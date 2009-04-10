@@ -120,16 +120,8 @@ public OnMapStart()
     LoadModelData();
     LoadDownloadData();
     
-    // Weapon restrict
+    // Forward event to modules.
     WeaponRestrictMapStart();
-    
-    new i;
-    new classindex = GetDefaultClassIndex();
-    for (i = 1; i <= MAXPLAYERS; i++)
-    {
-        pClass[i] = classindex;
-    }
-    
     Anticamp_Startup();
 }
 
@@ -140,11 +132,6 @@ public OnMapEnd()
 
 public OnConfigsExecuted()
 {
-    FindMapSky();
-    
-    LoadClassData();
-    LoadAmbienceData();
-    
     decl String:mapconfig[PLATFORM_MAX_PATH];
     
     GetCurrentMap(mapconfig, sizeof(mapconfig));
@@ -156,8 +143,17 @@ public OnConfigsExecuted()
     if (FileExists(path))
     {
         ServerCommand("exec %s", mapconfig);
-        LogMessage("Executed map config file: %s", mapconfig);
+        if (LogFlagCheck(LOG_CORE_EVENTS))
+        {
+            LogMessage("Executed map config file: %s", mapconfig);
+        }
     }
+    
+    FindMapSky();
+    
+    ClassLoad();
+    LoadClassData();
+    LoadAmbienceData();
 }
 
 public OnClientPutInServer(client)
@@ -171,8 +167,9 @@ public OnClientPutInServer(client)
     new bool:zhp = GetConVarBool(gCvars[CVAR_ZHP_DEFAULT]);
     dispHP[client] = zhp;
     
-    // Weapon restrict
+    // Forward event to modules.
     WeaponRestrictClientInit(client);
+    ClassClientInit(client);
     
     ClientHookAttack(client);
     
@@ -189,12 +186,12 @@ public OnClientPutInServer(client)
 
 public OnClientDisconnect(client)
 {
-    // Weapon restrict
-    WeaponRestrictClientDisconnect(client);
-    
     ClientUnHookAttack(client);
-    
     PlayerLeft(client);
+    
+    // Forward event to modules.
+    WeaponRestrictClientDisconnect(client);
+    ClassOnClientDisconnect(client);
     ZTeleResetClient(client);
     AmbienceStop(client);
     
@@ -235,6 +232,8 @@ ZREnd()
         
     UnhookCvars();
     UnhookEvents();
+    
+    // TODO: Disable all modules! Teleport, ambience, overlays, antistick, etc.
     
     new maxplayers = GetMaxClients();
     for (new x = 1; x <= maxplayers; x++)
