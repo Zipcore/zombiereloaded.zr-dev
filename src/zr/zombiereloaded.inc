@@ -55,9 +55,10 @@ enum ZTeam
 #define LOG_MODULE_OVERLAYS         65536       /** overlays.inc */
 #define LOG_MODULE_TELEPORT         131072      /** teleport.inc */
 #define LOG_MODULE_WEAPONS          262144      /** Weapons module - weapons/ *.inc */
-#define LOG_MODULE_ANTICAMP         524288      /** anticamp.inc */
-#define LOG_MODULE_DAMAGECONTROL    1048576     /** damagecontrol.inc */
-#define LOG_MODULE_OFFSETS          2097152     /** offsets.inc */
+#define LOG_MODULE_HITGROUPS        524288      /** hitgroups.inc */
+#define LOG_MODULE_ANTICAMP         1048576     /** anticamp.inc */
+#define LOG_MODULE_DAMAGECONTROL    2097152     /** damagecontrol.inc */
+#define LOG_MODULE_OFFSETS          4194304     /** offsets.inc */
 /*
  * @endsection
  */
