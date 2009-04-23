@@ -44,6 +44,9 @@
 // Weapons (core)
 #include "zr/weapons/weapons"
 
+// Hitgroups (core)
+#include "zr/hitgroups"
+
 // Round End (core)
 #include "zr/roundend"
 
@@ -52,9 +55,6 @@
 
 // Damage (core)
 #include "zr/damage"
-
-// Hitgroups (core)
-#include "zr/hitgroups"
 
 // Account (module)
 #include "zr/account"
@@ -177,10 +177,8 @@ public OnMapStart()
     
     // Forward event to modules.
     ClassLoad();
-    WeaponsLoad();
     RoundEndOnMapStart();
     InfectOnMapStart();
-    HitgroupsLoad();
     SEffectsOnMapStart();
     AntiStickOnMapStart();
     Anticamp_Startup();
@@ -215,6 +213,9 @@ public OnConfigsExecuted()
     FindMapSky();
     
     // Forward event to modules.
+    WeaponsLoad();
+    HitgroupsLoad();
+    InfectLoad();
     SEffectsLoad();
 }
 
