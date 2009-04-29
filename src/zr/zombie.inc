@@ -5,7 +5,7 @@
  *   Author: Greyscale
  * ==================== 
  */
-        
+
 HookCommands()
 {
     RegConsoleCmd("nightvision", Command_NightVision);
@@ -25,14 +25,19 @@ public Action:Command_NightVision(client, argc)
         return;
     }
     
+    if (!InfectIsClientInfected(client))
+    {
+        return;
+    }
+    
     bClientOverlayOn[client] = !bClientOverlayOn[client];
     
-    decl String:overlay[PLATFORM_MAX_PATH];
+    decl String:overlay[256];
     ClassGetOverlayPath(client, overlay, sizeof(overlay));
     
     if (strlen(overlay) > 0)
     {
-        if (ClassOverlayIsOn(client))
+        if (bClientOverlayOn[client])
         {
             ClassOverlayInitialize(client, overlay);
         }
@@ -41,19 +46,6 @@ public Action:Command_NightVision(client, argc)
             ClassOverlayStop(client);
         }
     }
-}
-
-JumpBoost(client, Float:distance, Float:height)
-{
-    new Float:vel[3];
-    
-    GetPlayerVelocity(client, vel);
-    
-    vel[0] *= distance;
-    vel[1] *= distance;
-    vel[2] += height;
-    
-    SetPlayerVelocity(client, vel, false);
 }
 
 RemoveObjectives()
