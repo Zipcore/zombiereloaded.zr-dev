@@ -37,71 +37,49 @@ ClassOnClientDisconnect(client)
 
 ClassOnClientSpawn(client)
 {
-    if (!IsPlayerAlive(client))
-    {
-        // The client isn't alive.
-        return;
-    }
+    // Reset client's FOV.
+    ToolsSetClientDefaultFOV(client, ATTRIBUTES_FOV_DEFAULT);
     
     new bool:randomclass = GetConVarBool(g_hCvarsList[CVAR_CLASSES_RANDOM]);
+    new bool:showmenu = GetConVarBool(g_hCvarsList[CVAR_CLASSES_SPAWN]);
     decl String:steamid[16];
     decl String:classname[64];
     
-    // Assign random classes if enabled. Always do it for bots.
-    GetClientAuthString(client, steamid, sizeof(steamid));
-    if (randomclass || StrEqual(steamid, "BOT"))
+    if (showmenu && !randomclass)
     {
-        // Get random classes for each type.
-        new randomzombie = ClassGetRandomClass(ZR_CLASS_TEAM_ZOMBIES);
-        new randomhuman = ClassGetRandomClass(ZR_CLASS_TEAM_HUMANS);
-        
-        // Mark zombie class as selected.
-        ClassSelected[client][ZR_CLASS_TEAM_ZOMBIES] = randomzombie;
-        ClassGetName(randomzombie, classname, sizeof(classname), ZR_CLASS_TEAM_ZOMBIES);
-        ZR_PrintToChat(client, "Auto-assign", classname);
-        
-        // Mark human class as selected.
-        ClassSelected[client][ZR_CLASS_TEAM_HUMANS] = randomhuman;
-        ClassGetName(randomhuman, classname, sizeof(classname), ZR_CLASS_TEAM_HUMANS);
-        ZR_PrintToChat(client, "Auto-assign", classname);
-        
-        // Update player cache with the human class data, and apply it.
-        ClassReloadPlayerCache(client, randomhuman);
-        ClassApplyAttributes(client);
+        ClassMenuMain(client);
     }
     
-    // Check if the player should spawn in admin mode.
-    if (ClassPlayerAdminMode[client])
+    // Assign random classes if enabled.
+    GetClientAuthString(client, steamid, sizeof(steamid));
+    if (StrEqual(steamid, "BOT") || randomclass)
     {
-        // Mark player as in admin mode.
-        ClassPlayerInAdminMode[client] = true;
+        // Get player's team
+        new teamid = GetClientTeam(client);
         
-        // Update player cache with the admin class and apply attributes.
-        new adminindex = ClassPlayerNextAdminClass[client];
-        ClassReloadPlayerCache(client, adminindex);
-        ClassApplyAttributes(client);
-    }
-    else
-    {
-        // Not in admin mode, spawn as a zombie or human.
+        // If the first zombie spawned, and the player is on the terrorist team, then
+        // find a random zombie class, otherwise find a human class.
+        if (g_bZombieSpawned && teamid == CS_TEAM_T)
+        {
+            new classindex = ClassGetRandomClass(ZR_CLASS_TEAM_ZOMBIES);
+            ClassSelected[client][ZR_CLASS_TEAM_ZOMBIES] = classindex;
+            ClassGetName(client, classname, sizeof(classname));
+        }
+        else
+        {
+            new classindex = ClassGetRandomClass(ZR_CLASS_TEAM_HUMANS);
+            ClassSelected[client][ZR_CLASS_TEAM_HUMANS] = classindex;
+            ClassGetName(client, classname, sizeof(classname));
+        }
         
-        // Mark player as not in admin mode.
-        ClassPlayerInAdminMode[client] = false;
-        
-        // Apply class attributes for the currently active class.
-        ClassReloadPlayerCache(client, ClassGetActiveIndex(client));
-        ClassApplyAttributes(client);
+        ZR_PrintToChat(client, "Auto-assign", classname);
     }
 }
 
 ClassOnClientDeath(client)
 {
-    // Reset certain attributes to not make spectating disorted.
     ClassHealthRegenStop(client);
     ClassOverlayStop(client);
-    
-    SetPlayerFOV(client, 90);
-    NightVisionOn(client, false);
 }
 
 ClassOnClientInfected(client, bool:motherzombie = false)
@@ -113,6 +91,10 @@ ClassOnClientInfected(client, bool:motherzombie = false)
     
     // Apply the new attributes.
     ClassApplyAttributes(client, motherzombie);
+}
+
+ClassOnRoundStart()
+{
 }
 
 

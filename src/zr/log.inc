@@ -24,6 +24,7 @@
 #define LOG_FORMAT_TYPE_SIMPLE      0      /** Simple log message. */
 #define LOG_FORMAT_TYPE_FULL        1      /** Full log message, printed in normal log. */
 #define LOG_FORMAT_TYPE_ERROR       2      /** Full log message, printed in error log. */
+#define LOG_FORMAT_TYPE_FATALERROR  3      /** Full log message, stops the plugin and printed in error logs. */
 /**
  * @endsection
  */
@@ -67,6 +68,9 @@ new Handle:g_hLogFlags = INVALID_HANDLE;
  * @endsection
  */
 
+/**
+ * Log module init function.
+ */
 LogInit()
 {
     // Create modules cvars.
@@ -128,6 +132,11 @@ LogMessageFormatted(client, const String:module[], const String:block[], const S
         {
             Format(logtext, sizeof(logtext), "\"%s\" : \"%s\" -- %s", module, block, logtext);
             LogError(logtext);
+        }
+        case LOG_FORMAT_TYPE_FATALERROR:
+        {
+            Format(logtext, sizeof(logtext), "\"%s\" : \"%s\" -- %s", module, block, logtext);
+            SetFailState(logtext);
         }
     }
     
