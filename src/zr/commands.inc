@@ -19,6 +19,7 @@ CommandsInit()
     ConfigOnCommandsCreate();
     ClassOnCommandsCreate();
     WeaponsOnCommandsCreate();
+    VolOnCommandsCreate();
     
     // Forward event to modules. (hook commands)
     ClassOnCommandsHook();

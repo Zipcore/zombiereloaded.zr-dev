@@ -163,6 +163,7 @@ public Action:EventPlayerSpawn(Handle:event, const String:name[], bool:dontBroad
     RespawnOnClientSpawn(index);
     ZTeleOnClientSpawn(index);
     ZHPOnClientSpawn(index);
+    VolOnPlayerSpawn(index);
     
     TranslationPrintToChat(index, "General zmenu reminder");
     
