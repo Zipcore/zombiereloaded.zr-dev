@@ -1,0 +1,709 @@
+﻿"Phrases"
+{
+	// ===========================
+	// General (base)
+	// ===========================
+
+	"General round objective"
+	{
+		"en"		"The game is @greenHumans vs. Zombies@default, the goal for zombies is to infect all humans by knifing them."
+		"ru"		"Битва @greenЛюдей против Зомби@default, цель для зомби - инфицировать всех людей."
+	}
+
+	"General zmenu reminder"
+	{
+		"en"		"For help on Zombie:Reloaded commands, type !zmenu in chat."
+		"ru"		"Напишите !zmenu в чате для просмотра всех команд."
+	}
+
+	// ===========================
+	// Generic (base)
+	// ===========================
+
+	// General
+
+	"Literal text"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1}"
+	}
+	// Set string to "{1}" for all languages.
+
+	"Feature is disabled"
+	{
+		"en"		"This feature is currently disabled by the server host."
+	}
+
+	"Not enough money"
+	{
+		"en"		"You do not have enough money to buy this item."
+	}
+
+	"Must be player"
+	{
+		"en"		"This feature is reserved for players only."
+	}
+
+	"Must be admin"
+	{
+		"en"		"This feature is reserved for admins only."
+	}
+
+	"Must be alive"
+	{
+		"en"		"This feature requires that you are alive."
+	}
+
+	"Must be dead"
+	{
+		"en"		"This feature requires that you are dead."
+	}
+
+	"Must be on team"
+	{
+		"en"		"This feature requires that you are on a team."
+	}
+
+	"Must be zombie"
+	{
+		"en"		"This feature requires that you are a zombie.
+	}
+
+	"Must be human"
+	{
+		"en"		"This feature requires that you are a human."
+	}
+
+	// Menu
+
+	"Menu empty"
+	{
+		"en"		"(Empty)"
+	}
+
+	// ===========================
+	// Config (core)
+	// ===========================
+
+	// Commands
+
+	"Config command reload syntax"
+	{
+		"#format"	"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"		"Syntax: zr_reloadconfig <file alias> - Reloads a config file.\n File Aliases:\n * \"{1}\"\n * \"{2}\"\n * \"{3}\"\n * \"{4}\"\n * \"{5}\""
+	}
+
+	"Config command reload invalid"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid file alias: \"{1}\""
+	}
+
+	"Config command reload not loaded"
+	{
+		"#format"	"{1:s}"
+		"en"		"File failed to load: \"{1}\" (Either disabled or invalid file content.)"
+	}
+
+	"Config command reload all stats begin"
+	{
+		"en"		"Reloading all Zombie:Reloaded config files...\n ------------------------------------------"
+	}
+
+	"Config command reload all stats successful"
+	{
+		"#format"	"{1:s}"
+		"en"		"\"{1}\" - Successful."
+	}
+
+	"Config command reload all stats failed"
+	{
+		"#format"	"{1:s}"
+		"en"		"\"{1}\" - Failed. (Either disabled or invalid file content.)"
+	}
+
+	// ===========================
+	// Classes
+	// ===========================
+
+	// General
+
+	"Classes admin mode enabled"
+	{
+		"en"		"Admin mode is enabled!"
+	}
+
+	"Classes random assignment"
+	{
+		"#format"	"{1:s}"
+		"en"		"You have randomly been assigned to the @green\"{1}\" @defaultclass."
+		"ru"		"Вам был случайным образом установлен класс \"{1}\"."
+	}
+
+	// Center Text/HUD
+
+	"Classes overlay toggle"
+	{
+		"#format"	"{1:s}"
+		"en"		"Class overlay toggle commands: {1}"
+	}
+
+	// Menu
+
+	"Classes menu title"
+	{
+		"en"		"Class Selection:"
+	}
+
+	"Classes menu zombie"
+	{
+		"en"		"Select Zombie Class"
+	}
+
+	"Classes menu human"
+	{
+		"en"		"Select Human Class"
+	}
+
+	"Classes menu admin"
+	{
+		"en"		"Select Admin Class"
+	}
+
+	"Classes menu admin mode toggle"
+	{
+		"en"		"Toggle Admin Mode"
+	}
+
+	// ===========================
+	// Overlays (core)
+	// ===========================
+
+	"Overlays not supported"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"Blocking Overlay - DX{1} Detected (DX{2} Required)"
+		"ru"		"Оверлей Отключен - Обнаружен DX{1} (Необходим DX{2})"
+	}
+
+	// ===========================
+	// Infect (core)
+	// ===========================
+
+	// General
+
+	"Infect infected"
+	{
+		"en"		"You have been infected!  Go pass it on to as many other players as you can."
+	}
+
+	"Infect disconnect"
+	{
+		"en"		"The last zombie has left the game, and has passed the infection on to you."
+		"ru"		"Последний зомби покинул игру и передал свою инфекцию вам."
+	}
+
+	// ===========================
+	// Damage (core)
+	// ===========================
+
+	"Damage suicide intercept"
+	{
+		"en"		"Suicide attempt intercepted."
+	}
+
+	// ===========================
+	// Menu (core)
+	// ===========================
+
+	// General
+
+	"Menu main title"
+	{
+		"en"		"ZR Commands:"
+		"ru"		"ZR Команды:"
+	}
+
+	"Menu main zadmin"
+	{
+		"#format"	"{1:s}"
+		"en"		"ZAdmin ({1}) - Open admin menu."
+	}
+
+	"Menu main zclass"
+	{
+		"#format"	"{1:s}"
+		"en"		"ZClass ({1}) - Configure your class settings."
+	}
+
+	"Menu main zspawn"
+	{
+		"#format"	"{1:s}"
+		"en"		"ZSpawn ({1}) - Join late?  Use this to spawn."
+	}
+
+	"Menu main ztele"
+	{
+		"#format"	"{1:s}"
+		"en"		"ZTele ({1}) - Teleport back to your spawn location."
+	}
+
+	"Menu main zhp"
+	{
+		"#format"	"{1:s}"
+		"en"		"ZHP ({1}) - Toggle real HP display when infected."
+	}
+
+	"Menu main zmarket"
+	{
+		"#format"	"{1:s}"
+		"en"		"ZMarket ({1}) - Need a weapon?  Buy them here."
+	}
+
+	// ===========================
+	// Weapons (core)
+	// ===========================
+
+	// General
+
+	"Zombie cant use weapon"
+	{
+		"en"		"Zombies can't use weapons!"
+		"ru"		"Зомби не могут использовать оружие!"
+	}
+
+	// Restrict
+
+	"Restrict weapon"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green\"{1}\" @defaulthas been restricted."
+	}
+
+	"Unrestrict weapon"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green\"{1}\" @defaulthas been unrestricted."
+	}
+
+	"Restrict weapon stopped"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green\"{1}\" @defaultis already restricted."
+	}
+
+	"Unrestrict weapon stopped"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green\"{1}\" @default has no restrictions set."
+	}
+
+	"Restrict weapon type"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapons of type @green\"{1}\" @defaulthave been restricted."
+	}
+
+	"Unrestrict weapon type"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapons of type @green\"{1}\" @defaulthave been unrestricted."
+	}
+
+	"Restrict weapon type stopped"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapons of type @green\"{1}\" @defaultare all already restricted."
+	}
+
+	"Unrestrict weapon type stopped"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapons of type @green\"{1}\" @defaulthave no restrictions set."
+	}
+
+	"Restrict weapon untoggleable"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green\"{1}\" @defaultmay not have its restrictions toggled."
+	}
+
+	"Weapon invalid"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green\"{1}\" @defaultis an invalid weapon (type) name."
+	}
+
+	"Weapon is restricted"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green{1} @defaultis restricted."
+		"ru"		"Оружие @green{1} @default запрещено."
+	}
+
+	// ZMarket
+
+	"Weapons zmarket buyzone"
+	{
+		"en"		"You must be in a buyzone to use ZMarket."
+	}
+
+	"Weapons zmarket purchase"
+	{
+		"#format"	"{1:s}"
+		"en"		"You have purchased weapon @green{1}. @defaultSelect item again to buy ammo if you are low."
+	}
+
+	"Weapons zmarket purchase max"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"Weapon @green{1} @defaulthas a purchase limit of @green{2}@default.  Wait until you respawn to try again."
+	}
+
+	// Commands
+
+	"Weapons command restrict syntax"
+	{
+		"en"		"Restricts a weapon or a weapon type. Usage: zr_restrict <weapon|weapon type> [weapon2|weapontype2] ..."
+	}
+
+	"Weapons command unrestrict syntax"
+	{
+		"en"		"Unrestricts a weapon or a weapon type. Usage: zr_unrestrict <weapon|weapon type> [weapon2|weapontype2] ..."
+	}
+
+	// Menu (Restrict)
+
+	"Weapons menu restrict main title"
+	{
+		"en"		"Weapons Management"
+	}
+
+	"Weapons menu restrict main restrict"
+	{
+		"en"		"Weapon Restrictions"
+	}
+
+	"Weapons menu restrict main market"
+	{
+		"en"		"ZMarket"
+	}
+
+	"Weapons menu restrict types title"
+	{
+		"en"		"Weapon Restrictions\nSelect Weapon Type:"
+	}
+
+	"Weapons menu restrict types weapon type title"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon Restrictions\nWeapon Type: {1}\n[] = Restricted"
+	}
+
+	"Weapons menu restrict types restrict all"
+	{
+		"#format"	"{1:s}"
+		"en"		"Restrict weapon type {1}"
+	}
+
+	"Weapons menu restrict types unrestrict all"
+	{
+		"#format"	"{1:s}"
+		"en"		"Unrestrict weapon type {1}\n "
+	}
+
+	"Weapons menu restrict zmarket title"
+	{
+		"en"		"ZMarket\nSelect Setting:"
+	}
+
+	"Weapons menu restrict zmarket buyzone"
+	{
+		"#format"	"{1:s}"
+		"en"		"Buyzone Only - {1}"
+	}
+
+	// Menu (ZMarket)
+
+	"Weapons menu zmarket types title"
+	{
+		"en"		"ZMarket\nSelect Weapon Type:"
+	}
+
+	"Weapons menu zmarket types rebuy"
+	{
+		"en"		"Rebuy (1 weapon per slot)"
+	}
+
+        "Weapons menu zmarket types auto-rebuy"
+	{
+		"#format"	"{1:s}"
+		"en"		"Auto-Rebuy: {1}\n "
+	}
+
+	"Weapons menu zmarket types weapon type title"
+	{
+		"#format"	"{1:s}"
+		"en"		"ZMarket\nWeapon Type: {1}\n[] = Restricted"
+	}
+
+	"Weapons menu zmarket types weapon info"
+	{
+		"#format"	"{1:s},{2:d},{3:d}"
+		"en"		"{1} (${2})\nPurchases Left: {3}"
+	}
+
+	"Weapons menu zmarket types weapon ammo"
+	{
+		"en"		"Ammo"
+	}
+
+	// ===========================
+	// Spawn Protect (module)
+	// ===========================
+
+	// General
+
+	"Spawn protection begin"
+	{
+		"#format"	"{1:d}"
+		"en"		"Zombies are present, you have {1} seconds to find a safe place before you lose immunity."
+		"ru"		"Зомби на свободе, у вас {1} секунд, чтобы найти безопасное место, пока не потеряли иммунитет."
+	}
+
+	"Spawn protection end"
+	{
+		"en"		"You are now susceptible to zombie infection."
+		"ru"		"Теперь вы восприимчивы к зомби инфекции."
+	}
+
+	// HUD
+
+	"Spawn Protect"
+	{
+		"#format"	"{1:d}"
+		"en"		"Zombie protection ends in: {1} seconds."
+	}
+
+	// ===========================
+	// ZSpawn (module)
+	// ===========================
+
+	"ZSpawn double spawn"
+	{
+		"en"		"ZSpawn can only be used if you joined late during a round in progress."
+	}
+
+	"ZSpawn timelimit"
+	{
+		"#format"	"{1:d}"
+		"en"		"The timelimit ({1} seconds), to use ZSpawn, has already expired."
+	}
+
+	// ===========================
+	// ZTele (module)
+	// ===========================
+
+	// General
+
+	"ZTele restricted human"
+	{
+		"en"		"ZTele is restricted for humans at this time."
+	}
+
+	"ZTele max"
+	{
+		"#format"	"{1:d}"
+		"en"		"You have reached your max of {1} teleport(s) per round."
+	}
+
+	"ZTele in progress"
+	{
+		"en"		"You are currently pending teleportation."
+	}
+
+	"ZTele autocancel text"
+	{
+		"#format"	"{1:d}"
+		"en"		"Teleport has been cancelled.  (Restrictive boundary is {1} ft.)"
+	}
+
+	// Center Text
+
+	"ZTele countdown"
+	{
+		"#format"	"{1:d}"
+		"en"		"Teleporting back to spawn in: {1} seconds."
+	}
+
+	"ZTele autocancel centertext"
+	{
+		"en"		"Teleport has been cancelled."
+	}
+
+	"ZTele countdown end"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"Teleported back to spawn. (Count: {1}/{2})"
+	}
+
+	// ===========================
+	// ZHP (module)
+	// ===========================
+
+	// General
+
+	"ZHP enable"
+	{
+		"en"		"HP display enabled, your real HP will be displayed after infection."
+	}
+
+	"ZHP disable"
+	{
+		"en"		"HP display disabled."
+		"ru"		"Отображение здоровья включено."
+	}
+
+	// HUD
+
+	"Display HP"
+	{
+		"#format"	"{1:d}"
+		"en"		"HP: {1}"
+		"ru"		"Здоровье: {1}"
+	}
+
+
+
+	"Unfair camping"
+	{
+		"en"		"An admin has marked this area as unfair, please move along, or die."
+	}
+	
+	"Unfair camper slayed"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"Player {1} has been slayed for camping in a restricted area. (ID: {2})"
+	}
+
+	// ===========================
+	// ZAdmin Menu
+	// ===========================
+
+	"!zadmin main title"
+	{
+		"en"		"ZAdmin\n Select Category:"
+	}
+
+	"!zadmin main weapons"
+	{
+		"en"		"Weapon Management"
+	}
+
+	"!zadmin main logflags"
+	{
+		"en"		"Logging Flags"
+	}
+
+	"!zadmin class title"
+	{
+		"en"		"Select Class to Modify:"
+	}
+
+	"!zadmin knockbackm title"
+	{
+		"#format"	"{1:f}"
+		"en"		"Modify Knockback Multiplier\nCurrent Knockback: {1}"
+	}
+
+	"!zadmin knockbackm increase"
+	{
+		"#format"	"{1:s}"
+		"en"		"Increase Knockback Multiplier (+{1})"
+	}
+
+	"!zadmin knockbackm decrease"
+	{
+		"#format"	"{1:s}"
+		"en"		"Decrease Knockback Multiplier (-{1})"
+	}
+
+	"!zadmin knockback title"
+	{
+		"#format"	"{1:s},{2:f}"
+		"en"		"Modify Knockback\nClass: {1}\nCurrent Knockback: {2}"
+	}
+
+	"!zadmin knockback increase"
+	{
+		"#format"	"{1:s}"
+		"en"		"Increase Knockback (+{1})"
+	}
+
+	"!zadmin knockback decrease"
+	{
+		"#format"	"{1:s}"
+		"en"		"Decrease Knockback (-{1})"
+	}
+
+	"!zadmin nvgs title"
+	{
+		"#format"	"{1:d}"
+		"en"		"Override NVG Cvar\nCurrent Setting: {1}"
+	}
+
+	"!zadmin nvgs decrease"
+	{
+		"en"		"Decrease Knockback"
+	}
+
+	"!zadmin nvgs no override"
+	{
+		"en"		"No Override/Class Specific"
+	}
+
+	"!zadmin nvgs disable"
+	{
+		"en"		"Disable NVGs"
+	}
+
+	"!zadmin nvgs enable"
+	{
+		"en"		"Enable NVGs"
+	}
+
+	"!zadmin infect title"
+	{
+		"en"		"Choose a Player to Infect:"
+	}
+
+	"!zadmin ztele title"
+	{
+		"en"		"ZTele Admin Menu:"
+	}
+
+	"!zadmin ztele spawn tele"
+	{
+		"en"		"Teleport a Player to Spawn"
+	}
+
+	"!zadmin ztele abort"
+	{
+		"en"		"Abort Teleport on a Player"
+	}
+
+	"!zadmin ztele save"
+	{
+		"en"		"Save Teleport Location"
+	}
+
+	"!zadmin ztele tele"
+	{
+		"en"		"Teleport Player to Saved Location"
+	}
+
+	"!zadmin log flags title"
+	{
+		"en"		"Toggle Logging Flags:"
+	}
+}
