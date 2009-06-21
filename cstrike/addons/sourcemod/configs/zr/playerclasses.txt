@@ -1,0 +1,361 @@
+// ============================================================================
+//
+//                              ZOMBIE:RELOADED
+//                           Class configuration
+//
+// Check the class configuration section in the manual for detailed info.
+//
+// ============================================================================
+//
+// SHORT DESCRIPTIONS
+//
+// Attribute:               Values:     Description:
+// ----------------------------------------------------------------------------
+// enabled                  0/1         Enables or disables a class.
+// team                     number      Specifies what team the class belongs to:
+//                                      0 - Zombies
+//                                      1 - Humans
+//                                      2 - Admin mode classes (incomplete feautre!)
+// team_default             0/1         Marks the class as the default class in the team.
+// flags                    number      Special class flags (bit field). To combine multiple flags
+//                                      use a sum of the flag values. Available flags:
+//                                      1 - Admins only
+//                                      2 - Mother zombies only
+// name                     text        The class name used in class menu.
+// description              text        The class description used in class menu.
+// model_path               text        Path to model to use. Relative to cstrike folder.
+// alpha_initial            number      Initial transparency setting.
+// alpha_damaged            number      Transparency when damaged.
+// alpha_damage             number      How much damage to do before switching alpha.
+// overlay_path             text        Overlay displayed at the player.
+// nvgs                     0/1         Give night vision.
+// fov                      number      Field of view value. 90 is default.
+// has_napalm               0/1         Allows player to throw napalm grenades. Humans only.
+// napalm_time              decimal     Napalm burn duration. Zombies only.
+// immunity_mode            number      Sets the immunity mode.
+// immunity_amount          decimal     Sets the immunity value.
+// no_fall_damage           0/1         Disables fall damage.
+// health                   number      How many health points to give.
+// health_regen_interval    decimal     Sets the regeneration interval. 0 to disable.
+// health_regen_amount      number      How much HP to give per interval.
+// health_infect_gain       number      How much HP to give when the player infects someone. Zombies only.
+// kill_bonus               number      How many points to give per kill. Humans only.
+// speed                    decimal     The player speed.
+// knockback                decimal     Force of the knockback when shot at. Zombies only.
+// jump_height              decimal     Extra upwards jump boost in units. 0.0 for no extra boost.
+// jump_distance            decimal     Extra forwards jump boost multiplier. 0.2 is normal distance.
+
+"classes"
+{
+    // ------------------------------------------
+    //
+    // Zombie classes
+    //
+    // ------------------------------------------
+    "classic"
+    {
+        // General
+        "enabled"               "1"
+        "team"                  "0"
+        "team_default"          "1"
+        "flags"                 "0"
+        
+        "name"                  "Classic"
+        "description"           "Need brains!!! Arrrrggghh!"
+        
+        // Model
+        "model_path"            "models/player/zh/zh_charple001.mdl"
+        "alpha_initial"         "255"
+        "alpha_damaged"         "255"
+        "alpha_damage"          "0"
+        
+        // Hud
+        "overlay_path"          "overlays/zr/zvision"
+        "nvgs"                  "0"
+        "fov"                   "90"
+        
+        // Effects
+        "has_napalm"            "0"
+        "napalm_time"           "10.0"
+        
+        // Player behaviour
+        "immunity_mode"         "0"
+        "immunity_amount"       "0.0"
+        "no_fall_damage"        "1"
+        
+        "health"                "2500"
+        "health_regen_interval" "0.0"
+        "health_regen_amount"   "0"
+        "health_infect_gain"    "700"
+        "kill_bonus"            "2"
+        
+        "speed"                 "350"
+        "knockback"             "4"
+        "jump_height"           "10.0"
+        "jump_distance"         "0.3"
+    }
+    
+    "fast"
+    {
+        // General
+        "enabled"               "1"
+        "team"                  "0"
+        "team_default"          "0"
+        "flags"                 "0"
+        
+        "name"                  "Fast"
+        "description"           "-HP | +Speed | +Jump | +Knockback"
+        
+        // Model
+        "model_path"            "models/player/zh/zh_corpse002.mdl"
+        "alpha_initial"         "255"
+        "alpha_damaged"         "255"
+        "alpha_damage"          "0"
+        
+        // Hud
+        "overlay_path"          "overlays/zr/zvision"
+        "nvgs"                  "0"
+        "fov"                   "90"
+        
+        // Effects
+        "has_napalm"            "0"
+        "napalm_time"           "5.0"
+        
+        // Player behaviour
+        "immunity_mode"         "0"
+        "immunity_amount"       "0.0"
+        "no_fall_damage"        "1"
+        
+        "health"                "2000"
+        "health_regen_interval" "0.0"
+        "health_regen_amount"   "0"
+        "health_infect_gain"    "500"
+        "kill_bonus"            "2"
+        
+        "speed"                 "380"
+        "knockback"             "4.5"
+        "jump_height"           "30.0"
+        "jump_distance"         "0.4"
+    }
+    
+    "mutated"
+    {
+        // General
+        "enabled"               "1"
+        "team"                  "0"
+        "team_default"          "0"
+        "flags"                 "0"
+        
+        "name"                  "Mutated"
+        "description"           "+HP | -Speed | +Jump | +Knockback"
+        
+        // Model
+        "model_path"            "models/player/zh/zh_zombie003.mdl"
+        "alpha_initial"         "255"
+        "alpha_damaged"         "255"
+        "alpha_damage"          "0"
+        
+        // Hud
+        "overlay_path"          "overlays/zr/zvision"
+        "nvgs"                  "0"
+        "fov"                   "90"
+        
+        // Effects
+        "has_napalm"            "0"
+        "napalm_time"           "15.0"
+        
+        // Player behaviour
+        "immunity_mode"         "0"
+        "immunity_amount"       "0.0"
+        "no_fall_damage"        "1"
+        
+        "health"                "3500"
+        "health_regen_interval" "0.0"
+        "health_regen_amount"   "0"
+        "health_infect_gain"    "850"
+        "kill_bonus"            "2"
+        
+        "speed"                 "275"
+        "knockback"             "3.5"
+        "jump_height"           "20.0"
+        "jump_distance"         "0.4"
+    }
+    
+    "heavy"
+    {
+        // General
+        "enabled"               "1"
+        "team"                  "0"
+        "team_default"          "0"
+        "flags"                 "0"
+        
+        "name"                  "Heavy"
+        "description"           "+HP | -Speed | -Jump | -Knockback"
+        
+        // Model
+        "model_path"            "models/player/ics/hellknight_red/t_guerilla.mdl"
+        "alpha_initial"         "255"
+        "alpha_damaged"         "255"
+        "alpha_damage"          "0"
+        
+        // Hud
+        "overlay_path"          "overlays/zr/zvision"
+        "nvgs"                  "0"
+        "fov"                   "90"
+        
+        // Effects
+        "has_napalm"            "0"
+        "napalm_time"           "20.0"
+        
+        // Player behaviour
+        "immunity_mode"         "0"
+        "immunity_amount"       "0.0"
+        "no_fall_damage"        "1"
+        
+        "health"                "4000"
+        "health_regen_interval" "0.0"
+        "health_regen_amount"   "0"
+        "health_infect_gain"    "1000"
+        "kill_bonus"            "2"
+        
+        "speed"                 "280"
+        "knockback"             "2.5"
+        "jump_height"           "0.0"
+        "jump_distance"         "0.2"
+    }
+    
+    // ------------------------------------------
+    //
+    // Human classes
+    //
+    // ------------------------------------------
+    
+    "human_normal"
+    {
+        // General
+        "enabled"               "1"
+        "team"                  "1"
+        "team_default"          "1"
+        "flags"                 "0"
+        
+        "name"                  "Normal Human"
+        "description"           "Default Counter-Strike settings"
+        
+        // Model
+        "model_path"            "default"
+        "alpha_initial"         "255"
+        "alpha_damaged"         "255"
+        "alpha_damage"          "0"
+        
+        // Hud
+        "overlay_path"          ""
+        "nvgs"                  "0"
+        "fov"                   "90"
+        
+        // Effects
+        "has_napalm"            "1"
+        "napalm_time"           "0.0"
+        
+        // Player behaviour
+        "immunity_mode"         "0"
+        "immunity_amount"       "0.0"
+        "no_fall_damage"        "0"
+        
+        "health"                "100"
+        "health_regen_interval" "0.0"
+        "health_regen_amount"   "0"
+        "health_infect_gain"    "0"
+        "kill_bonus"            "2"
+        
+        "speed"                 "300"
+        "knockback"             "0"
+        "jump_height"           "0.0"
+        "jump_distance"         "0.2"
+    }
+    
+    "human_speedy"
+    {
+        // General
+        "enabled"               "1"
+        "team"                  "1"
+        "team_default"          "0"
+        "flags"                 "0"
+        
+        "name"                  "Speedy"
+        "description"           "Fast human"
+        
+        // Model
+        "model_path"            "default"
+        "alpha_initial"         "255"
+        "alpha_damaged"         "255"
+        "alpha_damage"          "0"
+        
+        // Hud
+        "overlay_path"          ""
+        "nvgs"                  "0"
+        "fov"                   "90"
+        
+        // Effects
+        "has_napalm"            "0"
+        "napalm_time"           "0.0"
+        
+        // Player behaviour
+        "immunity_mode"         "0"
+        "immunity_amount"       "0.0"
+        "no_fall_damage"        "0"
+        
+        "health"                "100"
+        "health_regen_interval" "0.0"
+        "health_regen_amount"   "0"
+        "health_infect_gain"    "0"
+        "kill_bonus"            "1"
+        
+        "speed"                 "380"
+        "knockback"             "0"
+        "jump_height"           "0.0"
+        "jump_distance"         "0.2"
+    }
+    
+    "human_light"
+    {
+        // General
+        "enabled"               "1"
+        "team"                  "1"
+        "team_default"          "0"
+        "flags"                 "0"
+        
+        "name"                  "Light"
+        "description"           "Regular human with improved jump skills"
+        
+        // Model
+        "model_path"            "default"
+        "alpha_initial"         "255"
+        "alpha_damaged"         "255"
+        "alpha_damage"          "0"
+        
+        // Hud
+        "overlay_path"          ""
+        "nvgs"                  "0"
+        "fov"                   "90"
+        
+        // Effects
+        "has_napalm"            "1"
+        "napalm_time"           "0.0"
+        
+        // Player behaviour
+        "immunity_mode"         "0"
+        "immunity_amount"       "0.0"
+        "no_fall_damage"        "0"
+        
+        "health"                "100"
+        "health_regen_interval" "0.0"
+        "health_regen_amount"   "0"
+        "health_infect_gain"    "0"
+        "kill_bonus"            "1"
+        
+        "speed"                 "300"
+        "knockback"             "0"
+        "jump_height"           "30.0"
+        "jump_distance"         "0.4"
+    }
+}
