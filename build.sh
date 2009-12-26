@@ -1,18 +1,23 @@
 #!/bin/sh
 
-RELEASEDIR=release
-BUILDDIR=build
 VERSION="zombiereloaded-3.0-dev"
 REVISION=$(hg id -n)
-ZIPFILE=$VERSION-r$REVISION.zip
 
-PLUGINFILES="cstrike/*"
-DOCS="docs/*"
-DOCS_DEST=$RELEASEDIR/zrdocs
+# Source paths
+BUILDDIR=build
 PLUGINFILE=zombiereloaded.smx
-PLUGINDIR=$RELEASEDIR/addons/sourcemod/plugins
+PLUGINFILES="cstrike/*"
 ZRTOOLS_SOURCE=/home/zrdev/archive/zrtools
+DOCS="docs/*"
+SOURCEDIR="src/*"
+
+# Destination paths
+RELEASEDIR=release
+SOURCE_DEST=$RELEASEDIR/addons/sourcemod/scripting
+DOCS_DEST=$RELEASEDIR/zrdocs
+PLUGINDIR=$RELEASEDIR/addons/sourcemod/plugins
 EXTENSIONDIR=$RELEASEDIR/addons/sourcemod/extensions
+ZIPFILE=$VERSION-r$REVISION.zip
 
 MAKEPATCH=false
 
@@ -67,6 +72,9 @@ then
     exit 1
 fi
 
+# Rebuild hgversion.h.inc for unofficial builds.
+sh updateversion.sh --unofficial
+
 
 # Copy files.
 echo "Copying documentation..."
@@ -76,6 +84,10 @@ cp -r $DOCS $DOCS_DEST
 echo "Copying plugin binary..."
 mkdir -p $PLUGINDIR
 cp -r $BUILDDIR/$PLUGINFILE $PLUGINDIR/$PLUGINFILE
+
+echo "Copying plugin source code..."
+mkdir -p $SOURCE_DEST
+cp -r $SOURCEDIR $SOURCE_DEST
 
 if [ $MAKEPATCH = "false" ]
 then
