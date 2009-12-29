@@ -135,7 +135,7 @@ public Plugin:myinfo =
  */
 public bool:AskPluginLoad(Handle:myself, bool:late, String:error[], err_max)
 {
-    // TODO: EXTERNAL API
+    // TODO: EXTERNAL API.
     
     // Let plugin load.
     return true;
