@@ -707,6 +707,7 @@ stock bool:WeaponsClientHasWeapon(client, const String:weapon[])
 
 /**
  * Return an array that contains all client's weapon indexes.
+ * Note: This only returns the first grenade in the 4th slot. 
  * 
  * @param client    The client index.
  * @param weapons   The weapon index array.
