@@ -45,6 +45,15 @@
  */
 
 /**
+ * @section The bounds for grenade counts (used for iterations)
+ */
+#define WEAPONAMMO_GRENADETYPE_LOW  11
+#define WEAPONAMMO_GRENADETYPE_HIGH 13
+/**
+ * @endsection
+ */
+
+/**
  * Variable to store if Grenade Pack is loaded and running.
  */
 new bool:g_bGrenadePack;
@@ -181,34 +190,29 @@ stock WeaponAmmoGetGrenadeCount(client, WeaponAmmoGrenadeType:type)
 }
 
 /**
- * Takes a weapon entity and returns an entry in enum WeaponAmmoGrenadeType.
+ * Returns an array containing the amount of each grenade in CS:S for a client.
  * 
- * @param weaponentity  The weapon entity to find entry for.
- * @return              An entry in WeaponAmmoGrenadeType.
+ * @param client            The client index.
+ * @param grenadecounts     The output array.
  */
-stock WeaponAmmoGrenadeType:WeaponAmmoEntityToGrenadeType(const String:weaponentity[])
+stock WeaponAmmoGetGrenadeTally(client, grenadecount[WeaponAmmoGrenadeType])
 {
-    if (StrEqual(weaponentity, "weapon_hegrenade"))
+    // x = Grenade type
+    for (new x = WEAPONAMMO_GRENADETYPE_LOW; x <= WEAPONAMMO_GRENADETYPE_HIGH; x++)
     {
-        return GrenadeType_HEGrenade;
+        // Cast int type into our custom enum type.
+        new WeaponAmmoGrenadeType:grenadetype = WeaponAmmoGrenadeType:x;
+        
+        // Get the count for this grenade.
+        grenadecount[grenadetype] = WeaponAmmoGetGrenadeCount(client, grenadetype);
     }
-    else if (StrEqual(weaponentity, "weapon_flashbang"))
-    {
-        return GrenadeType_Flashbang;
-    }
-    else if (StrEqual(weaponentity, "weapon_smokegrenade"))
-    {
-        return GrenadeType_Smokegrenade;
-    }
-    
-    return GrenadeType_Invalid;
 }
 
 /**
  * Returns the max amount of this type of grenades the client is allowed to carry.
- * 
+ *
  * @param weaponentity  The weapon entity to get the limit for.
- * @return              The grenade limit, -1 if an unhandled grenade entity was given. 
+ * @return              The grenade limit, -1 if an unhandled grenade entity was given.
  */
  stock WeaponAmmoGetGrenadeLimit(WeaponAmmoGrenadeType:grenadetype)
  {
@@ -236,7 +240,63 @@ stock WeaponAmmoGrenadeType:WeaponAmmoEntityToGrenadeType(const String:weaponent
 }
 
 /**
+ * Takes a weapon entity and returns an entry in enum WeaponAmmoGrenadeType.
+ * 
+ * @param weaponentity  The weapon entity to find entry for.
+ *  
+ * @return              An entry in WeaponAmmoGrenadeType.
+ */
+stock WeaponAmmoGrenadeType:WeaponAmmoEntityToGrenadeType(const String:weaponentity[])
+{
+    if (StrEqual(weaponentity, "weapon_hegrenade"))
+    {
+        return GrenadeType_HEGrenade;
+    }
+    else if (StrEqual(weaponentity, "weapon_flashbang"))
+    {
+        return GrenadeType_Flashbang;
+    }
+    else if (StrEqual(weaponentity, "weapon_smokegrenade"))
+    {
+        return GrenadeType_Smokegrenade;
+    }
+    
+    return GrenadeType_Invalid;
+}
+
+/**
+ * Takes an entry in enum WeaponAmmoGrenadeType and returns a weapon entity.
+ * 
+ * @param type          The grenade type to return an entity name for.
+ * @param weaponentity  The output string.
+ * @param maxlen        The maximum length of the outputted string. 
+ */
+stock WeaponAmmoGrenadeTypeToEntity(WeaponAmmoGrenadeType:type, String:weaponentity[], maxlen)
+{
+    // Nullify our output string.
+    weaponentity[0] = 0;
+    
+    switch(type)
+    {
+        case GrenadeType_HEGrenade:
+        {
+            strcopy(weaponentity, maxlen, "weapon_hegrenade");
+        }
+        case GrenadeType_Flashbang:
+        {
+            strcopy(weaponentity, maxlen, "weapon_flashbang");
+        }
+        case GrenadeType_Smokegrenade:
+        {
+            strcopy(weaponentity, maxlen, "weapon_smokegrenade");
+        }
+    }
+}
+
+/**
  * Returns true if plugin "Grenade Pack" is found and running.
+ * 
+ * @return  True if GrenadePack is loaded, false if not.  
  */
 stock bool:ZMarketIsGPLoaded()
 {

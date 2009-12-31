@@ -40,7 +40,9 @@
  * List Options:
  * 
  * Construct: Take a string and dump out a list.  Simple.
- * Remove: Removes an item from the list.  Must remove from the end to preserve list order.
+ * Count: Count how many items are in the raw list.
+ * Add: Add an item to a raw list. 
+ * Remove: Removes an item from the raw list.  Must remove from the end to preserve list order.
  *  
  * Scenario:
  * String: "Apple, Orange, Mango, Orange"
@@ -146,14 +148,74 @@ stock ShoppingListConstruct(const String:list[], String:shoppinglist[], slist_ma
 }
 
 /**
+ * Count how many of a certain item is in a list.
+ *
+ * @param list          The raw list to remove item from.
+ * @param maxlen        The maximum length of the list.
+ * @param item          The item to count. ("" to count all items)
+ * @param token         The token used to separate each item in the raw string. Ex: "Apple, Orange"  Token: ","
+ * @return              The number of items specified that are in the list.
+ */
+stock ShoppingListCount(const String:list[], const String:item[], const String:token[])
+{
+    // Put each item in a list.
+    new String:items[SHOPPINGLIST_MAXITEMS][SHOPPINGLIST_MAXLEN];
+    ExplodeString(list, token, items, SHOPPINGLIST_MAXITEMS, SHOPPINGLIST_MAXLEN);
+    
+    new validstrings;
+
+    // x = Array index.
+    for (new x = 0; x < SHOPPINGLIST_MAXITEMS; x++)
+    {
+        // Trim off any whitespace.
+        TrimString(items[x]);
+        
+        // If there are no more items left, exit the loop.
+        if (!items[x][0])
+            break;
+
+        if (item[0] && !StrEqual(item, items[x], false))
+            continue;
+
+        validstrings++;
+    }
+
+    return validstrings;
+}
+
+/**
  * Add an item to the list.
  * Notes:
  * For max number of items, and the max length of each item, see SHOPPINGLIST_* defines at the top.
  * 
- * @param list          The list to remove item from.
+ * @param list          The raw list to add item to.
+ * @param maxlen        The maximum length of the finished list.
+ * @param item          The item to add from to list.
+ * @param token         The token to add with the item. 
+ */
+public ShoppingListAdd(String:list[], maxlen, const String:item[], const String:token[])
+{
+    // If the list is empty, then just copy the item into it and return.
+    if (!list[0])
+    {
+        strcopy(list, maxlen, item);
+        return;
+    }
+    
+    // Format on the item.
+    Format(list, maxlen, "%s%s%s", list, token, item);
+}
+
+/**
+ * Remove an item from the list.
+ * Notes:
+ * For max number of items, and the max length of each item, see SHOPPINGLIST_* defines at the top.
+ * 
+ * @param list          The raw list to remove item from.
  * @param maxlen        The maximum length of the finished list.
  * @param item          The item to remove from the list.
- * @param token         The token to remove with the item. 
+ * @param token         The token to remove with the item.
+ *  
  * @return              True if the item was found and removed, false if not found. 
  */
 public bool:ShoppingListRemove(String:list[], maxlen, const String:item[], const String:token[])
@@ -179,8 +241,15 @@ public bool:ShoppingListRemove(String:list[], maxlen, const String:item[], const
             for (new y = x; y < SHOPPINGLIST_MAXITEMS - 1; y++)
                 items[y] = items[y + 1];
             
-            // Implode the array of strings back together into a full string.
-            ImplodeStrings(items, validstrings + x, token, list, maxlen);
+            // If this isn't the last item removed, then implode the rest together.
+            if (validstrings + x > 0)
+            {
+                // Implode the array of strings back together into a full string.
+                ImplodeStrings(items, validstrings + x, token, list, maxlen);
+            }
+            // If this is the last item, then just nullify the output.
+            else
+                list[0] = 0;
             
             return true;
         }
