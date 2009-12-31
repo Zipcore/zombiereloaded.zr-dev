@@ -67,14 +67,14 @@ ZCookiesMenuMain(client)
     Format(autorebuy, sizeof(autorebuy), "%t", "ZCookies menu main auto-rebuy", autorebuyenabled);
     Format(zhp, sizeof(zhp), "%t", "ZCookies menu main zhp", zhpenabled);
     Format(overlay, sizeof(overlay), "%t", "ZCookies menu main overlay", overlayenabled);
-    Format(zmarket, sizeof(zmarket), "%t", "ZCookies zmarket loadout");
+    Format(zmarket, sizeof(zmarket), "%t", "ZCookies zmarket weapon setup");
     
     // Get conditional values for each option.
     new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);                               // For auto-rebuy.
     new bool:zmarketrebuyauto = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_ZMARKET_REBUY_AUTO]);   // For auto-rebuy.
     new bool:zhpcvar = GetConVarBool(g_hCvarsList[CVAR_ZHP]);                                   // For ZHP.
     new bool:overlaytoggle = GetConVarBool(g_hCvarsList[CVAR_CLASSES_OVERLAY_TOGGLE]);          // For class overlay.
-    new bool:zmarketenabled = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_ZMARKET]);                // For ZMarket loadout.
+    new bool:zmarketenabled = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_ZMARKET]);                // For ZMarket weapon setup.
     
     // Add items to menu.
     SetMenuTitle(zcookies_menu_main, title);
@@ -131,11 +131,11 @@ public ZCookiesMenuMainHandle(Handle:menu, MenuAction:action, client, slot)
                     CookiesSetClientCookieBool(client, g_hOverlayEnabledCookie, overlayenabled);
                 }
             }
-            // Opened ZMarket loadout.
+            // View ZMarket weapon setup.
             case 3:
             {
-                // Show a client their current loadout.
-                ZMarketMenuLoadout(client);
+                // Show a client their current weapon setup.
+                ZMarketMenuWeaponSetup(client);
                 
                 // Don't resend ZCookies.
                 resend = false;

@@ -1,4 +1,4 @@
-﻿"Phrases"
+"Phrases"
 {
 	// ===========================
 	// General (base)
@@ -474,7 +474,7 @@
 
 	"Menu main zmarket"
 	{
-		"en"		"ZMarket - Customize loadouts here"
+		"en"		"ZMarket - Create a weapon setup here"
 	}
 
 	// ===========================
@@ -563,10 +563,16 @@
 		"en"		"You must be in a buyzone to use ZMarket."
 	}
 
-	"Weapons zmarket purchase"
+	"Weapons zmarket purchase with ammo"
 	{
 		"#format"	"{1:s}"
 		"en"		"You have purchased weapon @green{1}. @defaultSelect item again to buy ammo if you are low."
+	}
+
+	"Weapons zmarket purchase no ammo"
+	{
+		"#format"	"{1:s}"
+		"en"		"You have purchased item @green{1}."
 	}
 
 	"Weapons zmarket purchase max"
@@ -583,7 +589,7 @@
 
 	"Weapons zmarket auto-rebuy toggle on"
 	{
-		"en"		"Auto-rebuy has been enabled, your loadout will be automatically purchased for you each time you spawn."
+		"en"		"Auto-rebuy has been enabled, your weapon setup will be automatically purchased for you each time you spawn."
 	}
 
 	"Weapons zmarket auto-rebuy toggle off"
@@ -591,14 +597,20 @@
 		"en"		"Auto-rebuy has been disabled."
 	}
 
-	"Weapons zmarket updated loadout"
+	"Weapons zmarket updated weapon setup"
 	{
-		"en"		"You are not able to purchase a weapon at this time, but your loadout has been updated with this weapon."
+		"en"		"You are not able to purchase a weapon at this time, but your weapon setup has been updated with this weapon."
 	}
 
-	"Weapons zmarket get current loadout"
+	"Weapons zmarket save current weapon setup"
 	{
-		"en"		"Updated current loadout, use rebuy option to purchase these weapons again."
+		"en"		"Saved current weapon setup, use rebuy option to purchase these weapons again."
+	}
+
+	"Weapons zmarket weapon setup restricted"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon {1} is a restricted weapon and has been automatically removed from your weapon setup."
 	}
 
 	// Commands
@@ -671,74 +683,73 @@
 		"en"		"ZMarket\nSelect an Option:"
 	}
 
-	"Weapons menu zmarket main get loadout"
+	"Weapons menu zmarket main rebuy saved setup"
 	{
-		"en"		"Get Current Loadout"
+		"en"		"Rebuy Saved Setup"
 	}
 
-	"Weapons menu zmarket main view loadout"
+	"Weapons menu zmarket main buy weapons"
 	{
-		"en"		"View My Loadout"
+		"en"		"Buy Weapons"
 	}
 
-	"Weapons menu zmarket main rebuy"
+	"Weapons menu zmarket main save current setup"
 	{
-		"en"		"Rebuy My Loadout"
+		"en"		"Save Current Setup"
+	}
+
+	"Weapons menu zmarket main view weapon setup"
+	{
+		"en"		"View Weapon Setup"
 	}
 
 	"Weapons menu zmarket main auto-rebuy"
 	{
 		"#format"	"{1:s}"
-		"en"		"Auto-Rebuy: {1}"
+		"en"		"Auto-Rebuy (on spawn): {1}"
 	}
 
-	"Weapons menu zmarket main weapons list"
+	"Weapons menu zmarket weapon setup title"
 	{
-		"en"		"View Weapons List"
+		"en"		"ZMarket\nCurrent Weapon Setup:\nSelect weapon slot to clear."
 	}
 
-	"Weapons menu zmarket loadout title"
+	"Weapons menu zmarket weapon setup clear all"
 	{
-		"en"		"ZMarket\nMy Current Loadout:\nSelect weapon slot to clear.\nNote: Rebuy refers to these weapons."
+		"en"		"Clear All"
 	}
 
-	"Weapons menu zmarket loadout primary"
+	"Weapons menu zmarket weapon setup primary"
 	{
-		"#format"	"{1:s}"
-		"en"		"Primary: {1}"
+		"en"		"Primary:"
 	}
 
-	"Weapons menu zmarket loadout secondary"
+	"Weapons menu zmarket weapon setup secondary"
 	{
-		"#format"	"{1:s}"
-		"en"		"Secondary: {1}"
+		"en"		"Secondary:"
 	}
 
-	"Weapons menu zmarket loadout melee"
+	"Weapons menu zmarket weapon setup melee"
 	{
-		"#format"	"{1:s}"
-		"en"		"Melee: {1}"
+		"en"		"Melee:"
 	}
 
-	"Weapons menu zmarket loadout projectile"
+	"Weapons menu zmarket weapon setup projectile"
 	{
-		"#format"	"{1:s}"
-		"en"		"Projectile: {1}"
+		"en"		"Projectile:"
 	}
 
-	"Weapons menu zmarket loadout explosive"
+	"Weapons menu zmarket weapon setup explosive"
 	{
-		"#format"	"{1:s}"
-		"en"		"Explosive: {1}"
+		"en"		"Explosive:"
 	}
 
-	"Weapons menu zmarket loadout nvgs"
+	"Weapons menu zmarket weapon setup nvgs"
 	{
-		"#format"	"{1:s}"
-		"en"		"NVGs: {1}"
+		"en"		"NVGs:"
 	}
 
-	"Weapons menu zmarket loadout empty"
+	"Weapons menu zmarket weapon setup empty"
 	{
 		"en"		"(None)"
 	}
@@ -763,6 +774,16 @@
 	"Weapons menu zmarket types weapon ammo"
 	{
 		"en"		"Ammo"
+	}
+
+	"Weapons menu zmarket sub weapon setup title"
+	{
+		"en"		"ZMarket\nCurrent Weapon Setup:\nSelect weapon to clear."
+	}
+
+	"Weapons menu zmarket sub weapon setup clear all"
+	{
+		"en"		"Clear All"
 	}
 
 	// ===========================
@@ -962,9 +983,9 @@
 		"en"		"Human/Zombie Class Overlay: {1}"
 	}
 
-	"ZCookies zmarket loadout"
+	"ZCookies zmarket weapon setup"
 	{
-		"en"		"ZMarket Loadout"
+		"en"		"ZMarket Weapon Setup"
 	}
 
 	// ===========================
