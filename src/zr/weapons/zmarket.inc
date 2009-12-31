@@ -691,7 +691,7 @@ public ZMarketMenuSubWeaponSetupHandle(Handle:menu_zmarket_subweaponsetup, MenuA
         // If no weapon was removed then something went wrong in the menu.
         if (!success)
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Setup", "Client %N used the ZMarket menu to try and remove invalid weapon \"%s\".  Contact plugin support.", client, weaponinfo[1]);
+            LogEvent(false, LogType_Error, LOG_GAME_EVENTS, LogModule_Weapons, "Weapon Setup", "Client %N used the ZMarket menu to try and remove invalid weapon \"%s\".  Contact plugin support.", client, weaponinfo[1]);
             return;
         }
         
@@ -998,10 +998,37 @@ stock bool:ZMarketEquip(client, const String:weapon[], bool:rebuy = false)
     // Get weapon index.
     new weaponindex = WeaponsNameToIndex(weapon);
     
-    // If weapon index is -1, then something went very wrong.
+    // If weapon index is -1, then either something went very wrong or the weapon has been removed from the config.
     if (weaponindex == -1)
     {
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "ZMarket Equip", "Invalid weapon (%s) selected from the ZMarket menu.", weapon);
+        // Something went very wrong.
+        if (!rebuy)
+            LogEvent(false, LogType_Error, LOG_GAME_EVENTS, LogModule_Weapons, "ZMarket Equip", "Client %N selected a non-existent weapon (%s) from ZMarket weapon list.", client, weapon);
+        // Weapon in setup has been removed from the config.
+        else
+        {
+            // Search for the weapon in every slot and remove it.
+            
+            // Copy all cookie values to an array
+            new String:rebuyweapons[WeaponsSlot][WEAPONS_MAX_LENGTH * ZMARKET_MAX_WEAPONS_PER_SLOT];
+            ZMarketCookiesToArray(client, rebuyweapons, WEAPONS_SLOTS_MAX + 1, sizeof(rebuyweapons[]));
+            
+            // x = Weapon slot
+            for (new x = 0; x < WEAPONS_SLOTS_MAX + 1; x++)
+            {
+                // Remove all occurences of the weapon.
+                while (StrContains(rebuyweapons[x], weapon, false) > -1)
+                {
+                    ShoppingListRemove(rebuyweapons[x], sizeof(rebuyweapons[]), weapon, ZMARKET_WEAPON_COOKIE_TOKEN);
+                }
+            }
+            
+            // Save tbe modified array back into the cookies.
+            ZMarketArrayToCookies(client, rebuyweapons, WEAPONS_SLOTS_MAX + 1, sizeof(rebuyweapons[]));
+            
+            LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Weapons, "ZMarket Equip", "Client %N has an invalid weapon saved in his weapon setup (%s), removing from setup.", client, weapon);
+        }
+            
         return false;
     }
     
@@ -1059,7 +1086,7 @@ stock bool:ZMarketEquip(client, const String:weapon[], bool:rebuy = false)
             // If no weapon was removed then something went wrong in the menu.
             if (!success)
             {
-                LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Setup Rebuy", "Client %N has an invalid weapon in his weapon setup: \"%s\".  Contact plugin support.", client, weapondisplay);
+                LogEvent(false, LogType_Error, LOG_GAME_EVENTS, LogModule_Weapons, "Weapon Setup Rebuy", "Client %N has an invalid weapon in his weapon setup: \"%s\".  Contact plugin support.", client, weapondisplay);
                 return false;
             }
             
@@ -1435,7 +1462,7 @@ stock ZMarketAddToRebuyCookie(client, WeaponsSlot:slot, const String:value[])
     new weaponcount = ShoppingListCount(curvalue, "", ZMARKET_WEAPON_COOKIE_TOKEN);
     if (weaponcount >= ZMARKET_MAX_WEAPONS_PER_SLOT)
     {
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "ZMarket", "Weapon setup for client %N has reached the maximum limit of %d weapons for slot %d.", client, ZMARKET_MAX_WEAPONS_PER_SLOT, _:slot);
+        LogEvent(false, LogType_Error, LOG_GAME_EVENTS, LogModule_Weapons, "ZMarket", "Weapon setup for client %N has reached the maximum limit of %d weapons for slot %d.", client, ZMARKET_MAX_WEAPONS_PER_SLOT, _:slot);
         CloseHandle(rebuycookie);
         return;
     }
