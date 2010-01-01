@@ -52,6 +52,9 @@ enum CvarsList
     Handle:CVAR_CONFIG_PATH_CLASSES,
     Handle:CVAR_CONFIG_PATH_WEAPONS,
     Handle:CVAR_CONFIG_PATH_HITGROUPS,
+    Handle:CVAR_CONFIG_PATH_AMMOPROFILES,
+    Handle:CVAR_CONFIG_PATH_RESTRICTPROFILES,
+    Handle:CVAR_CONFIG_PATH_WEAPONPROFILES,
     Handle:CVAR_PERMISSIONS_USE_GROUPS,
     Handle:CVAR_CLASSES_MENU_SPAWN,
     Handle:CVAR_CLASSES_MENU_JOIN,
@@ -238,11 +241,14 @@ CvarsCreate()
     // ===========================
     // Config (core)
     // ===========================
-    g_hCvarsList[CVAR_CONFIG_PATH_MODELS]        =    CreateConVar("zr_config_path_models",         "configs/zr/models.txt",                "Path, relative to root sourcemod directory, to models config file.");
-    g_hCvarsList[CVAR_CONFIG_PATH_DOWNLOADS]     =    CreateConVar("zr_config_path_downloads",      "configs/zr/downloads.txt",             "Path, relative to root sourcemod directory, to downloads file.");
-    g_hCvarsList[CVAR_CONFIG_PATH_CLASSES]       =    CreateConVar("zr_config_path_playerclasses",  "configs/zr/playerclasses.txt",         "Path, relative to root sourcemod directory, to playerclasses config file.");
-    g_hCvarsList[CVAR_CONFIG_PATH_WEAPONS]       =    CreateConVar("zr_config_path_weapons",        "configs/zr/weapons.txt",               "Path, relative to root sourcemod directory, to weapons config file.");
-    g_hCvarsList[CVAR_CONFIG_PATH_HITGROUPS]     =    CreateConVar("zr_config_path_hitgroups",      "configs/zr/hitgroups.txt",             "Path, relative to root sourcemod directory, to hitgroups config file.");
+    g_hCvarsList[CVAR_CONFIG_PATH_MODELS]               =    CreateConVar("zr_config_path_models",              "configs/zr/models.txt",                "Path to models config file. Path is relative to the SourceMod directory.");
+    g_hCvarsList[CVAR_CONFIG_PATH_DOWNLOADS]            =    CreateConVar("zr_config_path_downloads",           "configs/zr/downloads.txt",             "Path to downloads file. Path is relative to the SourceMod directory.");
+    g_hCvarsList[CVAR_CONFIG_PATH_CLASSES]              =    CreateConVar("zr_config_path_playerclasses",       "configs/zr/playerclasses.txt",         "Path to playerclasses config file. Path is relative to the SourceMod directory.");
+    g_hCvarsList[CVAR_CONFIG_PATH_WEAPONS]              =    CreateConVar("zr_config_path_weapons",             "configs/zr/weapons.txt",               "Path to weapons config file. Path is relative to the SourceMod directory.");
+    g_hCvarsList[CVAR_CONFIG_PATH_HITGROUPS]            =    CreateConVar("zr_config_path_hitgroups",           "configs/zr/hitgroups.txt",             "Path to hitgroups config file. Path is relative to the SourceMod directory.");
+    g_hCvarsList[CVAR_CONFIG_PATH_AMMOPROFILES]         =    CreateConVar("zr_config_path_ammoprofiles",        "configs/zr/ammoprofiles.txt",          "Path to ammp profiles config file. Path is relative to the SourceMod directory.");
+    g_hCvarsList[CVAR_CONFIG_PATH_RESTRICTROFILES]      =    CreateConVar("zr_config_path_restrictprofiles",    "configs/zr/restrictprofiles.txt",      "Path to restrict profiles config file. Path is relative to the SourceMod directory.");
+    g_hCvarsList[CVAR_CONFIG_PATH_WEAPONROFILES]        =    CreateConVar("zr_config_path_weaponprofiles",      "configs/zr/weaponprofiles.txt",        "Path to weapon profiles config file. Path is relative to the SourceMod directory.");
     
     
     // ===========================
