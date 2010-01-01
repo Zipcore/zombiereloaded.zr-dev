@@ -121,11 +121,13 @@
 /**
  * @section Config file reference aliases.
  */
-#define CONFIG_FILE_ALIAS_MODELS        "models"
-#define CONFIG_FILE_ALIAS_DOWNLOADS     "downloads"
-#define CONFIG_FILE_ALIAS_CLASSES       "classes"
-#define CONFIG_FILE_ALIAS_WEAPONS       "weapons"
-#define CONFIG_FILE_ALIAS_HITGROUPS     "hitgroups"
+#define CONFIG_FILE_ALIAS_MODELS            "models"
+#define CONFIG_FILE_ALIAS_DOWNLOADS         "downloads"
+#define CONFIG_FILE_ALIAS_CLASSES           "classes"
+#define CONFIG_FILE_ALIAS_WEAPONS           "weapons"
+#define CONFIG_FILE_ALIAS_HITGROUPS         "hitgroups"
+#define CONFIG_FILE_ALIAS_AMMOPROFILES      "ammoprofiles"
+#define CONFIG_FILE_ALIAS_RESTRICTPROFILES  "restrictprofiles"
 /**
  * @endsection
  */
@@ -144,12 +146,14 @@ enum ConfigStructure
  */
 enum ConfigFile
 {
-    File_Invalid = -1,  /** Invalid config file. */
-    File_Models,        /** <sourcemod root>/configs/zr/models.txt (default) */
-    File_Downloads,     /** <sourcemod root>/configs/zr/downloads.txt (default) */
-    File_Classes,       /** <sourcemod root>/configs/zr/playerclasses.txt (default) */
-    File_Weapons,       /** <sourcemod root>/configs/zr/weapons.txt (default) */
-    File_Hitgroups,     /** <sourcemod root>/configs/zr/hitgroups.txt (default) */
+    File_Invalid = -1,      /** Invalid config file. */
+    File_Models,            /** <sourcemod root>/configs/zr/models.txt (default) */
+    File_Downloads,         /** <sourcemod root>/configs/zr/downloads.txt (default) */
+    File_Classes,           /** <sourcemod root>/configs/zr/playerclasses.txt (default) */
+    File_Weapons,           /** <sourcemod root>/configs/zr/weapons.txt (default) */
+    File_Hitgroups,         /** <sourcemod root>/configs/zr/hitgroups.txt (default) */
+    File_AmmoProfiles,      /** <sourcemod root>/configs/zr/ammoprofiles.txt (default) */
+    File_RestrictProfiles   /** <sourcemod root>/configs/zr/restrictprofiles.txt (default) */
 }
 
 /**
