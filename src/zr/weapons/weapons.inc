@@ -91,6 +91,9 @@ enum WeaponsSlot
  */
 new Handle:arrayWeapons = INVALID_HANDLE;
 
+#include "zr/weapons/ammoprofiles"
+//#include "zr/weapons/restrictprofiles"
+#include "zr/weapons/weaponprofiles"
 #include "zr/weapons/restrict"
 #include "zr/weapons/weaponammo"
 #include "zr/weapons/weaponalpha"
@@ -207,7 +210,10 @@ WeaponsLoad()
     ConfigSetConfigHandle(File_Weapons, arrayWeapons);
     
     // Forward event to sub-modules
+    AmmoLoad();
+    //RestrictProfilesLoad();     // Not written yet. Must be loaded before weapon profiles.
     RestrictLoad();
+    WeaponProfilesLoad();
 }
 
 /**

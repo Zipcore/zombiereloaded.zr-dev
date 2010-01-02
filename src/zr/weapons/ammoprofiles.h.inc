@@ -42,12 +42,12 @@
 #define AMMO_CLIP_SIZE_MAX          5000
 #define AMMO_CLIP_RESERVE_MIN       -1
 #define AMMO_CLIP_RESERVE_MAX       16000
-#define AMMO_CLIP_INTERVAL_MIN      0.0
-#define AMMO_CLIP_INTERVAL_MAX      600.0
-#define AMMO_CLIP_AMOUNT_MIN        0
-#define AMMO_CLIP_AMOUNT_MAX        AMMO_CLIP_SIZE_MAX
-#define AMMO_CLIP_MAX_MIN           0
-#define AMMO_CLIP_MAX_MAX           AMMO_CLIP_RESERVE_MAX
+#define AMMO_INTERVAL_MIN           0.0
+#define AMMO_INTERVAL_MAX           600.0
+#define AMMO_AMOUNT_MIN             0
+#define AMMO_AMOUNT_MAX             AMMO_CLIP_SIZE_MAX
+#define AMMO_MAX_MIN                0
+#define AMMO_MAX_MAX                AMMO_CLIP_RESERVE_MAX
 /**
  * @endsection
  */
@@ -59,8 +59,8 @@
 #define AMMO_DEFAULT_MODE           "disabled"
 #define AMMO_DEFAULT_CLIP_SIZE      AMMO_CLIP_SIZE_MIN
 #define AMMO_DEFAULT_CLIP_RESERVE   AMMO_CLIP_RESERVE_MIN
-#define AMMO_DEFAULT_INTERVAL       AMMO_CLIP_INTERVAL_MIN
-#define AMMO_DEFAULT_AMOUNT         AMMO_CLIP_AMOUNT_MIN
+#define AMMO_DEFAULT_INTERVAL       AMMO_INTERVAL_MIN
+#define AMMO_DEFAULT_AMOUNT         AMMO_AMOUNT_MIN
 #define AMMO_DEFAULT_MAX            AMMO_MAX_MAX
 /**
  * @endsection
@@ -72,7 +72,7 @@
 enum AmmoMode
 {
     AmmoMode_Invalid = -1,  /** Invalid mode. */
-    AmmoMode_Disabled,      /** Do nothing applying clip settings. */
+    AmmoMode_Disabled,      /** Do nothing but applying clip settings. */
     AmmoMode_Unlimited,     /** Remove need for reloading weapon. Simulates unlimited clip size. */
     AmmoMode_FillClip,      /** Give "amount" bullets to clip every "interval" second as long it's below "max". */
     AmmoMode_FillReserve    /** Same as AmmoMode_FillClip, but on clip reserve. */

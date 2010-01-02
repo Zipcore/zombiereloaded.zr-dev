@@ -3,7 +3,8 @@
 //                              ZOMBIE:RELOADED
 //                        Ammo Profile configuration
 //
-// See Ammo Profile Configuration (3.5) section in the manual for detailed info.
+// See Ammo Profile Configuration (3.x) section in the manual for detailed
+// info.
 //
 // ============================================================================
 //
