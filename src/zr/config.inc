@@ -127,7 +127,8 @@
 #define CONFIG_FILE_ALIAS_WEAPONS           "weapons"
 #define CONFIG_FILE_ALIAS_HITGROUPS         "hitgroups"
 #define CONFIG_FILE_ALIAS_AMMOPROFILES      "ammoprofiles"
-#define CONFIG_FILE_ALIAS_RESTRICTPROFILES  "restrictprofiles"
+#define CONFIG_FILE_ALIAS_RESTRICTPROF      "restrictprofiles"
+#define CONFIG_FILE_ALIAS_WEAPONPROF        "weaponprofiles"
 /**
  * @endsection
  */
@@ -153,7 +154,8 @@ enum ConfigFile
     File_Weapons,           /** <sourcemod root>/configs/zr/weapons.txt (default) */
     File_Hitgroups,         /** <sourcemod root>/configs/zr/hitgroups.txt (default) */
     File_AmmoProfiles,      /** <sourcemod root>/configs/zr/ammoprofiles.txt (default) */
-    File_RestrictProfiles   /** <sourcemod root>/configs/zr/restrictprofiles.txt (default) */
+    File_RestrictProfiles,  /** <sourcemod root>/configs/zr/restrictprofiles.txt (default) */
+    File_WeaponProfiles     /** <sourcemod root>/configs/zr/weaponprofiles.txt (default) */
 }
 
 /**

@@ -4,7 +4,7 @@
  *  Zombie:Reloaded
  *
  *  File:          ammomanager.inc
- *  Description:   Ammo profile manager for players.
+ *  Description:   Ammo profile manager headers.
  *
  *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
@@ -24,9 +24,27 @@
  * ============================================================================
  */
 
-#include "zr/weapons/ammomanager.h.inc"
+#if defined _ammomanager_included
+ #endinput
+#endif
+#define _ammomanager_included
+
+#include "zr/weapons/ammoprofiles"
 
 /**
- * Player ammo managers.
+ * @section Maximum number of ammo managers. There must be at least two
+ *          managers available per player (primary and secondary weapon).
  */
-new AmmoManagers[AMMO_MANAGER_MAX][AmmoManager];
+#define AMMO_MANAGER_MAX    MAXPLAYERS * 2
+/**
+ * @endsection
+ */
+
+enum AmmoManager
+{
+    bool:AmmoManager_InUse,     /** Specifies whether the profile is used or not. */
+    AmmoManager_Clip,           /** Current weapon clip value. */
+    AmmoManager_Reserve,        /** Current weapon reserve value. */
+    AmmoManager_ProfileIndex,   /** Index to a ammo profile. */
+    Handle:AmmoManager_Timer    /** Timer used for refilling, if enabled. */
+}

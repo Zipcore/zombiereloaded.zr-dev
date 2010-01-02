@@ -3,8 +3,8 @@
  *
  *  Zombie:Reloaded
  *
- *  File:          ammomanager.inc
- *  Description:   Ammo profile manager for players.
+ *  File:          weaponprofiles.h.inc
+ *  Description:   Weapon profile headers.
  *
  *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
@@ -24,9 +24,23 @@
  * ============================================================================
  */
 
-#include "zr/weapons/ammomanager.h.inc"
+#if defined _weaponprofiles_included
+ #endinput
+#endif
+#define _weaponprofiles_included
 
 /**
- * Player ammo managers.
+ * Profile storage capacity.
  */
-new AmmoManagers[AMMO_MANAGER_MAX][AmmoManager];
+#define WEAPON_PROFILES_MAX 32
+
+/**
+ * Weapon profile attributes.
+ */
+enum WeaponProfile
+{
+    String:WeaponProfile_Name[32],      /** Profile name. */
+    WeaponProfile_PriAmmoManager,       /** Index to a ammo manager for the primary weapon. */
+    WeaponProfile_SecAmmoManager,       /** Index to a ammo manager for the secondary weapon. */
+    WeaponProfile_RestrictManager       /** Index to a weapon restriction manager. */
+}
