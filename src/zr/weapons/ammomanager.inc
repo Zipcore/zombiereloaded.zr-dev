@@ -3,9 +3,8 @@
  *
  *  Zombie:Reloaded
  *
- *  File:          global.inc
- *  Type:          Core
- *  Description:   External API.
+ *  File:          ammomanager.inc
+ *  Description:   Ammo profile manager for players.
  *
  *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
@@ -25,9 +24,9 @@
  * ============================================================================
  */
 
+#include "zr/weapons/ammomanager.h.inc"
+
 /**
- * All external API natives are created here.
- */ 
-CreateGlobals()
-{
-}
+ * Player ammo managers.
+ */
+new AmmoManagers[AMMO_MANAGER_MAX][AmmoManager];

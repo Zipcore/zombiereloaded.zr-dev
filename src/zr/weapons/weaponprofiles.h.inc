@@ -3,9 +3,8 @@
  *
  *  Zombie:Reloaded
  *
- *  File:          global.inc
- *  Type:          Core
- *  Description:   External API.
+ *  File:          weaponprofiles.h.inc
+ *  Description:   Weapon profile headers.
  *
  *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
@@ -25,9 +24,23 @@
  * ============================================================================
  */
 
+#if defined _weaponprofiles_included
+ #endinput
+#endif
+#define _weaponprofiles_included
+
 /**
- * All external API natives are created here.
- */ 
-CreateGlobals()
+ * Profile storage capacity.
+ */
+#define WEAPON_PROFILES_MAX 32
+
+/**
+ * Weapon profile attributes.
+ */
+enum WeaponProfile
 {
+    String:WeaponProfile_Name[32],      /** Profile name. */
+    WeaponProfile_PriAmmoManager,       /** Index to a ammo manager for the primary weapon. */
+    WeaponProfile_SecAmmoManager,       /** Index to a ammo manager for the secondary weapon. */
+    WeaponProfile_RestrictManager       /** Index to a weapon restriction manager. */
 }
