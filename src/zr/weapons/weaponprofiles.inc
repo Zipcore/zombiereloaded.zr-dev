@@ -24,7 +24,7 @@
  * ============================================================================
  */
 
-#include "zr/weapons/weaponprofiles.h"
+#include "zr/weapons/weaponprofileheaders.h"
 
 /**
  * Weapon profile data storage.
