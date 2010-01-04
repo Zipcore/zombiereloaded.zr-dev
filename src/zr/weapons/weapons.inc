@@ -7,7 +7,7 @@
  *  Type:          Core 
  *  Description:   API for all weapon-related functions.
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -91,6 +91,9 @@ enum WeaponsSlot
  */
 new Handle:arrayWeapons = INVALID_HANDLE;
 
+#include "zr/weapons/ammoprofiles"
+//#include "zr/weapons/restrictprofiles"
+#include "zr/weapons/weaponprofiles"
 #include "zr/weapons/restrict"
 #include "zr/weapons/weaponammo"
 #include "zr/weapons/weaponalpha"
@@ -207,7 +210,10 @@ WeaponsLoad()
     ConfigSetConfigHandle(File_Weapons, arrayWeapons);
     
     // Forward event to sub-modules
+    AmmoLoad();
+    //RestrictProfilesLoad();     // Not written yet. Must be loaded before weapon profiles.
     RestrictLoad();
+    WeaponProfilesLoad();
 }
 
 /**
