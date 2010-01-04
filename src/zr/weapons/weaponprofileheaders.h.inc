@@ -24,10 +24,10 @@
  * ============================================================================
  */
 
-#if defined _weaponprofiles_included
+#if defined _weaponprofileheaders_included
  #endinput
 #endif
-#define _weaponprofiles_included
+#define _weaponprofileheaders_included
 
 /**
  * Profile storage capacity.

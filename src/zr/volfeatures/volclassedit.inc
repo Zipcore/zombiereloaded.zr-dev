@@ -44,6 +44,7 @@ new VolEmptyAttributes[ClassEditableAttributes] = {
     -1,                             /** ImmunityMode */
     -1.0,                           /** ImmunityAmount */
     -1,                             /** NoFallDamage */
+    -1,                             /** WeaponProfile */
     
     -1.0,                           /** RegenInterval */
     -1,                             /** RegenAmount */

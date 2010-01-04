@@ -24,7 +24,7 @@
  * ============================================================================
  */
 
-#include "zr/weapons/ammoprofiles.h"
+#include "zr/weapons/ammoheaders.h"
 
 /**
  * Ammo profile storage.
@@ -118,7 +118,7 @@ AmmoLoad()
         // Verify name length.
         if (!strlen(name))
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Empty name string at index %d.", AmmoProfileCount + failedCount);
+            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Empty \"name\" setting at index %d.", AmmoProfileCount + failedCount);
             failedCount++;
             continue;
         }
@@ -133,7 +133,7 @@ AmmoLoad()
         
         // Validate clip size.
         new clipSize = AmmoProfiles[AmmoProfileCount][AmmoProfile_ClipSize];
-        if (clipSize >= AMMO_CLIP_SIZE_MIN && clipSize <= AMMO_CLIP_SIZE_MAX)
+        if (clipSize < AMMO_CLIP_SIZE_MIN && clipSize > AMMO_CLIP_SIZE_MAX)
         {
             LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"clip_size\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, clipSize);
             failedCount++;
@@ -142,7 +142,7 @@ AmmoLoad()
         
         // Validate clip reserve.
         new clipReserve = AmmoProfiles[AmmoProfileCount][AmmoProfile_ClipReserve];
-        if (clipReserve >= AMMO_CLIP_RESERVE_MIN && clipReserve <= AMMO_CLIP_RESERVE_MAX)
+        if (clipReserve < AMMO_CLIP_RESERVE_MIN && clipReserve > AMMO_CLIP_RESERVE_MAX)
         {
             LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"clip_reserve\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, clipReserve);
             failedCount++;
@@ -151,7 +151,7 @@ AmmoLoad()
         
         // Validate interval.
         new Float:interval = AmmoProfiles[AmmoProfileCount][AmmoProfile_Interval];
-        if (interval >= AMMO_INTERVAL_MIN && interval <= AMMO_INTERVAL_MAX)
+        if (interval < AMMO_INTERVAL_MIN && interval > AMMO_INTERVAL_MAX)
         {
             LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"interval\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, interval);
             failedCount++;
@@ -160,7 +160,7 @@ AmmoLoad()
         
         // Validate amount.
         new amount = AmmoProfiles[AmmoProfileCount][AmmoProfile_Amount];
-        if (amount >= AMMO_AMOUNT_MIN && amount <= AMMO_AMOUNT_MAX)
+        if (amount < AMMO_AMOUNT_MIN && amount > AMMO_AMOUNT_MAX)
         {
             LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"amount\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, amount);
             failedCount++;
@@ -169,7 +169,7 @@ AmmoLoad()
         
         // Validate max.
         new max = AmmoProfiles[AmmoProfileCount][AmmoProfile_Max];
-        if (max >= AMMO_MAX_MIN && max <= AMMO_MAX_MAX)
+        if (max < AMMO_MAX_MIN && max > AMMO_MAX_MAX)
         {
             LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"max\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, max);
             failedCount++;

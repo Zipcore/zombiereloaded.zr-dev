@@ -914,6 +914,16 @@ stock ClassModifyString(classindex, attributeflag, const String:value[])
             strcopy(ClassDataCache[classindex][Class_OverlayPath], PLATFORM_MAX_PATH, value);
             return true;
         }
+        case ZR_CLASS_WEAPON_PROFILE:
+        {
+            // Resolve profile index.
+            new profile = WeaponProfilesGetIndex(value);
+            if (profile >= 0)
+            {
+                ClassDataCache[classindex][Class_WeaponProfile] = profile;
+                return true;
+            }
+        }
     }
     
     // Invalid flag or multiple flags combined.

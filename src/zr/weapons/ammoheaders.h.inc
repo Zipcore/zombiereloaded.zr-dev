@@ -24,10 +24,10 @@
  * ============================================================================
  */
 
-#if defined _ammoprofiles_included
+#if defined _ammopheaders_included
  #endinput
 #endif
-#define _ammoprofiles_included
+#define _ammopheaders_included
 
 /**
  * Profile storage capacity.

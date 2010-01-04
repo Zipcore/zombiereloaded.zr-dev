@@ -229,6 +229,15 @@ stock ClassValidateAttributes(classindex)
     
     // Immunity mode (not implemented).
     
+    // Weapon profile. Only validate if class is a human class.
+    if (ClassData[classindex][Class_Team] == ZR_CLASS_TEAM_HUMANS)
+    {
+        new weapon_profile = ClassData[classindex][Class_WeaponProfile];
+        if (!WeaponProfilesIsValidIndex(weapon_profile))
+        {
+            flags += ZR_CLASS_WEAPON_PROFILE;
+        }
+    }
     
     // Health.
     new health = ClassData[classindex][Class_Health];
@@ -374,7 +383,17 @@ stock ClassValidateEditableAttributes(attributes[ClassEditableAttributes])
     }
     
     // Immunity mode not implemented yet.
-        
+    
+    // Weapon profile. Only validate if class is a human class.
+    if (attributes[Class_Team] == ZR_CLASS_TEAM_HUMANS)
+    {
+        new weapon_profile = attributes[Class_WeaponProfile];
+        if (!WeaponProfilesIsValidIndex(weapon_profile))
+        {
+            flags += ZR_CLASS_WEAPON_PROFILE;
+        }
+    }
+    
     // Health regen interval.
     new Float:healthRegenInterval = attributes[ClassEdit_RegenInterval];
     if (healthRegenInterval >= 0.0)
