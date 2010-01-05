@@ -45,7 +45,7 @@ JumpBoostOnClientJumpPost(client)
     new Float:vecVelocity[3];
     
     // Get client's current velocity.
-    ToolsClientVelocity(client, vecVelocity, false);
+    ToolsGetClientVelocity(client, vecVelocity);
     
     // Only apply horizontal multiplier if it's not a bhop.
     if (!JumpBoostIsBHop(vecVelocity))
@@ -59,7 +59,7 @@ JumpBoostOnClientJumpPost(client)
     vecVelocity[2] *= heightmultiplier;
     
     // Set new velocity.
-    ToolsClientVelocity(client, vecVelocity, true, false);
+    ToolsSetClientVelocity(client, vecVelocity, false);
 }
 
 /**
