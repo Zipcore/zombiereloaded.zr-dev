@@ -190,9 +190,6 @@ stock ToolsSetClientScore(client, ToolsScoreProps:prop, value)
     {
         SetEntProp(client, Prop_Data, "m_iDeaths", value);
     }
-    
-    // Neither case was given.
-    return -1;
 }
 
 /**
@@ -216,6 +213,9 @@ stock ToolsGetClientScore(client, ToolsScoreProps:prop)
     {
         return GetEntProp(client, Prop_Data, "m_iDeaths");
     }
+    
+    // Neither case was given.
+    return -1;
 }
 
 /**
