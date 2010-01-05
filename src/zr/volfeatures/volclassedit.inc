@@ -7,7 +7,7 @@
  *  Type:           Module
  *  Description:    Class editor volumetric feature.
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ new VolEmptyAttributes[ClassEditableAttributes] = {
     -1,                             /** ImmunityMode */
     -1.0,                           /** ImmunityAmount */
     -1,                             /** NoFallDamage */
+    -1,                             /** WeaponProfile */
     
     -1.0,                           /** RegenInterval */
     -1,                             /** RegenAmount */

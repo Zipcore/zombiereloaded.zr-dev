@@ -3,9 +3,8 @@
  *
  *  Zombie:Reloaded
  *
- *  File:          clientalpha.inc
- *  Type:          Core
- *  Description:   Handles transparency on clients.
+ *  File:          ammomanager.inc
+ *  Description:   Ammo profile manager headers.
  *
  *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
@@ -25,19 +24,27 @@
  * ============================================================================
  */
 
+#if defined _ammomanager_included
+ #endinput
+#endif
+#define _ammomanager_included
+
+#include "zr/weapons/ammoprofiles"
+
 /**
- * Updates the alpha value on a player.
+ * @section Maximum number of ammo managers. There must be at least two
+ *          managers available per player (primary and secondary weapon).
  */
-ClassAlphaUpdate(client)
+#define AMMO_MANAGER_MAX    MAXPLAYERS * 2
+/**
+ * @endsection
+ */
+
+enum AmmoManager
 {
-    new current_health = GetClientHealth(client);
-    new max_health     = ClassGetHealth(client);
-    new max_damage     = ClassGetAlphaDamage(client);
-    
-    // Calculate if enough damage is done to change alpha.
-    if ((max_health - current_health) > max_damage)
-    {
-        new alpha_damaged = ClassGetAlphaDamaged(client);
-        ToolsSetClientAlpha(client, alpha_damaged);
-    }
+    bool:AmmoManager_InUse,     /** Specifies whether the profile is used or not. */
+    AmmoManager_Clip,           /** Current weapon clip value. */
+    AmmoManager_Reserve,        /** Current weapon reserve value. */
+    AmmoManager_ProfileIndex,   /** Index to a ammo profile. */
+    Handle:AmmoManager_Timer    /** Timer used for refilling, if enabled. */
 }

@@ -7,7 +7,7 @@
  *  Type:          Module
  *  Description:   Handles knockback on clients.
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -135,7 +135,7 @@ KnockbackSetVelocity(client, const Float:startpoint[3], const Float:endpoint[3],
     ScaleVector(vector, magnitude);
     
     // ADD the given vector to the client's current velocity.
-    ToolsClientVelocity(client, vector);
+    ToolsSetClientVelocity(client, vector, true);
 }
 
 /**

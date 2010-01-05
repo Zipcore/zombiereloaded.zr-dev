@@ -7,7 +7,7 @@
  *  Type:          Core
  *  Description:   API for offsets/signatures exposed in tools.inc
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,28 +26,40 @@
  */
 
 /**
- * Get or set a client's velocity.
+ * NVG properties on a client.
+ */
+enum ToolsNVGProps
+{
+    NVGProp_Owner,
+    NVGProp_Enabled
+}
+
+/**
+ * Score properties on a client.
+ */
+enum ToolsScoreProps
+{
+    ScoreProp_Kills,
+    ScoreProp_Deaths
+}
+
+/**
+ * Set a client's velocity.
  * @param client        The client index.
  * @param vecVelocity   Array to store vector in, or velocity to set on client.
  * @param retrieve      True to get client's velocity, false to set it.
  * @param stack         If modifying velocity, then true will stack new velocity onto the client's
  *                      current velocity, false will reset it.
  */
-stock ToolsClientVelocity(client, Float:vecVelocity[3], bool:apply = true, bool:stack = true)
+stock ToolsSetClientVelocity(client, const Float:vecVelocity[3], bool:stack = true)
 {
-    // If retrieve if true, then get client's velocity.
-    if (!apply)
+    // Copy input velocity to new variable.
+    new Float:vecTrueVelocity[3];
+    for (new x = 0; x < 3; x++)
     {
-        // x = vector component.
-        for (new x = 0; x < 3; x++)
-        {
-            vecVelocity[x] = GetEntDataFloat(client, g_iToolsVelocity + (x*4));
-        }
-        
-        // Stop here.
-        return;
+        vecTrueVelocity[x] = vecVelocity[x];
     }
-    
+        
     // If stack is true, then add client's velocity.
     if (stack)
     {
@@ -60,11 +72,29 @@ stock ToolsClientVelocity(client, Float:vecVelocity[3], bool:apply = true, bool:
             vecClientVelocity[x] = GetEntDataFloat(client, g_iToolsVelocity + (x*4));
         }
         
-        AddVectors(vecClientVelocity, vecVelocity, vecVelocity);
+        // Add the vectors and overwrite to update the "true" velocity.
+        AddVectors(vecClientVelocity, vecVelocity, vecTrueVelocity);
     }
     
     // Apply velocity on client.
-    TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, vecVelocity);
+    TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, vecTrueVelocity);
+}
+
+/**
+ * Set a client's velocity.
+ * @param client        The client index.
+ * @param vecVelocity   Array to store vector in, or velocity to set on client.
+ * @param retrieve      True to get client's velocity, false to set it.
+ * @param stack         If modifying velocity, then true will stack new velocity onto the client's
+ *                      current velocity, false will reset it.
+ */
+stock ToolsGetClientVelocity(client, Float:vecVelocity[3])
+{
+    // x = vector component.
+    for (new x = 0; x < 3; x++)
+    {
+        vecVelocity[x] = GetEntDataFloat(client, g_iToolsVelocity + (x*4));
+    }
 }
 
 /**
@@ -79,42 +109,54 @@ stock ToolsSetClientLMV(client, Float:fLMV)
 }
 
 /**
- * Get nightvision values on a client.
+ * Get a client's lagged movement value.
  * @param client    The client index.
- * @param ownership If true, function will return the value of the client's ownership of nightvision.
- *                  If false, function will return the value of the client's on/off state of the nightvision.
- * @return          True if aspect of nightvision is enabled on the client, false if not.
+ *  
+ * @return          LMV value. (1.0 = default, 2.0 = double)
  */
-stock bool:ToolsGetClientNightVision(client, bool:ownership = true)
+stock Float:ToolsGetClientLMV(client)
 {
-    // If ownership is true, then toggle the ownership of nightvision on client.
-    if (ownership)
-    {
-        return bool:GetEntData(client, g_iToolsHasNightVision, 1);
-    }
-    
-    return bool:GetEntData(client, g_iToolsNightVisionOn, 1);
+    // Set lagged movement value of client.
+    return GetEntDataFloat(client, g_iToolsLMV);
 }
 
 /**
- * Control nightvision values on a client.
+ * Set nightvision properties on a client.
  * @param client    The client index.
- * @param enable    Enable or disable an aspect of nightvision. (see ownership parameter)
- * @param ownership If true, enable will toggle the client's ownership of nightvision.
- *                  If false, enable will toggle the client's on/off state of the nightvision.
+ * @param prop      The prop to set: See ToolsNVGProps (top of file) 
+ * @param value     New value of the property of nightvision.
  */
-stock ToolsSetClientNightVision(client, bool:enable, bool:ownership = true)
+stock ToolsSetClientNVG(client, ToolsNVGProps:prop, bool:value)
 {
-    // If ownership is true, then toggle the ownership of nightvision on client.
-    if (ownership)
+    if (prop == NVGProp_Owner)
     {
-        SetEntData(client, g_iToolsHasNightVision, enable, 1, true);
-        
-        // Stop here.
-        return;
+        SetEntData(client, g_iToolsHasNightVision, value, 1, true);
+    }
+    else if (prop == NVGProp_Enabled)
+    {
+        SetEntData(client, g_iToolsNightVisionOn, value, 1, true);
+    }
+}
+
+/**
+ * Get nightvision properties on a client.
+ * @param client    The client index.
+ * @param prop      The prop to get: See ToolsNVGProps (top of file)
+ * @return          The value of the property of nightvision on client.
+ */
+stock bool:ToolsGetClientNVG(client, ToolsNVGProps:prop)
+{
+    if (prop == NVGProp_Owner)
+    {
+        return bool:GetEntData(client, g_iToolsHasNightVision, 1);
+    }
+    else if (prop == NVGProp_Enabled)
+    {
+        return bool:GetEntData(client, g_iToolsNightVisionOn, 1);
     }
     
-    SetEntData(client, g_iToolsNightVisionOn, enable, 1, true);
+    // Neither case was given.
+    return false;
 }
 
 /**
@@ -128,7 +170,7 @@ stock ToolsSetClientDefaultFOV(client, FOV)
 }
 
 /**
- * Get or set a client's score or deaths.
+ * Set a client's score or deaths.
  * 
  * @param client    The client index.
  * @param score     True to look at score, false to look at deaths.  
@@ -136,34 +178,43 @@ stock ToolsSetClientDefaultFOV(client, FOV)
  * @param value     The value of the client's score or deaths.
  * @return          The score or death count of the client, -1 if setting.
  */
-stock ToolsClientScore(client, bool:score = true, bool:apply = true, value = 0)
+stock ToolsSetClientScore(client, ToolsScoreProps:prop, value)
 {
-    if (!apply)
-    {
-        if (score)
-        {
-            // If score is true, then return client's score.
-            return GetEntProp(client, Prop_Data, "m_iFrags");
-        }
-        // Return client's deaths.
-        else
-        {
-            return GetEntProp(client, Prop_Data, "m_iDeaths");
-        }
-    }
-    
     // If score is true, then set client's score.
-    if (score)
+    if (prop == ScoreProp_Kills)
     {
         SetEntProp(client, Prop_Data, "m_iFrags", value);
     }
     // Set client's deaths.
-    else
+    else if (prop == ScoreProp_Deaths)
     {
         SetEntProp(client, Prop_Data, "m_iDeaths", value);
     }
+}
+
+/**
+ * Get a client's score or deaths.
+ * 
+ * @param client    The client index.
+ * @param score     True to look at score, false to look at deaths.  
+ * @param apply     True to set scores or death, false to get. 
+ * @param value     The value of the client's score or deaths.
+ * @return          The score or death count of the client, -1 if setting.
+ */
+stock ToolsGetClientScore(client, ToolsScoreProps:prop)
+{
+    if (prop == ScoreProp_Kills)
+    {
+        // If score is true, then return client's score.
+        return GetEntProp(client, Prop_Data, "m_iFrags");
+    }
+    // Return client's deaths.
+    else if (prop == ScoreProp_Deaths)
+    {
+        return GetEntProp(client, Prop_Data, "m_iDeaths");
+    }
     
-    // We set the client's score or deaths.
+    // Neither case was given.
     return -1;
 }
 
