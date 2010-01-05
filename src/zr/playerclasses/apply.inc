@@ -274,8 +274,8 @@ bool:ClassApplyNightVision(client, classindex, cachetype = ZR_CLASS_CACHE_PLAYER
         nvgs = ClassGetNvgs(classindex, cachetype);
     }
     
-    ToolsSetClientNightVision(client, nvgs);
-    ToolsSetClientNightVision(client, nvgs, false);
+    ToolsSetClientNVG(client, NVGProp_Owner, nvgs);
+    ToolsSetClientNVG(client, NVGProp_Enabled, nvgs);
     
     return true;
 }
