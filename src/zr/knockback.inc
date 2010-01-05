@@ -135,7 +135,7 @@ KnockbackSetVelocity(client, const Float:startpoint[3], const Float:endpoint[3],
     ScaleVector(vector, magnitude);
     
     // ADD the given vector to the client's current velocity.
-    ToolsClientVelocity(client, vector);
+    ToolsSetClientVelocity(client, vector, true);
 }
 
 /**

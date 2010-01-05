@@ -1296,15 +1296,15 @@ bool:ZMarketSaveCurrentSetup(client)
     ZMarketHandleRebuyCookie(client, Slot_Projectile, grenades, true);
     
     // Update nightvision ownership.
-    new bool:nightvision = ToolsGetClientNightVision(client);
-    if (!nightvision)
+    new bool:nvgs = ToolsGetClientNVG(client, NVGProp_Owner);
+    if (nvgs)
     {
-        // Empty rebuy slot.
-        ZMarketHandleRebuyCookie(client, Slot_NVGs, "");
+        ZMarketHandleRebuyCookie(client, Slot_NVGs, "nvgs");
     }
     else
     {
-        ZMarketHandleRebuyCookie(client, Slot_NVGs, "nvgs");
+        // Empty rebuy slot.
+        ZMarketHandleRebuyCookie(client, Slot_NVGs, "");
     }
     
     // Tell client their weapon setup has been updated.
