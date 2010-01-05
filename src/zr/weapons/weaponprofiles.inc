@@ -190,7 +190,7 @@ WeaponProfilesLoad()
 /**
  * Callback for ammo config reload request.
  */
-WeaponProfilesOnConfigReload(ConfigFile:config)
+public WeaponProfilesOnConfigReload(ConfigFile:config)
 {
     WeaponProfilesLoad();
 }

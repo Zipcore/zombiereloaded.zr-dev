@@ -204,7 +204,7 @@ AmmoLoad()
 /**
  * Callback for ammo config reload request.
  */
-AmmoOnConfigReload(ConfigFile:config)
+public AmmoOnConfigReload(ConfigFile:config)
 {
     AmmoLoad();
 }
