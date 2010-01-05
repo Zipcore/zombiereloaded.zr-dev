@@ -35,6 +35,7 @@
 // immunity_mode            number      Sets the immunity mode.
 // immunity_amount          decimal     Sets the immunity value.
 // no_fall_damage           on/off      Disables fall damage.
+// weapon_profile           text        Weapon profile to apply to class, for ammo control and weapon restrictions. Humans only.
 // health                   number      How many health points to give.
 // health_regen_interval    decimal     Sets the regeneration interval. 0 to disable.
 // health_regen_amount      number      How much HP to give per interval.
@@ -83,6 +84,7 @@
         "immunity_mode"         "0"
         "immunity_amount"       "0.0"
         "no_fall_damage"        "yes"
+        "weapon_profile"        ""
         
         "health"                "2500"
         "health_regen_interval" "0.0"
@@ -127,6 +129,7 @@
         "immunity_mode"         "0"
         "immunity_amount"       "0.0"
         "no_fall_damage"        "yes"
+        "weapon_profile"        ""
         
         "health"                "2000"
         "health_regen_interval" "0.0"
@@ -171,6 +174,7 @@
         "immunity_mode"         "0"
         "immunity_amount"       "0.0"
         "no_fall_damage"        "yes"
+        "weapon_profile"        ""
         
         "health"                "3500"
         "health_regen_interval" "0.0"
@@ -215,6 +219,7 @@
         "immunity_mode"         "0"
         "immunity_amount"       "0.0"
         "no_fall_damage"        "yes"
+        "weapon_profile"        ""
         
         "health"                "4000"
         "health_regen_interval" "0.0"
@@ -259,6 +264,7 @@
         "immunity_mode"         "0"
         "immunity_amount"       "0.0"
         "no_fall_damage"        "yes"
+        "weapon_profile"        ""
         
         "health"                "2500"
         "health_regen_interval" "0.25"
@@ -303,6 +309,7 @@
         "immunity_mode"         "0"
         "immunity_amount"       "0.0"
         "no_fall_damage"        "yes"
+        "weapon_profile"        ""
         
         "health"                "3500"
         "health_regen_interval" "0.25"
@@ -353,6 +360,7 @@
         "immunity_mode"         "0"
         "immunity_amount"       "0.0"
         "no_fall_damage"        "no"
+        "weapon_profile"        "default"
         
         "health"                "100"
         "health_regen_interval" "0.0"
@@ -397,6 +405,7 @@
         "immunity_mode"         "0"
         "immunity_amount"       "0.0"
         "no_fall_damage"        "yes"
+        "weapon_profile"        "default"
         
         "health"                "200"
         "health_regen_interval" "1.0"
@@ -441,6 +450,7 @@
         "immunity_mode"         "0"
         "immunity_amount"       "0.0"
         "no_fall_damage"        "yes"
+        "weapon_profile"        "default"
         
         "health"                "200"
         "health_regen_interval" "1.0"
@@ -485,6 +495,7 @@
         "immunity_mode"         "0"
         "immunity_amount"       "0.0"
         "no_fall_damage"        "0"
+        "weapon_profile"        "default"
         
         "health"                "100"
         "health_regen_interval" "0.0"
@@ -529,6 +540,7 @@
         "immunity_mode"         "0"
         "immunity_amount"       "0.0"
         "no_fall_damage"        "yes"
+        "weapon_profile"        "default"
         
         "health"                "100"
         "health_regen_interval" "0.0"

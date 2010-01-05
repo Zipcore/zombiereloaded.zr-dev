@@ -7,7 +7,7 @@
  *  Type:          Core
  *  Description:   Functions for applying attributes and effects on a client.
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -274,8 +274,8 @@ bool:ClassApplyNightVision(client, classindex, cachetype = ZR_CLASS_CACHE_PLAYER
         nvgs = ClassGetNvgs(classindex, cachetype);
     }
     
-    ToolsSetClientNightVision(client, nvgs);
-    ToolsSetClientNightVision(client, nvgs, false);
+    ToolsSetClientNVG(client, NVGProp_Owner, nvgs);
+    ToolsSetClientNVG(client, NVGProp_Enabled, nvgs);
     
     return true;
 }

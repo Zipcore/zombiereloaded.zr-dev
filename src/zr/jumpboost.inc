@@ -7,7 +7,7 @@
  *  Type:          Module
  *  Description:   Modified jump vector magnitudes.
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ JumpBoostOnClientJumpPost(client)
     new Float:vecVelocity[3];
     
     // Get client's current velocity.
-    ToolsClientVelocity(client, vecVelocity, false);
+    ToolsGetClientVelocity(client, vecVelocity);
     
     // Only apply horizontal multiplier if it's not a bhop.
     if (!JumpBoostIsBHop(vecVelocity))
@@ -59,7 +59,7 @@ JumpBoostOnClientJumpPost(client)
     vecVelocity[2] *= heightmultiplier;
     
     // Set new velocity.
-    ToolsClientVelocity(client, vecVelocity, true, false);
+    ToolsSetClientVelocity(client, vecVelocity, false);
 }
 
 /**

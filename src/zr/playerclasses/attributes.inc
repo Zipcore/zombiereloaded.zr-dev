@@ -7,7 +7,7 @@
  *  Type:          Core
  *  Description:   Retrieving class attributes from certain caches.
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -737,6 +737,38 @@ stock bool:ClassGetNoFallDamage(index, cachetype = ZR_CLASS_CACHE_PLAYER)
 }
 
 /**
+ * Gets the weapon profile index from the specified class.
+ *
+ * @param index     Index of the class in a class cache or a client index,
+ *                  depending on the cache type specified.
+ * @param cachetype Optional. Specifies what class cache to read from. Options:
+ *                  ZR_CLASS_CACHE_ORIGINAL - Unchanced class data.
+ *                  ZR_CLASS_CACHE_MODIFIED - Changed/newest class data.
+ *                  ZR_CLASS_CACHE_PLAYER (default) - Player cache. If this one
+ *                  is used, index will be used as a client index.
+ * @return  Weapon profile index for the specified class. -1 on error.
+ */
+stock ClassGetWeaponProfile(index, cachetype = ZR_CLASS_CACHE_PLAYER)
+{
+    switch (cachetype)
+    {
+        case ZR_CLASS_CACHE_ORIGINAL:
+        {
+            return ClassData[index][Class_WeaponProfile];
+        }
+        case ZR_CLASS_CACHE_MODIFIED:
+        {
+            return ClassDataCache[index][Class_WeaponProfile];
+        }
+        case ZR_CLASS_CACHE_PLAYER:
+        {
+            return ClassPlayerCache[index][Class_WeaponProfile];
+        }
+    }
+    return -1;
+}
+
+/**
  * Gets the health points from the specified class.
  *
  * Note: Multiplier is used if cache type is player cache.
@@ -1129,6 +1161,10 @@ stock ClassAttributeNameToFlag(const String:attributename[])
     {
         return ZR_CLASS_NO_FALL_DAMAGE;
     }
+    else if (StrEqual(attributename, "weapon_profile", false))
+    {
+        return ZR_CLASS_WEAPON_PROFILE;
+    }
     else if (StrEqual(attributename, "health", false))
     {
         return ZR_CLASS_HEALTH;
@@ -1273,7 +1309,8 @@ stock ClassDataTypes:ClassGetAttributeType(attributeflag)
               ZR_CLASS_NAME,
               ZR_CLASS_DESCRIPTION,
               ZR_CLASS_MODEL_PATH,
-              ZR_CLASS_OVERLAY_PATH:
+              ZR_CLASS_OVERLAY_PATH,
+              ZR_CLASS_WEAPON_PROFILE:      // Weapon profile is marked as string because the name must be resolved.
         {
             return ClassDataType_String;
         }

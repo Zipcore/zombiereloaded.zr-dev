@@ -7,7 +7,7 @@
  *  Type:          Core 
  *  Description:   API for all weapon-related functions.
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -91,6 +91,9 @@ enum WeaponsSlot
  */
 new Handle:arrayWeapons = INVALID_HANDLE;
 
+#include "zr/weapons/ammoprofiles"
+//#include "zr/weapons/restrictprofiles"
+#include "zr/weapons/weaponprofiles"
 #include "zr/weapons/restrict"
 #include "zr/weapons/weaponammo"
 #include "zr/weapons/weaponalpha"
@@ -207,7 +210,10 @@ WeaponsLoad()
     ConfigSetConfigHandle(File_Weapons, arrayWeapons);
     
     // Forward event to sub-modules
+    AmmoLoad();
+    //RestrictProfilesLoad();     // Not written yet. Must be loaded before weapon profiles.
     RestrictLoad();
+    WeaponProfilesLoad();
 }
 
 /**
@@ -343,6 +349,9 @@ WeaponsOnClientSpawn(client)
  */
 WeaponsOnClientSpawnPost(client)
 {
+    // Refresh all weapons on clients to cleanup any rendering errors.
+    WeaponsRefreshAllClientWeapons(client);
+    
     // Forward event to sub-modules.
     ZMarketOnClientSpawnPost(client);
 }
@@ -807,6 +816,31 @@ stock WeaponsRemoveClientGrenades(client, bool:weaponsdrop)
 }
 
 /**
+ * Refresh a weapon by taking it and giving it back.
+ * 
+ * @param client        The client index.
+ * @param slot          The weapon slot to refresh. (see enum WeaponsSlot)
+ */
+stock WeaponsRefreshClientWeapon(client, WeaponsSlot:slot)
+{
+    new weaponindex = GetPlayerWeaponSlot(client, _:slot);
+    
+    // If weapon is invalid, then stop.
+    if (weaponindex == -1)
+    {
+        return;
+    }
+    
+    // Get the classname of the weapon to re-give.
+    decl String:entityname[WEAPONS_MAX_LENGTH];
+    GetEdictClassname(weaponindex, entityname, sizeof(entityname));
+    
+    // Refresh weapon.
+    RemovePlayerItem(client, weaponindex);
+    GivePlayerItem(client, entityname);
+}
+
+/**
  * Remove all weapons, except knife, on a client, with options.
  * 
  * @param client        The client index.
@@ -853,4 +887,29 @@ stock WeaponsRemoveAllClientWeapons(client, bool:weaponsdrop)
     
     // Give zombie a new knife. (If you leave the old one there will be glitches with the knife positioning)
     GivePlayerItem(client, "weapon_knife");
+}
+
+/**
+ * Refresh a weapon by taking it and giving it back.
+ * 
+ * @param client        The client index.
+ */
+stock WeaponsRefreshAllClientWeapons(client)
+{
+    // Get a list of all client's weapon indexes.
+    new weapons[WeaponsSlot];
+    WeaponsGetClientWeapons(client, weapons);
+    
+    // Loop through array slots and force drop.
+    // x = weapon slot.
+    for (new x = 0; x < WEAPONS_SLOTS_MAX; x++)
+    {
+        // If weapon is invalid, then stop.
+        if (weapons[x] == -1)
+        {
+            continue;
+        }
+        
+        WeaponsRefreshClientWeapon(client, WeaponsSlot:x);
+    }
 }

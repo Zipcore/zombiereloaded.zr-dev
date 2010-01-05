@@ -7,7 +7,7 @@
  *  Type:          Module
  *  Description:   ZMarket module, provides menu of weapons to buy from.
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1296,15 +1296,15 @@ bool:ZMarketSaveCurrentSetup(client)
     ZMarketHandleRebuyCookie(client, Slot_Projectile, grenades, true);
     
     // Update nightvision ownership.
-    new bool:nightvision = ToolsGetClientNightVision(client);
-    if (!nightvision)
+    new bool:nvgs = ToolsGetClientNVG(client, NVGProp_Owner);
+    if (nvgs)
     {
-        // Empty rebuy slot.
-        ZMarketHandleRebuyCookie(client, Slot_NVGs, "");
+        ZMarketHandleRebuyCookie(client, Slot_NVGs, "nvgs");
     }
     else
     {
-        ZMarketHandleRebuyCookie(client, Slot_NVGs, "nvgs");
+        // Empty rebuy slot.
+        ZMarketHandleRebuyCookie(client, Slot_NVGs, "");
     }
     
     // Tell client their weapon setup has been updated.

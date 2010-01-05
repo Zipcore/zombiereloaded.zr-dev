@@ -3,9 +3,8 @@
  *
  *  Zombie:Reloaded
  *
- *  File:          clientalpha.inc
- *  Type:          Core
- *  Description:   Handles transparency on clients.
+ *  File:          ammomanager.inc
+ *  Description:   Ammo profile manager for players.
  *
  *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
@@ -25,19 +24,9 @@
  * ============================================================================
  */
 
+#include "zr/weapons/ammomanager.h.inc"
+
 /**
- * Updates the alpha value on a player.
+ * Player ammo managers.
  */
-ClassAlphaUpdate(client)
-{
-    new current_health = GetClientHealth(client);
-    new max_health     = ClassGetHealth(client);
-    new max_damage     = ClassGetAlphaDamage(client);
-    
-    // Calculate if enough damage is done to change alpha.
-    if ((max_health - current_health) > max_damage)
-    {
-        new alpha_damaged = ClassGetAlphaDamaged(client);
-        ToolsSetClientAlpha(client, alpha_damaged);
-    }
-}
+new AmmoManagers[AMMO_MANAGER_MAX][AmmoManager];

@@ -3,9 +3,8 @@
  *
  *  Zombie:Reloaded
  *
- *  File:          clientalpha.inc
- *  Type:          Core
- *  Description:   Handles transparency on clients.
+ *  File:          weaponprofiles.h.inc
+ *  Description:   Weapon profile headers.
  *
  *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
@@ -25,19 +24,23 @@
  * ============================================================================
  */
 
+#if defined _weaponprofileheaders_included
+ #endinput
+#endif
+#define _weaponprofileheaders_included
+
 /**
- * Updates the alpha value on a player.
+ * Profile storage capacity.
  */
-ClassAlphaUpdate(client)
+#define WEAPON_PROFILES_MAX 32
+
+/**
+ * Weapon profile attributes.
+ */
+enum WeaponProfile
 {
-    new current_health = GetClientHealth(client);
-    new max_health     = ClassGetHealth(client);
-    new max_damage     = ClassGetAlphaDamage(client);
-    
-    // Calculate if enough damage is done to change alpha.
-    if ((max_health - current_health) > max_damage)
-    {
-        new alpha_damaged = ClassGetAlphaDamaged(client);
-        ToolsSetClientAlpha(client, alpha_damaged);
-    }
+    String:WeaponProfile_Name[32],      /** Profile name. */
+    WeaponProfile_PriAmmoManager,       /** Index to a ammo manager for the primary weapon. */
+    WeaponProfile_SecAmmoManager,       /** Index to a ammo manager for the secondary weapon. */
+    WeaponProfile_RestrictManager       /** Index to a weapon restriction manager. */
 }

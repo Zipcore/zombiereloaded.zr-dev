@@ -7,7 +7,7 @@
  *  Type:          Core
  *  Description:   Weapon restriction system.
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -214,6 +214,12 @@ RestrictOnClientSpawn(client)
  */
 RestrictOnRoundEnd()
 {
+    new bool:restrictzombieequip = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_RESTRICT_ENDEQUIP]);
+    if (!restrictzombieequip)
+    {
+        return;
+    }
+    
     // x = Client index.
     for (new x = 1; x <= MaxClients; x++)
     {

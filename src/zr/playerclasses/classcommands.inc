@@ -7,7 +7,7 @@
  *  Type:        Core 
  *  Description: Console commands for working with classes.
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -913,6 +913,16 @@ stock ClassModifyString(classindex, attributeflag, const String:value[])
         {
             strcopy(ClassDataCache[classindex][Class_OverlayPath], PLATFORM_MAX_PATH, value);
             return true;
+        }
+        case ZR_CLASS_WEAPON_PROFILE:
+        {
+            // Resolve profile index.
+            new profile = WeaponProfilesGetIndex(value);
+            if (profile >= 0)
+            {
+                ClassDataCache[classindex][Class_WeaponProfile] = profile;
+                return true;
+            }
         }
     }
     

@@ -7,7 +7,7 @@
  *  Type:          Core
  *  Description:   Client infection functions.
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -285,8 +285,8 @@ InfectOnClientDeath(client, attacker)
     
     // Add kill bonus to attacker's score.
     new bonus = ClassGetKillBonus(client);
-    new score = ToolsClientScore(attacker, true, false);
-    ToolsClientScore(attacker, true, true, score + bonus);
+    new kills = ToolsGetClientScore(attacker, ScoreProp_Kills);
+    ToolsSetClientScore(attacker, ScoreProp_Kills, kills + bonus);
 }
 
 /** Client has been hurt.
@@ -583,12 +583,12 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
         }
         
         // Give client's infector a point.
-        new score = ToolsClientScore(attacker, true, false);
-        ToolsClientScore(attacker, true, true, ++score);
+        new score = ToolsGetClientScore(attacker, ScoreProp_Kills);
+        ToolsSetClientScore(attacker, ScoreProp_Kills, ++score);
         
         // Add a death to the zombie's score.
-        new deaths = ToolsClientScore(client, false, false);
-        ToolsClientScore(client, false, true, ++deaths);
+        new deaths = ToolsGetClientScore(client, ScoreProp_Deaths);
+        ToolsSetClientScore(client, ScoreProp_Deaths, ++deaths);
         
         // Apply infect HP gain.
         new healthgain = ClassGetHealthInfectGain(attacker);

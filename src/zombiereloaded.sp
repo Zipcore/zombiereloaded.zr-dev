@@ -7,7 +7,7 @@
  *  Type:          Base
  *  Description:   Plugin's base file.
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -55,6 +55,10 @@
 // Header includes.
 #include "zr/log.h"
 #include "zr/models.h"
+#include "zr/playerclasses/classheaders.h"
+#include "zr/weapons/ammoheaders.h"
+//#include "zr/weapons/restrictheaders.h"
+#include "zr/weapons/weaponprofileheaders.h"
 
 #if defined ADD_VERSION_INFO
 #include "zr/hgversion.h"
@@ -72,9 +76,9 @@
 #include "zr/admintools"
 #include "zr/log"
 #include "zr/config"
+#include "zr/tools"
 #include "zr/steamidcache"
 #include "zr/sayhooks"
-#include "zr/tools"
 #include "zr/menu"
 #include "zr/cookies"
 #include "zr/paramtools"
