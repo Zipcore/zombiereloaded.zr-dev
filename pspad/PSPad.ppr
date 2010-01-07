@@ -139,6 +139,7 @@ ZR
 		..\env\include\sdktools_entinput.inc
 		..\env\include\sdktools_entoutput.inc
 		..\env\include\sdktools_functions.inc
+		..\env\include\sdktools_hooks.inc
 		..\env\include\sdktools_sound.inc
 		..\env\include\sdktools_stocks.inc
 		..\env\include\sdktools_stringtables.inc
