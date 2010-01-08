@@ -52,6 +52,7 @@ ZR
 		..\src\zr\account.inc
 		..\src\zr\admintools.inc
 		..\src\zr\antistick.inc
+		..\src\zr\api.inc
 		..\src\zr\commands.inc
 		..\src\zr\config.inc
 		..\src\zr\cookies.inc
@@ -61,7 +62,6 @@ ZR
 		..\src\zr\downloads.inc
 		..\src\zr\event.inc
 		..\src\zr\flashlight.inc
-		..\src\zr\global.inc
 		..\src\zr\hitgroups.inc
 		..\src\zr\infect.inc
 		..\src\zr\jumpboost.inc
