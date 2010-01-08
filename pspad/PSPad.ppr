@@ -60,6 +60,7 @@ ZR
 		..\src\zr\debugtools.inc
 		..\src\zr\downloads.inc
 		..\src\zr\event.inc
+		..\src\zr\flashlight.inc
 		..\src\zr\global.inc
 		..\src\zr\hitgroups.inc
 		..\src\zr\infect.inc

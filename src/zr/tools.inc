@@ -33,7 +33,6 @@ new g_iToolsLMV;
 new g_iToolsHasNightVision;
 new g_iToolsNightVisionOn;
 new g_iToolsFOV;
-
 /**
  * @endsection
  */
@@ -150,4 +149,7 @@ ToolsSetupGameData()
     {
         LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Tools, "GameData", "Signature \"CBasePlayer::CSWeaponDrop\" was not found.");
     }
+    
+    // Forward event to modules.
+    FlashlightOnGameDataPrepped();
 }

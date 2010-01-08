@@ -50,6 +50,24 @@
 				"windows"	"219"
 				"linux"		"220"
 			}
+
+			"FlashlightIsOn"
+			{
+				"windows"	"290"
+				"linux"		"291"
+			}
+
+			"FlashlightTurnOn"
+			{
+				"windows"	"291"
+				"linux"		"292"
+			}
+
+			"FlashlightTurnOff"
+			{
+				"windows"	"292"
+				"linux"		"293"
+			}
 		}
 
 		"Signatures"
