@@ -98,6 +98,7 @@ enum CvarsList
     Handle:CVAR_INFECT_SPAWNTIME_MIN,
     Handle:CVAR_INFECT_SPAWNTIME_MAX,
     Handle:CVAR_INFECT_CONSECUTIVE_BLOCK,
+    Handle:CVAR_INFECT_FLASHLIGHT_BLOCK,
     Handle:CVAR_INFECT_WEAPONS_DROP,
     Handle:CVAR_INFECT_MZOMBIE_RATIO,
     Handle:CVAR_INFECT_MZOMBIE_RESPAWN,
@@ -320,6 +321,7 @@ CvarsCreate()
     g_hCvarsList[CVAR_INFECT_SPAWNTIME_MIN]             =    CreateConVar("zr_infect_spawntime_min",        "30.0",                             "Minimum time from the start of the round until picking the mother zombie(s).");
     g_hCvarsList[CVAR_INFECT_SPAWNTIME_MAX]             =    CreateConVar("zr_infect_spawntime_max",        "50.0",                             "Maximum time from the start of the round until picking the mother zombie(s).");
     g_hCvarsList[CVAR_INFECT_CONSECUTIVE_BLOCK]         =    CreateConVar("zr_infect_consecutive_block",    "1",                                "Prevent a player from being chosen as mother zombie two rounds in a row.");
+    g_hCvarsList[CVAR_INFECT_FLASHLIGHT_BLOCK]          =    CreateConVar("zr_infect_flashlight_block",     "0",                                "Disallow zombies from using a flashlight. [Recommended: Enable zombie attribute: 'nvgs']");
     g_hCvarsList[CVAR_INFECT_WEAPONS_DROP]              =    CreateConVar("zr_infect_weapons_drop",         "1",                                "Force player to drop all weapons on infect, disabling this will strip weapons instead.");
     
     // Effects
