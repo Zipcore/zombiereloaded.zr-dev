@@ -98,7 +98,6 @@
 #include "zr/event"
 #include "zr/zadmin"
 #include "zr/commands"
-//#include "zr/global"
 
 // Modules
 #include "zr/account"
@@ -117,6 +116,9 @@
 #include "zr/jumpboost"
 #include "zr/volfeatures/volfeatures"
 #include "zr/debugtools"
+
+// Include API last because no file uses the API while the API calls functions from every file.
+#include "zr/api"
 
 /**
  * Record plugin info.
@@ -141,7 +143,8 @@ public Plugin:myinfo =
  */
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
-    // TODO: EXTERNAL API.
+    // Forward event to the API module.
+    APIInit();
     
     // Let plugin load successfully.
     return APLRes_Success;
