@@ -332,6 +332,44 @@ InfectOnClientHurt(client, attacker, const String:weapon[])
 }
 
 /**
+ * Called when a clients movement buttons are being processed.
+ * 
+ * @param client	Index of the client.
+ * @param impulse	Copyback buffer containing the current impulse command.
+ * 
+ * @return 			Plugin_Handled to block the commands from being processed, Plugin_Continue otherwise.
+ */
+Action:InfectOnPlayerRunCmd(client, &impulse)
+{
+    // Note: These are ordered from least likely to be true to most likely to be true.
+    // This way we don't check the values that are most likely true before the ones that are probably false, saves processing time.
+    
+    // If the client isn't using their flashlight, then stop.
+    if (impulse != INFECT_FLASHLIGHT_IMPULSE)
+    {
+        return Plugin_Continue;
+    }
+    
+    // If the client isn't a zombie, then stop
+    if (!InfectIsClientInfected(client))
+    {
+        return Plugin_Continue;
+    }
+    
+    // If the cvar doesn't disallow it, then stop.
+    new bool:flashlight_block = GetConVarBool(g_hCvarsList[CVAR_INFECT_FLASHLIGHT_BLOCK]);
+    if (!flashlight_block)
+    {
+        return Plugin_Continue;
+    }
+    
+    // Finally we made it, the client is a zombie trying to use a flashlight and the cvar disallows it, so reset impulse and pass back into the game.
+    impulse = 0;
+    
+    return Plugin_Continue;
+}
+
+/**
  * The round is starting.
  */
 InfectOnRoundStart()
@@ -631,6 +669,17 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
         if (respawnoverride && respawn)
         {
             ZTeleTeleportClient(client);
+        }
+    }
+    
+    // Disable the zombie's flashlight if they are not allowed to use one.
+    new bool:flashlight_block = GetConVarBool(g_hCvarsList[CVAR_INFECT_FLASHLIGHT_BLOCK]);
+    if (flashlight_block)
+    {
+        // If the flashlight is on, then turn it off.
+        if (FlashlightIsOn(client))
+        {
+            FlashlightTurnOff(client);
         }
     }
     
