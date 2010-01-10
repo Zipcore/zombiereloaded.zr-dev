@@ -62,6 +62,7 @@ ZR
 		..\src\zr\downloads.inc
 		..\src\zr\event.inc
 		..\src\zr\flashlight.inc
+		..\src\zr\hgversion.h.inc
 		..\src\zr\hitgroups.inc
 		..\src\zr\infect.inc
 		..\src\zr\jumpboost.inc
