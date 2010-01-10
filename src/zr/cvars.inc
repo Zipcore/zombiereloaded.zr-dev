@@ -121,13 +121,12 @@ enum CvarsList
     Handle:CVAR_VEFFECTS_SKY_PATH,
     Handle:CVAR_VEFFECTS_SUN_DISABLE,
     Handle:CVAR_VEFFECTS_FOG,
-    Handle:CVAR_VEFFECTS_FOG_OVERRIDE,
+    Handle:CVAR_VEFFECTS_FOG_BLEND,
     Handle:CVAR_VEFFECTS_FOG_PCOLOR,
     Handle:CVAR_VEFFECTS_FOG_SCOLOR,
-    Handle:CVAR_VEFFECTS_FOG_DENSITY,
+    Handle:CVAR_VEFFECTS_FOG_ANGLES,
     Handle:CVAR_VEFFECTS_FOG_STARTDIST,
     Handle:CVAR_VEFFECTS_FOG_ENDDIST,
-    Handle:CVAR_VEFFECTS_FOG_FARZ,
     Handle:CVAR_VEFFECTS_RAGDOLL_REMOVE,
     Handle:CVAR_VEFFECTS_RAGDOLL_DISSOLVE,
     Handle:CVAR_VEFFECTS_RAGDOLL_DELAY,
@@ -393,14 +392,13 @@ CvarsCreate()
     g_hCvarsList[CVAR_VEFFECTS_SUN_DISABLE]             =    CreateConVar("zr_veffects_sun_disable",        "0",                    "Disable sun rendering on map.");
     
     // Fog
-    g_hCvarsList[CVAR_VEFFECTS_FOG]                     =    CreateConVar("zr_veffects_fog",                "0",                    "(UNSUPPORTED) Enable fog rendering on the map.");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_OVERRIDE]            =    CreateConVar("zr_veffects_fog_override",       "0",                    "(UNSUPPORTED) If fog exists already on the map, then replace with new modified fog. [Dependency: zr_veffects_fog]");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_PCOLOR]              =    CreateConVar("zr_veffects_fog_pcolor",         "255 255 255",          "(UNSUPPORTED) Primary color of the fog. [Dependency: zr_veffects_fog]");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_SCOLOR]              =    CreateConVar("zr_veffects_fog_scolor",         "255 255 255",          "(UNSUPPORTED) Secondary color of the fog. [Dependency: zr_veffects_fog]");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_DENSITY]             =    CreateConVar("zr_veffects_fog_density",        "0.8",                  "(UNSUPPORTED) Density (thickness) of the fog. [Dependency: zr_veffects_fog]");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_STARTDIST]           =    CreateConVar("zr_veffects_fog_startdist",      "0",                    "(UNSUPPORTED) Distance from player to start rendering foremost fog. [Dependency: zr_veffects_fog]");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_ENDDIST]             =    CreateConVar("zr_veffects_fog_enddist",        "400",                  "(UNSUPPORTED) Distance from player to stop rendering fog. [Dependency: zr_veffects_fog]");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_FARZ]                =    CreateConVar("zr_veffects_fog_farz",           "2000",                 "(UNSUPPORTED) Vertical clipping plane.");
+    g_hCvarsList[CVAR_VEFFECTS_FOG]                     =    CreateConVar("zr_veffects_fog",                "0",                    "Enable fog rendering on the map.");
+    g_hCvarsList[CVAR_VEFFECTS_FOG_BLEND]               =    CreateConVar("zr_veffects_fog_blend",          "0",                    "Enable blending of the primary and secondary colors depending on the direction you are looking, if disabled only primary color will be used. [Dependency: zr_veffects_fog]");
+    g_hCvarsList[CVAR_VEFFECTS_FOG_PCOLOR]              =    CreateConVar("zr_veffects_fog_pcolor",         "100 100 100",          "Primary color of the fog. [Dependency: zr_veffects_fog]");
+    g_hCvarsList[CVAR_VEFFECTS_FOG_SCOLOR]              =    CreateConVar("zr_veffects_fog_scolor",         "50 50 50",             "Secondary color of the fog. [Dependency: zr_veffects_fog&zr_veffects_fog_blend]");
+    g_hCvarsList[CVAR_VEFFECTS_FOG_ANGLES]              =    CreateConVar("zr_veffects_fog_angles",         "1 1 1",                "A vector (given by three space-separated numbers X Y Z) which points from the secondary fog color towards the primary fogcolor. [Dependency: zr_veffects_fog&zr_veffects_fog_blend]");
+    g_hCvarsList[CVAR_VEFFECTS_FOG_STARTDIST]           =    CreateConVar("zr_veffects_fog_startdist",      "25.0",                 "Distance from player to start rendering foremost fog. [Dependency: zr_veffects_fog]");
+    g_hCvarsList[CVAR_VEFFECTS_FOG_ENDDIST]             =    CreateConVar("zr_veffects_fog_enddist",        "1500.0",                "Distance from player to stop rendering fog. [Dependency: zr_veffects_fog]");
     
     
     // Ragdoll
