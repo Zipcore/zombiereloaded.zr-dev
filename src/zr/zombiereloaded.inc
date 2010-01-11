@@ -57,7 +57,17 @@ Float:ZRConvertUnitsFloat(Float:number, Float:conversion)
 }
 
 /**
- * Create an array populated with eligible clients to be zombie.
+ * Options that a condition must pass to be eligible.
+ */
+enum EligibleClientCondition
+{
+    Condition_False = 0,    /** Condition must be false. */
+    Condition_True = 1,     /** Condition must be true. */
+    Condition_Either = -1   /** Condition can be either true or false. */
+}
+
+/**
+ * Create an array populated with eligible clients.
  * 
  * @param arrayEligibleClients  The handle of the array, don't forget to call CloseHandle
  *                              on it when finished!
@@ -65,8 +75,10 @@ Float:ZRConvertUnitsFloat(Float:number, Float:conversion)
  * @param alive                 Client is only eligible if alive.
  * @param human                 Client is only eligible if human.
  * @param immunity              True to ignore clients immune from mother infect, false to count them.
+ * 
+ * @return                      Number of eligible clients.  
  */  
-stock ZRCreateEligibleClientList(&Handle:arrayEligibleClients, bool:team = false, bool:alive = false, bool:human = false)
+stock ZRCreateEligibleClientList(&Handle:arrayEligibleClients, EligibleClientCondition:team = Condition_Either, EligibleClientCondition:alive = Condition_Either, EligibleClientCondition:human = Condition_Either)
 {
     // Create array.
     arrayEligibleClients = CreateArray();
@@ -81,20 +93,22 @@ stock ZRCreateEligibleClientList(&Handle:arrayEligibleClients, bool:team = false
             continue;
         }
         
-        // If client isn't on a team, then stop.
-        if (team && !ZRIsClientOnTeam(x))
+        // If the client doesn't pass the conditions set, then skip them.
+        
+        new bool:bTeam = bool:team;
+        if (team != Condition_Either && bTeam != ZRIsClientOnTeam(x))
         {
             continue;
         }
         
-        // If client is dead, then stop.
-        if (alive && !IsPlayerAlive(x))
+        new bool:bAlive = bool:alive;
+        if (alive != Condition_Either && bAlive != IsPlayerAlive(x))
         {
             continue;
         }
         
-        // If client is already zombie (via admin), then stop.
-        if (human && !InfectIsClientHuman(x))
+        new bool:bHuman = bool:human;
+        if (human != Condition_Either && bHuman != InfectIsClientHuman(x))
         {
             continue;
         }
