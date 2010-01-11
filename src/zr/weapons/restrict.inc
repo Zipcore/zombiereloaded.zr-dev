@@ -139,7 +139,7 @@ RestrictClientInit(client)
 {
     // Hook "Weapon_CanUse" on client.
     #if defined USE_SDKHOOKS
-        SDKHook(client, SDKHook_WeaponEquip, RestrictCanUse);
+        SDKHook(client, SDKHook_WeaponCanUse, RestrictCanUse);
         
         // Note: Do we need to use WeaponSwitch too? On infection all weapons
         //       are removed anyways.

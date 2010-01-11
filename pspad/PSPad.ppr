@@ -136,6 +136,7 @@ ZR
 		..\env\include\nextmap.inc
 		..\env\include\profiler.inc
 		..\env\include\regex.inc
+		..\env\include\sdkhooks.inc
 		..\env\include\sdktools.inc
 		..\env\include\sdktools_engine.inc
 		..\env\include\sdktools_entinput.inc
