@@ -192,7 +192,7 @@ InfectOnClientDisconnect(client)
     new Handle:arrayEligibleClients = INVALID_HANDLE;
     
     // Create eligible client list, with no mother infect immunities
-    new eligibleclients = ZRCreateEligibleClientList(arrayEligibleClients, true, true, true);
+    new eligibleclients = ZRCreateEligibleClientList(arrayEligibleClients, Condition_True, Condition_True, Condition_True);
     
     // If there are no eligible client's then stop.
     if (!eligibleclients)
@@ -451,7 +451,7 @@ public Action:InfectMotherZombie(Handle:timer)
     
     // Create eligible player list.
     new Handle:arrayEligibleClients = INVALID_HANDLE;
-    new eligibleclients = ZRCreateEligibleClientList(arrayEligibleClients, true, true, true);
+    new eligibleclients = ZRCreateEligibleClientList(arrayEligibleClients, Condition_True, Condition_True, Condition_True);
     
     // If there are no eligible client's then stop.
     if (!eligibleclients)

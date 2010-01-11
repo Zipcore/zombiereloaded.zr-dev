@@ -335,7 +335,7 @@ RoundEndBalanceTeams()
 {
     // Create eligible player list.
     new Handle:arrayEligibleClients = INVALID_HANDLE;
-    new eligibleclients = ZRCreateEligibleClientList(arrayEligibleClients, true);
+    new eligibleclients = ZRCreateEligibleClientList(arrayEligibleClients, Condition_True, Condition_Either, Condition_Either);
     
     // If there are no eligible client's then stop.
     if (!eligibleclients)
