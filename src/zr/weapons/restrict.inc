@@ -39,11 +39,6 @@ enum RestrictData
 }
 
 /**
- * Array that stores the "HookID" to be later unhooked on player disconnect.
- */
-new g_iCanUseHookID[MAXPLAYERS + 1] = {-1, ...};
-
-/**
  * Array to block any client from picking up weapons.
  */
 new bool:g_bRestrictBlockWeapon[MAXPLAYERS + 1];
@@ -131,66 +126,12 @@ RestrictOnCommandsCreate()
 }
 
 /**
- * Client is joining the server.
- * 
- * @param client    The client index.
- */
-RestrictClientInit(client)
-{
-    // Hook "Weapon_CanUse" on client.
-    #if defined USE_SDKHOOKS
-        SDKHook(client, SDKHook_WeaponCanUse, RestrictCanUse);
-        
-        // Note: Do we need to use WeaponSwitch too? On infection all weapons
-        //       are removed anyways.
-        
-        // Set dummy value so it think it's hooked.
-        g_iCanUseHookID[client] = 1;
-    #else
-        g_iCanUseHookID[client] = ZRTools_HookWeapon_CanUse(client, RestrictCanUse);
-    #endif
-    
-    // Reset block weapons flag.
-    g_bRestrictBlockWeapon[client] = false;
-}
-
-/**
- * Unhook Weapon_CanUse function on a client.
- * 
- * @param client    The client index.
- */
-RestrictOnClientDisconnect(client)
-{
-    // Unhook "Weapon_CanUse" callback, and reset variable.
-    if (g_iCanUseHookID[client] != -1)
-    {
-        #if defined USE_SDKHOOKS
-            SDKUnhook(client, SDKHook_WeaponCanUse, RestrictCanUse);
-        #else
-            ZRTools_UnhookWeapon_CanUse(g_iCanUseHookID[client]);
-        #endif
-        
-        g_iCanUseHookID[client] = -1;
-    }
-}
-
-/**
  * Client is spawning into the game.
  * 
  * @param client    The client index.
  */
 RestrictOnClientSpawn(client)
 {
-    // Re-hook "canuse" on client.
-    #if defined USE_SDKHOOKS
-        SDKUnhook(client, SDKHook_WeaponCanUse, RestrictCanUse);     // <--- What happens if it's not already hooked???
-        SDKHook(client, SDKHook_WeaponCanUse, RestrictCanUse);
-        g_iCanUseHookID[client] = 1;
-    #else
-        ZRTools_UnhookWeapon_CanUse(g_iCanUseHookID[client]);
-        g_iCanUseHookID[client] = ZRTools_HookWeapon_CanUse(client, RestrictCanUse);
-    #endif
-    
     // H4x.  Unfortunately I can't disable this flag early enough for CS:S to give start USP/Glock.
     // So I have to give BOOTLEG weapons.  (Sorry Valve)
     if (g_bRestrictBlockWeapon[client])
@@ -604,16 +545,17 @@ stock bool:RestrictIsTypeUniform(bool:restricted, index)
 }
 
 /**
- * Hook callback, called when a player is trying to pick up a weapon.
+ * Called when a client is trying to pick up a weapon.
+ *  
  * @param client    The client index.
  * @param weapon    The weapon index.
  * @return          Return ZRTools_Handled to stop weapon pickup.
  *                  ZRTools_Continue to allow weapon pickup.
  */
 #if defined USE_SDKHOOKS
-public Action:RestrictCanUse(client, weapon)
+Action:RestrictCanUse(client, weapon)
 #else
-public ZRTools_Action:RestrictCanUse(client, weapon)
+ZRTools_Action:RestrictCanUse(client, weapon)
 #endif
 {
     new String:weaponentity[WEAPONS_MAX_LENGTH];
@@ -667,9 +609,6 @@ public ZRTools_Action:RestrictCanUse(client, weapon)
     {
         return ACTION_HANDLED;
     }
-    
-    // Forward event to weapons module.
-    WeaponsOnItemPickup(client, weapon);
     
     // Allow pickup.
     return ACTION_CONTINUE;
