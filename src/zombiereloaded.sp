@@ -117,9 +117,8 @@
 #include "zr/volfeatures/volfeatures"
 #include "zr/debugtools"
 
-// Include API last because no file uses the API while the API calls functions from every file.
-#include "zr/api"
-
+// Include this last since nothing should be using it anyway.  Aside from external plugins.
+#include "zr/api/api"
 /**
  * Record plugin info.
  */

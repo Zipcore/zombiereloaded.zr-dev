@@ -567,7 +567,7 @@ stock bool:ConfigReloadConfig(ConfigFile:config)
         // Print reload failure to logs.
         LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Config, "Reload Function", "Invalid reload function for config: \"%s\"", configalias);
         
-        return true;
+        return false;
     }
     
     // Call reload function.
