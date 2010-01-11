@@ -14,11 +14,15 @@ ZR
 	+Base
 		..\src\zombiereloaded.sp
 	-Plugin Includes
+		-External API
+			..\src\zr\api\api.inc
+			..\src\zr\api\infect.api.inc
 		-Classes
 			..\src\zr\playerclasses\apply.inc
 			..\src\zr\playerclasses\attributes.inc
 			..\src\zr\playerclasses\classcommands.inc
 			..\src\zr\playerclasses\classevents.inc
+			..\src\zr\playerclasses\classheaders.h.inc
 			..\src\zr\playerclasses\classmenus.inc
 			..\src\zr\playerclasses\clientalpha.inc
 			..\src\zr\playerclasses\clientoverlays.inc
@@ -52,7 +56,6 @@ ZR
 		..\src\zr\account.inc
 		..\src\zr\admintools.inc
 		..\src\zr\antistick.inc
-		..\src\zr\api.inc
 		..\src\zr\commands.inc
 		..\src\zr\config.inc
 		..\src\zr\cookies.inc
@@ -93,6 +96,9 @@ ZR
 		..\src\zr\zombiereloaded.inc
 		..\src\zr\zspawn.inc
 		..\src\zr\ztele.inc
+	-External API Includes
+		..\src\include\zombiereloaded.inc
+		..\src\include\zr\infect.zr.inc
 	-Config Files
 		-Executable
 			..\cstrike\cfg\sourcemod\zombiereloaded\zombiereloaded.cfg

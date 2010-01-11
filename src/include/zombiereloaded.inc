@@ -8,7 +8,7 @@
  *  Description:   Main API include file.
  *  Notes:         Include this file to include the whole ZR API. 
  *
- *  Copyright (C) 2009  Greyscale, Richard Helgeby
+ *  Copyright (C) 2009-10  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #endif
 #define _zr_included
 
-// #include <zr/*.zr>
+ #include <zr/infect.zr>
 // #include <zr/*.zr>
 
 /**
@@ -41,5 +41,18 @@
  * @param param2    Parameter 2 description. 
  *  
  * @return			Return description.
+ * @error           Reasons for erroring. 
  */
 // native Tag:ExampleNative(param1, param2);
+
+/**
+ * Returns plugin version info.
+ * 
+ * @param version   The version of the build.
+ * @param maxlen    The max length of the version output string. 
+ * @param revision  The revision number of this build.  Will be set to "" if it's not available.
+ * @param maxlen2   The max length of the revision output string. 
+ *  
+ * @return			True if revision info is available, false if not.
+ */
+native bool:ZR_GetVersionInfo(String:version[], maxlen, String:revision[], maxlen2);

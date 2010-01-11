@@ -595,6 +595,15 @@ public Action:InfectMotherZombie(Handle:timer)
  */
 InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respawnoverride = false, bool:respawn = false)
 {
+    // Forward pre-event to modules.
+    new Action:result = APIOnClientInfectedPre(client, attacker, motherinfect, respawnoverride, respawn);
+    
+    // If the forward returned Plugin_Handled or Plugin_Stop, then stop this function.
+    if (result == Plugin_Handled || result == Plugin_Stop)
+    {
+        return;
+    }
+    
     // Mark player as zombie.
     bZombie[client] = true;
     
@@ -693,6 +702,7 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     SEffectsOnClientInfected(client);
     ZTeleOnClientInfected(client);
     ZHPOnClientInfected(client);
+    APIOnClientInfected(client, attacker, motherinfect, respawnoverride, respawn);
 }
 
 /**
@@ -705,6 +715,15 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
  */
 InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
 {
+    // Forward pre-event to modules.
+    new Action:result = APIOnClientHumanPre(client, respawn, protect);
+    
+    // If the forward returned Plugin_Handled or Plugin_Stop, then stop this function.
+    if (result == Plugin_Handled || result == Plugin_Stop)
+    {
+        return;
+    }
+    
     // Mark player as human.
     bZombie[client] = false;
     
@@ -744,6 +763,7 @@ InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
     
     // Forward event to modules.
     //SEffectsOnClientHuman(client);
+    APIOnClientHuman(client, respawn, protect);
 }
 
 /**
@@ -1070,7 +1090,7 @@ stock InfectManualInfect(client, targets[], count, bool:respawnoverride = false,
 }
 
 /**
- * Infecting a client manually (via zr_human or the "Zombie Management" menu)
+ * Turning a client human manually (via zr_human or the "Zombie Management" menu)
  * 
  * @param client    The client index changing a zombie to human.
  * @param targets   Array containing all clients to make human.
