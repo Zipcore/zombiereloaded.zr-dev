@@ -70,11 +70,11 @@ ZCookiesMenuMain(client)
     Format(zmarket, sizeof(zmarket), "%t", "ZCookies zmarket weapon setup");
     
     // Get conditional values for each option.
-    new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);                               // For auto-rebuy.
-    new bool:zmarketrebuyauto = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_ZMARKET_REBUY_AUTO]);   // For auto-rebuy.
-    new bool:zhpcvar = GetConVarBool(g_hCvarsList[CVAR_ZHP]);                                   // For ZHP.
-    new bool:overlaytoggle = GetConVarBool(g_hCvarsList[CVAR_CLASSES_OVERLAY_TOGGLE]);          // For class overlay.
-    new bool:zmarketenabled = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_ZMARKET]);                // For ZMarket weapon setup.
+    new bool:weapons = (GetConVarBool(g_hCvarsList[CVAR_WEAPONS]) && ConfigIsConfigLoaded(File_Weapons));   // For auto-rebuy.
+    new bool:zmarketrebuyauto = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_ZMARKET_REBUY_AUTO]);               // For auto-rebuy.
+    new bool:zhpcvar = GetConVarBool(g_hCvarsList[CVAR_ZHP]);                                               // For ZHP.
+    new bool:overlaytoggle = GetConVarBool(g_hCvarsList[CVAR_CLASSES_OVERLAY_TOGGLE]);                      // For class overlay.
+    new bool:zmarketenabled = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_ZMARKET]);                            // For ZMarket weapon setup.
     
     // Add items to menu.
     SetMenuTitle(zcookies_menu_main, title);

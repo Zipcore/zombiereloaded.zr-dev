@@ -579,9 +579,10 @@ ZRTools_Action:RestrictCanUse(client, weapon)
         return ACTION_HANDLED;
     }
     
-    // If weapons module is disabled, then stop.
+    // If the module isn't enabled, or the weapons file isn't loaded, then stop.
     new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);
-    if (!weapons)
+    new bool:weaponsloaded = ConfigIsConfigLoaded(File_Weapons);
+    if (!weapons || !weaponsloaded)
     {
         return ACTION_CONTINUE;
     }
@@ -634,9 +635,10 @@ public Action:RestrictCommand(client, argc)
         return Plugin_Handled;
     }
     
-    // If weapons module is disabled, then stop.
+    // If the module isn't enabled, or the weapons file isn't loaded, then stop.
     new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);
-    if (!weapons)
+    new bool:weaponsloaded = ConfigIsConfigLoaded(File_Weapons);
+    if (!weapons || !weaponsloaded)
     {
         // Tell client command is disabled.
         TranslationReplyToCommand(client, "Feature is disabled");
@@ -695,9 +697,10 @@ public Action:UnrestrictCommand(client, argc)
         return Plugin_Handled;
     }
     
-    // If weapons module is disabled, then stop.
+    // If the module isn't enabled, or the weapons file isn't loaded, then stop.
     new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);
-    if (!weapons)
+    new bool:weaponsloaded = ConfigIsConfigLoaded(File_Weapons);
+    if (!weapons || !weaponsloaded)
     {
         // Tell client command is disabled.
         TranslationReplyToCommand(client, "Feature is disabled");

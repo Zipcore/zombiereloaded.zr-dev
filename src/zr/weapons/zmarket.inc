@@ -254,9 +254,10 @@ ZMarketGetPurchaseCount(client, const String:weapon[])
  */
 bool:ZMarketMenuMain(client)
 {
-    // If weapons module is disabled, then stop.
+    // If the module isn't enabled, or the weapons file isn't loaded, then stop.
     new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);
-    if (!weapons)
+    new bool:weaponsloaded = ConfigIsConfigLoaded(File_Weapons);
+    if (!weapons || !weaponsloaded)
     {
         // Telle client feature is disabled.
         TranslationPrintToChat(client, "Feature is disabled");
