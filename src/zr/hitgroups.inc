@@ -357,8 +357,8 @@ stock Float:HitgroupsGetKnockback(index)
  */
 bool:HitgroupsMenuHitgroups(client)
 {
-    // If hitgroups is disabled, then stop.
-    new bool:hitgroups = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
+    // If hitgroups file isn't loaded, then stop.
+    new bool:hitgroups = ConfigIsConfigLoaded(File_Hitgroups);
     if (!hitgroups)
     {
         return false;
@@ -514,8 +514,8 @@ public Action:HitgroupsCommand(client, argc)
         return Plugin_Handled;
     }
     
-    // If module is disabled, then stop.
-    new bool:hitgroups = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
+    // If hitgroups file isn't loaded, then stop.
+    new bool:hitgroups = ConfigIsConfigLoaded(File_Hitgroups);
     if (!hitgroups)
     {
         TranslationReplyToCommand(client, "Feature is disabled");
@@ -607,8 +607,8 @@ public Action:HitgroupsEnableAllCommand(client, argc)
         return Plugin_Handled;
     }
     
-    // If module is disabled, then stop.
-    new bool:hitgroups = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
+    // If hitgroups file isn't loaded, then stop.
+    new bool:hitgroups = ConfigIsConfigLoaded(File_Hitgroups);
     if (!hitgroups)
     {
         TranslationReplyToCommand(client, "Feature is disabled");
@@ -648,8 +648,8 @@ public Action:HitgroupsHeadshotsOnlyCommand(client, argc)
         return Plugin_Handled;
     }
     
-    // If module is disabled, then stop.
-    new bool:hitgroups = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
+    // If hitgroups file isn't loaded, then stop.
+    new bool:hitgroups = ConfigIsConfigLoaded(File_Hitgroups);
     if (!hitgroups)
     {
         TranslationReplyToCommand(client, "Feature is disabled");
