@@ -411,11 +411,8 @@ public Action:ZTeleTimer(Handle:timer, any:client)
         new Float:distance = GetVectorDistance(vecClient, g_vecZTeleOrigin[client]);
         new Float:autocanceldistance = GetConVarFloat(g_hCvarsList[CVAR_ZTELE_AUTOCANCEL_DISTANCE]);
         
-        // Convert cvar units
-        new Float:unitdistance = ZRConvertUnitsFloat(autocanceldistance, CONVERSION_FEET_TO_UNITS);
-        
         // Check if distance has been surpassed.
-        if (distance > unitdistance)
+        if (distance > autocanceldistance)
         {
             // Reset timer handle.
             tZTele[client] = INVALID_HANDLE;

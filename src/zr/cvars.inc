@@ -512,7 +512,7 @@ CvarsCreate()
     g_hCvarsList[CVAR_ZTELE_MAX_ZOMBIE]                 =    CreateConVar("zr_ztele_max_zombie",            "3",    "Max number of times a zombie is allowed to use ZTele per round. [Dependency: zr_ztele_zombie]");
     g_hCvarsList[CVAR_ZTELE_MAX_HUMAN]                  =    CreateConVar("zr_ztele_max_human",             "1",    "Max number of times a human is allowed to use ZTele per round. [Dependency: zr_ztele_human_(before)/(after)]");
     g_hCvarsList[CVAR_ZTELE_AUTOCANCEL]                 =    CreateConVar("zr_ztele_autocancel",            "1",    "Automatically cancel ZTele if player moves out of a set boundary. [Dependency: zr_ztele_(zombie)/(human)[_(before)/(after)]]");
-    g_hCvarsList[CVAR_ZTELE_AUTOCANCEL_DISTANCE]        =    CreateConVar("zr_ztele_autocancel_distance",   "20",   "Maximum distance, in feet, player is allowed to travel before teleport is cancelled. [Dependency: zr_ztele_autocancel]");
+    g_hCvarsList[CVAR_ZTELE_AUTOCANCEL_DISTANCE]        =    CreateConVar("zr_ztele_autocancel_distance",   "320",  "Maximum distance, in units, player is allowed to travel before teleport is cancelled. [Dependency: zr_ztele_autocancel]");
     
     
     // ===========================

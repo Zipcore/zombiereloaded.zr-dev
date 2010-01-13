@@ -51,7 +51,7 @@ new bool:g_bZombieSpawned;
  * @param conversion    The conversion factor to multiply by. (See defines above)
  * @return              The converted number.
  */
-Float:ZRConvertUnitsFloat(Float:number, Float:conversion)
+stock Float:ZRConvertUnitsFloat(Float:number, Float:conversion)
 {
     return number / conversion;
 }
