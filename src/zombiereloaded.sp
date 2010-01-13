@@ -30,6 +30,7 @@
 
 #pragma semicolon 1
 #include <sourcemod>
+#include <regex>
 #include <sdktools>
 #include <clientprefs>
 #include <cstrike>
