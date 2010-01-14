@@ -112,6 +112,11 @@
 		"en"		"(Empty)"
 	}
 
+	"Menu none"
+	{
+		"en"		"(None)"
+	}
+
 	// ===========================
 	// Config (core)
 	// ===========================
@@ -747,11 +752,6 @@
 	"Weapons menu zmarket weapon setup nvgs"
 	{
 		"en"		"NVGs:"
-	}
-
-	"Weapons menu zmarket weapon setup empty"
-	{
-		"en"		"(None)"
 	}
 
 	"Weapons menu zmarket types title"

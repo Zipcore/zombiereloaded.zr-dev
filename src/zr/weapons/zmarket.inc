@@ -409,7 +409,7 @@ bool:ZMarketMenuWeaponSetup(client)
     
     // Get the empty translation.
     decl String:empty[MENU_LINE_SMALL_LENGTH];
-    Format(empty, sizeof(empty), "%t", "Weapons menu zmarket weapon setup empty");
+    Format(empty, sizeof(empty), "%t", "Menu none");
     
     // Count and format.
     new weaponcount[WeaponsSlot];
