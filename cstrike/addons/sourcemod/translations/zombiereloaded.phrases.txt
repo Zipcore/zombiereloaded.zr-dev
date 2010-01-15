@@ -483,6 +483,25 @@
 	}
 
 	// ===========================
+	// Menu Attach (core)
+	// ===========================
+
+	"Menu attach submenu zr"
+	{
+		"en"		"Zombie:Reloaded Admin"
+	}
+
+	"Menu attach submenu zr title"
+	{
+		"en"		"Zombie:Reloaded Admin:"
+	}
+
+	"Menu attach submenu zr zadmin"
+	{
+		"en"		"ZAdmin"
+	}
+
+	// ===========================
 	// Weapons (core)
 	// ===========================
 

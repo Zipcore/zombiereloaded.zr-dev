@@ -192,8 +192,16 @@ public ZAdminMenuHandle(Handle:menu_zadmin, MenuAction:action, client, slot)
     {
         if (slot == MenuCancel_ExitBack)
         {
-            // Exit back to main menu.
-            ZMenuMain(client);
+            // Get the admin topmenu handle, if it doesn't exist then open the ZMenu main menu.
+            new Handle:hAdminMenu = GetAdminTopMenu();
+            if (hAdminMenu == INVALID_HANDLE)
+            {
+                ZMenuMain(client);
+                return;
+            }
+            
+            // Send the admin menu.
+            DisplayTopMenu(hAdminMenu, client, TopMenuPosition_LastCategory);
         }
     }
     else if (action == MenuAction_End)
