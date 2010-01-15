@@ -13,22 +13,29 @@ ProjectFilesOnly=0
 ZR
 	+Base
 		..\src\zombiereloaded.sp
-	-Plugin Includes
-		-External API
-			..\src\zr\api\api.inc
-			..\src\zr\api\infect.api.inc
+	+Plugin Includes
+		+Headers
+			..\src\zr\weapons\ammoheaders.h.inc
+			..\src\zr\weapons\ammomanager.h.inc
+			..\src\zr\playerclasses\classheaders.h.inc
+			..\src\zr\hgversion.h.inc
+			..\src\zr\log.h.inc
+			..\src\zr\models.h.inc
+			..\src\zr\weapons\weaponprofileheaders.h.inc
 		-Classes
 			..\src\zr\playerclasses\apply.inc
 			..\src\zr\playerclasses\attributes.inc
 			..\src\zr\playerclasses\classcommands.inc
 			..\src\zr\playerclasses\classevents.inc
-			..\src\zr\playerclasses\classheaders.h.inc
 			..\src\zr\playerclasses\classmenus.inc
 			..\src\zr\playerclasses\clientalpha.inc
 			..\src\zr\playerclasses\clientoverlays.inc
 			..\src\zr\playerclasses\filtertools.inc
 			..\src\zr\playerclasses\healthregen.inc
 			..\src\zr\playerclasses\playerclasses.inc
+		-External API
+			..\src\zr\api\api.inc
+			..\src\zr\api\infect.api.inc
 		-Sound Effects
 			..\src\zr\soundeffects\ambientsounds.inc
 			..\src\zr\soundeffects\soundeffects.inc
@@ -47,10 +54,13 @@ ZR
 			..\src\zr\volfeatures\volgenericattributes.inc
 			..\src\zr\volfeatures\voltools.inc
 		-Weapons
+			..\src\zr\weapons\ammomanager.inc
+			..\src\zr\weapons\ammoprofiles.inc
 			..\src\zr\weapons\menu_weapons.inc
 			..\src\zr\weapons\restrict.inc
 			..\src\zr\weapons\weaponalpha.inc
 			..\src\zr\weapons\weaponammo.inc
+			..\src\zr\weapons\weaponprofiles.inc
 			..\src\zr\weapons\weapons.inc
 			..\src\zr\weapons\zmarket.inc
 		..\src\zr\account.inc
@@ -65,15 +75,12 @@ ZR
 		..\src\zr\downloads.inc
 		..\src\zr\event.inc
 		..\src\zr\flashlight.inc
-		..\src\zr\hgversion.h.inc
 		..\src\zr\hitgroups.inc
 		..\src\zr\infect.inc
 		..\src\zr\jumpboost.inc
 		..\src\zr\knockback.inc
-		..\src\zr\log.h.inc
 		..\src\zr\log.inc
 		..\src\zr\menu.inc
-		..\src\zr\models.h.inc
 		..\src\zr\models.inc
 		..\src\zr\napalm.inc
 		..\src\zr\overlays.inc
