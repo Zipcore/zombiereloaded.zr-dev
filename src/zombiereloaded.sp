@@ -30,6 +30,7 @@
 
 #pragma semicolon 1
 #include <sourcemod>
+#include <adminmenu>
 #include <regex>
 #include <sdktools>
 #include <clientprefs>
@@ -81,6 +82,7 @@
 #include "zr/steamidcache"
 #include "zr/sayhooks"
 #include "zr/menu"
+#include "zr/menu_attach"
 #include "zr/cookies"
 #include "zr/paramtools"
 #include "zr/paramparser"
@@ -160,6 +162,7 @@ public OnPluginStart()
     TranslationInit();
     CvarsInit();
     ToolsInit();
+    MenuAttachInit();
     CookiesInit();
     CommandsInit();
     WeaponsInit();
