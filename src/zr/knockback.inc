@@ -106,10 +106,11 @@ KnockbackOnClientHurt(client, attacker, const String:weapon[], hitgroup, dmg_hea
         }
     }
     
-    // If the hitgroup knockback cvar is enabled and the hitgroups file is loaded, then apply knockback multiplier.
+    // If hitgroups isn't enabled, the hitgroups file isn't loaded, or the hitgroup knockback multiplier is disabled, then stop.
+    new bool:hitgroupsenabled = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
+    new bool:hitgroupsloaded = ConfigIsConfigLoaded(File_Hitgroups);
     new bool:knockback_hitgroups = GetConVarBool(g_hCvarsList[CVAR_KNOCKBACK_HITGROUPS]);
-    new bool:hitgroups = ConfigIsConfigLoaded(File_Hitgroups);
-    if (knockback_hitgroups && hitgroups)
+    if (hitgroupsenabled && hitgroupsloaded && knockback_hitgroups)
     {
         new hitgroupindex = HitgroupToIndex(hitgroup);
         if (hitgroupindex != -1)

@@ -213,10 +213,11 @@ public ZRTools_Action:DamageTraceAttack(client, inflictor, attacker, Float:damag
         return ACTION_CONTINUE;
     }
     
-    // If damage hitgroups cvar is disabled, then allow damage.
+    // If hitgroups is disabled, hitgroups didn't load, or hitgroup damage control is disabled, then stop.
+    new bool:hitgroupsenabled = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
     new bool:hitgroupsloaded = ConfigIsConfigLoaded(File_Hitgroups);
     new bool:damagehitgroups = GetConVarBool(g_hCvarsList[CVAR_DAMAGE_HITGROUPS]);
-    if (!hitgroupsloaded || !damagehitgroups)
+    if (!hitgroupsenabled || !hitgroupsloaded || !damagehitgroups)
     {
         // Allow damage.
         return ACTION_CONTINUE;
