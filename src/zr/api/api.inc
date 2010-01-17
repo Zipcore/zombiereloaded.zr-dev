@@ -42,6 +42,7 @@
  */
 
 #include "zr/api/log.api"
+#include "zr/api/tools.api"
 #include "zr/api/infect.api"
 
 /**
@@ -57,6 +58,7 @@ APIInit()
     
     // Forward event to sub-modules.
     APILogInit();
+    APIToolsInit();
     APIInfectInit();
     
     // Needed natives/forwards
@@ -68,31 +70,26 @@ APIInit()
  * @param client    The client index to validate.
  * @param alive     Set to true to validate that the client is alive, false to ignore.
  * 
- * @return          True if client index passed validation, false if not.
+ * @error           Throws an error when the client isn't valid.
  */
-stock bool:APIValidateClientIndex(client, bool:alive = false)
+stock APIValidateClientIndex(client, bool:alive = false)
 {
     // If the client index is out of range, then throw an error.
     if (client < 1 || client > MaxClients)
     {
         ThrowNativeError(SP_ERROR_NATIVE, "Invalid client index. (%d)", client);
-        return false;
     }
     
     // If there is no client occupying this index, then throw an error.
     if (!IsClientConnected(client))
     {
         ThrowNativeError(SP_ERROR_NATIVE, "Client %d is not connected.", client);
-        return false;
     }
     
     if (alive && !IsPlayerAlive(client))
     {
         ThrowNativeError(SP_ERROR_NATIVE, "Client %d must be alive.", client);
-        return false;
     }
-    
-    return true;
 }
 
 /**

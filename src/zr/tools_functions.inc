@@ -30,8 +30,8 @@
  */
 enum ToolsNVGProps
 {
-    NVGProp_Owner,
-    NVGProp_Enabled
+    NVGProp_Owner,  /** Controls whether the client has nightvision or not. */
+    NVGProp_Enabled /** Controls whether the client's nightvision is enabled. (must own nightvision to have effect) */
 }
 
 /**
@@ -39,15 +39,15 @@ enum ToolsNVGProps
  */
 enum ToolsScoreProps
 {
-    ScoreProp_Kills,
-    ScoreProp_Deaths
+    ScoreProp_Kills,    /** Controls how many kills the client has. (score) */
+    ScoreProp_Deaths    /** Controls how many deaths the client has. */
 }
 
 /**
  * Set a client's velocity.
+ * 
  * @param client        The client index.
- * @param vecVelocity   Array to store vector in, or velocity to set on client.
- * @param retrieve      True to get client's velocity, false to set it.
+ * @param vecVelocity   Velocity to set on client.
  * @param stack         If modifying velocity, then true will stack new velocity onto the client's
  *                      current velocity, false will reset it.
  */
@@ -81,12 +81,10 @@ stock ToolsSetClientVelocity(client, const Float:vecVelocity[3], bool:stack = tr
 }
 
 /**
- * Set a client's velocity.
+ * Get a client's velocity.
+ *  
  * @param client        The client index.
- * @param vecVelocity   Array to store vector in, or velocity to set on client.
- * @param retrieve      True to get client's velocity, false to set it.
- * @param stack         If modifying velocity, then true will stack new velocity onto the client's
- *                      current velocity, false will reset it.
+ * @param vecVelocity   Array to store velocity vector in.
  */
 stock ToolsGetClientVelocity(client, Float:vecVelocity[3])
 {
@@ -99,6 +97,7 @@ stock ToolsGetClientVelocity(client, Float:vecVelocity[3])
 
 /**
  * Set a client's lagged movement value.
+ *  
  * @param client    The client index.
  * @param value     LMV value. (1.0 = default, 2.0 = double)
  */
@@ -110,6 +109,7 @@ stock ToolsSetClientLMV(client, Float:fLMV)
 
 /**
  * Get a client's lagged movement value.
+ *  
  * @param client    The client index.
  *  
  * @return          LMV value. (1.0 = default, 2.0 = double)
@@ -122,8 +122,9 @@ stock Float:ToolsGetClientLMV(client)
 
 /**
  * Set nightvision properties on a client.
+ *  
  * @param client    The client index.
- * @param prop      The prop to set: See ToolsNVGProps (top of file) 
+ * @param prop      The prop to set: See ToolsNVGProps (top of file)
  * @param value     New value of the property of nightvision.
  */
 stock ToolsSetClientNVG(client, ToolsNVGProps:prop, bool:value)
@@ -140,8 +141,10 @@ stock ToolsSetClientNVG(client, ToolsNVGProps:prop, bool:value)
 
 /**
  * Get nightvision properties on a client.
+ *  
  * @param client    The client index.
  * @param prop      The prop to get: See ToolsNVGProps (top of file)
+ * 
  * @return          The value of the property of nightvision on client.
  */
 stock bool:ToolsGetClientNVG(client, ToolsNVGProps:prop)
@@ -161,6 +164,7 @@ stock bool:ToolsGetClientNVG(client, ToolsNVGProps:prop)
 
 /**
  * Set a client's default field of vision.
+ *  
  * @param client    The client index.
  * @param FOV       The field of vision of the client.
  */
@@ -173,10 +177,8 @@ stock ToolsSetClientDefaultFOV(client, FOV)
  * Set a client's score or deaths.
  * 
  * @param client    The client index.
- * @param score     True to look at score, false to look at deaths.  
- * @param apply     True to set scores or death, false to get. 
- * @param value     The value of the client's score or deaths.
- * @return          The score or death count of the client, -1 if setting.
+ * @param prop      The prop to get: See ToolsScoreProps (top of file)
+ * @param value     New value of the property of their score.
  */
 stock ToolsSetClientScore(client, ToolsScoreProps:prop, value)
 {
@@ -196,10 +198,9 @@ stock ToolsSetClientScore(client, ToolsScoreProps:prop, value)
  * Get a client's score or deaths.
  * 
  * @param client    The client index.
- * @param score     True to look at score, false to look at deaths.  
- * @param apply     True to set scores or death, false to get. 
- * @param value     The value of the client's score or deaths.
- * @return          The score or death count of the client, -1 if setting.
+ * @param prop      The prop to get: See ToolsScoreProps (top of file)
+ * 
+ * @return          The value of the property of the client's score.
  */
 stock ToolsGetClientScore(client, ToolsScoreProps:prop)
 {
@@ -219,7 +220,7 @@ stock ToolsGetClientScore(client, ToolsScoreProps:prop)
 }
 
 /**
- * Set a client's alpha value.
+ * Set a client's (not entity) alpha value.
  * 
  * @param client    The client index.
  * @param alpha     The alpha value to set client's alpha to. (0-255)
@@ -239,8 +240,9 @@ stock ToolsSetClientAlpha(client, alpha)
 
 /**
  * Sets an entity's color. (This is the "get" version of SetEntityRenderColor)
- *
- * @param client	The client index.
+ * 
+ * @param entity	The entity index.
+ *  
  * @return          The alpha value of the client. (0-255)
  */
 stock ToolsGetEntityAlpha(entity)
