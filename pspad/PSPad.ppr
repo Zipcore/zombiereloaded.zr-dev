@@ -13,8 +13,8 @@ ProjectFilesOnly=0
 ZR
 	+Base
 		..\src\zombiereloaded.sp
-	+Plugin Includes
-		+Headers
+	-Plugin Includes
+		-Headers
 			..\src\zr\weapons\ammoheaders.h.inc
 			..\src\zr\weapons\ammomanager.h.inc
 			..\src\zr\playerclasses\classheaders.h.inc
@@ -36,6 +36,7 @@ ZR
 		-External API
 			..\src\zr\api\api.inc
 			..\src\zr\api\infect.api.inc
+			..\src\zr\api\log.api.inc
 		-Sound Effects
 			..\src\zr\soundeffects\ambientsounds.inc
 			..\src\zr\soundeffects\soundeffects.inc
@@ -106,6 +107,7 @@ ZR
 	-External API Includes
 		..\src\include\zombiereloaded.inc
 		..\src\include\zr\infect.zr.inc
+		..\src\include\zr\log.zr.inc
 	-Config Files
 		-Executable
 			..\cstrike\cfg\sourcemod\zombiereloaded\zombiereloaded.cfg
