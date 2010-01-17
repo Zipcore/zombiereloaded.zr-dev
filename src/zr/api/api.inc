@@ -41,6 +41,7 @@
  * http://wiki.alliedmods.net/Function_Calling_API_(SourceMod_Scripting) 
  */
 
+#include "zr/api/log.api"
 #include "zr/api/infect.api"
 
 /**
@@ -55,12 +56,10 @@ APIInit()
     
     
     // Forward event to sub-modules.
+    APILogInit();
     APIInfectInit();
     
-    
     // Needed natives/forwards
-    // LogEvent
-    // ZR_GetVersion (even a way to return the revision number as well)
 }
 
 /**

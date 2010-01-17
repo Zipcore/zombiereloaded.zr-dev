@@ -966,7 +966,7 @@ public InfectMenuClientsHandle(Handle:menu_infect_clients, MenuAction:action, cl
  * @param client    The client index.
  * @return          True if the client has been infected, false otherwise.
  */    
-bool:InfectIsClientInfected(client)
+stock bool:InfectIsClientInfected(client)
 {
     // If client is invalid, then stop.
     if (!ZRIsClientValid(client))
@@ -984,7 +984,7 @@ bool:InfectIsClientInfected(client)
  * @param client    The client index.
  * @return          True if the client is a human, false otherwise.
  */
-bool:InfectIsClientHuman(client)
+stock bool:InfectIsClientHuman(client)
 {
     // If client is invalid, then stop.
     if (!ZRIsClientValid(client))

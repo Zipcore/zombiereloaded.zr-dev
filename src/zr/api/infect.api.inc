@@ -57,6 +57,8 @@ APIInfectInit()
 /**
  * Native call function (ZR_IsClientInfected)
  * Returns true if the client is infected, false if not.
+ * 
+ * bool:InfectIsClientInfected(client)
  */
 public APIIsClientInfected(Handle:plugin, numParams)
 {
@@ -73,6 +75,8 @@ public APIIsClientInfected(Handle:plugin, numParams)
 /**
  * Native call function (ZR_IsClientHuman)
  * Returns true if the client is human, false if not.
+ * 
+ * bool:InfectIsClientHuman(client)
  */
 public APIIsClientHuman(Handle:plugin, numParams)
 {
@@ -93,7 +97,9 @@ public APIIsClientHuman(Handle:plugin, numParams)
  * @param attacker          The attacker who did the infect.
  * @param motherinfect      Indicates a mother zombie infect.
  * @param respawnoverride   Set to true to override respawn cvar.
- * @param respawn           Value to override with.  
+ * @param respawn           Value to override with.
+ * 
+ * InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respawnoverride = false, bool:respawn = false)
  */
 Action:APIOnClientInfectedPre(&client, &attacker, &bool:motherinfect, &bool:respawnoverride, &bool:respawn)
 {
@@ -120,7 +126,9 @@ Action:APIOnClientInfectedPre(&client, &attacker, &bool:motherinfect, &bool:resp
  * @param attacker          The attacker who did the infect.
  * @param motherinfect      Indicates a mother zombie infect.
  * @param respawnoverride   Set to true to override respawn cvar.
- * @param respawn           Value to override with.  
+ * @param respawn           Value to override with.
+ * 
+ * InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respawnoverride = false, bool:respawn = false)
  */
 APIOnClientInfected(client, attacker, bool:motherinfect, bool:respawnoverride, bool:respawn)
 {
@@ -144,6 +152,8 @@ APIOnClientInfected(client, attacker, bool:motherinfect, bool:respawnoverride, b
  * @param client            The client index.
  * @param respawn           True if the client was respawned, false if not.
  * @param protect           True if the client spawn protected, false if not.
+ * 
+ * InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
  */
 Action:APIOnClientHumanPre(&client, &bool:respawn, &bool:protect)
 {
@@ -166,7 +176,9 @@ Action:APIOnClientHumanPre(&client, &bool:respawn, &bool:protect)
  * 
  * @param client            The client index.
  * @param respawn           True if the client was respawned, false if not.
- * @param protect           True if the client spawn protected, false if not.  
+ * @param protect           True if the client spawn protected, false if not.
+ *  
+ * InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
  */
 APIOnClientHuman(client, bool:respawn, bool:protect)
 {
