@@ -31,8 +31,9 @@
 #endif
 #define _zr_included
 
- #include <zr/infect.zr>
-// #include <zr/*.zr>
+#include <zr/log.zr>
+#include <zr/infect.zr>
+// #include <zr/[module].zr>
 
 /**
  * Sample native description.
