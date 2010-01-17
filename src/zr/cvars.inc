@@ -84,10 +84,11 @@ enum CvarsList
     Handle:CVAR_DAMAGE_HITGROUPS,
     Handle:CVAR_DAMAGE_BLOCK_FF,
     Handle:CVAR_DAMAGE_BLOCK_BLAST,
-    Handle:CVAR_DAMAGE_SUICIDE_ZOMBIE,
-    Handle:CVAR_DAMAGE_SUICIDE_MZOMBIE,
-    Handle:CVAR_DAMAGE_SUICIDE_HUMAN,
-    Handle:CVAR_DAMAGE_SUICIDE_CMDS,
+    Handle:CVAR_SUICIDE_AFTER_INFECT,
+    Handle:CVAR_SUICIDE_ZOMBIE,
+    Handle:CVAR_SUICIDE_MZOMBIE,
+    Handle:CVAR_SUICIDE_HUMAN,
+    Handle:CVAR_SUICIDE_CMDS,
     Handle:CVAR_SAYHOOKS_QUIET,
     Handle:CVAR_SAYHOOKS_QUIET_FILTER,
     Handle:CVAR_SAYHOOKS_QUIET_FLAGS,
@@ -344,17 +345,18 @@ CvarsCreate()
     // ===========================
     
     // Hitgroup Damage
-    g_hCvarsList[CVAR_DAMAGE_HITGROUPS]                 =    CreateConVar("zr_damage_hitgroups",        "1",                            "Read hitgroup damage control from hitgroup config file, disabling this allows all zombie hitgroups to be shot.");
+    g_hCvarsList[CVAR_DAMAGE_HITGROUPS]                 =    CreateConVar("zr_damage_hitgroups",        "1",                                    "Read hitgroup damage control from hitgroup config file, disabling this allows all zombie hitgroups to be shot.");
     
     // Block Damage Types
-    g_hCvarsList[CVAR_DAMAGE_BLOCK_FF]                  =    CreateConVar("zr_damage_block_ff",         "1",                            "Block friendly fire.");
-    g_hCvarsList[CVAR_DAMAGE_BLOCK_BLAST]               =    CreateConVar("zr_damage_block_blast",      "1",                            "Block blast damage inflicted on self or teammates.");
+    g_hCvarsList[CVAR_DAMAGE_BLOCK_FF]                  =    CreateConVar("zr_damage_block_ff",         "1",                                    "Block friendly fire.");
+    g_hCvarsList[CVAR_DAMAGE_BLOCK_BLAST]               =    CreateConVar("zr_damage_block_blast",      "1",                                    "Block blast damage inflicted on self or teammates.");
     
     // Suicide Intercept
-    g_hCvarsList[CVAR_DAMAGE_SUICIDE_ZOMBIE]            =    CreateConVar("zr_damage_suicide_zombie",   "0",                                    "Intercept suicide commands attempted by zombies.");
-    g_hCvarsList[CVAR_DAMAGE_SUICIDE_MZOMBIE]           =    CreateConVar("zr_damage_suicide_mzombie",  "1",                                    "Intercept suicide commands attempted by mother zombies.");
-    g_hCvarsList[CVAR_DAMAGE_SUICIDE_HUMAN]             =    CreateConVar("zr_damage_suicide_human",    "0",                                    "Intercept suicide commands attempted by humans.");
-    g_hCvarsList[CVAR_DAMAGE_SUICIDE_CMDS]              =    CreateConVar("zr_damage_suicide_cmds",     "kill, spectate, jointeam, joinclass",  "List of client commands to intercept as suicide attempts. [Delimiter: \", \"]");
+    g_hCvarsList[CVAR_SUICIDE_AFTER_INFECT]             =    CreateConVar("zr_suicide_after_infect",    "1",                                   "Intercept suicide commands only after the first zombie has spawned.");
+    g_hCvarsList[CVAR_SUICIDE_ZOMBIE]                   =    CreateConVar("zr_suicide_zombie",          "0",                                   "Intercept suicide commands attempted by zombies.");
+    g_hCvarsList[CVAR_SUICIDE_MZOMBIE]                  =    CreateConVar("zr_suicide_mzombie",         "1",                                   "Intercept suicide commands attempted by mother zombies.");
+    g_hCvarsList[CVAR_SUICIDE_HUMAN]                    =    CreateConVar("zr_suicide_human",           "0",                                   "Intercept suicide commands attempted by humans.");
+    g_hCvarsList[CVAR_SUICIDE_CMDS]                     =    CreateConVar("zr_suicide_cmds",            "kill, spectate, jointeam, joinclass", "List of client commands to intercept as suicide attempts. [Delimiter: \", \"]");
     
     
     // ===========================
