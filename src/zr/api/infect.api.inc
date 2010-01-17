@@ -65,9 +65,7 @@ public APIIsClientInfected(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    new bool:valid = APIValidateClientIndex(client, true);
-    if (!valid)
-        return false;
+    APIValidateClientIndex(client, true);
     
     return InfectIsClientInfected(client);
 }
@@ -83,9 +81,7 @@ public APIIsClientHuman(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    new bool:valid = APIValidateClientIndex(client, true);
-    if (!valid)
-        return false;
+    APIValidateClientIndex(client, true);
     
     return InfectIsClientHuman(client);
 }

@@ -38,7 +38,7 @@ APILogInit()
 
 /**
  * Native call function (ZR_LogEvent)
- * Returns true if the client is infected, false if not.
+ * Print a formatted message to logs depending on log settings.
  * 
  * LogEvent(bool:isConsole = false, LogTypes:logType = LogType_Normal, eventType = LOG_CORE_EVENTS, LogModules:module, const String:description[], const String:text[], any:...)
  */
