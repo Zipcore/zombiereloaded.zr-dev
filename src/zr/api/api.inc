@@ -41,7 +41,6 @@
  * http://wiki.alliedmods.net/Function_Calling_API_(SourceMod_Scripting) 
  */
 
-#include "zr/api/log.api"
 #include "zr/api/tools.api"
 #include "zr/api/infect.api"
 #include "zr/api/respawn.api"
@@ -58,7 +57,6 @@ APIInit()
     
     
     // Forward event to sub-modules.
-    APILogInit();
     APIToolsInit();
     APIInfectInit();
     APIRespawnInit();
