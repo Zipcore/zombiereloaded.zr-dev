@@ -44,6 +44,7 @@
 #include "zr/api/log.api"
 #include "zr/api/tools.api"
 #include "zr/api/infect.api"
+#include "zr/api/respawn.api"
 
 /**
  * Initializes all main natives and forwards.
@@ -60,8 +61,11 @@ APIInit()
     APILogInit();
     APIToolsInit();
     APIInfectInit();
+    APIRespawnInit();
     
     // Needed natives/forwards
+    // forward ZR_OnClientDeath(client, bool:zombie) (because Player_Death is fired on infect)
+    
 }
 
 /**

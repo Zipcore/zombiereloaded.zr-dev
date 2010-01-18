@@ -41,7 +41,7 @@ new Handle:g_hAPIFwdOnClientHuman = INVALID_HANDLE;
  */
 APIInfectInit()
 {
-    // Infect module natives (infect.zr.inc)
+    // Infect module natives/forwards (infect.zr.inc)
     
     // Natives
     CreateNative("ZR_IsClientInfected", APIIsClientInfected);
