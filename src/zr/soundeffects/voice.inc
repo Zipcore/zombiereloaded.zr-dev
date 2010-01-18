@@ -86,8 +86,7 @@ public VoiceCvarsHookVoice(Handle:cvar, const String:oldvalue[], const String:ne
 VoiceOnRoundEnd()
 {
     // If voice module is disabled or sv_alltalk is enabled, then stop.
-    new bool:voice = GetConVarBool(g_hCvarsList[CVAR_VOICE]);
-    if (!voice || VOICE_SV_ALLTALK)
+    if (!VOICE_ZR_VOICE || VOICE_SV_ALLTALK)
     {
         return;
     }
@@ -111,8 +110,7 @@ VoiceOnRoundEnd()
 VoiceOnClientSpawn(client)
 {
     // If voice module is disabled or sv_alltalk is enabled, then stop.
-    new bool:voice = GetConVarBool(g_hCvarsList[CVAR_VOICE]);
-    if (!voice || VOICE_SV_ALLTALK)
+    if (!VOICE_ZR_VOICE || VOICE_SV_ALLTALK)
     {
         return;
     }
@@ -129,8 +127,7 @@ VoiceOnClientSpawn(client)
 VoiceOnClientInfected(client)
 {
     // If voice module is disabled or sv_alltalk is enabled, then stop.
-    new bool:voice = GetConVarBool(g_hCvarsList[CVAR_VOICE]);
-    if (!voice || VOICE_SV_ALLTALK)
+    if (!VOICE_ZR_VOICE || VOICE_SV_ALLTALK)
     {
         return;
     }
@@ -147,8 +144,7 @@ VoiceOnClientInfected(client)
 VoiceOnClientHuman(client)
 {
     // If voice module is disabled or sv_alltalk is enabled, then stop.
-    new bool:voice = GetConVarBool(g_hCvarsList[CVAR_VOICE]);
-    if (!voice || VOICE_SV_ALLTALK)
+    if (!VOICE_ZR_VOICE || VOICE_SV_ALLTALK)
     {
         return;
     }
@@ -301,7 +297,8 @@ stock VoiceAllTalk()
  */
 stock VoiceReset()
 {
-    new bool:voice = GetConVarBool(g_hCvarsList[CVAR_VOICE]);
+    // Cache it here, so we don't retrieve the same value several times.
+    new bool:voice = VOICE_ZR_VOICE;
     
     // x = Client index.
     for (new x = 1; x <= MaxClients; x++)
