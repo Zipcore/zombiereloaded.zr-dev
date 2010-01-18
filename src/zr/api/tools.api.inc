@@ -194,7 +194,7 @@ public APISetClientScore(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, true);
+    APIValidateClientIndex(client, false);
     
     new ToolsScoreProps:prop = ToolsScoreProps:GetNativeCell(2);
     new bool:value = bool:GetNativeCell(3);
@@ -214,7 +214,7 @@ public APIGetClientScore(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, true);
+    APIValidateClientIndex(client, false);
     
     new ToolsScoreProps:prop = ToolsScoreProps:GetNativeCell(2);
     

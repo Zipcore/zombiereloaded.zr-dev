@@ -47,7 +47,7 @@ native bool:ZR_IsClientHuman(client);
 
 /**
  * Called when a client is about to become a zombie.
- * Here you can modify any variable or stop the infection entirely. 
+ * Here you can modify any variable or stop the infection entirely.
  * 
  * @param client            The client index.
  * @param attacker          The the infecter. (-1 if there is no infecter)
@@ -72,7 +72,7 @@ forward ZR_OnClientInfected(client, attacker, bool:motherinfect, bool:respawnove
 
 /**
  * Called when a client is about to become a human. (Through either zr_human or admin menu)
- * Here you can modify any variable or stop the action entirely. 
+ * Here you can modify any variable or stop the action entirely.
  * 
  * @param client            The client index.
  * @param respawn           True if the client was respawned, false if not.

@@ -34,6 +34,7 @@
 #include <zr/log.zr>
 #include <zr/tools.zr>
 #include <zr/infect.zr>
+#include <zr/respawn.zr>
 // #include <zr/[module].zr>
 
 /**
