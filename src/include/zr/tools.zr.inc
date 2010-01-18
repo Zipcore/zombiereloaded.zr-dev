@@ -26,6 +26,15 @@
  */
 
 /**
+ * @section m_takedamage datamap property values.
+ */
+#define TOOLS_TAKEDAMAGE_ENABLE 2   /** Allows entity to take damage. */
+#define TOOLS_TAKEDAMAGE_DISABLE 0  /** Blocks all damage done to entity. */
+/**
+ * @endsection
+ */
+
+/**
  * NVG properties on a client.
  */
 enum ToolsNVGProps
@@ -142,3 +151,19 @@ native ZR_SetClientAlpha(client, alpha);
  * @return          The alpha value of the client. (0-255)
  */
 native ZR_GetEntityAlpha(entity);
+
+/**
+ * Add a flag to an entity.
+ * 
+ * @param entity    The entity index.
+ * @param flag      The flag to add. (See entity_prop_stocks.inc for flags)
+ */
+native ZR_AddEntityFlag(entity, flag);
+
+/**
+ * Remove a flag from an entity.
+ * 
+ * @param entity    The entity index.
+ * @param flag      The flag to remove. (See entity_prop_stocks.inc for flags)
+ */
+native ZR_RemoveEntityFlag(entity, flag);

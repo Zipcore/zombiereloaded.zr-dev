@@ -26,24 +26,6 @@
  */
 
 /**
- * NVG properties on a client.
- */
-enum ToolsNVGProps
-{
-    NVGProp_Owner,  /** Controls whether the client has nightvision or not. */
-    NVGProp_Enabled /** Controls whether the client's nightvision is enabled. (must own nightvision to have effect) */
-}
-
-/**
- * Score properties on a client.
- */
-enum ToolsScoreProps
-{
-    ScoreProp_Kills,    /** Controls how many kills the client has. (score) */
-    ScoreProp_Deaths    /** Controls how many deaths the client has. */
-}
-
-/**
  * Set a client's velocity.
  * 
  * @param client        The client index.
@@ -267,4 +249,42 @@ stock ToolsGetEntityAlpha(entity)
 	new offset = GetEntSendPropOffs(entity, prop);
 	
 	return GetEntData(entity, offset + 3, 1);
+}
+
+/**
+ * Add a flag to an entity.
+ * 
+ * @param entity    The entity index.
+ * @param flag      The flag to add. (See entity_prop_stocks.inc for flags)
+ */
+stock ToolsAddEntityFlag(entity, flag)
+{
+    new flags = GetEntityFlags(entity);
+    
+    // Add the flag if it's not already there.
+    if (!(flags & flag))
+    {
+        flags |= flag;
+    }
+    
+    SetEntProp(entity, Prop_Data, "m_fFlags", flags);
+}
+
+/**
+ * Remove a flag from an entity.
+ * 
+ * @param entity    The entity index.
+ * @param flag      The flag to remove. (See entity_prop_stocks.inc for flags)
+ */
+stock ToolsRemoveEntityFlag(entity, flag)
+{
+    new flags = GetEntityFlags(entity);
+    
+    // Remove the flag if it's there.
+    if (flags & flag)
+    {
+        flags &= ~flag;
+    }
+    
+    SetEntProp(entity, Prop_Data, "m_fFlags", flags);
 }

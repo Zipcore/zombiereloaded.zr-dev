@@ -96,13 +96,14 @@ enum CvarsList
     Handle:CVAR_ROUNDEND_OVERLAY,
     Handle:CVAR_ROUNDEND_OVERLAY_ZOMBIE,
     Handle:CVAR_ROUNDEND_OVERLAY_HUMAN,
+    Handle:CVAR_INFECT_MZOMBIE_RATIO,
+    Handle:CVAR_INFECT_MZOMBIE_RESPAWN,
+    Handle:CVAR_INFECT_MZOMBIE_FREEZE,
     Handle:CVAR_INFECT_SPAWNTIME_MIN,
     Handle:CVAR_INFECT_SPAWNTIME_MAX,
     Handle:CVAR_INFECT_CONSECUTIVE_BLOCK,
     Handle:CVAR_INFECT_FLASHLIGHT_BLOCK,
     Handle:CVAR_INFECT_WEAPONS_DROP,
-    Handle:CVAR_INFECT_MZOMBIE_RATIO,
-    Handle:CVAR_INFECT_MZOMBIE_RESPAWN,
     Handle:CVAR_INFECT_EXPLOSION,
     Handle:CVAR_INFECT_FIREBALL,
     Handle:CVAR_INFECT_SMOKE,
@@ -321,6 +322,7 @@ CvarsCreate()
     // General
     g_hCvarsList[CVAR_INFECT_MZOMBIE_RATIO]             =    CreateConVar("zr_infect_mzombie_ratio",        "5",                                "Number of mother zombies to infect (when infect timer is up) in proportion to number of humans on the server.");
     g_hCvarsList[CVAR_INFECT_MZOMBIE_RESPAWN]           =    CreateConVar("zr_infect_mzombie_respawn",      "0",                                "Teleport mother zombies back to spawn on infect.");
+    g_hCvarsList[CVAR_INFECT_MZOMBIE_FREEZE]            =    CreateConVar("zr_infect_mzombie_freeze",       "0",                                "Freeze mother zombies upon infection for this long ['0' = Disabled]");
     g_hCvarsList[CVAR_INFECT_SPAWNTIME_MIN]             =    CreateConVar("zr_infect_spawntime_min",        "30.0",                             "Minimum time from the start of the round until picking the mother zombie(s).");
     g_hCvarsList[CVAR_INFECT_SPAWNTIME_MAX]             =    CreateConVar("zr_infect_spawntime_max",        "50.0",                             "Maximum time from the start of the round until picking the mother zombie(s).");
     g_hCvarsList[CVAR_INFECT_CONSECUTIVE_BLOCK]         =    CreateConVar("zr_infect_consecutive_block",    "1",                                "Prevent a player from being chosen as mother zombie two rounds in a row.");

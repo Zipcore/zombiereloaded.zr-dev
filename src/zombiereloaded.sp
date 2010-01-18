@@ -56,6 +56,7 @@
 
 // Header includes.
 #include "zr/log.h"
+#include "zr/tools.h"
 #include "zr/models.h"
 #include "zr/playerclasses/classheaders.h"
 #include "zr/weapons/ammoheaders.h"

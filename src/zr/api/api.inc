@@ -97,6 +97,34 @@ stock APIValidateClientIndex(client, bool:alive = false)
 }
 
 /**
+ * Validates an entity index and when it fails, an error is thrown.
+ * 
+ * @param entity    The entity index to validate.
+ * 
+ * @error           Throws an error when the client isn't valid.
+ */
+stock APIValidateEntityIndex(entity)
+{
+    // If the entity index is out of range, then throw an error.
+    if (entity < 1)
+    {
+        ThrowNativeError(SP_ERROR_NATIVE, "Invalid entity index. (%d)", entity);
+    }
+    
+    // If this isn't a valid edict, then throw an error.
+    if (!IsValidEdict(entity))
+    {
+        ThrowNativeError(SP_ERROR_NATIVE, "Index %d is not a valid edict.", entity);
+    }
+    
+    // If this isn't a valid entity, then throw an error.
+    if (!IsValidEntity(entity))
+    {
+        ThrowNativeError(SP_ERROR_NATIVE, "Index %d is not a valid entity.", entity);
+    }
+}
+
+/**
  * Native call function (ZR_GetVersionInfo)
  * Returns the current plugin version and optional revision info.
  */
