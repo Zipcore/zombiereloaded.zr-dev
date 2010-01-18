@@ -31,7 +31,6 @@
 #endif
 #define _zr_included
 
-#include <zr/log.zr>
 #include <zr/tools.zr>
 #include <zr/infect.zr>
 #include <zr/respawn.zr>
