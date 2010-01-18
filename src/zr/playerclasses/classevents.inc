@@ -122,9 +122,9 @@ ClassOnClientSpawn(client)
     decl String:classname[64];
     new filter[ClassFilter];
     
-    // Check if the player is dead. Spawning into the game is also a event in
+    // Check if the player is on a team. Spawning into the game is also a event in
     // the connection process.
-    if (!IsPlayerAlive(client))
+    if (!ZRIsClientOnTeam(client))
     {
         return;
     }
