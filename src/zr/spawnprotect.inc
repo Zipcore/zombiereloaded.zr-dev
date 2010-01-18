@@ -53,8 +53,8 @@ SpawnProtectClientInit(client)
  */   
 SpawnProtectOnClientSpawnPost(client)
 {
-    // If client is dead, then they are joining the server, not spawning.
-    if (!IsPlayerAlive(client))
+    // If client isn't on a team, then stop.
+    if (!ZRIsClientOnTeam(client))
     {
         return;
     }

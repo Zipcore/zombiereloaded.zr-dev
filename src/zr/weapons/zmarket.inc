@@ -179,8 +179,8 @@ ZMarketOnClientSpawnPost(client)
         CookiesSetClientCookieBool(client, g_hZMarketAutoRebuyCookie, false);
     }
     
-    // If client hasn't spawned into the game yet, then stop.
-    if (!IsPlayerAlive(client))
+    // If client isn't on a team, then stop.
+    if (!ZRIsClientOnTeam(client))
     {
         return;
     }

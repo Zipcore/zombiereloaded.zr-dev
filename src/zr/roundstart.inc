@@ -37,8 +37,8 @@
  */
 RoundStartOnClientSpawn(client)
 {
-    // If client hasn't spawned yet, then stop.
-    if (!IsPlayerAlive(client))
+    // If client isn't on a team, then stop.
+    if (!ZRIsClientOnTeam(client))
     {
         return;
     }
