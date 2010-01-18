@@ -44,6 +44,8 @@ APIToolsInit()
     CreateNative("ZR_GetClientScore", APIGetClientScore);
     CreateNative("ZR_SetClientAlpha", APISetClientAlpha);
     CreateNative("ZR_GetEntityAlpha", APIGetEntityAlpha);
+    CreateNative("ZR_AddEntityFlag", APIAddEntityFlag);
+    CreateNative("ZR_RemoveEntityFlag", APIRemoveEntityFlag);
 }
 
 /**
@@ -256,4 +258,42 @@ public APIGetEntityAlpha(Handle:plugin, numParams)
     
     // Get the client's alpha.
     return ToolsGetEntityAlpha(client);
+}
+
+/**
+ * Native call function (ZR_AddEntityFlag)
+ * Add a flag to an entity.
+ * 
+ * ToolsAddEntityFlag(entity, flag)
+ */
+public APIAddEntityFlag(Handle:plugin, numParams)
+{
+    new entity = GetNativeCell(1);
+    
+    // Validate the client index.
+    APIValidateEntityIndex(entity);
+    
+    new flag = GetNativeCell(2);
+    
+    // Get the client's alpha.
+    ToolsAddEntityFlag(entity, flag);
+}
+
+/**
+ * Native call function (ZR_RemoveEntityFlag)
+ * Remove a flag from an entity.
+ * 
+ * ToolsRemoveEntityFlag(entity, flag)
+ */
+public APIRemoveEntityFlag(Handle:plugin, numParams)
+{
+    new entity = GetNativeCell(1);
+    
+    // Validate the client index.
+    APIValidateEntityIndex(entity);
+    
+    new flag = GetNativeCell(2);
+    
+    // Get the client's alpha.
+    ToolsRemoveEntityFlag(entity, flag);
 }

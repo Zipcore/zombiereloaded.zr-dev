@@ -51,6 +51,11 @@
 new Handle:tInfect = INVALID_HANDLE;
 
 /**
+ * Global array to store infect freeze timer handles per client.
+ */
+new Handle:tInfectFreeze[MAXPLAYERS + 1];
+
+/**
  * Array for flagging client as zombie.
  */
 new bool:bZombie[MAXPLAYERS + 1];
@@ -119,6 +124,9 @@ InfectClientInit(client)
     // Reset infect immunity flags.
     bInfectImmune[client][INFECT_TYPE_MOTHER] = false;
     bInfectImmune[client][INFECT_TYPE_NORMAL] = false;
+    
+    // Reset infect freeze timer.
+    tInfectFreeze[client] = INVALID_HANDLE;
 }
 
 /**
@@ -128,7 +136,14 @@ InfectClientInit(client)
  */
 InfectOnClientDisconnect(client)
 {
-    // If client is still connecting, then stop.
+    // Kill infect freeze timer.
+    if (tInfectFreeze[client] != INVALID_HANDLE)
+    {
+        KillTimer(tInfectFreeze[client]);
+        tInfectFreeze[client] = INVALID_HANDLE;
+    }
+    
+    // If the client is already out of the game, then stop.
     if (!IsClientInGame(client))
     {
         return;
@@ -243,6 +258,13 @@ InfectOnClientTeam(client, team)
  */
 InfectOnClientSpawn(client)
 {
+    // Kill infect freeze timer.
+    if (tInfectFreeze[client] != INVALID_HANDLE)
+    {
+        KillTimer(tInfectFreeze[client]);
+        tInfectFreeze[client] = INVALID_HANDLE;
+    }
+    
     // Disable zombie flag on client.
     bZombie[client] = false;
     
@@ -265,6 +287,13 @@ InfectOnClientSpawn(client)
  */
 InfectOnClientDeath(client, attacker)
 {
+    // Kill infect freeze timer.
+    if (tInfectFreeze[client] != INVALID_HANDLE)
+    {
+        KillTimer(tInfectFreeze[client]);
+        tInfectFreeze[client] = INVALID_HANDLE;
+    }
+    
     // If attacker isn't valid, then stop.
     if (!ZRIsClientValid(attacker))
     {
@@ -663,6 +692,9 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     // TODO: A solution to stop confusing bots? Respawn and teleport?
     CS_SwitchTeam(client, CS_TEAM_T);
     
+    
+    // Respawn/Freeze shit.
+    
     // If respawn is enabled, then teleport mother zombie back to spawnpoint.
     if (motherinfect)
     {
@@ -670,6 +702,13 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
         if(zombierespawn)
         {
             ZTeleTeleportClient(client);
+        }
+        
+        // If the infect freeze cvar is above 0, then freeze the client.
+        new Float:infect_freeze = GetConVarFloat(g_hCvarsList[CVAR_INFECT_MZOMBIE_FREEZE]);
+        if (infect_freeze > 0.0)
+        {
+            InfectFreezeClient(client, infect_freeze);
         }
     }
     // Check override.
@@ -761,6 +800,12 @@ InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
         SpawnProtectStart(client);
     }
     
+    // Manually trigger the end of the freeze timer if it's currently running.
+    if (tInfectFreeze[client] != INVALID_HANDLE)
+    {
+        TriggerTimer(tInfectFreeze[client]);
+    }
+    
     // Forward event to modules.
     //SEffectsOnClientHuman(client);
     APIOnClientHuman(client, respawn, protect);
@@ -841,6 +886,43 @@ InfectFireEffects(client)
         // Shake client's screen.
         VEffectsShakeClientScreen(client, shakeamp, shakefrequency, shakeduration);
     }
+}
+
+/**
+ * Immobilize and stop damage on this client.
+ * 
+ * @param client    The client index.
+ * @param time      How long until these effects wear off.
+ */
+InfectFreezeClient(client, Float:time)
+{
+    // Freeze and block damage.
+    ToolsAddEntityFlag(client, FL_FROZEN);
+    SetEntProp(client, Prop_Data, "m_takedamage", TOOLS_TAKEDAMAGE_DISABLE);
+    
+    // ToolsAddEntityFlag(client, FL_GODMODE); <- Doesn't work.
+    
+    // Start the timer to unfreeze/unblock damage.
+    tInfectFreeze[client] = CreateTimer(time, InfectFreezeTimer, client, TIMER_FLAG_NO_MAPCHANGE);
+}
+
+/**
+ * Timer callback.
+ * Unfreezes and unblocks damage on the mother zombie.
+ * 
+ * @param timer     The timer handle.
+ * @param client    The client index.
+*/
+public Action:InfectFreezeTimer(Handle:timer, any:client)
+{
+    // Unfreeze and unblock damage.
+    ToolsRemoveEntityFlag(client, FL_FROZEN);
+    SetEntProp(client, Prop_Data, "m_takedamage", TOOLS_TAKEDAMAGE_ENABLE);
+    
+    // ToolsRemoveEntityFlag(client, FL_GODMODE); <- Doesn't work.
+    
+    // Reset the timer handle.
+    tInfectFreeze[client] = INVALID_HANDLE;
 }
 
 /**
