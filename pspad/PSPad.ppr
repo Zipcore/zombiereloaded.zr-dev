@@ -37,6 +37,7 @@ ZR
 			..\src\zr\api\api.inc
 			..\src\zr\api\infect.api.inc
 			..\src\zr\api\log.api.inc
+			..\src\zr\api\respawn.api.inc
 			..\src\zr\api\tools.api.inc
 		-Sound Effects
 			..\src\zr\soundeffects\ambientsounds.inc
@@ -109,6 +110,7 @@ ZR
 		..\src\include\zombiereloaded.inc
 		..\src\include\zr\infect.zr.inc
 		..\src\include\zr\log.zr.inc
+		..\src\include\zr\respawn.zr.inc
 		..\src\include\zr\tools.zr.inc
 	-Config Files
 		-Executable
