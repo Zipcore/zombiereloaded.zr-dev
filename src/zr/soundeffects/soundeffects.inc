@@ -35,9 +35,18 @@
  */
 #define SOUND_AMBIENT_CHANNEL 8
 
-//#include "zr/soundeffects/voice"
+#include "zr/soundeffects/voice"
 #include "zr/soundeffects/ambientsounds"
 #include "zr/soundeffects/zombiesounds"
+
+/**
+ * Plugin has just finished creating/hooking cvars.
+ */
+SEffectsOnCvarInit()
+{
+    // Hook zr_veffects_* cvars.
+    VoiceCvarsHook();
+}
 
 /**
  * Load sound effects data.
@@ -75,7 +84,6 @@ SEffectsClientInit(client)
 SEffectsOnRoundStart()
 {
     // Forward event to sub-modules.
-    //VoiceOnRoundStart();
     AmbientSoundsOnRoundStart();
 }
 
@@ -85,7 +93,7 @@ SEffectsOnRoundStart()
 SEffectsOnRoundEnd()
 {
     // Forward event to sub-modules.
-    //VoiceOnRoundEnd();
+    VoiceOnRoundEnd();
     AmbientSoundsOnRoundEnd();
 }
 
@@ -97,7 +105,7 @@ SEffectsOnRoundEnd()
 SEffectsOnClientSpawn(client)
 {
     // Forward event to sub-modules.
-    //VoiceOnClientSpawn(client);
+    VoiceOnClientSpawn(client);
     ZombieSoundsOnClientSpawn(client);
 }
 
@@ -142,7 +150,7 @@ SEffectsOnClientHurt(client)
 SEffectsOnClientInfected(client)
 {
     // Forward event to sub-modules.
-    //VoiceOnClientInfected(client);
+    VoiceOnClientInfected(client);
     ZombieSoundsOnClientInfected(client);
 }
 
@@ -151,11 +159,11 @@ SEffectsOnClientInfected(client)
  * 
  * @param client    The client index.
  */
-//SEffectsOnClientHuman(client)
-//{
+SEffectsOnClientHuman(client)
+{
     // Forward event to sub-modules.
-    //VoiceOnClientHuman(client);
-//}
+    VoiceOnClientHuman(client);
+}
 
 /**
  * Emits an ambient sound
