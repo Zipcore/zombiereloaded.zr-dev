@@ -267,8 +267,12 @@ public OnClientDisconnect(client)
     WeaponsOnClientDisconnect(client);
     InfectOnClientDisconnect(client);
     DamageOnClientDisconnect(client);
+    SEffectsOnClientDisconnect(client);
     AntiStickOnClientDisconnect(client);
+    SpawnProtectOnClientDisconnect(client);
+    RespawnOnClientDisconnect(client);
     ZSpawnOnClientDisconnect(client);
+    ZHPOnClientDisconnect(client);
     VolOnPlayerDisconnect(client);
 }
 

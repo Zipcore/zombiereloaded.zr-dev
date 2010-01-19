@@ -58,11 +58,11 @@
 /**
  * Zombie sound types
  */
-enum ZombieSounds
+enum ZombieSoundsType
 {
-    Moan, /** Zombie's moan periodically */
-    Groan, /** When zombie is hurt */
-    Death, /** When a zombie is killed */
+    Type_Moan, /** Zombie's moan periodically */
+    Type_Groan, /** When zombie is hurt */
+    Type_Death, /** When a zombie is killed */
 }
  
 /**
@@ -78,7 +78,18 @@ new Handle:tSEffectsMoan[MAXPLAYERS + 1];
 ZombieSoundsClientInit(client)
 {
     // Reset timer handle.
-    tSEffectsMoan[client] = INVALID_HANDLE;
+    ZREndTimer(tSEffectsMoan[client], false);
+}
+
+/**
+ * Client is leaving the server.
+ * 
+ * @param client    The client index.
+ */
+ZombieSoundsOnClientDisconnect(client)
+{
+    // Reset timer handle.
+    ZREndTimer(tSEffectsMoan[client], true);
 }
 
 /**
@@ -89,49 +100,7 @@ ZombieSoundsClientInit(client)
 ZombieSoundsOnClientSpawn(client)
 {
     // If timer is running, kill it.
-    if (tSEffectsMoan[client] != INVALID_HANDLE)
-    {
-        KillTimer(tSEffectsMoan[client]);
-    }
-    
-    // Reset timer handle.
-    tSEffectsMoan[client] = INVALID_HANDLE;
-}
-
-/**
- * Client has been killed.
- * 
- * @param client    The client index.
- */
-ZombieSoundsOnClientDeath(client)
-{
-    // If timer is running, kill it.
-    if (tSEffectsMoan[client] != INVALID_HANDLE)
-    {
-        KillTimer(tSEffectsMoan[client]);
-    }
-    
-    // Reset timer handle.
-    tSEffectsMoan[client] = INVALID_HANDLE;
-    
-    // If player isn't a zombie, then stop.
-    if (!InfectIsClientInfected(client))
-    {
-        return;
-    }
-    
-    // If death sound cvar is disabled, then stop.
-    new bool:death = GetConVarBool(g_hCvarsList[CVAR_SEFFECTS_DEATH]);
-    if (!death)
-    {
-        return;
-    }
-    
-    // Get random death sound.
-    decl String:sound[SOUND_MAX_PATH];
-    ZombieSoundsGetRandomSound(sound, Death);
-    
-    SEffectsEmitSoundFromClient(client, sound);
+    ZREndTimer(tSEffectsMoan[client], true);
 }
 
 /**
@@ -159,10 +128,40 @@ ZombieSoundsOnClientHurt(client)
     {
         // Get random groan sound.
         decl String:sound[SOUND_MAX_PATH];
-        ZombieSoundsGetRandomSound(sound, Groan);
+        ZombieSoundsGetRandomSound(sound, Type_Groan);
         
         SEffectsEmitSoundFromClient(client, sound);
     }
+}
+
+/**
+ * Client has been killed.
+ * 
+ * @param client    The client index.
+ */
+ZombieSoundsOnClientDeath(client)
+{
+    // If timer is running, kill it.
+    ZREndTimer(tSEffectsMoan[client], true);
+    
+    // If player isn't a zombie, then stop.
+    if (!InfectIsClientInfected(client))
+    {
+        return;
+    }
+    
+    // If death sound cvar is disabled, then stop.
+    new bool:death = GetConVarBool(g_hCvarsList[CVAR_SEFFECTS_DEATH]);
+    if (!death)
+    {
+        return;
+    }
+    
+    // Get random death sound.
+    decl String:sound[SOUND_MAX_PATH];
+    ZombieSoundsGetRandomSound(sound, Type_Death);
+    
+    SEffectsEmitSoundFromClient(client, sound);
 }
 
 /**
@@ -180,10 +179,7 @@ ZombieSoundsOnClientInfected(client)
     }
     
     // If timer is currently running, kill it.
-    if (tSEffectsMoan[client] != INVALID_HANDLE)
-    {
-        KillTimer(tSEffectsMoan[client]);
-    }
+    ZREndTimer(tSEffectsMoan[client], true);
     
     // Start repeating timer.
     tSEffectsMoan[client] = CreateTimer(interval, ZombieSoundsMoanTimer, client, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
@@ -193,10 +189,10 @@ ZombieSoundsOnClientInfected(client)
  * Gets a random zombie sound from hl2 folder.
  *
  * @param sound     The randomly picked sound.
- * @param soundtype The type of sound to get. (See enum ZombieSounds)
+ * @param soundtype The type of sound to get. (See enum ZombieSoundsType)
  * @return          True if sound was successfully picked, false otherwise. 
  */    
-bool:ZombieSoundsGetRandomSound(String:sound[], ZombieSounds:soundtype)
+bool:ZombieSoundsGetRandomSound(String:sound[], ZombieSoundsType:soundtype)
 {
     new soundmin;
     new soundmax;
@@ -205,7 +201,7 @@ bool:ZombieSoundsGetRandomSound(String:sound[], ZombieSounds:soundtype)
     switch(soundtype)
     {
         // Find moan sound.
-        case Moan:
+        case Type_Moan:
         {
             // Copy min and max
             soundmin = SOUND_MOAN_MIN;
@@ -215,7 +211,7 @@ bool:ZombieSoundsGetRandomSound(String:sound[], ZombieSounds:soundtype)
             strcopy(soundpath, sizeof(soundpath), SOUND_MOAN_PATH);
         }
         // Find groan sound. (zombie shot)
-        case Groan:
+        case Type_Groan:
         {
             // Copy min and max
             soundmin = SOUND_GROAN_MIN;
@@ -225,7 +221,7 @@ bool:ZombieSoundsGetRandomSound(String:sound[], ZombieSounds:soundtype)
             strcopy(soundpath, sizeof(soundpath), SOUND_GROAN_PATH);
         }
         // Find death sound.
-        case Death:
+        case Type_Death:
         {
             // Copy min and max
             soundmin = SOUND_DEATH_MIN;
@@ -263,16 +259,14 @@ public Action:ZombieSoundsMoanTimer(Handle:timer, any:client)
     // If client isn't in-game or client is no longer a zombie, then stop.
     if (!IsClientInGame(client) || !InfectIsClientInfected(client))
     {
-        // Reset timer handle.
-        tSEffectsMoan[client] = INVALID_HANDLE;
-        
-        // Stop timer.
+        // Reset timer handle, and stop timer.
+        ZREndTimer(tSEffectsMoan[client], false);
         return Plugin_Stop;
     }
     
     // Get random moan sound.
     decl String:sound[SOUND_MAX_PATH];
-    ZombieSoundsGetRandomSound(sound, Moan);
+    ZombieSoundsGetRandomSound(sound, Type_Moan);
     
     // Emit sound from client.
     SEffectsEmitSoundFromClient(client, sound, SNDLEVEL_SCREAMING);

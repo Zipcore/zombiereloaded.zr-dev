@@ -83,7 +83,18 @@ ZHPClientInit(client)
     }
     
     // Reset timer handle.
-    tZHP[client] = INVALID_HANDLE;
+    ZREndTimer(tZHP[client], false);
+}
+
+/**
+ * Client is leaving the server.
+ * 
+ * @param client    The client index.
+ */
+ZHPOnClientDisconnect(client)
+{
+    // Reset timer handle.
+    ZREndTimer(tZHP[client], true);
 }
 
 /**
@@ -94,13 +105,7 @@ ZHPClientInit(client)
 ZHPOnClientSpawn(client)
 {
     // If timer is running, kill it.
-    if (tZHP[client] != INVALID_HANDLE)
-    {
-        KillTimer(tZHP[client]);
-    }
-    
-    // Reset timer handle.
-    tZHP[client] = INVALID_HANDLE;
+    ZREndTimer(tZHP[client], true);
 }
 
 /**
@@ -111,13 +116,7 @@ ZHPOnClientSpawn(client)
 ZHPOnClientDeath(client)
 {
     // If timer is running, kill it.
-    if (tZHP[client] != INVALID_HANDLE)
-    {
-        KillTimer(tZHP[client]);
-    }
-    
-    // Reset timer handle.
-    tZHP[client] = INVALID_HANDLE;
+    ZREndTimer(tZHP[client], true);
 }
 
 /**
@@ -138,10 +137,7 @@ ZHPOnClientInfected(client)
     ZHPUpdateHUD(client);
     
     // If timer is currently running, kill it.
-    if (tZHP[client] != INVALID_HANDLE)
-    {
-        KillTimer(tZHP[client]);
-    }
+    ZREndTimer(tZHP[client], true);
     
     // Start repeating timer to update display.
     tZHP[client] = CreateTimer(5.0, ZHPTimer, client, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
@@ -278,6 +274,7 @@ public Action:ZHPTimer(Handle:timer, any:client)
     // If client leaves, then stop timer.
     if (!IsClientInGame(client))
     {
+        ZREndTimer(tZHP[client], false);
         return Plugin_Stop;
     }
     

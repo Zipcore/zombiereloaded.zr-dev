@@ -36,7 +36,7 @@ ClassHealthRegenInit()
 {
     for (new client = 0; client < MAXPLAYERS + 1; client++)
     {
-        tHealthRegen[client] = INVALID_HANDLE;
+        ZREndTimer(tHealthRegen[client], false);
     }
 }
 
@@ -78,12 +78,8 @@ ClassHealthRegenStart(client, Float:interval)
  */
 ClassHealthRegenStop(client)
 {
-    // Kill the timer if it exist.
-    if (tHealthRegen[client] != INVALID_HANDLE)
-    {
-        KillTimer(tHealthRegen[client]);
-        tHealthRegen[client] = INVALID_HANDLE;
-    }
+    // Kill the timer if it exists.
+    ZREndTimer(tHealthRegen[client], true);
 }
 
 /**
@@ -94,7 +90,7 @@ public Action:ClassHealthRegenTimer(Handle:timer, any:client)
     // Kill the timer if the player is dead or not in game.
     if (!IsClientConnected(client) || !IsClientInGame(client) || !IsPlayerAlive(client))
     {
-        tHealthRegen[client] = INVALID_HANDLE;
+        ZREndTimer(tHealthRegen[client], false);
         return Plugin_Stop;
     }
     
