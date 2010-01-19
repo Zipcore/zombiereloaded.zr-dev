@@ -26,7 +26,7 @@
  */
 
 /**
- * Total number of classes that can be stored in each cache. A total of 32
+ * Total number of classes that can be stored in each cache. A total of 48
  * classes should be enough. Too many classes will confuse players.
  */
 #define ZR_CLASS_MAX 48
@@ -34,7 +34,7 @@
 /**
  * @section Class cache types. Specifies what data array to use.
  */
-#define ZR_CLASS_CACHE_ORIGINAL 0   /** Points ClassData array. A cache that is never changed after loading. */
+#define ZR_CLASS_CACHE_ORIGINAL 0   /** Points to ClassData array. A cache that is never changed after loading. */
 #define ZR_CLASS_CACHE_MODIFIED 1   /** Points to ClassDataCache array. Modified by admins or overrides. */
 #define ZR_CLASS_CACHE_PLAYER   2   /** Points to ClassPlayerCache array. Current player attributes. */
 /**
@@ -62,8 +62,8 @@
  * class team.
  */
 #define ZR_CLASS_IMMUNITY_DISABLED  0   /** No immunity. */
-#define ZR_CLASS_IMMUNITY_CONSTANT  1   /** Always imune. Should only be used in special cases like on admin classes. */
-#define ZR_CLASS_IMMUNITY_TIMED     2   /** Imune to damage for n seconds. The time is specified in a class as immunity amount. */
+#define ZR_CLASS_IMMUNITY_CONSTANT  1   /** Always immune. Should only be used in special cases like on admin classes. */
+#define ZR_CLASS_IMMUNITY_TIMED     2   /** Immune to damage for n seconds. The time is specified in a class as immunity amount. */
 /**
  * @endsection
  */

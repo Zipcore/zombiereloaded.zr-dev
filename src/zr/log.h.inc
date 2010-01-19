@@ -69,7 +69,6 @@ enum LogModules
 {
     bool:LogModule_Invalid = 0,     /** Used as return value when an error occurs.*/
     
-    bool:LogModule_External,        /** Use this if your logging from an external plugin */
     bool:LogModule_Account,
     bool:LogModule_AntiStick,
     bool:LogModule_Config,
