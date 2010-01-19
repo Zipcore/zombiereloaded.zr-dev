@@ -86,7 +86,7 @@ DamageOnCommandsHook()
         TrimString(arrayCmds[x]);
         
         // Prepare intercept for this command.
-        RegConsoleCmd(arrayCmds[x], DamageSuicideIntercept);
+        AddCommandListener(DamageSuicideIntercept, arrayCmds[x]);
     }
 }
 
@@ -366,13 +366,13 @@ public ZRTools_Action:DamageOnTakeDamage(client, inflictor, attacker, Float:dama
 }
 
 /**
- * Command callback (kill, spectate, jointeam, joinclass)
+ * Command listener. (See zr_suicide_cmds cvar)
  * Block command if plugin thinks they are trying to commit suicide.
  * 
  * @param client    The client index.
  * @param argc      The number of arguments in command string.
  */     
-public Action:DamageSuicideIntercept(client, argc)
+public Action:DamageSuicideIntercept(client, const String:command[], argc)
 {
     // If zombie hasn't spawned, and the cvar requires it, then stop.
     new bool:suicideafterinfect = GetConVarBool(g_hCvarsList[CVAR_SUICIDE_AFTER_INFECT]);
