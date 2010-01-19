@@ -30,9 +30,9 @@
 #define _weaponprofileheaders_included
 
 /**
- * Profile storage capacity.
+ * Profile storage capacity.  By default this matches the max number of classes.
  */
-#define WEAPON_PROFILES_MAX 32
+#define WEAPON_PROFILES_MAX 48
 
 /**
  * Weapon profile attributes.

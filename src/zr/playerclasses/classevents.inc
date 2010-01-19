@@ -25,11 +25,6 @@
  * ============================================================================
  */
 
-/**
- * Global array to store the timer handle for each client for instantly changing class.
- */
-new Handle:tInstantChange[MAXPLAYERS + 1];
-
 /* ------------------------------------
  *
  * GAME EVENTS
@@ -103,7 +98,7 @@ ClassClientInit(client)
     ClassPlayerSpawned[client] = false;
     
     // Reset instant change timer handle.
-    ZREndTimer(tInstantChange[client], false);
+    ZREndTimer(tClassInstantChange[client], false);
 }
 
 /**
@@ -118,7 +113,7 @@ ClassOnClientDisconnect(client)
     ClassResetNextIndexes(client);
     
     // Kill instant change timer if running.
-    ZREndTimer(tInstantChange[client], true);
+    ZREndTimer(tClassInstantChange[client], true);
 }
 
 /**
@@ -223,7 +218,7 @@ ClassOnClientSpawn(client)
     ClassApplyAttributes(client);
     
     // Kill instant change timer if running.
-    ZREndTimer(tInstantChange[client], true);
+    ZREndTimer(tClassInstantChange[client], true);
     
     // Check if instant class change cvar is set.
     new Float:instantspawn = GetConVarFloat(g_hCvarsList[CVAR_CLASSES_CHANGE_TIMELIMIT]);
@@ -233,7 +228,7 @@ ClassOnClientSpawn(client)
         ClassAllowInstantChange[client] = true;
         
         // Create timer to disable instant change.
-        tInstantChange[client] = CreateTimer(instantspawn, Event_ClassDisableInstantSpawn, client, TIMER_FLAG_NO_MAPCHANGE);
+        tClassInstantChange[client] = CreateTimer(instantspawn, Event_ClassDisableInstantSpawn, client, TIMER_FLAG_NO_MAPCHANGE);
     }
     else
     {
@@ -257,7 +252,7 @@ ClassOnClientDeath(client)
     ToolsSetClientDefaultFOV(client, 90);
     
     // Kill instant change timer if running.
-    ZREndTimer(tInstantChange[client], true);
+    ZREndTimer(tClassInstantChange[client], true);
     
     // Forward event to sub-modules.
     ClassOverlayOnClientDeath(client);
@@ -281,7 +276,7 @@ ClassOnClientInfected(client, bool:motherzombie = false)
     ClassHealthRegenStop(client);
     
     // Make sure the player is not allowed to instantly change class.
-    ZREndTimer(tInstantChange[client], true);
+    ZREndTimer(tClassInstantChange[client], true);
     ClassAllowInstantChange[client] = false;
     
     // Check if it's a mother zombie.
@@ -404,5 +399,5 @@ public Action:Event_ClassDisableInstantSpawn(Handle:timer, any:client)
     ClassAllowInstantChange[client] = false;
     
     // Reset the variable.
-    ZREndTimer(tInstantChange[client], false);
+    ZREndTimer(tClassInstantChange[client], false);
 }

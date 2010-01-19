@@ -55,10 +55,6 @@ LogGetModuleNameString(String:buffer[], maxlen, LogModules:module, bool:shortNam
 {
     switch (module)
     {
-        case LogModule_External:
-        {
-            return shortName ? strcopy(buffer, maxlen, "external") : strcopy(buffer, maxlen, "External Plugin");
-        }
         case LogModule_Account:
         {
             return shortName ? strcopy(buffer, maxlen, "account") : strcopy(buffer, maxlen, "Account");
@@ -150,10 +146,6 @@ LogGetModuleNameString(String:buffer[], maxlen, LogModules:module, bool:shortNam
  */
 LogModules:LogGetModule(const String:moduleName[])
 {
-    if (StrEqual(moduleName, "external", false))
-    {
-        return LogModule_External;
-    }
     if (StrEqual(moduleName, "account", false))
     {
         return LogModule_Account;
