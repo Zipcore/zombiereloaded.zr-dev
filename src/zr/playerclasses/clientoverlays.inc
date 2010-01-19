@@ -62,7 +62,7 @@ ClassOverlayOnCommandsHook()
     for (new i = 0; i < cmdcount; i++)
     {
         TrimString(arrayCmds[i]);
-        RegConsoleCmd(arrayCmds[i], ClassOverlayEnableCommand);
+        AddCommandListener(ClassOverlayEnableCommand, arrayCmds[i]);
     }
 }
 
@@ -147,13 +147,13 @@ ClassOverlayInitialize(client, const String:overlay[])
 }
 
 /**
- * Command callback. (See zr_classes_overlay_togglecmds)
+ * Command listener. (See zr_classes_overlay_togglecmds cvar)
  * Toggles nightvision of a client.
  *   
  * @param client    The client index.
  * @param argc      Argument count.
  */
-public Action:ClassOverlayEnableCommand(client, argc)
+public Action:ClassOverlayEnableCommand(client, const String:command[], argc)
 {
     // If overlay toggle is disabled, then stop.
     new bool:overlaytoggle = GetConVarBool(g_hCvarsList[CVAR_CLASSES_OVERLAY_TOGGLE]);

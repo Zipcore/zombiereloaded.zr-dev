@@ -65,9 +65,9 @@ enum RestrictQuery
 RestrictInit()
 {
     // Hook buy command.
-    RegConsoleCmd("buy", RestrictBuyCommand);
-    RegConsoleCmd("autobuy", RestrictBuyCommand);
-    RegConsoleCmd("rebuy", RestrictBuyCommand);
+    AddCommandListener(RestrictBuyCommand, "buy");
+    AddCommandListener(RestrictBuyCommand, "autobuy");
+    AddCommandListener(RestrictBuyCommand, "rebuy");
 }
 
 /**
@@ -182,13 +182,13 @@ RestrictOnRoundEnd()
 }
 
 /**
- * Command callback function for the "buy" command
+ * Command listener for the buy. autorebuy, and rebuy commands.
  * Used to block use of this command under certain conditions.
  * 
  * @param client    The client index.
  * @param argc      Argument count.
  */
-public Action:RestrictBuyCommand(client, argc)
+public Action:RestrictBuyCommand(client, const String:command[], argc)
 {
     // If client isn't in-game, then stop.
     if (!IsClientInGame(client))
