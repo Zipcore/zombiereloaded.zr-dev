@@ -62,7 +62,7 @@ public APIRespawnClient(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client);
+    APIValidateClientIndex(client, Condition_Either);
     
     new bool:zombie = bool:GetNativeCell(2);
     new bool:zombie_if_suicide = bool:GetNativeCell(3);
@@ -130,7 +130,7 @@ public APIOverrideKilledByWorld(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client);
+    APIValidateClientIndex(client, Condition_Either);
     
     new bool:suicide = bool:GetNativeCell(2);
     
@@ -149,7 +149,7 @@ public APIReadKilledByWorld(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client);
+    APIValidateClientIndex(client, Condition_Either);
     
     // Return the value.
     return _:g_bKilledByWorld[client];

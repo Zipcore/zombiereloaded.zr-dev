@@ -32,6 +32,7 @@ new Handle:g_hAPIFwdOnClientInfectedPre = INVALID_HANDLE;
 new Handle:g_hAPIFwdOnClientInfected = INVALID_HANDLE;
 new Handle:g_hAPIFwdOnClientHumanPre = INVALID_HANDLE;
 new Handle:g_hAPIFwdOnClientHuman = INVALID_HANDLE;
+new Handle:g_hAPIFwdOnClientDeath = INVALID_HANDLE;
 /**
  * @endsection
  */
@@ -52,6 +53,7 @@ APIInfectInit()
     g_hAPIFwdOnClientInfected = CreateGlobalForward("ZR_OnClientInfected", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
     g_hAPIFwdOnClientHumanPre = CreateGlobalForward("ZR_OnClientHumanPre", ET_Hook, Param_CellByRef, Param_CellByRef, Param_CellByRef);
     g_hAPIFwdOnClientHuman = CreateGlobalForward("ZR_OnClientHuman", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
+    g_hAPIFwdOnClientDeath = CreateGlobalForward("ZR_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell, Param_String, Param_Cell);
 }
 
 /**
@@ -65,7 +67,7 @@ public APIIsClientInfected(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, true);
+    APIValidateClientIndex(client, Condition_True);
     
     return InfectIsClientInfected(client);
 }
@@ -81,7 +83,7 @@ public APIIsClientHuman(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, true);
+    APIValidateClientIndex(client, Condition_True);
     
     return InfectIsClientHuman(client);
 }
@@ -185,6 +187,29 @@ APIOnClientHuman(client, bool:respawn, bool:protect)
     Call_PushCell(client);
     Call_PushCell(respawn);
     Call_PushCell(protect);
+    
+    // Finish the call.
+    Call_Finish();
+}
+
+/**
+ * Client has been killed.
+ * 
+ * @param client            The client index.
+ * @param attacker          The attacker index.
+ * @param weapon            The weapon the attacker used to kill the client.
+ * @param headshot          True if the kill was a headshot, false if regular kill.
+ */
+APIOnClientDeath(client, attacker, const String:weapon[], bool:headshot)
+{
+    // Start forward call.
+    Call_StartForward(g_hAPIFwdOnClientDeath);
+    
+    // Push the parameters.
+    Call_PushCell(client);
+    Call_PushCell(attacker);
+    Call_PushString(weapon);
+    Call_PushCell(headshot);
     
     // Finish the call.
     Call_Finish();

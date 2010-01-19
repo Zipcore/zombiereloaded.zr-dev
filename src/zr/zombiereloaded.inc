@@ -36,6 +36,16 @@
 new bool:g_bZombieSpawned;
 
 /**
+ * Options that a condition must pass to be eligible.
+ */
+enum EligibleCondition
+{
+    Condition_False = 0,    /** Condition must be false. */
+    Condition_True = 1,     /** Condition must be true. */
+    Condition_Either = -1   /** Condition can be either true or false. */
+}
+
+/**
  * Function to convert numbers to defined units.
  * 
  * @param number        The number to convert.
@@ -98,16 +108,6 @@ stock bool:ZREndTimer(&Handle:timer, bool:kill)
 }
 
 /**
- * Options that a condition must pass to be eligible.
- */
-enum EligibleClientCondition
-{
-    Condition_False = 0,    /** Condition must be false. */
-    Condition_True = 1,     /** Condition must be true. */
-    Condition_Either = -1   /** Condition can be either true or false. */
-}
-
-/**
  * Create an array populated with eligible clients.
  * 
  * @param arrayEligibleClients  The handle of the array, don't forget to call CloseHandle
@@ -115,11 +115,10 @@ enum EligibleClientCondition
  * @param team                  Client is only eligible if on a team.
  * @param alive                 Client is only eligible if alive.
  * @param human                 Client is only eligible if human.
- * @param immunity              True to ignore clients immune from mother infect, false to count them.
  * 
- * @return                      Number of eligible clients.  
+ * @return                      Number of eligible clients.
  */  
-stock ZRCreateEligibleClientList(&Handle:arrayEligibleClients, EligibleClientCondition:team = Condition_Either, EligibleClientCondition:alive = Condition_Either, EligibleClientCondition:human = Condition_Either)
+stock ZRCreateEligibleClientList(&Handle:arrayEligibleClients, EligibleCondition:team = Condition_Either, EligibleCondition:alive = Condition_Either, EligibleCondition:human = Condition_Either)
 {
     // Create array.
     arrayEligibleClients = CreateArray();

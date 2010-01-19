@@ -37,6 +37,16 @@
 // #include <zr/[module].zr>
 
 /**
+ * Options that a condition must pass to be eligible.
+ */
+enum EligibleCondition
+{
+    Condition_False = 0,    /** Condition must be false. */
+    Condition_True = 1,     /** Condition must be true. */
+    Condition_Either = -1   /** Condition can be either true or false. */
+}
+
+/**
  * Sample native description.
  *
  * @param param1    Parameter 1 description.
@@ -46,6 +56,19 @@
  * @error           Reasons for erroring. 
  */
 // native Tag:ExampleNative(param1, param2);
+
+/**
+ * Create an array populated with eligible clients.
+ * 
+ * @param arrayEligibleClients  The handle of the array, don't forget to call CloseHandle
+ *                              on it when finished!
+ * @param team                  Client is only eligible if on a team.
+ * @param alive                 Client is only eligible if alive.
+ * @param human                 Client is only eligible if human.
+ * 
+ * @return                      Number of eligible clients.
+ */
+native ZR_CreateEligibleClientList(&Handle:arrayEligibleClients, EligibleCondition:team = Condition_Either, EligibleCondition:alive = Condition_Either, EligibleCondition:human = Condition_Either);
 
 /**
  * Returns plugin version info.
