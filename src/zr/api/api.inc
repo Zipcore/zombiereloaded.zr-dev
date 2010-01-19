@@ -53,6 +53,7 @@ APIInit()
     // zombiereloaded.inc
     
     // Natives
+    CreateNative("ZR_CreateEligibleClientList", APICreateEligibleClientList);
     CreateNative("ZR_GetVersionInfo", APIGetVersionInfo);
     
     
@@ -74,7 +75,7 @@ APIInit()
  * 
  * @error           Throws an error when the client isn't valid.
  */
-stock APIValidateClientIndex(client, bool:alive = false)
+stock APIValidateClientIndex(client, EligibleCondition:alive = Condition_Either)
 {
     // If the client index is out of range, then throw an error.
     if (client < 1 || client > MaxClients)
@@ -88,7 +89,9 @@ stock APIValidateClientIndex(client, bool:alive = false)
         ThrowNativeError(SP_ERROR_NATIVE, "Client %d is not connected.", client);
     }
     
-    if (alive && !IsPlayerAlive(client))
+    // If the condition is yes or no, and the condition isn't met, then throw an error.
+    new bool:bAlive = bool:alive;
+    if (alive != Condition_Either && bAlive != IsPlayerAlive(client))
     {
         ThrowNativeError(SP_ERROR_NATIVE, "Client %d must be alive.", client);
     }
@@ -120,6 +123,23 @@ stock APIValidateEntityIndex(entity)
     {
         ThrowNativeError(SP_ERROR_NATIVE, "Index %d is not a valid entity.", entity);
     }
+}
+
+/**
+ * Native call function (ZR_CreateEligibleClientList)
+ * Create an array populated with eligible clients.
+ * 
+ * ZRCreateEligibleClientList(&Handle:arrayEligibleClients, EligibleCondition:team = Condition_Either, EligibleCondition:alive = Condition_Either, EligibleCondition:human = Condition_Either)  
+ */
+public APICreateEligibleClientList(Handle:plugin, numParams)
+{
+    new Handle:arrayEligibleClients = Handle:GetNativeCellRef(1);
+    new EligibleCondition:team = EligibleCondition:GetNativeCell(2);
+    new EligibleCondition:alive = EligibleCondition:GetNativeCell(3);
+    new EligibleCondition:human = EligibleCondition:GetNativeCell(4);
+    
+    // Create the list and return the number of clients in the list.
+    return ZRCreateEligibleClientList(arrayEligibleClients, team, alive, human);
 }
 
 /**

@@ -59,7 +59,7 @@ public APISetClientVelocity(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, true);
+    APIValidateClientIndex(client, Condition_Either);
     
     new Float:vecVelocity[3];
     GetNativeArray(2, vecVelocity, 3);
@@ -81,7 +81,7 @@ public APIGetClientVelocity(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, true);
+    APIValidateClientIndex(client, Condition_Either);
     
     // Get the client's velocity.
     new Float:vecVelocity[3];
@@ -102,7 +102,7 @@ public APISetClientLMV(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, true);
+    APIValidateClientIndex(client, Condition_Either);
     
     new Float:flLMV = Float:GetNativeCell(2);
     
@@ -121,7 +121,7 @@ public APIGetClientLMV(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, true);
+    APIValidateClientIndex(client, Condition_Either);
     
     // Set the client's lagged movement value.
     return _:ToolsGetClientLMV(client);
@@ -138,7 +138,7 @@ public APISetClientNVG(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, true);
+    APIValidateClientIndex(client, Condition_True);
     
     new ToolsNVGProps:prop = ToolsNVGProps:GetNativeCell(2);
     new bool:value = bool:GetNativeCell(3);
@@ -158,7 +158,7 @@ public APIGetClientNVG(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, true);
+    APIValidateClientIndex(client, Condition_True);
     
     new ToolsNVGProps:prop = ToolsNVGProps:GetNativeCell(2);
     
@@ -177,7 +177,7 @@ public APISetClientDefaultFOV(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, true);
+    APIValidateClientIndex(client, Condition_Either);
     
     new FOV = GetNativeCell(2);
     
@@ -196,7 +196,7 @@ public APISetClientScore(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, false);
+    APIValidateClientIndex(client, Condition_Either);
     
     new ToolsScoreProps:prop = ToolsScoreProps:GetNativeCell(2);
     new bool:value = bool:GetNativeCell(3);
@@ -216,7 +216,7 @@ public APIGetClientScore(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, false);
+    APIValidateClientIndex(client, Condition_Either);
     
     new ToolsScoreProps:prop = ToolsScoreProps:GetNativeCell(2);
     
@@ -235,7 +235,7 @@ public APISetClientAlpha(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, true);
+    APIValidateClientIndex(client, Condition_True);
     
     new alpha = GetNativeCell(2);
     
@@ -254,7 +254,7 @@ public APIGetEntityAlpha(Handle:plugin, numParams)
     new client = GetNativeCell(1);
     
     // Validate the client index.
-    APIValidateClientIndex(client, true);
+    APIValidateClientIndex(client, Condition_True);
     
     // Get the client's alpha.
     return ToolsGetEntityAlpha(client);

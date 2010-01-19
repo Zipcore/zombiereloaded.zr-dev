@@ -269,6 +269,7 @@ public Action:EventPlayerDeath(Handle:event, const String:name[], bool:dontBroad
     // Get all required event info.
     new index = GetClientOfUserId(GetEventInt(event, "userid"));
     new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
+    new bool:headshot = GetEventBool(event, "headshot");
     
     // Forward event to modules.
     ClassOnClientDeath(index);
@@ -283,6 +284,7 @@ public Action:EventPlayerDeath(Handle:event, const String:name[], bool:dontBroad
     ZHPOnClientDeath(index);
     VolOnPlayerDeath(index);
     RoundEndOnClientDeath();
+    APIOnClientDeath(index, attacker, weapon, headshot);
 }
 
 /**

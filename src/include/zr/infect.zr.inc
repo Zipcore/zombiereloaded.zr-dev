@@ -90,3 +90,14 @@ forward Action:ZR_OnClientHumanPre(&client, &bool:respawn, &bool:protect);
  * @param protect           True if the client spawn protected, false if not.
  */
 forward ZR_OnClientHuman(client, bool:respawn, bool:protect);
+
+/**
+ * Client has been killed.
+ * Note:  This doesn't fire when a client is infected.
+ * 
+ * @param client            The client index.
+ * @param attacker          The attacker index.
+ * @param weapon            The weapon the attacker used to kill the client.
+ * @param headshot          True if the kill was a headshot, false if regular kill.
+ */
+forward ZR_OnClientDeath(client, attacker, const String:weapon[], bool:headshot);
