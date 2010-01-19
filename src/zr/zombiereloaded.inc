@@ -5,7 +5,7 @@
  *
  *  File:          zombiereloaded.inc
  *  Type:          Core 
- *  Description:   General plugin functions and defines.
+ *  Description:   General plugin functions and utilities.
  *
  *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
@@ -31,15 +31,6 @@
 #define ZR_CONSOLE_INDEX 0
 
 /**
- * @section Conversion factors.
- */
-#define CONVERSION_UNITS_TO_FEET    16.000
-#define CONVERSION_FEET_TO_UNITS    0.0625
-/**
- * @endsection
- */
-
-/**
  * Global variable set to true when the first zombie(s) is/are spawned.
  */
 new bool:g_bZombieSpawned;
@@ -51,9 +42,59 @@ new bool:g_bZombieSpawned;
  * @param conversion    The conversion factor to multiply by. (See defines above)
  * @return              The converted number.
  */
+
+#define CONVERSION_UNITS_TO_FEET    16.000
+#define CONVERSION_FEET_TO_UNITS    0.0625
+
 stock Float:ZRConvertUnitsFloat(Float:number, Float:conversion)
 {
     return number / conversion;
+}
+
+// Timer utilities
+
+/**
+ * Checks if a timer is currently running.
+ * 
+ * @param timer     The timer handle.
+ */
+stock bool:ZRIsTimerRunning(Handle:timer)
+{
+    // Return true if the handle isn't empty.
+    return (timer != INVALID_HANDLE);
+}
+
+/**
+ * Wrapper functions for KilLTimer.
+ * Ends a timer if running, and resets its timer handle variable.
+ * 
+ * @param timer     The timer handle.
+ * @param kill      True to kill the timer and reset the variable, false to only reset the variable.
+ *                  This is useful when calling from the timer callback, because the timer is already killed.
+ * 
+ * @return          True if the timer was ended successfully, false if the handle wasn't valid.
+ */
+stock bool:ZREndTimer(&Handle:timer, bool:kill)
+{
+    // If the timer is running, then kill it.
+    if (ZRIsTimerRunning(timer))
+    {
+        // Kill if caller says to.
+        if (kill)
+        {
+            KillTimer(timer);
+        }
+        
+        // Reset variable.
+        timer = INVALID_HANDLE;
+        
+        return true;
+    }
+    
+    // Reset variable.
+    timer = INVALID_HANDLE;
+    
+    return false;
 }
 
 /**

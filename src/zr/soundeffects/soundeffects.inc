@@ -79,6 +79,17 @@ SEffectsClientInit(client)
 }
 
 /**
+ * Client is leaving the server.
+ * 
+ * @param client    The client index.
+ */
+SEffectsOnClientDisconnect(client)
+{
+    // Forward event to sub-modules.
+    ZombieSoundsOnClientDisconnect(client);
+}
+
+/**
  * The round is starting.
  */
 SEffectsOnRoundStart()

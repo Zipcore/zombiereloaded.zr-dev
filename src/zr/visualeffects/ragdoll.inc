@@ -132,7 +132,7 @@ RagdollRemove(ragdoll)
 }
 
 /**
- * Timer callback.  Removed a client's ragdoll.
+ * Timer callback.  Removes a client's ragdoll.
  * 
  * @param timer     The timer handle. 
  * @param ragdoll   The ragdoll index.

@@ -276,7 +276,7 @@ public Action:EventPlayerDeath(Handle:event, const String:name[], bool:dontBroad
     VEffectsOnClientDeath(index);
     SEffectsOnClientDeath(index);
     SpawnProtectOnClientDeath(index);
-    RespawnOnClientDeath(index, attacker, weapon);
+    RespawnOnClientDeath(index, attacker);
     NapalmOnClientDeath(index);
     ZSpawnOnClientDeath(index);
     ZTeleOnClientDeath(index);

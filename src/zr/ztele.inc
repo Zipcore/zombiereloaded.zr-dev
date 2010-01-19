@@ -70,7 +70,7 @@ ZTeleOnCommandsCreate()
 ZTeleClientInit(client)
 {
     // Reset timer handle.
-    tZTele[client] = INVALID_HANDLE;
+    ZREndTimer(tZTele[client], false);
 }
 
 /**
@@ -87,13 +87,7 @@ ZTeleOnClientSpawn(client)
     GetClientAbsOrigin(client, g_vecZTeleSpawn[client]);
     
     // If timer is running, kill it.
-    if (tZTele[client] != INVALID_HANDLE)
-    {
-        KillTimer(tZTele[client]);
-    }
-    
-    // Reset timer handle.
-    tZTele[client] = INVALID_HANDLE;
+    ZREndTimer(tZTele[client], true);
 }
 
 /**
@@ -104,13 +98,7 @@ ZTeleOnClientSpawn(client)
 ZTeleOnClientDeath(client)
 {
     // If timer is running, kill it.
-    if (tZTele[client] != INVALID_HANDLE)
-    {
-        KillTimer(tZTele[client]);
-    }
-    
-    // Reset timer handle.
-    tZTele[client] = INVALID_HANDLE;
+    ZREndTimer(tZTele[client], true);
 }
 
 /**
@@ -121,13 +109,7 @@ ZTeleOnClientDeath(client)
 ZTeleOnClientInfected(client)
 {
     // If timer is running, kill it.
-    if (tZTele[client] != INVALID_HANDLE)
-    {
-        KillTimer(tZTele[client]);
-    }
-    
-    // Reset timer handle.
-    tZTele[client] = INVALID_HANDLE;
+    ZREndTimer(tZTele[client], true);
 }
 
 /**
@@ -177,7 +159,7 @@ bool:ZTeleClient(client, bool:force = false)
     }
     
     // If teleport is already in progress, then stop.
-    if (tZTele[client] != INVALID_HANDLE)
+    if (ZRIsTimerRunning(tZTele[client]))
     {
         if (!force)
         {
@@ -398,6 +380,8 @@ public Action:ZTeleTimer(Handle:timer, any:client)
     // If client leaves, then stop timer.
     if (!IsClientInGame(client))
     {
+        // Reset timer handle.
+        ZREndTimer(tZTele[client], false);
         return Plugin_Stop;
     }
     
@@ -415,7 +399,7 @@ public Action:ZTeleTimer(Handle:timer, any:client)
         if (distance > autocanceldistance)
         {
             // Reset timer handle.
-            tZTele[client] = INVALID_HANDLE;
+            ZREndTimer(tZTele[client], false);
             
             // Tell client teleport has been cancelled.
             TranslationPrintCenterText(client, "ZTele autocancel centertext");
@@ -448,7 +432,7 @@ public Action:ZTeleTimer(Handle:timer, any:client)
         TranslationPrintCenterText(client, "ZTele countdown end", g_iZTeleCount[client], ztelemax);
         
         // Clear timer handle.
-        tZTele[client] = INVALID_HANDLE;
+        ZREndTimer(tZTele[client], false);
         
         // Stop timer.
         return Plugin_Stop;

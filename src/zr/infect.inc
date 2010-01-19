@@ -80,7 +80,7 @@ new bool:bInfectImmune[MAXPLAYERS + 1][2];
 InfectOnMapStart()
 {
     // Reset timer handle.
-    tInfect = INVALID_HANDLE;
+    ZREndTimer(tInfect, false);
 }
 
 /**
@@ -126,7 +126,7 @@ InfectClientInit(client)
     bInfectImmune[client][INFECT_TYPE_NORMAL] = false;
     
     // Reset infect freeze timer.
-    tInfectFreeze[client] = INVALID_HANDLE;
+    ZREndTimer(tInfectFreeze[client], false);
 }
 
 /**
@@ -137,11 +137,7 @@ InfectClientInit(client)
 InfectOnClientDisconnect(client)
 {
     // Kill infect freeze timer.
-    if (tInfectFreeze[client] != INVALID_HANDLE)
-    {
-        KillTimer(tInfectFreeze[client]);
-        tInfectFreeze[client] = INVALID_HANDLE;
-    }
+    ZREndTimer(tInfectFreeze[client], true);
     
     // If the client is already out of the game, then stop.
     if (!IsClientInGame(client))
@@ -259,11 +255,7 @@ InfectOnClientTeam(client, team)
 InfectOnClientSpawn(client)
 {
     // Kill infect freeze timer.
-    if (tInfectFreeze[client] != INVALID_HANDLE)
-    {
-        KillTimer(tInfectFreeze[client]);
-        tInfectFreeze[client] = INVALID_HANDLE;
-    }
+    ZREndTimer(tInfectFreeze[client], true);
     
     // Disable zombie flag on client.
     bZombie[client] = false;
@@ -288,11 +280,7 @@ InfectOnClientSpawn(client)
 InfectOnClientDeath(client, attacker)
 {
     // Kill infect freeze timer.
-    if (tInfectFreeze[client] != INVALID_HANDLE)
-    {
-        KillTimer(tInfectFreeze[client]);
-        tInfectFreeze[client] = INVALID_HANDLE;
-    }
+    ZREndTimer(tInfectFreeze[client], true);
     
     // If attacker isn't valid, then stop.
     if (!ZRIsClientValid(attacker))
@@ -404,14 +392,7 @@ Action:InfectOnPlayerRunCmd(client, &impulse)
 InfectOnRoundStart()
 {
     // If infect timer is running, then kill it.
-    if (tInfect != INVALID_HANDLE)
-    {
-        // Kill timer.
-        KillTimer(tInfect);
-        
-        // Reset timer handle.
-        tInfect = INVALID_HANDLE;
-    }
+    ZREndTimer(tInfect, true);
     
     // Tell plugin there are no zombies.
     g_bZombieSpawned = false;
@@ -423,11 +404,7 @@ InfectOnRoundStart()
 InfectOnRoundFreezeEnd()
 {
     // If infect timer is running, then kill it.
-    if (tInfect != INVALID_HANDLE)
-    {
-        // Kill timer.
-        KillTimer(tInfect);
-    }
+    ZREndTimer(tInfect, true);
     
     // Get min and max times.
     new Float:infectspawntimemin = GetConVarFloat(g_hCvarsList[CVAR_INFECT_SPAWNTIME_MIN]);
@@ -445,14 +422,7 @@ InfectOnRoundFreezeEnd()
 InfectOnRoundEnd()
 {
     // If infect timer is running, then kill it.
-    if (tInfect != INVALID_HANDLE)
-    {
-        // Kill timer.
-        KillTimer(tInfect);
-        
-        // Reset timer handle.
-        tInfect = INVALID_HANDLE;
-    }
+    ZREndTimer(tInfect, true);
     
     // x = client index.
     for (new x = 1; x <=  MaxClients; x++)
@@ -476,7 +446,7 @@ InfectOnRoundEnd()
 public Action:InfectMotherZombie(Handle:timer)
 {
     // Reset timer handle.
-    tInfect = INVALID_HANDLE;
+    ZREndTimer(tInfect, false);
     
     // Create eligible player list.
     new Handle:arrayEligibleClients = INVALID_HANDLE;
@@ -801,7 +771,7 @@ InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
     }
     
     // Manually trigger the end of the freeze timer if it's currently running.
-    if (tInfectFreeze[client] != INVALID_HANDLE)
+    if (ZRIsTimerRunning(tInfectFreeze[client]))
     {
         TriggerTimer(tInfectFreeze[client]);
     }
@@ -922,7 +892,7 @@ public Action:InfectFreezeTimer(Handle:timer, any:client)
     // ToolsRemoveEntityFlag(client, FL_GODMODE); <- Doesn't work.
     
     // Reset the timer handle.
-    tInfectFreeze[client] = INVALID_HANDLE;
+    ZREndTimer(tInfectFreeze[client], false);
 }
 
 /**
@@ -1095,11 +1065,7 @@ stock InfectManualInfect(client, targets[], count, bool:respawnoverride = false,
     if (!zombiespawned)
     {
         // Stop mother infect timer.
-        if (tInfect != INVALID_HANDLE)
-        {
-            KillTimer(tInfect);
-            tInfect = INVALID_HANDLE;
-        }
+        ZREndTimer(tInfect, true);
         
         // Move all clients to CT
         for (new x = 1; x <= MaxClients; x++)

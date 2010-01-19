@@ -41,10 +41,19 @@ new bool:g_bKilledByWorld[MAXPLAYERS + 1];
 RespawnClientInit(client)
 {
     // Reset timer handle.
-    tRespawn[client] = INVALID_HANDLE;
+    ZREndTimer(tRespawn[client], false);
     
     // Init g_bKilledByWorld for client.
     g_bKilledByWorld[client] = false;
+}
+
+/**
+ * Client is leaving the server.
+ */ 
+RespawnOnClientDisconnect(client)
+{
+    // Reset timer handle.
+    ZREndTimer(tRespawn[client], true);
 }
 
 /**
@@ -55,13 +64,7 @@ RespawnClientInit(client)
 RespawnOnClientSpawn(client)
 {
     // If timer is running, kill it.
-    if (tRespawn[client] != INVALID_HANDLE)
-    {
-        KillTimer(tRespawn[client]);
-    }
-    
-    // Reset timer handle.
-    tRespawn[client] = INVALID_HANDLE;
+    ZREndTimer(tRespawn[client], true);
 }
 
 /**
@@ -69,7 +72,7 @@ RespawnOnClientSpawn(client)
  * 
  * @param client    The client index.
  */
-RespawnOnClientDeath(client, attacker, const String:weapon[])
+RespawnOnClientDeath(client, attacker)
 {
     // If client is a zombie, check if they were killed by world.
     if (InfectIsClientInfected(client))
@@ -79,16 +82,7 @@ RespawnOnClientDeath(client, attacker, const String:weapon[])
     }
     
     // If timer is running, kill it.
-    if (tRespawn[client] != INVALID_HANDLE)
-    {
-        KillTimer(tRespawn[client]);
-    }
-    
-    // If player was infected, then stop.
-    if (StrEqual(weapon, "zombie_claws_of_death", false))
-    {
-        return;
-    }
+    ZREndTimer(tRespawn[client], true);
     
     // If respawn is disabled, stop here.
     new bool:respawn = GetConVarBool(g_hCvarsList[CVAR_RESPAWN]);
@@ -116,17 +110,8 @@ RespawnOnRoundEnd()
             continue;
         }
         
-        // If timer isn't currently running, then stop.
-        if (tRespawn[x] == INVALID_HANDLE)
-        {
-            continue;
-        }
-        
-        // Stop timer.
-        KillTimer(tRespawn[x]);
-        
-        // Reset timer handle.
-        tRespawn[x] = INVALID_HANDLE;
+        // Kill the timer if it's running.
+        ZREndTimer(tRespawn[x], true);
     }
 }
 
@@ -190,7 +175,7 @@ RespawnSpawnClient(client, bool:zombie = false, bool:zombie_if_suicide = false)
 public Action:RespawnTimer(Handle:timer, any:client)
 {
     // Reset timer handle.
-    tRespawn[client] = INVALID_HANDLE;
+    ZREndTimer(tRespawn[client], false);
     
     // If client isn't in-game, then stop.
     if (!IsClientInGame(client))
