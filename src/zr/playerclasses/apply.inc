@@ -363,33 +363,33 @@ bool:ClassApplyHealthRegen(client, classindex, cachetype = ZR_CLASS_CACHE_PLAYER
 {
     new Float:interval;
     new amount;
-    new max;
+    new maxhealth;
     
     // Get the health regeneration info from the specified cache.
     if (cachetype == ZR_CLASS_CACHE_PLAYER)
     {
         interval = ClassGetHealthRegenInterval(client, cachetype);
         amount = ClassGetHealthRegenAmount(client, cachetype);
-        max = ClassGetHealth(client, cachetype);
+        maxhealth = ClassGetHealth(client, cachetype);
     }
     else
     {
         interval = ClassGetHealthRegenInterval(classindex, cachetype);
         amount = ClassGetHealthRegenAmount(classindex, cachetype);
-        max = ClassGetHealth(classindex, cachetype);
+        maxhealth = ClassGetHealth(classindex, cachetype);
     }
     
+    // If interval is greater than 0, then regen is enabled, set attributes.
     if (interval > 0)
     {
-        ClassHealthRegenInitClient(client, interval, amount, max);
+        HealthRegenSetInterval(client, interval);
+        HealthRegenSetAmount(client, amount);
+        HealthRegenSetMaxHealth(client, maxhealth);
+        
         return true;
     }
-    else
-    {
-        // Make sure old timers are stopped.
-        ClassHealthRegenStop(client);
-        return false;
-    }
+    
+    return false;
 }
 
 /**

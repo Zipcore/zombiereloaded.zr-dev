@@ -745,11 +745,6 @@ InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
     // Print message to client.
     TranslationPrintToChat(client, "Infect human");
     
-    // Forward event to modules.
-    ClassReloadPlayer(client);
-    RoundEndOnClientInfected();
-    ZTeleOnClientInfected(client);
-    
     // Give human a new knife. (If you leave the old one there will be glitches with the knife positioning)
     new knife = GetPlayerWeaponSlot(client, _:Slot_Melee);
     if (knife != -1)
@@ -777,7 +772,10 @@ InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
     }
     
     // Forward event to modules.
+    ClassOnClientHuman(client);
+    RoundEndOnClientHuman();
     SEffectsOnClientHuman(client);
+    ZTeleOnClientHuman(client);
     APIOnClientHuman(client, respawn, protect);
 }
 

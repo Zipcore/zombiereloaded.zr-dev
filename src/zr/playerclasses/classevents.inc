@@ -72,9 +72,6 @@ ClassOnMapStart()
 {
 	// Clear multipliers.
 	ClassResetMultiplierCache();
-	
-	// Prepare hp regeneration module.
-	ClassHealthRegenInit();    // Badly named, Init functions usually are called on OnPluginStart
 }
 
 /**
@@ -99,6 +96,9 @@ ClassClientInit(client)
     
     // Reset instant change timer handle.
     ZREndTimer(tClassInstantChange[client], false);
+    
+    // Forward event to sub-modules.
+    HealthRegenClientInit(client);
 }
 
 /**
@@ -106,14 +106,14 @@ ClassClientInit(client)
  */
 ClassOnClientDisconnect(client)
 {
-    // Disable class attributes with timers.
-    ClassHealthRegenStop(client);
-    
     // Reset previously selected class indexes.
     ClassResetNextIndexes(client);
     
     // Kill instant change timer if running.
     ZREndTimer(tClassInstantChange[client], true);
+    
+    // Forward event to sub-modules.
+    HealthRegenOnClientDisconnect(client);
 }
 
 /**
@@ -235,6 +235,21 @@ ClassOnClientSpawn(client)
         // Make sure instant change is not allowed.
         ClassAllowInstantChange[client] = false;
     }
+    
+    // Forward event to sub-modules.
+    HealthRegenOnClientSpawn(client);
+}
+
+/**
+ * Client is being hurt.
+ * 
+ * @param client    The client index.
+ */
+ClassOnClientHurt(client)
+{
+    // Forward event to sub-modules.
+    ClassAlphaUpdate(client);
+    HealthRegenOnClientHurt(client);
 }
 
 /**
@@ -245,9 +260,6 @@ ClassOnClientSpawn(client)
  */
 ClassOnClientDeath(client)
 {
-    // Disable class attributes with timers.
-    ClassHealthRegenStop(client);
-    
     // Set client's FOV back to normal.
     ToolsSetClientDefaultFOV(client, 90);
     
@@ -256,6 +268,7 @@ ClassOnClientDeath(client)
     
     // Forward event to sub-modules.
     ClassOverlayOnClientDeath(client);
+    HealthRegenOnClientDeath(client);
 }
 
 /**
@@ -271,9 +284,6 @@ ClassOnClientInfected(client, bool:motherzombie = false)
     new filter[ClassFilter];
     
     decl String:motherzombiesetting[64];
-    
-    // Disable class attributes with timers.
-    ClassHealthRegenStop(client);
     
     // Make sure the player is not allowed to instantly change class.
     ZREndTimer(tClassInstantChange[client], true);
@@ -388,6 +398,21 @@ ClassOnClientInfected(client, bool:motherzombie = false)
     
     // Apply the new attributes.
     ClassApplyAttributes(client, motherzombie);
+    
+    // Forward event to sub-modules.
+    HealthRegenOnClientInfected(client);
+}
+
+/**
+ * Client has been turned back human.
+ * 
+ * @param client    The client index.
+ */
+ClassOnClientHuman(client)
+{
+    // Forward event to sub-modules.
+    ClassReloadPlayer(client);
+    HealthRegenOnClientHuman(client);
 }
 
 /**
