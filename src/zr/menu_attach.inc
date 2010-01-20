@@ -93,13 +93,14 @@ public OnAdminMenuReady(Handle:topmenu)
  */
 public MenuAttachZAdminSubmenu(Handle:topmenu, TopMenuAction:action, TopMenuObject:object_id, param, String:buffer[], maxlength)
 {
+    SetGlobalTransTarget(param);
+    
     switch(action)
     {
         // The submenu item in the main admin menu is being rendered.
         case TopMenuAction_DisplayOption:
         {
             // Format the buffer from the translations file.
-            SetGlobalTransTarget(param);
             Format(buffer, maxlength, "%t", "Menu attach submenu zr");
         }
         // The submenu title is being rendered in the submenu.
