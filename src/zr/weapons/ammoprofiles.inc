@@ -277,6 +277,17 @@ AmmoGetName(index, String:buffer[], maxlen)
 }
 
 /**
+ * Gets the profile mode at the specified index.
+ *
+ * @param index     Profile index.
+ * @return          Ammo mode.
+ */
+AmmoMode:AmmoGetMode(index)
+{
+    return AmmoProfiles[index][AmmoProfile_Mode];
+}
+
+/**
  * Converts a ammo mode string to a mode type.
  *
  * @param modeString    String to convert.
