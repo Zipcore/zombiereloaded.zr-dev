@@ -39,8 +39,13 @@
  */
 enum WeaponProfile
 {
-    String:WeaponProfile_Name[32],      /** Profile name. */
-    WeaponProfile_PriAmmoManager,       /** Index to a ammo manager for the primary weapon. */
-    WeaponProfile_SecAmmoManager,       /** Index to a ammo manager for the secondary weapon. */
-    WeaponProfile_RestrictManager       /** Index to a weapon restriction manager. */
+    String:WeaponProfile_Name[32],                  /** Profile name. */
+    WeaponProfile_PriAmmoProfile,                   /** Ammo profile for primary weapon. */
+    WeaponProfile_SecAmmoProfile,                   /** Ammo profile for secondary weapon. */
+    WeaponProfile_RestrictProfile,                  /** Weapon restriction profile. */
+    WeaponProfile_PriAmmoManager[MAXPLAYERS + 1],   /** Index to ammo managers for the primary weapon, per player. */
+    WeaponProfile_SecAmmoManager[MAXPLAYERS + 1],   /** Index to ammo managers for the secondary weapon, per player. */
+    
+    // Note: We might not need a restrict manager because it's static data.
+    //WeaponProfile_RestrictManager[MAXPLAYERS + 1]   /** Index to a weapon restriction manager. */
 }

@@ -746,23 +746,28 @@ stock bool:ClassGetNoFallDamage(index, cachetype = ZR_CLASS_CACHE_PLAYER)
  *                  ZR_CLASS_CACHE_MODIFIED - Changed/newest class data.
  *                  ZR_CLASS_CACHE_PLAYER (default) - Player cache. If this one
  *                  is used, index will be used as a client index.
- * @return  Weapon profile index for the specified class. -1 on error.
+ * @return  Weapon profile index for the specified class. -1 if weapon module
+ *          is disabled, or on error.
  */
 stock ClassGetWeaponProfile(index, cachetype = ZR_CLASS_CACHE_PLAYER)
 {
-    switch (cachetype)
+    new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);
+    if (weapons)
     {
-        case ZR_CLASS_CACHE_ORIGINAL:
+        switch (cachetype)
         {
-            return ClassData[index][Class_WeaponProfile];
-        }
-        case ZR_CLASS_CACHE_MODIFIED:
-        {
-            return ClassDataCache[index][Class_WeaponProfile];
-        }
-        case ZR_CLASS_CACHE_PLAYER:
-        {
-            return ClassPlayerCache[index][Class_WeaponProfile];
+            case ZR_CLASS_CACHE_ORIGINAL:
+            {
+                return ClassData[index][Class_WeaponProfile];
+            }
+            case ZR_CLASS_CACHE_MODIFIED:
+            {
+                return ClassDataCache[index][Class_WeaponProfile];
+            }
+            case ZR_CLASS_CACHE_PLAYER:
+            {
+                return ClassPlayerCache[index][Class_WeaponProfile];
+            }
         }
     }
     return -1;

@@ -29,13 +29,20 @@
 #endif
 #define _ammomanager_included
 
-#include "zr/weapons/ammoprofiles"
+/**
+ * @section Number of managed slots. So far it's for primary and secondary
+ *          weapons. This can be expanded later to support grenades.
+ */
+#define AMMO_MANAGED_SLOTS 2
+/**
+ * @endsection
+ */
 
 /**
- * @section Maximum number of ammo managers. There must be at least two
- *          managers available per player (primary and secondary weapon).
+ * @section Maximum number of ammo managers. There must be one manager per
+ *          slot that is managed.
  */
-#define AMMO_MANAGER_MAX    MAXPLAYERS * 2
+#define AMMO_MANAGER_MAX    MAXPLAYERS * AMMO_MANAGED_SLOTS
 /**
  * @endsection
  */

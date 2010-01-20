@@ -76,7 +76,6 @@ WeaponProfilesLoad()
         LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Config Validation", "Can't find any weapon profiles in \"%s\"", weaponProfilesPath);
     }
     
-    //decl String:buffer[256];
     decl String:name[32];
     decl String:priAmmoProfile[32];
     decl String:secAmmoProfile[32];
@@ -117,7 +116,7 @@ WeaponProfilesLoad()
         priAmmoIndex = AmmoGetIndex(priAmmoProfile);
         if (AmmoIsValidIndex(priAmmoIndex))
         {
-            WeaponProfiles[WeaponProfileCount][WeaponProfile_PriAmmoManager] = priAmmoIndex;            
+            WeaponProfiles[WeaponProfileCount][WeaponProfile_PriAmmoProfile] = priAmmoIndex;
         }
         else
         {
@@ -130,15 +129,16 @@ WeaponProfilesLoad()
         KvGetString(kvWeaponProfiles, "secondary_ammo_profile", secAmmoProfile, sizeof(secAmmoProfile));
         if (StrEqual(priAmmoProfile, secAmmoProfile))
         {
-            // Secondary profile is the same as primary profile.
-            WeaponProfiles[WeaponProfileCount][WeaponProfile_SecAmmoManager] = priAmmoIndex;
+            // Secondary profile is the same as primary profile. We already
+            // know that the primary profile index is valid.
+            WeaponProfiles[WeaponProfileCount][WeaponProfile_SecAmmoProfile] = priAmmoIndex;
         }
         else
         {
             secAmmoIndex = AmmoGetIndex(secAmmoProfile);
             if (AmmoIsValidIndex(secAmmoIndex))
             {
-                WeaponProfiles[WeaponProfileCount][WeaponProfile_SecAmmoManager] = secAmmoIndex;
+                WeaponProfiles[WeaponProfileCount][WeaponProfile_SecAmmoProfile] = secAmmoIndex;
             }
             else
             {
@@ -148,12 +148,13 @@ WeaponProfilesLoad()
             }
         }
         
+        // TODO: Make restriction profiles.
         // Weapon restriction profile.
         /*KvGetString(kvWeaponProfiles, "restriction_profile", restrictProfile, sizeof(restrictProfile));
         restrictIndex = RestrictProfileGetIndex(restrictProfile);
         if (RestrictIsValidIndex(restrictIndex))
         {
-            WeaponProfiles[WeaponProfileCount][WeaponProfile_RestrictManager] = restrictIndex;            
+            WeaponProfiles[WeaponProfileCount][WeaponProfile_RestrictProfile] = restrictIndex;            
         }
         else
         {
