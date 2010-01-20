@@ -200,6 +200,7 @@ public OnMapStart()
 public OnMapEnd()
 {
     // Forward event to modules.
+    VEffectsOnMapEnd();
     VolOnMapEnd();
 }
 
