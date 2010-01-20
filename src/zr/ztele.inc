@@ -113,6 +113,17 @@ ZTeleOnClientInfected(client)
 }
 
 /**
+ * Player has been turned back human.
+ * 
+ * @param client    The client index.
+ */
+ZTeleOnClientHuman(client)
+{
+    // If timer is running, kill it.
+    ZREndTimer(tZTele[client], true);
+}
+
+/**
  * Teleports a client back to spawn if conditions are met.
  * 
  * @param client    The client index.

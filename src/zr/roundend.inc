@@ -105,6 +105,19 @@ RoundEndOnClientInfected()
 }
 
 /**
+ * Client has been turned back human.
+ */
+RoundEndOnClientHuman()
+{
+    // Terminate the round if the last player has been turned human.
+    new RoundEndOutcome:outcome;
+    if (RoundEndGetRoundStatus(outcome))
+    {
+        RoundEndTerminateRound(ROUNDEND_DELAY, outcome);
+    }
+}
+
+/**
  * The round is starting.
  */
 RoundEndOnRoundStart()

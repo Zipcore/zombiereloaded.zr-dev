@@ -25,35 +25,123 @@
  * ============================================================================
  */
 
-new ClientHealthRegenAmount[MAXPLAYERS + 1];
-new ClientHealthRegenMax[MAXPLAYERS + 1];
-new Handle:tHealthRegen[MAXPLAYERS + 1];
+/**
+ * Attributes for health regen.
+ */
+enum HealthRegenAttribute
+{
+    Float:RegenAttribute_Interval,
+    RegenAttribute_Amount,
+    RegenAttribute_MaxHealth,
+    Handle:RegenAttribute_Timer
+}
 
 /**
- * Resets all timer handles. (called from classevents)
+ * Array to store health regen attributes for each client.
  */
-ClassHealthRegenInit()
+new HealthRegenAttributes[MAXPLAYERS + 1][HealthRegenAttribute];
+
+/**
+ * Called when a client connects to the server (OnClientPutInServer).
+ */
+HealthRegenClientInit(client)
 {
-    for (new client = 0; client < MAXPLAYERS + 1; client++)
+    // Reset the array index to INVALID_HANDLE because there is no regen timer running on this new client.
+    ZREndTimer(HealthRegenAttributes[client][RegenAttribute_Timer], false);
+}
+
+/**
+ * Client is leaving the server.
+ * 
+ * @param client    The client index.
+ */
+HealthRegenOnClientDisconnect(client)
+{
+    // Stop the client from regenerating.
+    HealthRegenStop(client);
+}
+
+/**
+ * Set the health regen attributes on a client.
+ */
+
+HealthRegenSetInterval(client, Float:interval)
+{
+    HealthRegenAttributes[client][RegenAttribute_Interval] = interval;
+}
+
+HealthRegenSetAmount(client, amount)
+{
+    HealthRegenAttributes[client][RegenAttribute_Amount] = amount;
+}
+
+HealthRegenSetMaxHealth(client, maxhealth)
+{
+    HealthRegenAttributes[client][RegenAttribute_MaxHealth] = maxhealth;
+}
+
+/**
+ * Client has spawned into the game.
+ * 
+ * @param client    The client index.
+ */ 
+HealthRegenOnClientSpawn(client)
+{
+    // Kill the regen timer.
+    HealthRegenStop(client);
+}
+
+/**
+ * Client is being hurt.
+ * 
+ * @param client    The client index.
+ */
+HealthRegenOnClientHurt(client)
+{
+    // If the client is regenerating health already, then stop.
+    if (ZRIsTimerRunning(HealthRegenAttributes[client][RegenAttribute_Timer]))
     {
-        ZREndTimer(tHealthRegen[client], false);
+        return;
+    }
+    
+    // If the client's health is lower than their max health, then start regeneration.
+    if (GetClientHealth(client) < HealthRegenAttributes[client][RegenAttribute_MaxHealth])
+    {
+        HealthRegenStart(client);
     }
 }
 
 /**
- * Prepares and starts HP regeneration on a client.
- *
- * @param client        The client to apply HP regeneration on.
- * @param interval      Regeneration interval.
- * @param amount        HP amount per interval.
- * @param max           Regeneration limit. Don't give HP if player HP is above
- *                      this value.
- */
-ClassHealthRegenInitClient(client, Float:interval, amount, max)
+ * Client has been killed.
+ * 
+ * @param client    The client index.
+ */ 
+HealthRegenOnClientDeath(client)
 {
-    ClientHealthRegenAmount[client] = amount;
-    ClientHealthRegenMax[client] = max;
-    ClassHealthRegenStart(client, interval);
+    // Kill the regen timer.
+    HealthRegenStop(client);
+}
+
+/**
+ * Client has been infected.
+ * 
+ * @param client    The client index.
+ */
+HealthRegenOnClientInfected(client)
+{
+    // Kill the regen timer.
+    HealthRegenStop(client);
+}
+
+/**
+ * Client has been turned back human.
+ * 
+ * @param client    The client index.
+ */
+HealthRegenOnClientHuman(client)
+{
+    // Kill the regen timer.
+    HealthRegenStop(client);
 }
 
 /**
@@ -62,13 +150,13 @@ ClassHealthRegenInitClient(client, Float:interval, amount, max)
  * @param client        The client index.
  * @param interval      Regeneration interval.
  */
-ClassHealthRegenStart(client, Float:interval)
+HealthRegenStart(client)
 {
-    // Stop timer if it already exist.
-    ClassHealthRegenStop(client);
+    // Stop timer if it already exists.
+    HealthRegenStop(client);
     
     // Create new timer.
-    tHealthRegen[client] = CreateTimer(interval, ClassHealthRegenTimer, client, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+    HealthRegenAttributes[client][RegenAttribute_Timer] = CreateTimer(HealthRegenAttributes[client][RegenAttribute_Interval], HealthRegenTimer, client, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 }
 
 /**
@@ -76,32 +164,42 @@ ClassHealthRegenStart(client, Float:interval)
  *
  * @param client    The client index.
  */
-ClassHealthRegenStop(client)
+HealthRegenStop(client)
 {
     // Kill the timer if it exists.
-    ZREndTimer(tHealthRegen[client], true);
+    ZREndTimer(HealthRegenAttributes[client][RegenAttribute_Timer], true);
 }
 
 /**
  * Timer callback for HP regeneration.
  */
-public Action:ClassHealthRegenTimer(Handle:timer, any:client)
+public Action:HealthRegenTimer(Handle:timer, any:client)
 {
     // Kill the timer if the player is dead or not in game.
-    if (!IsClientConnected(client) || !IsClientInGame(client) || !IsPlayerAlive(client))
+    if (!IsClientInGame(client) || !IsPlayerAlive(client))
     {
-        ZREndTimer(tHealthRegen[client], false);
+        ZREndTimer(HealthRegenAttributes[client][RegenAttribute_Timer], false);
         return Plugin_Stop;
     }
     
     new health = GetClientHealth(client);    
-    health += ClientHealthRegenAmount[client];
+    health += HealthRegenAttributes[client][RegenAttribute_Amount];
     
-    // Check if the health points is below the limit.
-    if (health < ClientHealthRegenMax[client])
+    // Check if the health points is below or equal to the limit.
+    if (health <= HealthRegenAttributes[client][RegenAttribute_MaxHealth])
     {
         // Increase health.
         SetEntityHealth(client, health);
+    }
+    
+    // If their health is now either the max health or beyond, then end health regen.
+    if (health >= HealthRegenAttributes[client][RegenAttribute_MaxHealth])
+    {
+        // Set their HP to the max health before ending.
+        SetEntityHealth(client, HealthRegenAttributes[client][RegenAttribute_MaxHealth]);
+        
+        ZREndTimer(HealthRegenAttributes[client][RegenAttribute_Timer], false);
+        return Plugin_Stop;
     }
     
     return Plugin_Continue;
