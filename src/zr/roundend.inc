@@ -75,7 +75,7 @@ new Handle:tRoundEnd = INVALID_HANDLE;
 RoundEndOnMapStart()
 {
     // Reset timer handle.
-    tRoundEnd = INVALID_HANDLE;
+    ZREndTimer(tRoundEnd, false);
 }
 
 /**
@@ -105,6 +105,19 @@ RoundEndOnClientInfected()
 }
 
 /**
+ * Client has been turned back human.
+ */
+RoundEndOnClientHuman()
+{
+    // Terminate the round if the last player has been turned human.
+    new RoundEndOutcome:outcome;
+    if (RoundEndGetRoundStatus(outcome))
+    {
+        RoundEndTerminateRound(ROUNDEND_DELAY, outcome);
+    }
+}
+
+/**
  * The round is starting.
  */
 RoundEndOnRoundStart()
@@ -113,14 +126,7 @@ RoundEndOnRoundStart()
     RoundEndOverlayStop();
     
     // If round end timer is running, then kill it.
-    if (tRoundEnd != INVALID_HANDLE)
-    {
-        // Kill timer.
-        KillTimer(tRoundEnd);
-        
-        // Reset timer handle.
-        tRoundEnd = INVALID_HANDLE;
-    }
+    ZREndTimer(tRoundEnd, true);
 }
 
 /**
@@ -147,14 +153,7 @@ RoundEndOnRoundFreezeEnd()
 RoundEndOnRoundEnd(reason)
 {
     // If round end timer is running, then kill it.
-    if (tRoundEnd != INVALID_HANDLE)
-    {
-        // Kill timer.
-        KillTimer(tRoundEnd);
-        
-        // Reset timer handle.
-        tRoundEnd = INVALID_HANDLE;
-    }
+    ZREndTimer(tRoundEnd, true);
     
     // Tell plugin no zombies have been spawned.
     g_bZombieSpawned = false;
@@ -228,7 +227,7 @@ RoundEndOutcome:RoundEndReasonToOutcome(reason)
 public Action:RoundEndTimer(Handle:timer)
 {
     // Set the global timer handle variable to INVALID_HANDLE.
-    tRoundEnd = INVALID_HANDLE;
+    ZREndTimer(tRoundEnd, false);
     
     // If there aren't clients on both teams, then stop.
     if (!ZRTeamHasClients())
@@ -335,7 +334,7 @@ RoundEndBalanceTeams()
 {
     // Create eligible player list.
     new Handle:arrayEligibleClients = INVALID_HANDLE;
-    new eligibleclients = ZRCreateEligibleClientList(arrayEligibleClients, true);
+    new eligibleclients = ZRCreateEligibleClientList(arrayEligibleClients, Condition_True, Condition_Either, Condition_Either);
     
     // If there are no eligible client's then stop.
     if (!eligibleclients)

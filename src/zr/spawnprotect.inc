@@ -43,7 +43,18 @@ new pSpawnProtectTime[MAXPLAYERS + 1];
 SpawnProtectClientInit(client)
 {
     // Reset timer handle.
-    tSpawnProtect[client] = INVALID_HANDLE;
+    ZREndTimer(tSpawnProtect[client], false);
+}
+
+/**
+ * Client is leaving the server.
+ * 
+ * @param client    The client index.
+ */
+SpawnProtectOnClientDisconnect(client)
+{
+    // Reset timer handle.
+    ZREndTimer(tSpawnProtect[client], true);
 }
 
 /**
@@ -53,20 +64,14 @@ SpawnProtectClientInit(client)
  */   
 SpawnProtectOnClientSpawnPost(client)
 {
-    // If client is dead, then they are joining the server, not spawning.
-    if (!IsPlayerAlive(client))
+    // If client isn't on a team, then stop.
+    if (!ZRIsClientOnTeam(client))
     {
         return;
     }
     
     // If timer is currently running, kill it.
-    if (tSpawnProtect[client] != INVALID_HANDLE)
-    {
-        KillTimer(tSpawnProtect[client]);
-    }
-    
-    // Reset timer handle.
-    tSpawnProtect[client] = INVALID_HANDLE;
+    ZREndTimer(tSpawnProtect[client], true);
     
     // If protect cvar is disabled, then stop.
     new bool:protect = GetConVarBool(g_hCvarsList[CVAR_SPAWNPROTECT]);
@@ -90,13 +95,7 @@ SpawnProtectOnClientSpawnPost(client)
 SpawnProtectOnClientDeath(client)
 {
     // If timer is running, kill it.
-    if (tSpawnProtect[client] != INVALID_HANDLE)
-    {
-        KillTimer(tSpawnProtect[client]);
-    }
-    
-    // Reset timer handle.
-    tSpawnProtect[client] = INVALID_HANDLE;
+    ZREndTimer(tSpawnProtect[client], true);
 }
 
 /**
@@ -161,7 +160,7 @@ public Action:SpawnProtectTimer(Handle:timer, any:client)
     if (!IsClientInGame(client))
     {
         // Reset timer handle.
-        tSpawnProtect[client] = INVALID_HANDLE;
+        ZREndTimer(tSpawnProtect[client], false);
         return Plugin_Stop;
     }
     
@@ -169,7 +168,7 @@ public Action:SpawnProtectTimer(Handle:timer, any:client)
     if (!InfectIsClientHuman(client))
     {
         // Reset timer handle.
-        tSpawnProtect[client] = INVALID_HANDLE;
+        ZREndTimer(tSpawnProtect[client], false);
         return Plugin_Stop;
     }
     
@@ -193,7 +192,7 @@ public Action:SpawnProtectTimer(Handle:timer, any:client)
         ToolsSetClientLMV(client, ClassGetSpeed(client));
         
         // Clear timer handle.
-        tSpawnProtect[client] = INVALID_HANDLE;
+        ZREndTimer(tSpawnProtect[client], false);
         
         // Stop timer.
         return Plugin_Stop;

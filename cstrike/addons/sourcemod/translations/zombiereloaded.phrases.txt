@@ -112,6 +112,11 @@
 		"en"		"(Empty)"
 	}
 
+	"Menu none"
+	{
+		"en"		"(None)"
+	}
+
 	// ===========================
 	// Config (core)
 	// ===========================
@@ -478,6 +483,25 @@
 	}
 
 	// ===========================
+	// Menu Attach (core)
+	// ===========================
+
+	"Menu attach submenu zr"
+	{
+		"en"		"Zombie:Reloaded Admin"
+	}
+
+	"Menu attach submenu zr title"
+	{
+		"en"		"Zombie:Reloaded Admin:"
+	}
+
+	"Menu attach submenu zr zadmin"
+	{
+		"en"		"ZAdmin"
+	}
+
+	// ===========================
 	// Weapons (core)
 	// ===========================
 
@@ -747,11 +771,6 @@
 	"Weapons menu zmarket weapon setup nvgs"
 	{
 		"en"		"NVGs:"
-	}
-
-	"Weapons menu zmarket weapon setup empty"
-	{
-		"en"		"(None)"
 	}
 
 	"Weapons menu zmarket types title"

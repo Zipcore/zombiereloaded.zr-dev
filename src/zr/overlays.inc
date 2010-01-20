@@ -76,7 +76,7 @@ new Handle:tOverlays = INVALID_HANDLE;
 OverlaysOnMapStart()
 {
     // Reset timer handle.
-    tOverlays = INVALID_HANDLE;
+    ZREndTimer(tOverlays, false);
 }
 
 /**
@@ -150,10 +150,7 @@ public OverlaysQueryClientDXLevel(QueryCookie:cookie, client, ConVarQueryResult:
 OverlaysOnRoundStart()
 {
     // If timer is running, kill it.
-    if (tOverlays != INVALID_HANDLE)
-    {
-        KillTimer(tOverlays);
-    }
+    ZREndTimer(tOverlays, true);
     
     // If antistick is disabled, then stop.
     new Float:overlaysupdate = GetConVarFloat(g_hCvarsList[CVAR_OVERLAYS_UPDATE_TIME]);

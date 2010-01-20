@@ -35,6 +35,13 @@
  */
 KnockbackOnClientHurt(client, attacker, const String:weapon[], hitgroup, dmg_health)
 {
+    // If the knockback cvar is disabled, then stop.
+    new bool:knockback = GetConVarBool(g_hCvarsList[CVAR_KNOCKBACK]);
+    if (!knockback)
+    {
+        return;
+    }
+    
     // If attacker is invalid, then stop.
     if (!ZRIsClientValid(attacker))
     {
@@ -54,7 +61,7 @@ KnockbackOnClientHurt(client, attacker, const String:weapon[], hitgroup, dmg_hea
     }
     
     // Get zombie knockback value.
-    new Float:knockback = ClassGetKnockback(client);
+    new Float:flKnockback = ClassGetKnockback(client);
     
     new Float:clientloc[3];
     new Float:attackerloc[3];
@@ -85,33 +92,39 @@ KnockbackOnClientHurt(client, attacker, const String:weapon[], hitgroup, dmg_hea
         TR_GetEndPosition(clientloc);
     }
     
+    // If the weapon knockback cvar is enabled, the weapons module is enabled, and the weapons file is loaded, then apply knockback multiplier.
     new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);
-    if (weapons)
+    new bool:weaponsloaded = ConfigIsConfigLoaded(File_Weapons);
+    new bool:knockback_weapons = GetConVarBool(g_hCvarsList[CVAR_KNOCKBACK_WEAPONS]);
+    if (weapons && weaponsloaded && knockback_weapons)
     {
         new weaponindex = WeaponsNameToIndex(weapon);
         if (weaponindex != -1)
         {
             // Apply weapon knockback multiplier.
-            knockback *= WeaponsGetKnockback(weaponindex);
+            flKnockback *= WeaponsGetKnockback(weaponindex);
         }
     }
     
-    new bool:hitgroups = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
-    if (hitgroups)
+    // If hitgroups isn't enabled, the hitgroups file isn't loaded, or the hitgroup knockback multiplier is disabled, then stop.
+    new bool:hitgroupsenabled = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
+    new bool:hitgroupsloaded = ConfigIsConfigLoaded(File_Hitgroups);
+    new bool:knockback_hitgroups = GetConVarBool(g_hCvarsList[CVAR_KNOCKBACK_HITGROUPS]);
+    if (hitgroupsenabled && hitgroupsloaded && knockback_hitgroups)
     {
         new hitgroupindex = HitgroupToIndex(hitgroup);
         if (hitgroupindex != -1)
         {
             // Apply hitgroup knockback multiplier.
-            knockback *= HitgroupsGetKnockback(hitgroupindex);
+            flKnockback *= HitgroupsGetKnockback(hitgroupindex);
         }
     }
     
     // Apply damage knockback multiplier.
-    knockback *= float(dmg_health);
+    flKnockback *= float(dmg_health);
     
     // Apply knockback.
-    KnockbackSetVelocity(client, attackerloc, clientloc, knockback);
+    KnockbackSetVelocity(client, attackerloc, clientloc, flKnockback);
 }
 
 /**

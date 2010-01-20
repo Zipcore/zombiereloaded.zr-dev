@@ -357,9 +357,10 @@ stock Float:HitgroupsGetKnockback(index)
  */
 bool:HitgroupsMenuHitgroups(client)
 {
-    // If hitgroups is disabled, then stop.
-    new bool:hitgroups = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
-    if (!hitgroups)
+    // If hitgroups isn't enabled or the hitgroups file isn't loaded, then stop.
+    new bool:hitgroupsenabled = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
+    new bool:hitgroupsloaded = ConfigIsConfigLoaded(File_Hitgroups);
+    if (!hitgroupsenabled || !hitgroupsloaded)
     {
         return false;
     }
@@ -514,9 +515,10 @@ public Action:HitgroupsCommand(client, argc)
         return Plugin_Handled;
     }
     
-    // If module is disabled, then stop.
-    new bool:hitgroups = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
-    if (!hitgroups)
+    // If hitgroups isn't enabled or the hitgroups file isn't loaded, then stop.
+    new bool:hitgroupsenabled = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
+    new bool:hitgroupsloaded = ConfigIsConfigLoaded(File_Hitgroups);
+    if (!hitgroupsenabled || !hitgroupsloaded)
     {
         TranslationReplyToCommand(client, "Feature is disabled");
         return Plugin_Handled;
@@ -607,9 +609,10 @@ public Action:HitgroupsEnableAllCommand(client, argc)
         return Plugin_Handled;
     }
     
-    // If module is disabled, then stop.
-    new bool:hitgroups = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
-    if (!hitgroups)
+    // If hitgroups isn't enabled or the hitgroups file isn't loaded, then stop.    
+    new bool:hitgroupsenabled = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
+    new bool:hitgroupsloaded = ConfigIsConfigLoaded(File_Hitgroups);
+    if (!hitgroupsenabled || !hitgroupsloaded)
     {
         TranslationReplyToCommand(client, "Feature is disabled");
         return Plugin_Handled;
@@ -648,9 +651,10 @@ public Action:HitgroupsHeadshotsOnlyCommand(client, argc)
         return Plugin_Handled;
     }
     
-    // If module is disabled, then stop.
-    new bool:hitgroups = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
-    if (!hitgroups)
+    // If hitgroups isn't enabled or the hitgroups file isn't loaded, then stop.
+    new bool:hitgroupsenabled = GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]);
+    new bool:hitgroupsloaded = ConfigIsConfigLoaded(File_Hitgroups);
+    if (!hitgroupsenabled || !hitgroupsloaded)
     {
         TranslationReplyToCommand(client, "Feature is disabled");
         return Plugin_Handled;

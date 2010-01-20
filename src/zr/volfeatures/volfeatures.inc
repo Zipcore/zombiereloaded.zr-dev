@@ -307,11 +307,7 @@ bool:VolStartUpdateTimer()
 VolStopUpdateTimer()
 {
     // Kill the timer if it's running.
-    if (hVolUpdateTimer != INVALID_HANDLE)
-    {
-        KillTimer(hVolUpdateTimer);
-        hVolUpdateTimer = INVALID_HANDLE;
-    }
+    ZREndTimer(hVolUpdateTimer, true);
     
     // Also stop trigger delay timer.
     VolStopTriggerTimer();
@@ -356,11 +352,7 @@ bool:VolStartTriggerTimer()
 VolStopTriggerTimer()
 {
     // Kill the timer if it's running.
-    if (hVolTriggerTimer != INVALID_HANDLE)
-    {
-        KillTimer(hVolTriggerTimer);
-        hVolTriggerTimer = INVALID_HANDLE;
-    }
+    ZREndTimer(hVolTriggerTimer, true);
 }
 
 /**

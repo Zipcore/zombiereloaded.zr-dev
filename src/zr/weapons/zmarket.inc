@@ -179,8 +179,8 @@ ZMarketOnClientSpawnPost(client)
         CookiesSetClientCookieBool(client, g_hZMarketAutoRebuyCookie, false);
     }
     
-    // If client hasn't spawned into the game yet, then stop.
-    if (!IsPlayerAlive(client))
+    // If client isn't on a team, then stop.
+    if (!ZRIsClientOnTeam(client))
     {
         return;
     }
@@ -254,9 +254,10 @@ ZMarketGetPurchaseCount(client, const String:weapon[])
  */
 bool:ZMarketMenuMain(client)
 {
-    // If weapons module is disabled, then stop.
+    // If the module isn't enabled, or the weapons file isn't loaded, then stop.
     new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);
-    if (!weapons)
+    new bool:weaponsloaded = ConfigIsConfigLoaded(File_Weapons);
+    if (!weapons || !weaponsloaded)
     {
         // Telle client feature is disabled.
         TranslationPrintToChat(client, "Feature is disabled");
@@ -408,7 +409,7 @@ bool:ZMarketMenuWeaponSetup(client)
     
     // Get the empty translation.
     decl String:empty[MENU_LINE_SMALL_LENGTH];
-    Format(empty, sizeof(empty), "%t", "Weapons menu zmarket weapon setup empty");
+    Format(empty, sizeof(empty), "%t", "Menu none");
     
     // Count and format.
     new weaponcount[WeaponsSlot];
@@ -1202,10 +1203,12 @@ stock bool:ZMarketEquip(client, const String:weapon[], bool:rebuy = false)
             return false;
         }
         
-        // Give ammo and preserve client's clip ammo value.
-        new clip = WeaponAmmoGetAmmo(weapons[slot], true);
+        // Give ammo and preserve client's clip ammo value on both primary/secondary weapons.
+        new prim_clip = WeaponAmmoGetAmmo(weapons[Slot_Primary], true);
+        new sec_clip = WeaponAmmoGetAmmo(weapons[Slot_Secondary], true);
         GivePlayerItem(client, weaponammo);
-        WeaponAmmoSetAmmo(weapons[slot], true, clip);
+        WeaponAmmoSetAmmo(weapons[Slot_Primary], true, prim_clip);
+        WeaponAmmoSetAmmo(weapons[Slot_Secondary], true, sec_clip);
     }
     
     return true;

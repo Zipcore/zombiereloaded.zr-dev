@@ -142,7 +142,7 @@ LogGetModuleNameString(String:buffer[], maxlen, LogModules:module, bool:shortNam
  *
  * @param moduleName    A string with the short module name. Case insensitive,
  *                      but not trimmed for white space.
- * @return              The matcing module type or LogModules_Invalid if failed.
+ * @return              The matching module type or LogModules_Invalid if failed.
  */
 LogModules:LogGetModule(const String:moduleName[])
 {
@@ -228,7 +228,7 @@ LogModules:LogGetModule(const String:moduleName[])
 }
 
 /**
- * Check if the specified log flag is set.
+ * Check if the specified log flag is set. (Ex. LOG_CORE_EVENTS)
  *
  * @param eventType     The log flag to check.
  * @return              True if set, false otherwise.
@@ -614,7 +614,7 @@ public Action:Command_LogAddModule(client, argc)
 }
 
 /**
- * Handles the zr_log_add_module command. Remove one or modules to module filter.
+ * Handles the zr_log_remove_module command. Remove one or modules to module filter.
  *
  * @param client    The client that executed the command.
  * @param argc      Number of arguments passed.

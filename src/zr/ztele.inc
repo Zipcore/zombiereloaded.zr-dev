@@ -70,7 +70,7 @@ ZTeleOnCommandsCreate()
 ZTeleClientInit(client)
 {
     // Reset timer handle.
-    tZTele[client] = INVALID_HANDLE;
+    ZREndTimer(tZTele[client], false);
 }
 
 /**
@@ -87,13 +87,7 @@ ZTeleOnClientSpawn(client)
     GetClientAbsOrigin(client, g_vecZTeleSpawn[client]);
     
     // If timer is running, kill it.
-    if (tZTele[client] != INVALID_HANDLE)
-    {
-        KillTimer(tZTele[client]);
-    }
-    
-    // Reset timer handle.
-    tZTele[client] = INVALID_HANDLE;
+    ZREndTimer(tZTele[client], true);
 }
 
 /**
@@ -104,13 +98,7 @@ ZTeleOnClientSpawn(client)
 ZTeleOnClientDeath(client)
 {
     // If timer is running, kill it.
-    if (tZTele[client] != INVALID_HANDLE)
-    {
-        KillTimer(tZTele[client]);
-    }
-    
-    // Reset timer handle.
-    tZTele[client] = INVALID_HANDLE;
+    ZREndTimer(tZTele[client], true);
 }
 
 /**
@@ -121,13 +109,18 @@ ZTeleOnClientDeath(client)
 ZTeleOnClientInfected(client)
 {
     // If timer is running, kill it.
-    if (tZTele[client] != INVALID_HANDLE)
-    {
-        KillTimer(tZTele[client]);
-    }
-    
-    // Reset timer handle.
-    tZTele[client] = INVALID_HANDLE;
+    ZREndTimer(tZTele[client], true);
+}
+
+/**
+ * Player has been turned back human.
+ * 
+ * @param client    The client index.
+ */
+ZTeleOnClientHuman(client)
+{
+    // If timer is running, kill it.
+    ZREndTimer(tZTele[client], true);
 }
 
 /**
@@ -177,7 +170,7 @@ bool:ZTeleClient(client, bool:force = false)
     }
     
     // If teleport is already in progress, then stop.
-    if (tZTele[client] != INVALID_HANDLE)
+    if (ZRIsTimerRunning(tZTele[client]))
     {
         if (!force)
         {
@@ -252,6 +245,15 @@ public ZTeleForceHandle(Handle:menu_ztele_force, MenuAction:action, client, slot
     {
         // Get the client index of the selected client.
         new target = MenuGetClientIndex(menu_ztele_force, slot);
+        
+        // If the target is 0, then the client left before being selected from the menu.
+        if (target == 0)
+        {
+            // Re-send the menu.
+            MenuClientList(client, ZTeleForceHandle, true, true, false, "ZTele clients title");
+            
+            return;
+        }
         
         // Get the target's name for future use.
         decl String:targetname[MAX_NAME_LENGTH];
@@ -389,6 +391,8 @@ public Action:ZTeleTimer(Handle:timer, any:client)
     // If client leaves, then stop timer.
     if (!IsClientInGame(client))
     {
+        // Reset timer handle.
+        ZREndTimer(tZTele[client], false);
         return Plugin_Stop;
     }
     
@@ -402,14 +406,11 @@ public Action:ZTeleTimer(Handle:timer, any:client)
         new Float:distance = GetVectorDistance(vecClient, g_vecZTeleOrigin[client]);
         new Float:autocanceldistance = GetConVarFloat(g_hCvarsList[CVAR_ZTELE_AUTOCANCEL_DISTANCE]);
         
-        // Convert cvar units
-        new Float:unitdistance = ZRConvertUnitsFloat(autocanceldistance, CONVERSION_FEET_TO_UNITS);
-        
         // Check if distance has been surpassed.
-        if (distance > unitdistance)
+        if (distance > autocanceldistance)
         {
             // Reset timer handle.
-            tZTele[client] = INVALID_HANDLE;
+            ZREndTimer(tZTele[client], false);
             
             // Tell client teleport has been cancelled.
             TranslationPrintCenterText(client, "ZTele autocancel centertext");
@@ -442,7 +443,7 @@ public Action:ZTeleTimer(Handle:timer, any:client)
         TranslationPrintCenterText(client, "ZTele countdown end", g_iZTeleCount[client], ztelemax);
         
         // Clear timer handle.
-        tZTele[client] = INVALID_HANDLE;
+        ZREndTimer(tZTele[client], false);
         
         // Stop timer.
         return Plugin_Stop;

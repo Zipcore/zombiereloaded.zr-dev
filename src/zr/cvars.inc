@@ -84,10 +84,11 @@ enum CvarsList
     Handle:CVAR_DAMAGE_HITGROUPS,
     Handle:CVAR_DAMAGE_BLOCK_FF,
     Handle:CVAR_DAMAGE_BLOCK_BLAST,
-    Handle:CVAR_DAMAGE_SUICIDE_ZOMBIE,
-    Handle:CVAR_DAMAGE_SUICIDE_MZOMBIE,
-    Handle:CVAR_DAMAGE_SUICIDE_HUMAN,
-    Handle:CVAR_DAMAGE_SUICIDE_CMDS,
+    Handle:CVAR_SUICIDE_AFTER_INFECT,
+    Handle:CVAR_SUICIDE_ZOMBIE,
+    Handle:CVAR_SUICIDE_MZOMBIE,
+    Handle:CVAR_SUICIDE_HUMAN,
+    Handle:CVAR_SUICIDE_CMDS,
     Handle:CVAR_SAYHOOKS_QUIET,
     Handle:CVAR_SAYHOOKS_QUIET_FILTER,
     Handle:CVAR_SAYHOOKS_QUIET_FLAGS,
@@ -95,13 +96,14 @@ enum CvarsList
     Handle:CVAR_ROUNDEND_OVERLAY,
     Handle:CVAR_ROUNDEND_OVERLAY_ZOMBIE,
     Handle:CVAR_ROUNDEND_OVERLAY_HUMAN,
+    Handle:CVAR_INFECT_MZOMBIE_RATIO,
+    Handle:CVAR_INFECT_MZOMBIE_RESPAWN,
+    Handle:CVAR_INFECT_MZOMBIE_FREEZE,
     Handle:CVAR_INFECT_SPAWNTIME_MIN,
     Handle:CVAR_INFECT_SPAWNTIME_MAX,
     Handle:CVAR_INFECT_CONSECUTIVE_BLOCK,
     Handle:CVAR_INFECT_FLASHLIGHT_BLOCK,
     Handle:CVAR_INFECT_WEAPONS_DROP,
-    Handle:CVAR_INFECT_MZOMBIE_RATIO,
-    Handle:CVAR_INFECT_MZOMBIE_RESPAWN,
     Handle:CVAR_INFECT_EXPLOSION,
     Handle:CVAR_INFECT_FIREBALL,
     Handle:CVAR_INFECT_SMOKE,
@@ -121,17 +123,17 @@ enum CvarsList
     Handle:CVAR_VEFFECTS_SKY_PATH,
     Handle:CVAR_VEFFECTS_SUN_DISABLE,
     Handle:CVAR_VEFFECTS_FOG,
-    Handle:CVAR_VEFFECTS_FOG_OVERRIDE,
+    Handle:CVAR_VEFFECTS_FOG_BLEND,
     Handle:CVAR_VEFFECTS_FOG_PCOLOR,
     Handle:CVAR_VEFFECTS_FOG_SCOLOR,
-    Handle:CVAR_VEFFECTS_FOG_DENSITY,
+    Handle:CVAR_VEFFECTS_FOG_ANGLES,
     Handle:CVAR_VEFFECTS_FOG_STARTDIST,
     Handle:CVAR_VEFFECTS_FOG_ENDDIST,
-    Handle:CVAR_VEFFECTS_FOG_FARZ,
     Handle:CVAR_VEFFECTS_RAGDOLL_REMOVE,
     Handle:CVAR_VEFFECTS_RAGDOLL_DISSOLVE,
     Handle:CVAR_VEFFECTS_RAGDOLL_DELAY,
     Handle:CVAR_VOICE,
+    Handle:CVAR_VOICE_ROUNDEND_ALLTALK,
     Handle:CVAR_VOICE_ZOMBIES_MUTE,
     Handle:CVAR_SEFFECTS_MOAN,
     Handle:CVAR_SEFFECTS_GROAN,
@@ -143,6 +145,9 @@ enum CvarsList
     Handle:CVAR_ANTISTICK,
     Handle:CVAR_ANTISTICK_DEFAULT_WIDTH,
     Handle:CVAR_ANTISTICK_FILE_PATH,
+    Handle:CVAR_KNOCKBACK,
+    Handle:CVAR_KNOCKBACK_WEAPONS,
+    Handle:CVAR_KNOCKBACK_HITGROUPS,
     Handle:CVAR_SPAWNPROTECT,
     Handle:CVAR_SPAWNPROTECT_TIME,
     Handle:CVAR_SPAWNPROTECT_SPEED,
@@ -221,6 +226,7 @@ CvarsInit()
     
     // Forward event to modules.
     VEffectsOnCvarInit();
+    SEffectsOnCvarInit();
 }
 
 /**
@@ -318,6 +324,7 @@ CvarsCreate()
     // General
     g_hCvarsList[CVAR_INFECT_MZOMBIE_RATIO]             =    CreateConVar("zr_infect_mzombie_ratio",        "5",                                "Number of mother zombies to infect (when infect timer is up) in proportion to number of humans on the server.");
     g_hCvarsList[CVAR_INFECT_MZOMBIE_RESPAWN]           =    CreateConVar("zr_infect_mzombie_respawn",      "0",                                "Teleport mother zombies back to spawn on infect.");
+    g_hCvarsList[CVAR_INFECT_MZOMBIE_FREEZE]            =    CreateConVar("zr_infect_mzombie_freeze",       "0",                                "Freeze mother zombies upon infection for this long ['0' = Disabled]");
     g_hCvarsList[CVAR_INFECT_SPAWNTIME_MIN]             =    CreateConVar("zr_infect_spawntime_min",        "30.0",                             "Minimum time from the start of the round until picking the mother zombie(s).");
     g_hCvarsList[CVAR_INFECT_SPAWNTIME_MAX]             =    CreateConVar("zr_infect_spawntime_max",        "50.0",                             "Maximum time from the start of the round until picking the mother zombie(s).");
     g_hCvarsList[CVAR_INFECT_CONSECUTIVE_BLOCK]         =    CreateConVar("zr_infect_consecutive_block",    "1",                                "Prevent a player from being chosen as mother zombie two rounds in a row.");
@@ -342,17 +349,18 @@ CvarsCreate()
     // ===========================
     
     // Hitgroup Damage
-    g_hCvarsList[CVAR_DAMAGE_HITGROUPS]                 =    CreateConVar("zr_damage_hitgroups",        "1",                            "Read hitgroup damage control from hitgroup config file, disabling this allows all zombie hitgroups to be shot.");
+    g_hCvarsList[CVAR_DAMAGE_HITGROUPS]                 =    CreateConVar("zr_damage_hitgroups",        "1",                                    "Read hitgroup damage control from hitgroup config file, disabling this allows all zombie hitgroups to be shot.");
     
     // Block Damage Types
-    g_hCvarsList[CVAR_DAMAGE_BLOCK_FF]                  =    CreateConVar("zr_damage_block_ff",         "1",                            "Block friendly fire.");
-    g_hCvarsList[CVAR_DAMAGE_BLOCK_BLAST]               =    CreateConVar("zr_damage_block_blast",      "1",                            "Block blast damage inflicted on self or teammates.");
+    g_hCvarsList[CVAR_DAMAGE_BLOCK_FF]                  =    CreateConVar("zr_damage_block_ff",         "1",                                    "Block friendly fire.");
+    g_hCvarsList[CVAR_DAMAGE_BLOCK_BLAST]               =    CreateConVar("zr_damage_block_blast",      "1",                                    "Block blast damage inflicted on self or teammates.");
     
     // Suicide Intercept
-    g_hCvarsList[CVAR_DAMAGE_SUICIDE_ZOMBIE]            =    CreateConVar("zr_damage_suicide_zombie",   "0",                                    "Intercept suicide commands attempted by zombies.");
-    g_hCvarsList[CVAR_DAMAGE_SUICIDE_MZOMBIE]           =    CreateConVar("zr_damage_suicide_mzombie",  "1",                                    "Intercept suicide commands attempted by mother zombies.");
-    g_hCvarsList[CVAR_DAMAGE_SUICIDE_HUMAN]             =    CreateConVar("zr_damage_suicide_human",    "0",                                    "Intercept suicide commands attempted by humans.");
-    g_hCvarsList[CVAR_DAMAGE_SUICIDE_CMDS]              =    CreateConVar("zr_damage_suicide_cmds",     "kill, spectate, jointeam, joinclass",  "List of client commands to intercept as suicide attempts. [Delimiter: \", \"]");
+    g_hCvarsList[CVAR_SUICIDE_AFTER_INFECT]             =    CreateConVar("zr_suicide_after_infect",    "1",                                   "Intercept suicide commands only after the first zombie has spawned.");
+    g_hCvarsList[CVAR_SUICIDE_ZOMBIE]                   =    CreateConVar("zr_suicide_zombie",          "0",                                   "Intercept suicide commands attempted by zombies.");
+    g_hCvarsList[CVAR_SUICIDE_MZOMBIE]                  =    CreateConVar("zr_suicide_mzombie",         "1",                                   "Intercept suicide commands attempted by mother zombies.");
+    g_hCvarsList[CVAR_SUICIDE_HUMAN]                    =    CreateConVar("zr_suicide_human",           "0",                                   "Intercept suicide commands attempted by humans.");
+    g_hCvarsList[CVAR_SUICIDE_CMDS]                     =    CreateConVar("zr_suicide_cmds",            "kill, spectate, jointeam, joinclass", "List of client commands to intercept as suicide attempts. [Delimiter: \", \"]");
     
     
     // ===========================
@@ -393,14 +401,13 @@ CvarsCreate()
     g_hCvarsList[CVAR_VEFFECTS_SUN_DISABLE]             =    CreateConVar("zr_veffects_sun_disable",        "0",                    "Disable sun rendering on map.");
     
     // Fog
-    g_hCvarsList[CVAR_VEFFECTS_FOG]                     =    CreateConVar("zr_veffects_fog",                "0",                    "(UNSUPPORTED) Enable fog rendering on the map.");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_OVERRIDE]            =    CreateConVar("zr_veffects_fog_override",       "0",                    "(UNSUPPORTED) If fog exists already on the map, then replace with new modified fog. [Dependency: zr_veffects_fog]");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_PCOLOR]              =    CreateConVar("zr_veffects_fog_pcolor",         "255 255 255",          "(UNSUPPORTED) Primary color of the fog. [Dependency: zr_veffects_fog]");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_SCOLOR]              =    CreateConVar("zr_veffects_fog_scolor",         "255 255 255",          "(UNSUPPORTED) Secondary color of the fog. [Dependency: zr_veffects_fog]");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_DENSITY]             =    CreateConVar("zr_veffects_fog_density",        "0.8",                  "(UNSUPPORTED) Density (thickness) of the fog. [Dependency: zr_veffects_fog]");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_STARTDIST]           =    CreateConVar("zr_veffects_fog_startdist",      "0",                    "(UNSUPPORTED) Distance from player to start rendering foremost fog. [Dependency: zr_veffects_fog]");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_ENDDIST]             =    CreateConVar("zr_veffects_fog_enddist",        "400",                  "(UNSUPPORTED) Distance from player to stop rendering fog. [Dependency: zr_veffects_fog]");
-    g_hCvarsList[CVAR_VEFFECTS_FOG_FARZ]                =    CreateConVar("zr_veffects_fog_farz",           "2000",                 "(UNSUPPORTED) Vertical clipping plane.");
+    g_hCvarsList[CVAR_VEFFECTS_FOG]                     =    CreateConVar("zr_veffects_fog",                "0",                    "Enable fog rendering on the map.");
+    g_hCvarsList[CVAR_VEFFECTS_FOG_BLEND]               =    CreateConVar("zr_veffects_fog_blend",          "0",                    "Enable blending of the primary and secondary colors depending on the direction you are looking, if disabled only primary color will be used. [Dependency: zr_veffects_fog]");
+    g_hCvarsList[CVAR_VEFFECTS_FOG_PCOLOR]              =    CreateConVar("zr_veffects_fog_pcolor",         "100 100 100",          "Primary color of the fog. [Dependency: zr_veffects_fog]");
+    g_hCvarsList[CVAR_VEFFECTS_FOG_SCOLOR]              =    CreateConVar("zr_veffects_fog_scolor",         "50 50 50",             "Secondary color of the fog. [Dependency: zr_veffects_fog&zr_veffects_fog_blend]");
+    g_hCvarsList[CVAR_VEFFECTS_FOG_ANGLES]              =    CreateConVar("zr_veffects_fog_angles",         "1 1 1",                "A vector (given by three space-separated numbers X Y Z) which points from the secondary fog color towards the primary fogcolor. [Dependency: zr_veffects_fog&zr_veffects_fog_blend]");
+    g_hCvarsList[CVAR_VEFFECTS_FOG_STARTDIST]           =    CreateConVar("zr_veffects_fog_startdist",      "25.0",                 "Distance from player to start rendering foremost fog. [Dependency: zr_veffects_fog]");
+    g_hCvarsList[CVAR_VEFFECTS_FOG_ENDDIST]             =    CreateConVar("zr_veffects_fog_enddist",        "1500.0",                "Distance from player to stop rendering fog. [Dependency: zr_veffects_fog]");
     
     
     // Ragdoll
@@ -414,8 +421,9 @@ CvarsCreate()
     // ===========================
     
     // Voice
-    g_hCvarsList[CVAR_VOICE]                            =    CreateConVar("zr_voice",                   "0",                            "(Incomplete) Modify sv_alltalk to obey zombie/human teams instead of t/ct.");
-    g_hCvarsList[CVAR_VOICE_ZOMBIES_MUTE]               =    CreateConVar("zr_voice_zombies_mute",      "0",                            "(Incomplete) Only allow humans to communicate, block verbal zombie communication.");
+    g_hCvarsList[CVAR_VOICE]                            =    CreateConVar("zr_voice",                   "1",                            "Modify sv_alltalk to obey zombie/human teams instead of t/ct.");
+    g_hCvarsList[CVAR_VOICE_ROUNDEND_ALLTALK]           =    CreateConVar("zr_voice_roundend_alltalk",  "1",                            "Allow everyone to communicate via microphone at the end of the round. [Dependency: zr_voice]");
+    g_hCvarsList[CVAR_VOICE_ZOMBIES_MUTE]               =    CreateConVar("zr_voice_zombies_mute",      "0",                            "Only allow humans to communicate, block verbal zombie communication. [Dependency: zr_voice]");
     
     // Zombie Sounds
     g_hCvarsList[CVAR_SEFFECTS_MOAN]                    =    CreateConVar("zr_seffects_moan",           "30.0",                         "Time between emission of a moan sound from a zombie.");
@@ -435,6 +443,15 @@ CvarsCreate()
     g_hCvarsList[CVAR_ANTISTICK]                        =    CreateConVar("zr_antistick",               "1",                    "Automatically unstick players when stuck within each others' collision hull.");
     g_hCvarsList[CVAR_ANTISTICK_DEFAULT_WIDTH]          =    CreateConVar("zr_antistick_default_width", "32.0",                 "The default width of player models, don't touch if you don't know what you're doing. [Dependency: zr_antistick]");
     g_hCvarsList[CVAR_ANTISTICK_FILE_PATH]              =    CreateConVar("zr_antistick_file_path",     "data/antistick.dat",   "File to store antistick model hull data. [Dependency: zr_antistick]");
+    
+    
+    // ===========================
+    // Knockback (module)
+    // ===========================
+    g_hCvarsList[CVAR_KNOCKBACK]                        =    CreateConVar("zr_knockback",               "1",                    "Zombies will be knocked back when shot by humans.  Knockback multipliers may be applied based off hitgroup location and weapon used.");
+    g_hCvarsList[CVAR_KNOCKBACK_WEAPONS]                =    CreateConVar("zr_knockback_weapons",       "1",                    "Allows knockback multipliers depending on weapons, values set in weapons config file. [Dependency: zr_knockback]");
+    g_hCvarsList[CVAR_KNOCKBACK_HITGROUPS]              =    CreateConVar("zr_knockback_hitgroups",     "1",                    "Allows knockback multipliers depending on hitgroups, values set in hitgroups config file. [Dependency: zr_knockback]");
+    
     
     // ===========================
     // Spawn Protect (module)
@@ -502,7 +519,7 @@ CvarsCreate()
     g_hCvarsList[CVAR_ZTELE_MAX_ZOMBIE]                 =    CreateConVar("zr_ztele_max_zombie",            "3",    "Max number of times a zombie is allowed to use ZTele per round. [Dependency: zr_ztele_zombie]");
     g_hCvarsList[CVAR_ZTELE_MAX_HUMAN]                  =    CreateConVar("zr_ztele_max_human",             "1",    "Max number of times a human is allowed to use ZTele per round. [Dependency: zr_ztele_human_(before)/(after)]");
     g_hCvarsList[CVAR_ZTELE_AUTOCANCEL]                 =    CreateConVar("zr_ztele_autocancel",            "1",    "Automatically cancel ZTele if player moves out of a set boundary. [Dependency: zr_ztele_(zombie)/(human)[_(before)/(after)]]");
-    g_hCvarsList[CVAR_ZTELE_AUTOCANCEL_DISTANCE]        =    CreateConVar("zr_ztele_autocancel_distance",   "20",   "Maximum distance, in feet, player is allowed to travel before teleport is cancelled. [Dependency: zr_ztele_autocancel]");
+    g_hCvarsList[CVAR_ZTELE_AUTOCANCEL_DISTANCE]        =    CreateConVar("zr_ztele_autocancel_distance",   "320",  "Maximum distance, in units, player is allowed to travel before teleport is cancelled. [Dependency: zr_ztele_autocancel]");
     
     
     // ===========================

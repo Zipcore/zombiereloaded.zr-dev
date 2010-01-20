@@ -51,6 +51,11 @@
 new Handle:tInfect = INVALID_HANDLE;
 
 /**
+ * Global array to store infect freeze timer handles per client.
+ */
+new Handle:tInfectFreeze[MAXPLAYERS + 1];
+
+/**
  * Array for flagging client as zombie.
  */
 new bool:bZombie[MAXPLAYERS + 1];
@@ -75,7 +80,7 @@ new bool:bInfectImmune[MAXPLAYERS + 1][2];
 InfectOnMapStart()
 {
     // Reset timer handle.
-    tInfect = INVALID_HANDLE;
+    ZREndTimer(tInfect, false);
 }
 
 /**
@@ -119,6 +124,9 @@ InfectClientInit(client)
     // Reset infect immunity flags.
     bInfectImmune[client][INFECT_TYPE_MOTHER] = false;
     bInfectImmune[client][INFECT_TYPE_NORMAL] = false;
+    
+    // Reset infect freeze timer.
+    ZREndTimer(tInfectFreeze[client], false);
 }
 
 /**
@@ -128,7 +136,10 @@ InfectClientInit(client)
  */
 InfectOnClientDisconnect(client)
 {
-    // If client is still connecting, then stop.
+    // Kill infect freeze timer.
+    ZREndTimer(tInfectFreeze[client], true);
+    
+    // If the client is already out of the game, then stop.
     if (!IsClientInGame(client))
     {
         return;
@@ -192,7 +203,7 @@ InfectOnClientDisconnect(client)
     new Handle:arrayEligibleClients = INVALID_HANDLE;
     
     // Create eligible client list, with no mother infect immunities
-    new eligibleclients = ZRCreateEligibleClientList(arrayEligibleClients, true, true, true);
+    new eligibleclients = ZRCreateEligibleClientList(arrayEligibleClients, Condition_True, Condition_True, Condition_True);
     
     // If there are no eligible client's then stop.
     if (!eligibleclients)
@@ -243,6 +254,9 @@ InfectOnClientTeam(client, team)
  */
 InfectOnClientSpawn(client)
 {
+    // Kill infect freeze timer.
+    ZREndTimer(tInfectFreeze[client], true);
+    
     // Disable zombie flag on client.
     bZombie[client] = false;
     
@@ -265,6 +279,9 @@ InfectOnClientSpawn(client)
  */
 InfectOnClientDeath(client, attacker)
 {
+    // Kill infect freeze timer.
+    ZREndTimer(tInfectFreeze[client], true);
+    
     // If attacker isn't valid, then stop.
     if (!ZRIsClientValid(attacker))
     {
@@ -375,14 +392,7 @@ Action:InfectOnPlayerRunCmd(client, &impulse)
 InfectOnRoundStart()
 {
     // If infect timer is running, then kill it.
-    if (tInfect != INVALID_HANDLE)
-    {
-        // Kill timer.
-        KillTimer(tInfect);
-        
-        // Reset timer handle.
-        tInfect = INVALID_HANDLE;
-    }
+    ZREndTimer(tInfect, true);
     
     // Tell plugin there are no zombies.
     g_bZombieSpawned = false;
@@ -394,11 +404,7 @@ InfectOnRoundStart()
 InfectOnRoundFreezeEnd()
 {
     // If infect timer is running, then kill it.
-    if (tInfect != INVALID_HANDLE)
-    {
-        // Kill timer.
-        KillTimer(tInfect);
-    }
+    ZREndTimer(tInfect, true);
     
     // Get min and max times.
     new Float:infectspawntimemin = GetConVarFloat(g_hCvarsList[CVAR_INFECT_SPAWNTIME_MIN]);
@@ -416,14 +422,7 @@ InfectOnRoundFreezeEnd()
 InfectOnRoundEnd()
 {
     // If infect timer is running, then kill it.
-    if (tInfect != INVALID_HANDLE)
-    {
-        // Kill timer.
-        KillTimer(tInfect);
-        
-        // Reset timer handle.
-        tInfect = INVALID_HANDLE;
-    }
+    ZREndTimer(tInfect, true);
     
     // x = client index.
     for (new x = 1; x <=  MaxClients; x++)
@@ -447,11 +446,11 @@ InfectOnRoundEnd()
 public Action:InfectMotherZombie(Handle:timer)
 {
     // Reset timer handle.
-    tInfect = INVALID_HANDLE;
+    ZREndTimer(tInfect, false);
     
     // Create eligible player list.
     new Handle:arrayEligibleClients = INVALID_HANDLE;
-    new eligibleclients = ZRCreateEligibleClientList(arrayEligibleClients, true, true, true);
+    new eligibleclients = ZRCreateEligibleClientList(arrayEligibleClients, Condition_True, Condition_True, Condition_True);
     
     // If there are no eligible client's then stop.
     if (!eligibleclients)
@@ -595,6 +594,15 @@ public Action:InfectMotherZombie(Handle:timer)
  */
 InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respawnoverride = false, bool:respawn = false)
 {
+    // Forward pre-event to modules.
+    new Action:result = APIOnClientInfectedPre(client, attacker, motherinfect, respawnoverride, respawn);
+    
+    // If the forward returned Plugin_Handled or Plugin_Stop, then stop this function.
+    if (result == Plugin_Handled || result == Plugin_Stop)
+    {
+        return;
+    }
+    
     // Mark player as zombie.
     bZombie[client] = true;
     
@@ -654,6 +662,9 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     // TODO: A solution to stop confusing bots? Respawn and teleport?
     CS_SwitchTeam(client, CS_TEAM_T);
     
+    
+    // Respawn/Freeze shit.
+    
     // If respawn is enabled, then teleport mother zombie back to spawnpoint.
     if (motherinfect)
     {
@@ -661,6 +672,13 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
         if(zombierespawn)
         {
             ZTeleTeleportClient(client);
+        }
+        
+        // If the infect freeze cvar is above 0, then freeze the client.
+        new Float:infect_freeze = GetConVarFloat(g_hCvarsList[CVAR_INFECT_MZOMBIE_FREEZE]);
+        if (infect_freeze > 0.0)
+        {
+            InfectFreezeClient(client, infect_freeze);
         }
     }
     // Check override.
@@ -693,6 +711,7 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     SEffectsOnClientInfected(client);
     ZTeleOnClientInfected(client);
     ZHPOnClientInfected(client);
+    APIOnClientInfected(client, attacker, motherinfect, respawnoverride, respawn);
 }
 
 /**
@@ -705,6 +724,15 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
  */
 InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
 {
+    // Forward pre-event to modules.
+    new Action:result = APIOnClientHumanPre(client, respawn, protect);
+    
+    // If the forward returned Plugin_Handled or Plugin_Stop, then stop this function.
+    if (result == Plugin_Handled || result == Plugin_Stop)
+    {
+        return;
+    }
+    
     // Mark player as human.
     bZombie[client] = false;
     
@@ -716,11 +744,6 @@ InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
     
     // Print message to client.
     TranslationPrintToChat(client, "Infect human");
-    
-    // Forward event to modules.
-    ClassReloadPlayer(client);
-    RoundEndOnClientInfected();
-    ZTeleOnClientInfected(client);
     
     // Give human a new knife. (If you leave the old one there will be glitches with the knife positioning)
     new knife = GetPlayerWeaponSlot(client, _:Slot_Melee);
@@ -742,8 +765,18 @@ InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
         SpawnProtectStart(client);
     }
     
+    // Manually trigger the end of the freeze timer if it's currently running.
+    if (ZRIsTimerRunning(tInfectFreeze[client]))
+    {
+        TriggerTimer(tInfectFreeze[client]);
+    }
+    
     // Forward event to modules.
-    //SEffectsOnClientHuman(client);
+    ClassOnClientHuman(client);
+    RoundEndOnClientHuman();
+    SEffectsOnClientHuman(client);
+    ZTeleOnClientHuman(client);
+    APIOnClientHuman(client, respawn, protect);
 }
 
 /**
@@ -821,6 +854,43 @@ InfectFireEffects(client)
         // Shake client's screen.
         VEffectsShakeClientScreen(client, shakeamp, shakefrequency, shakeduration);
     }
+}
+
+/**
+ * Immobilize and stop damage on this client.
+ * 
+ * @param client    The client index.
+ * @param time      How long until these effects wear off.
+ */
+InfectFreezeClient(client, Float:time)
+{
+    // Freeze and block damage.
+    ToolsAddEntityFlag(client, FL_FROZEN);
+    SetEntProp(client, Prop_Data, "m_takedamage", TOOLS_TAKEDAMAGE_DISABLE);
+    
+    // ToolsAddEntityFlag(client, FL_GODMODE); <- Doesn't work.
+    
+    // Start the timer to unfreeze/unblock damage.
+    tInfectFreeze[client] = CreateTimer(time, InfectFreezeTimer, client, TIMER_FLAG_NO_MAPCHANGE);
+}
+
+/**
+ * Timer callback.
+ * Unfreezes and unblocks damage on the mother zombie.
+ * 
+ * @param timer     The timer handle.
+ * @param client    The client index.
+*/
+public Action:InfectFreezeTimer(Handle:timer, any:client)
+{
+    // Unfreeze and unblock damage.
+    ToolsRemoveEntityFlag(client, FL_FROZEN);
+    SetEntProp(client, Prop_Data, "m_takedamage", TOOLS_TAKEDAMAGE_ENABLE);
+    
+    // ToolsRemoveEntityFlag(client, FL_GODMODE); <- Doesn't work.
+    
+    // Reset the timer handle.
+    ZREndTimer(tInfectFreeze[client], false);
 }
 
 /**
@@ -946,7 +1016,7 @@ public InfectMenuClientsHandle(Handle:menu_infect_clients, MenuAction:action, cl
  * @param client    The client index.
  * @return          True if the client has been infected, false otherwise.
  */    
-bool:InfectIsClientInfected(client)
+stock bool:InfectIsClientInfected(client)
 {
     // If client is invalid, then stop.
     if (!ZRIsClientValid(client))
@@ -964,7 +1034,7 @@ bool:InfectIsClientInfected(client)
  * @param client    The client index.
  * @return          True if the client is a human, false otherwise.
  */
-bool:InfectIsClientHuman(client)
+stock bool:InfectIsClientHuman(client)
 {
     // If client is invalid, then stop.
     if (!ZRIsClientValid(client))
@@ -993,11 +1063,7 @@ stock InfectManualInfect(client, targets[], count, bool:respawnoverride = false,
     if (!zombiespawned)
     {
         // Stop mother infect timer.
-        if (tInfect != INVALID_HANDLE)
-        {
-            KillTimer(tInfect);
-            tInfect = INVALID_HANDLE;
-        }
+        ZREndTimer(tInfect, true);
         
         // Move all clients to CT
         for (new x = 1; x <= MaxClients; x++)
@@ -1070,7 +1136,7 @@ stock InfectManualInfect(client, targets[], count, bool:respawnoverride = false,
 }
 
 /**
- * Infecting a client manually (via zr_human or the "Zombie Management" menu)
+ * Turning a client human manually (via zr_human or the "Zombie Management" menu)
  * 
  * @param client    The client index changing a zombie to human.
  * @param targets   Array containing all clients to make human.

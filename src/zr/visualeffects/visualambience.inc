@@ -31,22 +31,28 @@
 new String:g_VAmbienceDefaultSky[PLATFORM_MAX_PATH];
 
 /**
+ * The two components of fog.
+ */
+enum VAmbienceFogType
+{
+    FogType_Primary,
+    FogType_Secondary
+}
+
+/**
+ * The map is ending.
+ */
+VAmbienceOnMapEnd()
+{
+    // Reset the default sky cache to empty, to be re-cached for the next map.
+    g_VAmbienceDefaultSky[0] = '\0';
+}
+
+/**
  * Validate cvar data.
  */
 VAmbienceLoad()
 {
-    // Find map's default sky.
-    new Handle:hSkyname = FindConVar("sv_skyname");
-    if (hSkyname != INVALID_HANDLE)
-    {
-        // Store map's default sky before applying new one.
-        GetConVarString(hSkyname, g_VAmbienceDefaultSky, sizeof(g_VAmbienceDefaultSky));
-    }
-    else
-    {
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_VEffects, "Sky Caching", "Couldn't find handle to cvar: \"sv_skyname\"");
-    }
-    
     // Apply all visual effects now
     VAmbienceApplyAll();
     
@@ -93,13 +99,12 @@ VAmbienceCvarsHook(bool:unhook = false)
         
         // Unhook fog cvars.
         UnhookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG], VAmbienceCvarsHookFog);
-        UnhookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_OVERRIDE], VAmbienceCvarsHookFog);
+        UnhookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_BLEND], VAmbienceCvarsHookFog);
         UnhookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_PCOLOR], VAmbienceCvarsHookFog);
         UnhookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_SCOLOR], VAmbienceCvarsHookFog);
-        UnhookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_DENSITY], VAmbienceCvarsHookFog);
+        UnhookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_ANGLES], VAmbienceCvarsHookFog);
         UnhookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_STARTDIST], VAmbienceCvarsHookFog);
         UnhookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_ENDDIST], VAmbienceCvarsHookFog);
-        UnhookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_FARZ], VAmbienceCvarsHookFog);
         
         // Stop after unhooking cvars.
         return;
@@ -118,13 +123,12 @@ VAmbienceCvarsHook(bool:unhook = false)
     
     // Hook fog cvars.
     HookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG], VAmbienceCvarsHookFog);
-    HookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_OVERRIDE], VAmbienceCvarsHookFog);
+    HookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_BLEND], VAmbienceCvarsHookFog);
     HookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_PCOLOR], VAmbienceCvarsHookFog);
     HookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_SCOLOR], VAmbienceCvarsHookFog);
-    HookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_DENSITY], VAmbienceCvarsHookFog);
+    HookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_ANGLES], VAmbienceCvarsHookFog);
     HookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_STARTDIST], VAmbienceCvarsHookFog);
     HookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_ENDDIST], VAmbienceCvarsHookFog);
-    HookConVarChange(g_hCvarsList[CVAR_VEFFECTS_FOG_FARZ], VAmbienceCvarsHookFog);
 }
 
 /**
@@ -171,7 +175,7 @@ public VAmbienceCvarsHookSky(Handle:cvar, const String:oldvalue[], const String:
  */
 public VAmbienceCvarsHookSunDisable(Handle:cvar, const String:oldvalue[], const String:newvalue[])
 {
-    // If fog is disabled, then disable.
+    // If sun disable is disabled, then disable.  (Lol)
     new bool:sun = GetConVarBool(g_hCvarsList[CVAR_VEFFECTS_SUN_DISABLE]);
     
     // Apply fog.
@@ -189,16 +193,16 @@ public VAmbienceCvarsHookSunDisable(Handle:cvar, const String:oldvalue[], const 
 public VAmbienceCvarsHookFog(Handle:cvar, const String:oldvalue[], const String:newvalue[])
 {
     // If fog is disabled, then disable.
-    new bool:fogoverride = GetConVarBool(g_hCvarsList[CVAR_VEFFECTS_FOG_OVERRIDE]);
+    new bool:fog = GetConVarBool(g_hCvarsList[CVAR_VEFFECTS_FOG]);
     
     // Apply fog.
-    VAmbienceApplyFog(fogoverride);
+    VAmbienceApplyFog(!fog);
 }
 
 /**
  * Apply all cvar values on server.
  */
-VAmbienceApplyAll()
+stock VAmbienceApplyAll()
 {
     // If lightstyle is disabled, then disable.
     new bool:lightstyle = GetConVarBool(g_hCvarsList[CVAR_VEFFECTS_LIGHTSTYLE]);
@@ -212,16 +216,16 @@ VAmbienceApplyAll()
     // Apply new sky.
     VAmbienceApplySky(!sky);
     
-    // If fog is disabled, then disable.
-    new bool:fogoverride = GetConVarBool(g_hCvarsList[CVAR_VEFFECTS_FOG_OVERRIDE]);
+    // If sky is disabled, then disable.
+    new bool:fog = GetConVarBool(g_hCvarsList[CVAR_VEFFECTS_FOG]);
     
     // Apply fog.
-    VAmbienceApplyFog(fogoverride);
+    VAmbienceApplyFog(!fog);
 }
 
-VAmbienceApplyLightStyle(bool:disable = false)
+stock VAmbienceApplyLightStyle(bool:disable = false)
 {
-    // If default, then set to normal light style.
+    // If disabled, then set to normal light style.
     if (disable)
     {
         // Set light style.
@@ -238,20 +242,27 @@ VAmbienceApplyLightStyle(bool:disable = false)
     SetLightStyle(0, lightstylevalue);
 }
 
-VAmbienceApplySky(bool:disable = false)
+stock VAmbienceApplySky(bool:disable = false)
 {
-    // if we can't find the sv_skyname cvar, then stop.
+    // If we can't find the sv_skyname cvar, then stop.
     new Handle:hSkyname = FindConVar("sv_skyname");
     if (hSkyname == INVALID_HANDLE)
     {
         return;
     }
     
-    // If default, then set to default sky.
+    // Store map's default sky before applying new one.
+    if (!g_VAmbienceDefaultSky[0])
+    {
+        GetConVarString(hSkyname, g_VAmbienceDefaultSky, sizeof(g_VAmbienceDefaultSky));
+    }
+    
+    // If disabled, then set to default sky.
     if (disable)
     {
         if (g_VAmbienceDefaultSky[0])
         {
+            // Set default sky on all clients.
             SetConVarString(hSkyname, g_VAmbienceDefaultSky, true);
         }
         
@@ -266,7 +277,7 @@ VAmbienceApplySky(bool:disable = false)
     SetConVarString(hSkyname, skypath, true);
 }
 
-VAmbienceApplySunDisable(bool:disable = false)
+stock VAmbienceApplySunDisable(bool:disable = false)
 {
     // Find sun entity.
     new sun = FindEntityByClassname(-1, "env_sun");
@@ -277,7 +288,7 @@ VAmbienceApplySunDisable(bool:disable = false)
         return;
     }
     
-    // If default, then re-enable sun rendering.
+    // If disabled, then re-enable sun rendering.
     if (disable)
     {
         // Turn on sun rendering.
@@ -290,140 +301,187 @@ VAmbienceApplySunDisable(bool:disable = false)
     AcceptEntityInput(sun, "TurnOff");
 }
 
-VAmbienceApplyFog(bool:override = false)
+stock VAmbienceApplyFog(bool:disable = false)
 {
-    // If fog is disabled, then stop.
-    new bool:fog = GetConVarBool(g_hCvarsList[CVAR_VEFFECTS_FOG]);
+    // Find any existing fog controlling entities.
+    new fogreference = FindEntityByClassname(-1, "env_fog_controller");
+    new skyreference = FindEntityByClassname(-1, "sky_camera");
     
-    // DUE TO SOURCEMOD NOT SUPPORT FOG, DISABLE.
-    fog = false;
+    // If fog is disabled, then turn off the entities and stop here.
+    if (disable)
+    {
+        if (fogreference != INVALID_ENT_REFERENCE)
+        {
+            AcceptEntityInput(fogreference, "TurnOff");
+        }
+        
+        if (skyreference != INVALID_ENT_REFERENCE)
+        {
+            DispatchKeyValue(skyreference, "fogenable", "0");
+        }
+        
+        return;
+    }
     
-    if (!fog)
+    // If fog doesn't exist, then create it.
+    if (fogreference == INVALID_ENT_REFERENCE)
+    {
+        // Create the non-networked fog entity.
+        fogreference = CreateEntityByName("env_fog_controller");
+        DispatchSpawn(fogreference);
+    }
+    
+    // Enable fog if it was disabled.
+    AcceptEntityInput(fogreference, "TurnOn");
+    
+    // Check if the map is missing a sky_camera entity
+    if (skyreference == INVALID_ENT_REFERENCE)
+    {
+        LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_VEffects, "Fog Manipulation", "Failed to find a sky_camera entity on this map, sky fog couldn't be synced with level fog.");
+    }
+    else
+    {
+        DispatchKeyValue(skyreference, "fogenable", "1");
+    }
+    
+    // Set fog color blending.
+    new bool:blend = GetConVarBool(g_hCvarsList[CVAR_VEFFECTS_FOG_BLEND]);
+    VAmbienceSetFogBlend(fogreference, blend);
+    VAmbienceSetFogBlend(skyreference, blend);
+    
+    decl String:fogcolor[16];
+    decl String:fogangles[16];
+    
+    // Set primary fog color.
+    GetConVarString(g_hCvarsList[CVAR_VEFFECTS_FOG_PCOLOR], fogcolor, sizeof(fogcolor));
+    VAmbienceSetFogColor(fogreference, fogcolor, FogType_Primary);
+    VAmbienceSetFogColor(skyreference, fogcolor, FogType_Primary);
+    
+    // Set secondary fog color.
+    GetConVarString(g_hCvarsList[CVAR_VEFFECTS_FOG_SCOLOR], fogcolor, sizeof(fogcolor));
+    VAmbienceSetFogColor(fogreference, fogcolor, FogType_Secondary);
+    VAmbienceSetFogColor(skyreference, fogcolor, FogType_Secondary);
+    
+    // Set fog blending angles.
+    GetConVarString(g_hCvarsList[CVAR_VEFFECTS_FOG_ANGLES], fogangles, sizeof(fogangles));
+    VAmbienceSetFogAngles(fogreference, fogangles);
+    VAmbienceSetFogAngles(skyreference, fogangles);
+    
+    // Set fog's start distance.
+    new Float:fogstart = GetConVarFloat(g_hCvarsList[CVAR_VEFFECTS_FOG_STARTDIST]);
+    VAmbienceSetFogStartDist(fogreference, fogstart);
+    VAmbienceSetFogStartDist(skyreference, fogstart);
+    
+    // Set fog's end distance.
+    new Float:fogend = GetConVarFloat(g_hCvarsList[CVAR_VEFFECTS_FOG_ENDDIST]);
+    VAmbienceSetFogEndDist(fogreference, fogend);
+    VAmbienceSetFogEndDist(skyreference, fogend);
+}
+
+/**
+ * Set if fog should blend colors.
+ * 
+ * @param entityreference   Entity reference of the fog to modify.
+ * @param blend             True to blend, false to only use primary color.
+ */
+stock VAmbienceSetFogBlend(entityreference, bool:blend)
+{
+    // If the entity reference is invalid, then stop.
+    if (entityreference == INVALID_ENT_REFERENCE)
     {
         return;
     }
     
-    // Find current fog index
-    new fogindex = FindEntityByClassname(-1, "env_fog_controller");
-    
-    // If override is enabled, then continue.
-    if (override)
+    // Set fog blending.
+    if (blend)
     {
-        // If there is fog, then continue.
-        if (fogindex != -1)
-        {
-            // Delete fog.
-            RemoveEdict(fogindex);
-        }
+        DispatchKeyValue(entityreference, "fogblend", "1");
     }
-    
-    // If there is no fog on the map, create new fog.
-    if (fogindex == -1)
+    else
     {
-        // Create and spawn fog.
-        fogindex = CreateEntityByName("env_fog_controller");
-        DispatchSpawn(fogindex);
+        DispatchKeyValue(entityreference, "fogblend", "0");
     }
-    
-    decl String:fogcolor[16];
-    
-    // Set primary fog color.
-    GetConVarString(g_hCvarsList[CVAR_VEFFECTS_FOG_PCOLOR], fogcolor, sizeof(fogcolor));
-    VAmbienceSetFogColor(fogindex, fogcolor, true);
-    
-    // Set secondary fog color.
-    GetConVarString(g_hCvarsList[CVAR_VEFFECTS_FOG_SCOLOR], fogcolor, sizeof(fogcolor));
-    VAmbienceSetFogColor(fogindex, fogcolor, false);
-    
-    // Set fog's density.
-    new Float:fogdensity = GetConVarFloat(g_hCvarsList[CVAR_VEFFECTS_FOG_DENSITY]);
-    VAmbienceSetFogDensity(fogindex, fogdensity);
-    
-    // Set fog's start distance.
-    new fogstart = GetConVarInt(g_hCvarsList[CVAR_VEFFECTS_FOG_STARTDIST]);
-    VAmbienceSetFogStartDist(fogindex, fogstart);
-    
-    // Set fog's end distance.
-    new fogend = GetConVarInt(g_hCvarsList[CVAR_VEFFECTS_FOG_ENDDIST]);
-    VAmbienceSetFogEndDist(fogindex, fogend);
-    
-    // Set fog's far z distance.
-    new fogfarz = GetConVarInt(g_hCvarsList[CVAR_VEFFECTS_FOG_FARZ]);
-    VAmbienceSetFogFarZ(fogindex, fogfarz);
 }
 
 /**
  * Set fog's primary or secondary color.
  * 
- * @param fogindex  Edict index of the fog to modify.
- * @param color     The rgb color of the fog. 
- * @param primary   (Optional) True to set primary, false otherwise.
+ * @param entityreference   Entity reference of the fog to modify.
+ * @param color             The rgb color of the fog.
+ * @param primary           (Optional) True to set primary, false otherwise.
  */
-VAmbienceSetFogColor(fogindex, const String:color[], bool:primary = true)
+stock VAmbienceSetFogColor(entityreference, const String:color[], VAmbienceFogType:type = FogType_Primary)
 {
+    // If the entity reference is invalid, then stop.
+    if (entityreference == INVALID_ENT_REFERENCE)
+    {
+        return;
+    }
+    
     // Set primary color.
-    if (primary)
+    if (type == FogType_Primary)
     {
         // Set new color.
-        SetVariantString(color);
-        AcceptEntityInput(fogindex, "SetColor");
+        DispatchKeyValue(entityreference, "fogcolor", color);
     }
     // Set secondary color.
-    else
+    else if (type == FogType_Secondary)
     {
         // Set new color.
-        SetVariantString(color);
-        AcceptEntityInput(fogindex, "SetColorSecondary");
+        DispatchKeyValue(entityreference, "fogcolor2", color);
     }
 }
 
 /**
- * Set fog's density.
+ * Set fog's blending angles.
  * 
- * @param fogindex  Edict index of the fog to modify.
- * @param density   The density of the fog. 
+ * @param entityreference   Entity reference of the fog to modify.
+ * @param angles            The blending angles to set.
  */
-VAmbienceSetFogDensity(fogindex, Float:density)
+stock VAmbienceSetFogAngles(entityreference, const String:angles[])
 {
-    // Set density.
-    DispatchKeyValueFloat(fogindex, "fogmaxdensity", density);
+    // If the entity reference is invalid, then stop.
+    if (entityreference == INVALID_ENT_REFERENCE)
+    {
+        return;
+    }
+    
+    // Set blending angles.
+    DispatchKeyValue(entityreference, "fogdir", angles);
 }
 
 /**
  * Set fog's start distance.
  * 
- * @param fogindex      Edict index of the fog to modify.
- * @param startdist     The start distance of the fog. 
+ * @param entityreference       Entity reference of the fog to modify.
+ * @param startdist             The start distance of the fog.
  */
-VAmbienceSetFogStartDist(fogindex, startdist)
+stock VAmbienceSetFogStartDist(entityreference, Float:startdist)
 {
+    // If the entity reference is invalid, then stop.
+    if (entityreference == INVALID_ENT_REFERENCE)
+    {
+        return;
+    }
+    
     // Set start distance.
-    SetVariantInt(startdist);
-    AcceptEntityInput(fogindex, "SetStartDist");
+    DispatchKeyValueFloat(entityreference, "fogstart", startdist);
 }
 
 /**
  * Set fog's end distance.
  * 
- * @param fogindex      Edict index of the fog to modify.
- * @param enddist       The end distance of the fog. 
+ * @param entityreference       Entity reference of the fog to modify.
+ * @param enddist               The end distance of the fog.
  */
-VAmbienceSetFogEndDist(fogindex, enddist)
+stock VAmbienceSetFogEndDist(entityreference, Float:enddist)
 {
+    // If the entity reference is invalid, then stop.
+    if (entityreference == INVALID_ENT_REFERENCE)
+    {
+        return;
+    }
+    
     // Set end distance.
-    SetVariantInt(enddist);
-    AcceptEntityInput(fogindex, "SetEndDist");
-}
-
-/**
- * Set fog's far z distance.
- * 
- * @param fogindex      Edict index of the fog to modify.
- * @param farz          The far z distance of the fog. 
- */
-VAmbienceSetFogFarZ(fogindex, farz)
-{
-    // Set far z distance.
-    SetVariantInt(farz);
-    AcceptEntityInput(fogindex, "SetFarZ");
+    DispatchKeyValueFloat(entityreference, "fogend", enddist);
 }

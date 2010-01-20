@@ -72,9 +72,6 @@ ClassOnMapStart()
 {
 	// Clear multipliers.
 	ClassResetMultiplierCache();
-	
-	// Prepare hp regeneration module.
-	ClassHealthRegenInit();
 }
 
 /**
@@ -96,6 +93,12 @@ ClassClientInit(client)
     
     // Reset spawn flag.
     ClassPlayerSpawned[client] = false;
+    
+    // Reset instant change timer handle.
+    ZREndTimer(tClassInstantChange[client], false);
+    
+    // Forward event to sub-modules.
+    HealthRegenClientInit(client);
 }
 
 /**
@@ -103,11 +106,14 @@ ClassClientInit(client)
  */
 ClassOnClientDisconnect(client)
 {
-    // Disable class attributes with timers.
-    ClassHealthRegenStop(client);
-    
     // Reset previously selected class indexes.
     ClassResetNextIndexes(client);
+    
+    // Kill instant change timer if running.
+    ZREndTimer(tClassInstantChange[client], true);
+    
+    // Forward event to sub-modules.
+    HealthRegenOnClientDisconnect(client);
 }
 
 /**
@@ -122,9 +128,9 @@ ClassOnClientSpawn(client)
     decl String:classname[64];
     new filter[ClassFilter];
     
-    // Check if the player is dead. Spawning into the game is also a event in
+    // Check if the player is on a team. Spawning into the game is also a event in
     // the connection process.
-    if (!IsPlayerAlive(client))
+    if (!ZRIsClientOnTeam(client))
     {
         return;
     }
@@ -211,6 +217,9 @@ ClassOnClientSpawn(client)
     ClassReloadPlayerCache(client, ClassGetActiveIndex(client));
     ClassApplyAttributes(client);
     
+    // Kill instant change timer if running.
+    ZREndTimer(tClassInstantChange[client], true);
+    
     // Check if instant class change cvar is set.
     new Float:instantspawn = GetConVarFloat(g_hCvarsList[CVAR_CLASSES_CHANGE_TIMELIMIT]);
     if (instantspawn > 0)
@@ -219,13 +228,28 @@ ClassOnClientSpawn(client)
         ClassAllowInstantChange[client] = true;
         
         // Create timer to disable instant change.
-        CreateTimer(instantspawn, Event_ClassDisableInstantSpawn, client, TIMER_FLAG_NO_MAPCHANGE);
+        tClassInstantChange[client] = CreateTimer(instantspawn, Event_ClassDisableInstantSpawn, client, TIMER_FLAG_NO_MAPCHANGE);
     }
     else
     {
         // Make sure instant change is not allowed.
         ClassAllowInstantChange[client] = false;
     }
+    
+    // Forward event to sub-modules.
+    HealthRegenOnClientSpawn(client);
+}
+
+/**
+ * Client is being hurt.
+ * 
+ * @param client    The client index.
+ */
+ClassOnClientHurt(client)
+{
+    // Forward event to sub-modules.
+    ClassAlphaUpdate(client);
+    HealthRegenOnClientHurt(client);
 }
 
 /**
@@ -236,14 +260,15 @@ ClassOnClientSpawn(client)
  */
 ClassOnClientDeath(client)
 {
-    // Disable class attributes with timers.
-    ClassHealthRegenStop(client);
-    
     // Set client's FOV back to normal.
     ToolsSetClientDefaultFOV(client, 90);
     
+    // Kill instant change timer if running.
+    ZREndTimer(tClassInstantChange[client], true);
+    
     // Forward event to sub-modules.
     ClassOverlayOnClientDeath(client);
+    HealthRegenOnClientDeath(client);
 }
 
 /**
@@ -260,10 +285,8 @@ ClassOnClientInfected(client, bool:motherzombie = false)
     
     decl String:motherzombiesetting[64];
     
-    // Disable class attributes with timers.
-    ClassHealthRegenStop(client);
-    
     // Make sure the player is not allowed to instantly change class.
+    ZREndTimer(tClassInstantChange[client], true);
     ClassAllowInstantChange[client] = false;
     
     // Check if it's a mother zombie.
@@ -375,6 +398,21 @@ ClassOnClientInfected(client, bool:motherzombie = false)
     
     // Apply the new attributes.
     ClassApplyAttributes(client, motherzombie);
+    
+    // Forward event to sub-modules.
+    HealthRegenOnClientInfected(client);
+}
+
+/**
+ * Client has been turned back human.
+ * 
+ * @param client    The client index.
+ */
+ClassOnClientHuman(client)
+{
+    // Forward event to sub-modules.
+    ClassReloadPlayer(client);
+    HealthRegenOnClientHuman(client);
 }
 
 /**
@@ -384,4 +422,7 @@ public Action:Event_ClassDisableInstantSpawn(Handle:timer, any:client)
 {
     // Disable instant class change.
     ClassAllowInstantChange[client] = false;
+    
+    // Reset the variable.
+    ZREndTimer(tClassInstantChange[client], false);
 }

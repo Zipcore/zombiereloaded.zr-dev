@@ -31,55 +31,12 @@
 #define WEAPONALPHA_DEFAULT_VALUE 255
 
 /**
- * Array that stores the "HookID" to be later unhooked on player disconnect.
- */
-new g_iWeaponDropHookID[MAXPLAYERS + 1] = {-1, ...};
-
-/**
- * Client is joining the server.
- * 
- * @param client    The client index.
- */
-WeaponAlphaClientInit(client)
-{
-    // Hook "Weapon_Drop" on client.
-    #if defined USE_SDKHOOKS
-        SDKHook(client, SDKHook_WeaponDrop, WeaponAlphaDrop);
-        
-        // Set dummy value so it think it's hooked.
-        g_iWeaponDropHookID[client] = 1;
-    #else
-        g_iWeaponDropHookID[client] = ZRTools_HookWeapon_Drop(client, WeaponAlphaDrop);
-    #endif
-}
-
-/**
- * Client is leaving the server.
- * 
- * @param client    The client index.
- */
-WeaponAlphaOnClientDisconnect(client)
-{
-    // Unhook "Weapon_Drop" callback, and reset variable.
-    if (g_iWeaponDropHookID[client] != -1)
-    {
-        #if defined USE_SDKHOOKS
-            SDKUnhook(client, SDKHook_WeaponDrop, WeaponAlphaDrop);
-        #else
-            ZRTools_UnhookWeapon_Drop(g_iWeaponDropHookID[client]);
-        #endif
-        
-        g_iWeaponDropHookID[client] = -1;
-    }
-}
-
-/**
  * Client has just picked up a weapon.
  * 
  * @param client    The client index.
  * @param weapon    The weapon index.   
  */
-WeaponAlphaOnItemPickupPost(client, weapon)
+WeaponAlphaEquipPost(client, weapon)
 {
     // Get client's current alpha.
     new alpha = ToolsGetEntityAlpha(client);
@@ -89,17 +46,12 @@ WeaponAlphaOnItemPickupPost(client, weapon)
 }
 
 /**
- * Callback function for Weapon_Drop.
  * Called when a client drops their weapon.
  * 
  * @param client    The client index.
  * @param weapon    The weapon index.
  */
-#if defined USE_SDKHOOKS
-public Action:WeaponAlphaDrop(client, weapon)
-#else
-public ZRTools_Action:WeaponAlphaDrop(client, weapon)
-#endif
+WeaponAlphaDrop(weapon)
 {
     // If weapon isn't a valid entity, then stop.
     if (weapon < MaxClients)

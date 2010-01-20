@@ -237,9 +237,9 @@ public Action:EventPlayerHurt(Handle:event, const String:name[], bool:dontBroadc
     GetEventString(event, "weapon", weapon, sizeof(weapon));
     
     // Forward event to modules.
-    ClassAlphaUpdate(index);
+    ClassOnClientHurt(index);
     InfectOnClientHurt(index, attacker, weapon);
-    AccountOnClientHurt(attacker, dmg_health);
+    AccountOnClientHurt(index, attacker, dmg_health);
     SEffectsOnClientHurt(index);
     KnockbackOnClientHurt(index, attacker, weapon, hitgroup, dmg_health);
     NapalmOnClientHurt(index, attacker, weapon);
@@ -269,6 +269,7 @@ public Action:EventPlayerDeath(Handle:event, const String:name[], bool:dontBroad
     // Get all required event info.
     new index = GetClientOfUserId(GetEventInt(event, "userid"));
     new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
+    new bool:headshot = GetEventBool(event, "headshot");
     
     // Forward event to modules.
     ClassOnClientDeath(index);
@@ -276,13 +277,14 @@ public Action:EventPlayerDeath(Handle:event, const String:name[], bool:dontBroad
     VEffectsOnClientDeath(index);
     SEffectsOnClientDeath(index);
     SpawnProtectOnClientDeath(index);
-    RespawnOnClientDeath(index, attacker, weapon);
+    RespawnOnClientDeath(index, attacker);
     NapalmOnClientDeath(index);
     ZSpawnOnClientDeath(index);
     ZTeleOnClientDeath(index);
     ZHPOnClientDeath(index);
     VolOnPlayerDeath(index);
     RoundEndOnClientDeath();
+    APIOnClientDeath(index, attacker, weapon, headshot);
 }
 
 /**

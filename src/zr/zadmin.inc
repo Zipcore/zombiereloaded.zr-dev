@@ -99,7 +99,7 @@ bool:ZAdminMenu(client)
     // Get conditions for options.
     new configdraw = MenuGetItemDraw(configallowed);
     new moderatordraw = MenuGetItemDraw(ZRIsClientPrivileged(client, OperationType_Generic));
-    new hitgroupdraw = MenuGetItemDraw(GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]) && configallowed);
+    new hitgroupdraw = MenuGetItemDraw(GetConVarBool(g_hCvarsList[CVAR_HITGROUPS]) && ConfigIsConfigLoaded(File_Hitgroups) && configallowed);
     
     // Add items to menu.
     SetMenuTitle(menu_zadmin, title);
@@ -192,8 +192,16 @@ public ZAdminMenuHandle(Handle:menu_zadmin, MenuAction:action, client, slot)
     {
         if (slot == MenuCancel_ExitBack)
         {
-            // Exit back to main menu.
-            ZMenuMain(client);
+            // Get the admin topmenu handle, if it doesn't exist then open the ZMenu main menu.
+            new Handle:hAdminMenu = GetAdminTopMenu();
+            if (hAdminMenu == INVALID_HANDLE)
+            {
+                ZMenuMain(client);
+                return;
+            }
+            
+            // Send the admin menu.
+            DisplayTopMenu(hAdminMenu, client, TopMenuPosition_LastCategory);
         }
     }
     else if (action == MenuAction_End)

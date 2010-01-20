@@ -119,7 +119,7 @@ bool:AmbientSoundsValidateConfig()
 AmbientSoundsOnMapStart()
 {
     // Reset timer handle.
-    tAmbientSounds = INVALID_HANDLE;
+    ZREndTimer(tAmbientSounds, false);
 }
 
 /**
@@ -182,10 +182,7 @@ AmbientSoundsOnClientSpawnPost(client)
 AmbientSoundsRestart()
 {
     // If timer is running, kill it.
-    if (tAmbientSounds != INVALID_HANDLE)
-    {
-        KillTimer(tAmbientSounds);
-    }
+    ZREndTimer(tAmbientSounds, true);
     
     // If ambience is disabled, then stop.
     if (!g_bAmbientSounds)

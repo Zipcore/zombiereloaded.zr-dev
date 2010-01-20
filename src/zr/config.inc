@@ -470,7 +470,7 @@ stock bool:ConfigLoadConfig(ConfigFile:config, &Handle:arrayConfig, blocksize = 
             
             decl String:line[PLATFORM_MAX_PATH];
             
-            while(ReadFileLine(hFile, line, sizeof(line)))
+            while (ReadFileLine(hFile, line, sizeof(line)))
             {
                 // Cut out comments at the end of a line.
                 if (StrContains(line, "//") > -1)
@@ -526,7 +526,7 @@ stock bool:ConfigLoadConfig(ConfigFile:config, &Handle:arrayConfig, blocksize = 
                     
                     // Store this handle in the main array.
                     PushArrayCell(arrayConfig, arrayConfigEntry);
-                } while(KvGotoNextKey(hKeyvalue));
+                } while (KvGotoNextKey(hKeyvalue));
             }
             
             // We're done this file for now, so now we can destory it from memory. 
@@ -567,7 +567,7 @@ stock bool:ConfigReloadConfig(ConfigFile:config)
         // Print reload failure to logs.
         LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Config, "Reload Function", "Invalid reload function for config: \"%s\"", configalias);
         
-        return true;
+        return false;
     }
     
     // Call reload function.

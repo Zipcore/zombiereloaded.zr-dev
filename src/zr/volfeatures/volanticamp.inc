@@ -77,7 +77,6 @@ new AnticampData[ZR_VOLUMES_MAX][VolTypeAnticamp];
 VolAnticampEnable(volumeIndex)
 {
     new Float:interval;
-    new Handle:timer;
     
     // Validate index.
     if (!VolIsValidIndex(volumeIndex))
@@ -97,13 +96,8 @@ VolAnticampEnable(volumeIndex)
     // Check if in use.
     if (AnticampData[dataindex][Anticamp_InUse])
     {
-        // Kill timer if it exist.
-        timer = AnticampData[dataindex][Anticamp_Timer];
-        if (timer != INVALID_HANDLE)
-        {
-            KillTimer(timer);
-            AnticampData[dataindex][Anticamp_Timer] = INVALID_HANDLE;
-        }
+        // Kill timer if it exists.
+        ZREndTimer(AnticampData[dataindex][Anticamp_Timer], true);
         
         // Get interval.
         interval = AnticampData[dataindex][Anticamp_Interval];
@@ -147,13 +141,8 @@ stock VolAnticampEnableAll()
             // Get data index.
             dataindex = Volumes[volumeindex][Vol_DataIndex];
             
-            // Kill timer if it exist.
-            timer = AnticampData[dataindex][Anticamp_Timer];
-            if (timer != INVALID_HANDLE)
-            {
-                KillTimer(timer);
-                AnticampData[dataindex][Anticamp_Timer] = INVALID_HANDLE;
-            }
+            // Kill timer if it exists.
+            ZREndTimer(AnticampData[dataindex][Anticamp_Timer], true);
             
             // Get interval.
             interval = AnticampData[dataindex][Anticamp_Interval];
@@ -177,8 +166,6 @@ stock VolAnticampEnableAll()
  */
 VolAnticampDisable(volumeIndex)
 {
-    new Handle:timerbuffer;
-    
     // Validate index.
     if (!VolIsValidIndex(volumeIndex))
     {
@@ -198,16 +185,10 @@ VolAnticampDisable(volumeIndex)
     if (AnticampData[dataindex][Anticamp_InUse])
     {
         // Stop timer.
-        timerbuffer = AnticampData[dataindex][Anticamp_Timer];
-        if (timerbuffer != INVALID_HANDLE)
-        {
-            KillTimer(timerbuffer);
-            AnticampData[dataindex][Anticamp_Timer] = INVALID_HANDLE;
-        }
+        ZREndTimer(AnticampData[dataindex][Anticamp_Timer], true);
         
         LogEvent(_, LogType_Normal, LOG_DEBUG, LogModule_Volfeatures, "Vol state", "Disabled anticamp volume %d.", volumeIndex);
     }
-    
 }
 
 /**
@@ -215,8 +196,6 @@ VolAnticampDisable(volumeIndex)
  */
 stock VolAnticampDisableAll()
 {
-    new Handle:timerbuffer;
-    
     // Loop through all volumes.
     for (new dataindex = 0; dataindex < ZR_VOLUMES_MAX; dataindex++)
     {
@@ -224,12 +203,7 @@ stock VolAnticampDisableAll()
         if (AnticampData[dataindex][Anticamp_InUse])
         {
             // Stop timer.
-            timerbuffer = AnticampData[dataindex][Anticamp_Timer];
-            if (timerbuffer != INVALID_HANDLE)
-            {
-                KillTimer(timerbuffer);
-                AnticampData[dataindex][Anticamp_Timer] = INVALID_HANDLE;
-            }
+            ZREndTimer(AnticampData[dataindex][Anticamp_Timer], true);
         }
     }
 }
@@ -244,11 +218,7 @@ VolAnticampReset(dataIndex)
     AnticampData[dataIndex][Anticamp_InUse] = false;
     
     AnticampData[dataIndex][Anticamp_Interval] = 1.0;
-    if (AnticampData[dataIndex][Anticamp_Timer] != INVALID_HANDLE)
-    {
-        KillTimer(AnticampData[dataIndex][Anticamp_Timer]);
-        AnticampData[dataIndex][Anticamp_Timer] = INVALID_HANDLE;
-    }
+    ZREndTimer(AnticampData[dataIndex][Anticamp_Timer], true);
     
     AnticampData[dataIndex][Anticamp_Action] = Anticamp_Damage;
     AnticampData[dataIndex][Anticamp_Amount] = 5.0;

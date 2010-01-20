@@ -73,6 +73,16 @@ enum WeaponsData
 new g_iToolsActiveWeapon;
 
 /**
+ * Array that stores the "HookID" to be later unhooked on player disconnect.
+ */
+new g_iCanUseHookID[MAXPLAYERS + 1] = {-1, ...};
+
+/**
+ * Array that stores the "HookID" to be later unhooked on player disconnect.
+ */
+new g_iWeaponDropHookID[MAXPLAYERS + 1] = {-1, ...};
+
+/**
  * Weapon slots.
  */
 enum WeaponsSlot
@@ -312,9 +322,36 @@ public WeaponsOnConfigReload()
  */
 WeaponsClientInit(client)
 {
+    // Hook "Weapon_CanUse" on client.
+    #if defined USE_SDKHOOKS
+        SDKHook(client, SDKHook_WeaponCanUse, WeaponsCanUse);
+        
+        // Note: Do we need to use WeaponSwitch too? On infection all weapons
+        //       are removed anyways.
+        
+        // Set dummy value so it think it's hooked.
+        g_iCanUseHookID[client] = 1;
+    #else
+        g_iCanUseHookID[client] = ZRTools_HookWeapon_CanUse(client, WeaponsCanUse);
+    #endif
+    
+    // Reset block weapons flag.
+    g_bRestrictBlockWeapon[client] = false;
+    
+    // Hook "Weapon_Drop" on client.
+    #if defined USE_SDKHOOKS
+        SDKHook(client, SDKHook_WeaponDrop, WeaponsDrop);
+        
+        // Set dummy value so it think it's hooked.
+        g_iWeaponDropHookID[client] = 1;
+    #else
+        g_iWeaponDropHookID[client] = ZRTools_HookWeapon_Drop(client, WeaponsDrop);
+    #endif
+    
+    // Hook "Weapon_Equip" on client.
+    SDKHook(client, SDKHook_WeaponEquip, WeaponsEquip);
+    
     // Forward event to sub-modules.
-    RestrictClientInit(client);
-    WeaponAlphaClientInit(client);
     ZMarketClientInit(client);
 }
 
@@ -325,9 +362,34 @@ WeaponsClientInit(client)
  */
 WeaponsOnClientDisconnect(client)
 {
+    // Unhook "Weapon_CanUse" callback, and reset variable.
+    if (g_iCanUseHookID[client] != -1)
+    {
+        #if defined USE_SDKHOOKS
+            SDKUnhook(client, SDKHook_WeaponCanUse, WeaponsCanUse);
+        #else
+            ZRTools_UnhookWeapon_CanUse(g_iCanUseHookID[client]);
+        #endif
+        
+        g_iCanUseHookID[client] = -1;
+    }
+    
+    // Unhook "Weapon_Drop" callback, and reset variable.
+    if (g_iWeaponDropHookID[client] != -1)
+    {
+        #if defined USE_SDKHOOKS
+            SDKUnhook(client, SDKHook_WeaponDrop, WeaponsDrop);
+        #else
+            ZRTools_UnhookWeapon_Drop(g_iWeaponDropHookID[client]);
+        #endif
+        
+        g_iWeaponDropHookID[client] = -1;
+    }
+    
+    // Hook "Weapon_Equip" on client.
+    SDKUnhook(client, SDKHook_WeaponEquip, WeaponsEquip);
+    
     // Forward event to sub-modules.
-    RestrictOnClientDisconnect(client);
-    WeaponAlphaOnClientDisconnect(client);
     ZMarketOnClientDisconnect(client);
 }
 
@@ -338,6 +400,16 @@ WeaponsOnClientDisconnect(client)
  */
 WeaponsOnClientSpawn(client)
 {
+    // Re-hook "canuse" on client.
+    #if defined USE_SDKHOOKS
+        SDKUnhook(client, SDKHook_WeaponCanUse, WeaponsCanUse);     // <--- What happens if it's not already hooked???
+        SDKHook(client, SDKHook_WeaponCanUse, WeaponsCanUse);
+        g_iCanUseHookID[client] = 1;
+    #else
+        ZRTools_UnhookWeapon_CanUse(g_iCanUseHookID[client]);
+        g_iCanUseHookID[client] = ZRTools_HookWeapon_CanUse(client, WeaponsCanUse);
+    #endif
+    
     // Forward event to sub-modules.
     RestrictOnClientSpawn(client);
 }
@@ -366,24 +438,65 @@ WeaponsOnRoundEnd()
 }
 
 /**
- * Called when a client picks up an item.
+ * Hook callback, called when a client is trying to pick up a weapon.
+ *  
+ * @param client    The client index.
+ * @param weapon    The weapon index.
+ * @return          Return ZRTools_Handled to stop weapon pickup.
+ *                  ZRTools_Continue to allow weapon pickup.
+ */
+#if defined USE_SDKHOOKS
+public Action:WeaponsCanUse(client, weapon)
+#else
+public ZRTools_Action:WeaponsCanUse(client, weapon)
+#endif
+{
+    new Action:result;
+    
+    // Forward event to sub-modules.
+    result = RestrictCanUse(client, weapon);
+    if (result == ACTION_HANDLED)
+    {
+        return ACTION_HANDLED;
+    }
+    
+    return ACTION_CONTINUE;
+}
+
+/**
+ * Callback function for Weapon_Drop.
+ * Called when a client drops their weapon.
  * 
  * @param client    The client index.
  * @param weapon    The weapon index.
  */
-WeaponsOnItemPickup(client, weapon)
+#if defined USE_SDKHOOKS
+public Action:WeaponsDrop(client, weapon)
+#else
+public ZRTools_Action:WeaponsDrop(client, weapon)
+#endif
 {
     // Forward event to sub-modules.
-    
-    // Fire post OnItemPickup event.
-    
+    WeaponAlphaDrop(weapon);
+}
+
+/**
+ * Hook callback, called when a client equips a weapon.
+ *  
+ * @param client    The client index.
+ * @param weapon    The weapon index.
+ * @return          Return ZRTools_Handled to stop weapon pickup.
+ *                  ZRTools_Continue to allow weapon pickup.
+ */
+public Action:WeaponsEquip(client, weapon)
+{
     // Fill datapack with event information.
     new Handle:eventinfo = CreateDataPack();
     WritePackCell(eventinfo, client);
     WritePackCell(eventinfo, weapon);
     
     // Create post delay timer.
-    CreateTimer(0.0, WeaponsOnItemPickupPost, eventinfo, TIMER_DATA_HNDL_CLOSE);
+    CreateTimer(0.0, WeaponsEquipPost, eventinfo, TIMER_DATA_HNDL_CLOSE);
 }
 
 /**
@@ -392,7 +505,7 @@ WeaponsOnItemPickup(client, weapon)
  * @param client    The client index.
  * @param weapon    The weapon index.
  */
-public Action:WeaponsOnItemPickupPost(Handle:timer, Handle:eventinfo)
+public Action:WeaponsEquipPost(Handle:timer, Handle:eventinfo)
 {
     // Get event info.
     ResetPack(eventinfo);
@@ -406,13 +519,13 @@ public Action:WeaponsOnItemPickupPost(Handle:timer, Handle:eventinfo)
     }
     
     // If the weapon entity isn't valid anymore, then stop.
-    if (!IsValidEdict(weapon))
+    if (!IsValidEntity(weapon))
     {
         return;
     }
     
     // Forward event to sub-modules.
-    WeaponAlphaOnItemPickupPost(client, weapon);
+    WeaponAlphaEquipPost(client, weapon);
 }
 
 /**

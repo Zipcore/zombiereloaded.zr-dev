@@ -26,10 +26,12 @@
  */
 
 // Comment to use ZR Tools Extension, otherwise SDK Hooks Extension will be used.
-//#define USE_SDKHOOKS
+#define USE_SDKHOOKS
 
 #pragma semicolon 1
 #include <sourcemod>
+#include <adminmenu>
+#include <regex>
 #include <sdktools>
 #include <clientprefs>
 #include <cstrike>
@@ -54,6 +56,7 @@
 
 // Header includes.
 #include "zr/log.h"
+#include "zr/tools.h"
 #include "zr/models.h"
 #include "zr/playerclasses/classheaders.h"
 #include "zr/weapons/ammoheaders.h"
@@ -80,6 +83,7 @@
 #include "zr/steamidcache"
 #include "zr/sayhooks"
 #include "zr/menu"
+#include "zr/menu_attach"
 #include "zr/cookies"
 #include "zr/paramtools"
 #include "zr/paramparser"
@@ -117,9 +121,8 @@
 #include "zr/volfeatures/volfeatures"
 #include "zr/debugtools"
 
-// Include API last because no file uses the API while the API calls functions from every file.
-#include "zr/api"
-
+// Include this last since nothing should be using it anyway.  Aside from external plugins.
+#include "zr/api/api"
 /**
  * Record plugin info.
  */
@@ -160,6 +163,7 @@ public OnPluginStart()
     TranslationInit();
     CvarsInit();
     ToolsInit();
+    MenuAttachInit();
     CookiesInit();
     CommandsInit();
     WeaponsInit();
@@ -196,6 +200,7 @@ public OnMapStart()
 public OnMapEnd()
 {
     // Forward event to modules.
+    VEffectsOnMapEnd();
     VolOnMapEnd();
 }
 
@@ -263,8 +268,12 @@ public OnClientDisconnect(client)
     WeaponsOnClientDisconnect(client);
     InfectOnClientDisconnect(client);
     DamageOnClientDisconnect(client);
+    SEffectsOnClientDisconnect(client);
     AntiStickOnClientDisconnect(client);
+    SpawnProtectOnClientDisconnect(client);
+    RespawnOnClientDisconnect(client);
     ZSpawnOnClientDisconnect(client);
+    ZHPOnClientDisconnect(client);
     VolOnPlayerDisconnect(client);
 }
 

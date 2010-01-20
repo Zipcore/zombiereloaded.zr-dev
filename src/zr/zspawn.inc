@@ -53,7 +53,7 @@ ZSpawnOnCommandsCreate()
 ZSpawnOnMapStart()
 {
     // Reset timer handle.
-    tZSpawn = INVALID_HANDLE;
+    ZREndTimer(tZSpawn, false);
     
     // If SteamID cache hasn't been created yet, then create.
     if (g_hZSpawnSteamIDCache == INVALID_HANDLE)
@@ -108,14 +108,7 @@ ZSpawnOnRoundStart()
     SteamidCacheReset(g_hZSpawnSteamIDCache);
     
     // If zspawn timer is running, then kill it.
-    if (tZSpawn != INVALID_HANDLE)
-    {
-        // Kill timer.
-        KillTimer(tZSpawn);
-        
-        // Reset timer handle.
-        tZSpawn = INVALID_HANDLE;
-    }
+    ZREndTimer(tZSpawn, true);
 }
 
 /**
@@ -124,11 +117,7 @@ ZSpawnOnRoundStart()
 ZSpawnOnRoundFreezeEnd()
 {
     // If infect timer is running, then kill it.
-    if (tZSpawn != INVALID_HANDLE)
-    {
-        // Kill timer.
-        KillTimer(tZSpawn);
-    }
+    ZREndTimer(tZSpawn, true);
     
     // If zspawn is disabled, then stop.
     new bool:zspawn = GetConVarBool(g_hCvarsList[CVAR_ZSPAWN]);
@@ -157,14 +146,7 @@ ZSpawnOnRoundFreezeEnd()
 ZSpawnOnRoundEnd()
 {
     // If zspawn timer is running, then kill it.
-    if (tZSpawn != INVALID_HANDLE)
-    {
-        // Kill timer.
-        KillTimer(tZSpawn);
-        
-        // Reset timer handle.
-        tZSpawn = INVALID_HANDLE;
-    }
+    ZREndTimer(tZSpawn, true);
 }
 
 /**
@@ -284,6 +266,15 @@ public ZSpawnForceHandle(Handle:menu_zspawn_force, MenuAction:action, client, sl
     {
         // Get the client index of the selected client.
         new target = MenuGetClientIndex(menu_zspawn_force, slot);
+        
+        // If the target is 0, then the client left before being selected from the menu.
+        if (target == 0)
+        {
+            // Re-send the menu.
+            MenuClientList(client, ZTeleForceHandle, true, true, false, "ZTele clients title");
+            
+            return;
+        }
         
         // Get the target's name for future use.
         decl String:targetname[MAX_NAME_LENGTH];
@@ -426,5 +417,5 @@ public Action:ZSpawnForceCommand(client, argc)
 public Action:ZSpawnTimer(Handle:timer)
 {
     // Reset timer handle.
-    tZSpawn = INVALID_HANDLE;
+    ZREndTimer(tZSpawn, false);
 }

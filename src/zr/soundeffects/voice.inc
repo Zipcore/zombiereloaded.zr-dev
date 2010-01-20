@@ -23,28 +23,61 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * ============================================================================
+ * 
+ * Known Issues:
+ * - Using sm_(un)mute might cause temporary listening "problems."  The clients normal CS:S listening
+ * flags will be restored.  Zombie:Reloaded should fix it either during the round, and if not then on spawn.
+ * Since there is no forward telling me when the client is either muted or unmuted, the plugin just will ignore
+ * muted clients until unmuted.
  */
 
 /**
- * Updates every round with the value of the cvar.
+ * The current value of the voice cvar.
  */
-new bool:g_bVoice;
+#define VOICE_ZR_VOICE GetConVarBool(g_hCvarsList[CVAR_VOICE])
 
 /**
- * The round is starting.
+ * The current value of the cvar sv_alltalk.
  */
-VoiceOnRoundStart()
+#define VOICE_SV_ALLTALK GetConVarBool(FindConVar("sv_alltalk"))
+
+/**
+ * Hook voice-sensitive cvar changes.
+ * 
+ * @param unhook    If true, cvars will be unhooked, false to hook cvars.
+ */
+VoiceCvarsHook(bool:unhook = false)
 {
-    new bool:voice = GetConVarBool(g_hCvarsList[CVAR_VOICE]);
-    
-    // If the cvar has changed, then reset the voice permissions.
-    if (g_bVoice != voice)
+    // If unhook is true, then continue.
+    if (unhook)
     {
-        VoiceReset();
+        // Unhook cvars.
+        UnhookConVarChange(FindConVar("sv_alltalk"), VoiceCvarsHookVoice);
+        UnhookConVarChange(g_hCvarsList[CVAR_VOICE], VoiceCvarsHookVoice);
+        UnhookConVarChange(g_hCvarsList[CVAR_VOICE_ZOMBIES_MUTE], VoiceCvarsHookVoice);
+        
+        // Stop after unhooking cvars.
+        return;
     }
     
-    // Update g_bVoice with new value.
-    g_bVoice = voice;
+    // Hook cvars.
+    HookConVarChange(FindConVar("sv_alltalk"), VoiceCvarsHookVoice);
+    HookConVarChange(g_hCvarsList[CVAR_VOICE], VoiceCvarsHookVoice);
+    HookConVarChange(g_hCvarsList[CVAR_VOICE_ZOMBIES_MUTE], VoiceCvarsHookVoice);
+}
+
+/**
+ * Cvar hook callback (zr_voice, zr_voice_zombies_mute)
+ * Updated server to cvar values.
+ * 
+ * @param convar    The cvar handle.
+ * @param oldvalue  The value before change.
+ * @param newvalue  The new value.
+ */
+public VoiceCvarsHookVoice(Handle:cvar, const String:oldvalue[], const String:newvalue[])
+{
+    // Reset all voice settings.
+    VoiceReset();
 }
 
 /**
@@ -52,8 +85,15 @@ VoiceOnRoundStart()
  */
 VoiceOnRoundEnd()
 {
-    // If voice module is disabled, then stop.
-    if (!g_bVoice)
+    // If voice module is disabled or sv_alltalk is enabled, then stop.
+    if (!VOICE_ZR_VOICE || VOICE_SV_ALLTALK)
+    {
+        return;
+    }
+    
+    // If the round end alltalk cvar is disabled, then stop.
+    new bool:roundend_alltalk = GetConVarBool(g_hCvarsList[CVAR_VOICE_ROUNDEND_ALLTALK]);
+    if (!roundend_alltalk)
     {
         return;
     }
@@ -69,6 +109,12 @@ VoiceOnRoundEnd()
  */
 VoiceOnClientSpawn(client)
 {
+    // If voice module is disabled or sv_alltalk is enabled, then stop.
+    if (!VOICE_ZR_VOICE || VOICE_SV_ALLTALK)
+    {
+        return;
+    }
+    
     // Give client proper verbal permissions.
     VoiceUpdateClient(client);
 }
@@ -80,6 +126,12 @@ VoiceOnClientSpawn(client)
  */
 VoiceOnClientInfected(client)
 {
+    // If voice module is disabled or sv_alltalk is enabled, then stop.
+    if (!VOICE_ZR_VOICE || VOICE_SV_ALLTALK)
+    {
+        return;
+    }
+    
     // Give client proper verbal permissions.
     VoiceUpdateClient(client);
 }
@@ -91,6 +143,12 @@ VoiceOnClientInfected(client)
  */
 VoiceOnClientHuman(client)
 {
+    // If voice module is disabled or sv_alltalk is enabled, then stop.
+    if (!VOICE_ZR_VOICE || VOICE_SV_ALLTALK)
+    {
+        return;
+    }
+    
     // Give client proper verbal permissions.
     VoiceUpdateClient(client);
 }
@@ -101,9 +159,10 @@ VoiceOnClientHuman(client)
  *
  * @param iReceiver		The listener index.
  * @param iSender		The sender index.
+ * @param override      The listen override (see sdktools_voice.inc enum ListenOverride)
  * @return			    True if successful otherwise false.
  */
-stock bool:VoiceSetClientListening(iReceiver, iSender, bool:bListen)
+stock bool:VoiceSetClientOverride(iReceiver, iSender, ListenOverride:override)
 {
     // If the sender is muted, then return false.
     if (VoiceIsClientMuted(iSender))
@@ -111,8 +170,89 @@ stock bool:VoiceSetClientListening(iReceiver, iSender, bool:bListen)
         return false;
     }
     
-    SetClientListening(iReceiver, iSender, bListen);
+    // Set the new override if the override isn't the same.
+    if (GetListenOverride(iReceiver, iSender) != override)
+    {
+        // Debug stuff
+        /*switch (override)
+        {
+            case Listen_Yes:
+            {
+                PrintToChat(iReceiver, "You can now hear %N", iSender);
+            }
+            case Listen_No:
+            {
+                PrintToChat(iReceiver, "You can't hear %N now", iSender);
+            }
+            case Listen_Default:
+            {
+                PrintToChat(iReceiver, "Default between you and %N", iSender);
+            }
+        }*/
+        
+        SetListenOverride(iReceiver, iSender, override);
+    }
+    
     return true;
+}
+
+/**
+ * Set which team the client is allowed to listen/speak with.
+ * 
+ * @param client    The client index.
+ * @param zombie    True to permit verbal communication to zombies only, false for humans only.
+ * @param mute      If this is true, the client isn't allowed to listen or hear anybody. (Implemented for zr_voice_zombies_mute) 
+ */
+stock VoiceSetClientTeam(client, bool:zombie, bool:mute = false)
+{
+    // x = Client index.
+    for (new x = 1; x <= MaxClients; x++)
+    {
+        // If sender isn't in-game, then stop.
+        if (!IsClientInGame(x))
+        {
+            continue;
+        }
+        
+        // No need to alter listening/speaking flags between one client.
+        if (client == x)
+        {
+            continue;
+        }
+        
+        // Client can only listen/speak if the sender is on their team.
+        new ListenOverride:override = (zombie == InfectIsClientInfected(x) && !mute) ? Listen_Yes : Listen_No;
+        
+        // (Dis)allow clients to listen/speak with each other, don't touch if the sender is muted.
+        VoiceSetClientOverride(client, x, override);
+        VoiceSetClientOverride(x, client, override);
+    }
+}
+
+/**
+ * Update a client's listening/speaking status.
+ * 
+ * @param client    The client index.
+ */
+stock VoiceUpdateClient(client)
+{
+    new bool:zombies_mute = GetConVarBool(g_hCvarsList[CVAR_VOICE_ZOMBIES_MUTE]);
+    new bool:infected = InfectIsClientInfected(client);
+    
+    // Set the client's listening/speaking status to their current team, or if the client is a zombie and zombie mute is enabled, then mute.
+    VoiceSetClientTeam(client, infected, (zombies_mute && infected));
+}
+
+/**
+ * This function returns if the client is muted.
+ * 
+ * @param client    The client index.
+ * @return          True if the client is muted, false if not.
+ */
+stock bool:VoiceIsClientMuted(client)
+{
+    // Return true if the mute flag isn't on the client.
+    return bool:(GetClientListeningFlags(client) & VOICE_MUTED);
 }
 
 /**
@@ -145,82 +285,20 @@ stock VoiceAllTalk()
             }
             
             // Receiver (x) can now hear the sender (y), only if sender isn't muted.
-            VoiceSetClientListening(x, y, true);
+            VoiceSetClientOverride(x, y, Listen_Yes);
         }
     }
 }
 
 /**
- * Set which team the client is allowed to listen/speak with.
+ * Reset voice listening/speaking permissions on all clients.
  * 
- * @param client    The client index.
- * @param zombie    True to permit verbal communication to zombies only, false for humans only.
- */
-stock VoiceSetClientTeam(client, bool:zombie)
-{
-    // x = Client index.
-    for (new x = 1; x <= MaxClients; x++)
-    {
-        // If sender isn't in-game, then stop.
-        if (!IsClientInGame(x))
-        {
-            continue;
-        }
-        
-        // No need to alter listening/speaking flags between one client.
-        if (client == x)
-        {
-            continue;
-        }
-        
-        // Client can only listen/speak if the sender is on their team.
-        new bool:canlisten = (zombie == InfectIsClientInfected(x));
-        
-        // (Dis)allow clients to listen/speak with each other, don't touch if the sender is muted.
-        VoiceSetClientListening(client, x, canlisten);
-        VoiceSetClientListening(x, client, canlisten);
-    }
-}
-
-/**
- * Update a client's listening/speaking status.
- * 
- * @param client    The client index.
- */
-stock VoiceUpdateClient(client)
-{
-    // If voice module is disabled, then stop.
-    if (!g_bVoice)
-    {
-        return;
-    }
-    
-    // Set the client's listening/speaking status to their current team.
-    VoiceSetClientTeam(client, InfectIsClientInfected(client));
-}
-
-/**
- * This function returns if the client is muted.
- * 
- * @param client    The client index.
- * @return          True if the client is muted, false if not.
- */
-stock bool:VoiceIsClientMuted(client)
-{
-    // Return true if the mute flag isn't on the client.
-    return bool:(GetClientListeningFlags(client) & VOICE_MUTED);
-}
-
-/**
- * Reset voice listening/speaking permissions back to normal according to sv_alltalk.
+ * @param humanzombie   If true, clients will be updated to only hear clients on their team (human/zombie, not T/CT), false will undo overrides.
  */
 stock VoiceReset()
 {
-    // Is alltalk enabled?
-    new bool:alltalk = GetConVarBool(FindConVar("sv_alltalk"));
-    
-    // Determine new voice flags based off of alltalk.
-    new voiceflags = alltalk ? VOICE_SPEAKALL | VOICE_LISTENALL : VOICE_TEAM | VOICE_LISTENTEAM;
+    // Cache it here, so we don't retrieve the same value several times.
+    new bool:voice = VOICE_ZR_VOICE;
     
     // x = Client index.
     for (new x = 1; x <= MaxClients; x++)
@@ -231,7 +309,29 @@ stock VoiceReset()
             continue;
         }
         
-        // Apply new voice flags.
-        SetClientListeningFlags(x, voiceflags);
+        // If voice module is enabled, and alltalk is off, then update client with human/zombie rules.
+        if (voice && !VOICE_SV_ALLTALK)
+        {
+            VoiceUpdateClient(x);
+            continue;
+        }
+        
+        for (new y = 1; y <= MaxClients; y++)
+        {
+            // If sender isn't in-game, then stop.
+            if (!IsClientInGame(y))
+            {
+                continue;
+            }
+            
+            // No need to alter listening/speaking flags between one client.
+            if (x == y)
+            {
+                continue;
+            }
+            
+            // Undo the override.
+            VoiceSetClientOverride(x, y, Listen_Default);
+        }
     }
 }

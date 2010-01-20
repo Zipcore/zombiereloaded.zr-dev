@@ -5,7 +5,7 @@
  *
  *  File:          zombiereloaded.inc
  *  Type:          Core 
- *  Description:   General plugin functions and defines.
+ *  Description:   General plugin functions and utilities.
  *
  *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
@@ -31,18 +31,19 @@
 #define ZR_CONSOLE_INDEX 0
 
 /**
- * @section Conversion factors.
- */
-#define CONVERSION_UNITS_TO_FEET    16.000
-#define CONVERSION_FEET_TO_UNITS    0.0625
-/**
- * @endsection
- */
-
-/**
  * Global variable set to true when the first zombie(s) is/are spawned.
  */
 new bool:g_bZombieSpawned;
+
+/**
+ * Options that a condition must pass to be eligible.
+ */
+enum EligibleCondition
+{
+    Condition_False = 0,    /** Condition must be false. */
+    Condition_True = 1,     /** Condition must be true. */
+    Condition_Either = -1   /** Condition can be either true or false. */
+}
 
 /**
  * Function to convert numbers to defined units.
@@ -51,22 +52,73 @@ new bool:g_bZombieSpawned;
  * @param conversion    The conversion factor to multiply by. (See defines above)
  * @return              The converted number.
  */
-Float:ZRConvertUnitsFloat(Float:number, Float:conversion)
+
+#define CONVERSION_UNITS_TO_FEET    16.000
+#define CONVERSION_FEET_TO_UNITS    0.0625
+
+stock Float:ZRConvertUnitsFloat(Float:number, Float:conversion)
 {
     return number / conversion;
 }
 
+// Timer utilities
+
 /**
- * Create an array populated with eligible clients to be zombie.
+ * Checks if a timer is currently running.
+ * 
+ * @param timer     The timer handle.
+ */
+stock bool:ZRIsTimerRunning(Handle:timer)
+{
+    // Return true if the handle isn't empty.
+    return (timer != INVALID_HANDLE);
+}
+
+/**
+ * Wrapper functions for KilLTimer.
+ * Ends a timer if running, and resets its timer handle variable.
+ * 
+ * @param timer     The timer handle.
+ * @param kill      True to kill the timer and reset the variable, false to only reset the variable.
+ *                  This is useful when calling from the timer callback, because the timer is already killed.
+ * 
+ * @return          True if the timer was ended successfully, false if the handle wasn't valid.
+ */
+stock bool:ZREndTimer(&Handle:timer, bool:kill)
+{
+    // If the timer is running, then kill it.
+    if (ZRIsTimerRunning(timer))
+    {
+        // Kill if caller says to.
+        if (kill)
+        {
+            KillTimer(timer);
+        }
+        
+        // Reset variable.
+        timer = INVALID_HANDLE;
+        
+        return true;
+    }
+    
+    // Reset variable.
+    timer = INVALID_HANDLE;
+    
+    return false;
+}
+
+/**
+ * Create an array populated with eligible clients.
  * 
  * @param arrayEligibleClients  The handle of the array, don't forget to call CloseHandle
  *                              on it when finished!
  * @param team                  Client is only eligible if on a team.
  * @param alive                 Client is only eligible if alive.
  * @param human                 Client is only eligible if human.
- * @param immunity              True to ignore clients immune from mother infect, false to count them.
+ * 
+ * @return                      Number of eligible clients.
  */  
-stock ZRCreateEligibleClientList(&Handle:arrayEligibleClients, bool:team = false, bool:alive = false, bool:human = false)
+stock ZRCreateEligibleClientList(&Handle:arrayEligibleClients, EligibleCondition:team = Condition_Either, EligibleCondition:alive = Condition_Either, EligibleCondition:human = Condition_Either)
 {
     // Create array.
     arrayEligibleClients = CreateArray();
@@ -81,20 +133,22 @@ stock ZRCreateEligibleClientList(&Handle:arrayEligibleClients, bool:team = false
             continue;
         }
         
-        // If client isn't on a team, then stop.
-        if (team && !ZRIsClientOnTeam(x))
+        // If the client doesn't pass the conditions set, then skip them.
+        
+        new bool:bTeam = bool:team;
+        if (team != Condition_Either && bTeam != ZRIsClientOnTeam(x))
         {
             continue;
         }
         
-        // If client is dead, then stop.
-        if (alive && !IsPlayerAlive(x))
+        new bool:bAlive = bool:alive;
+        if (alive != Condition_Either && bAlive != IsPlayerAlive(x))
         {
             continue;
         }
         
-        // If client is already zombie (via admin), then stop.
-        if (human && !InfectIsClientHuman(x))
+        new bool:bHuman = bool:human;
+        if (human != Condition_Either && bHuman != InfectIsClientHuman(x))
         {
             continue;
         }

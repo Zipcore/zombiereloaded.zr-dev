@@ -33,7 +33,7 @@ new Handle:tRespawn[MAXPLAYERS + 1];
 /**
  * Array for flagging zombies who were killed by world.
  */ 
-new bool:bKilledByWorld[MAXPLAYERS + 1];
+new bool:g_bKilledByWorld[MAXPLAYERS + 1];
 
 /**
  * Client is joining the server.
@@ -41,10 +41,19 @@ new bool:bKilledByWorld[MAXPLAYERS + 1];
 RespawnClientInit(client)
 {
     // Reset timer handle.
-    tRespawn[client] = INVALID_HANDLE;
+    ZREndTimer(tRespawn[client], false);
     
-    // Init bKilledByWorld for client.
-    bKilledByWorld[client] = false;
+    // Init g_bKilledByWorld for client.
+    g_bKilledByWorld[client] = false;
+}
+
+/**
+ * Client is leaving the server.
+ */ 
+RespawnOnClientDisconnect(client)
+{
+    // Reset timer handle.
+    ZREndTimer(tRespawn[client], true);
 }
 
 /**
@@ -55,13 +64,7 @@ RespawnClientInit(client)
 RespawnOnClientSpawn(client)
 {
     // If timer is running, kill it.
-    if (tRespawn[client] != INVALID_HANDLE)
-    {
-        KillTimer(tRespawn[client]);
-    }
-    
-    // Reset timer handle.
-    tRespawn[client] = INVALID_HANDLE;
+    ZREndTimer(tRespawn[client], true);
 }
 
 /**
@@ -69,26 +72,17 @@ RespawnOnClientSpawn(client)
  * 
  * @param client    The client index.
  */
-RespawnOnClientDeath(client, attacker, const String:weapon[])
+RespawnOnClientDeath(client, attacker)
 {
     // If client is a zombie, check if they were killed by world.
     if (InfectIsClientInfected(client))
     {
-        // Set bKilledByWorld to true if attacker is not a valid client.
-        bKilledByWorld[client] = !ZRIsClientValid(attacker);
+        // Set g_bKilledByWorld to true if attacker is not a valid client.
+        g_bKilledByWorld[client] = !ZRIsClientValid(attacker);
     }
     
     // If timer is running, kill it.
-    if (tRespawn[client] != INVALID_HANDLE)
-    {
-        KillTimer(tRespawn[client]);
-    }
-    
-    // If player was infected, then stop.
-    if (StrEqual(weapon, "zombie_claws_of_death", false))
-    {
-        return;
-    }
+    ZREndTimer(tRespawn[client], true);
     
     // If respawn is disabled, stop here.
     new bool:respawn = GetConVarBool(g_hCvarsList[CVAR_RESPAWN]);
@@ -116,29 +110,31 @@ RespawnOnRoundEnd()
             continue;
         }
         
-        // If timer isn't currently running, then stop.
-        if (tRespawn[x] == INVALID_HANDLE)
-        {
-            continue;
-        }
-        
-        // Stop timer.
-        KillTimer(tRespawn[x]);
-        
-        // Reset timer handle.
-        tRespawn[x] = INVALID_HANDLE;
+        // Kill the timer if it's running.
+        ZREndTimer(tRespawn[x], true);
     }
 }
 
 /**
- * Spawns a player into the round.
+ * Spawns a player into the round following rules set by cvars.
  * 
- * @param client    The client index.
+ * @param client            The client index.
+ * @param zombie            True to spawn as zombie, false to spawn as human.
+ * @param zombie_if_suicide If true, client will be respawned as a zombie if they died by suicide.
  */
-RespawnSpawnClient(client, bool:zombie = false)
+RespawnSpawnClient(client, bool:zombie = false, bool:zombie_if_suicide = false)
 {
     // If client isn't in-game, then stop.
     if (!IsClientInGame(client))
+    {
+        return;
+    }
+    
+    // Forward pre-event to modules.
+    new Action:result = APIOnClientRespawnPre(client, zombie, zombie_if_suicide);
+    
+    // If the forward returned Plugin_Handled or Plugin_Stop, then stop this function.
+    if (result == Plugin_Handled || result == Plugin_Stop)
     {
         return;
     }
@@ -159,11 +155,15 @@ RespawnSpawnClient(client, bool:zombie = false)
         return;
     }
     
-    if (GetConVarBool(g_hCvarsList[CVAR_RESPAWN_TEAM_ZOMBIE_WORLD]) && bKilledByWorld[client])
+    // Infect if they committed suicide.
+    if (zombie_if_suicide && g_bKilledByWorld[client])
     {
         InfectHumanToZombie(client);
-        bKilledByWorld[client] = false;
+        g_bKilledByWorld[client] = false;
     }
+    
+    // Forward event to modules.
+    APIOnClientRespawn(client, zombie, zombie_if_suicide);
 }
 
 /**
@@ -175,7 +175,7 @@ RespawnSpawnClient(client, bool:zombie = false)
 public Action:RespawnTimer(Handle:timer, any:client)
 {
     // Reset timer handle.
-    tRespawn[client] = INVALID_HANDLE;
+    ZREndTimer(tRespawn[client], false);
     
     // If client isn't in-game, then stop.
     if (!IsClientInGame(client))
@@ -201,6 +201,6 @@ public Action:RespawnTimer(Handle:timer, any:client)
     // Get respawn team.
     new bool:respawn_zombie = GetConVarBool(g_hCvarsList[CVAR_RESPAWN_TEAM_ZOMBIE]);
     
-    // Spawn player.
-    RespawnSpawnClient(client, respawn_zombie);
+    // Respawn client, and if the cvar is enabled, then respawn as a zombie if they suicided.
+    RespawnSpawnClient(client, respawn_zombie, GetConVarBool(g_hCvarsList[CVAR_RESPAWN_TEAM_ZOMBIE_WORLD]));
 }
