@@ -49,14 +49,11 @@ new Handle:g_hOverlayEnabledCookie = INVALID_HANDLE;
  */
 ClassOverlayOnCommandsHook()
 {
-    decl String:togglecmds[CLASSOVERLAY_TOGGLE_MAX_CMDS * CLASSOVERLAY_TOGGLE_MAX_LENGTH];
-    GetConVarString(g_hCvarsList[CVAR_CLASSES_OVERLAY_TOGGLECMDS], togglecmds, sizeof(togglecmds));
-    
     // Array to store commands.
     new String:arrayCmds[CLASSOVERLAY_TOGGLE_MAX_CMDS][CLASSOVERLAY_TOGGLE_MAX_LENGTH];
     
-    // Put the commands into an array.
-    new cmdcount = ExplodeString(togglecmds, ",", arrayCmds, sizeof(arrayCmds), sizeof(arrayCmds[]));
+    // Separate the list into an array.
+    new cmdcount = CvarsListToArray(g_hCvarsList[CVAR_CLASSES_OVERLAY_TOGGLECMDS], arrayCmds, CLASSOVERLAY_TOGGLE_MAX_CMDS, CLASSOVERLAY_TOGGLE_MAX_LENGTH, ",");
     
     // Register all overlay commands.
     for (new i = 0; i < cmdcount; i++)

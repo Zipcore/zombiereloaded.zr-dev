@@ -40,13 +40,31 @@
 #endif
 
 /**
+ * @section Prop damage defines (see cvars zr_props_block_bullets_ignore or zr_props_block_blast_ignore)
+ */
+#define DAMAGE_PROPS_MAX_CLASSNAMES 15
+#define DAMAGE_PROPS_MAX_LENGTH 32
+/**
+ * @endsection
+ */
+
+/**
  * @section Suicide intercept defines.
  */
-#define DAMAGE_SUICIDE_MAX_CMDS 5
+#define DAMAGE_SUICIDE_MAX_CMDS 10
 #define DAMAGE_SUICIDE_MAX_LENGTH 16
 /**
  * @endsection
  */
+
+/**
+ * Prop damage types.
+ */
+enum DamagePropTypes
+{
+    DamageProp_Bullets,
+    DamageProp_Blast
+}
 
 /**
  * Array to store TraceAttack HookIDs.
@@ -68,24 +86,17 @@ new bool:g_bDamageMotherZombie[MAXPLAYERS + 1];
  */
 DamageOnCommandsHook()
 {
-    // Create command callbacks (intercepts) for listed suicide commands.
-    decl String:suicidecmds[DAMAGE_SUICIDE_MAX_CMDS * DAMAGE_SUICIDE_MAX_LENGTH];
-    GetConVarString(g_hCvarsList[CVAR_SUICIDE_CMDS], suicidecmds, sizeof(suicidecmds));
-    
-    // Create array to store cmds
+    // Create array to store cmds.
     new String:arrayCmds[DAMAGE_SUICIDE_MAX_CMDS][DAMAGE_SUICIDE_MAX_LENGTH];
     
-    // Explode string into array indexes.
-    new cmdcount = ExplodeString(suicidecmds, ",", arrayCmds, sizeof(arrayCmds), sizeof(arrayCmds[]));
+    // Separate the list into an array.
+    new cmdcount = CvarsListToArray(g_hCvarsList[CVAR_SUICIDE_CMDS], arrayCmds, DAMAGE_SUICIDE_MAX_CMDS, DAMAGE_SUICIDE_MAX_LENGTH, ",");
     
     // x = Array index.
     // arrayCmds[x] = suicide command.
     for (new x = 0; x <= cmdcount - 1; x++)
     {
-        // Trim whitespace.
         TrimString(arrayCmds[x]);
-        
-        // Prepare intercept for this command.
         AddCommandListener(DamageSuicideIntercept, arrayCmds[x]);
     }
 }
@@ -153,6 +164,129 @@ DamageOnClientInfected(client, bool:motherinfect)
 {
     // Update if client is a mother zombie or not.
     g_bDamageMotherZombie[client] = motherinfect;
+}
+
+// Prop Damage
+
+/**
+ * Called when an entity is created.
+ *
+ * @param entity    Entity index.
+ * @param classname Class name.
+ */
+DamageOnEntityCreated(entity)
+{
+    // If the entity is a client, then stop.
+    if (entity <= MaxClients)
+    {
+        return;
+    }
+    
+    // Hook OnTakeDamage on the entity, to later possibly block it.
+    SDKHook(entity, SDKHook_OnTakeDamage, DamagePropOnTakeDamage);
+}
+
+/**
+ * Hook: OnTakeDamage
+ * Called right before damage is done.
+ * 
+ * @param client        The client index.
+ * @param inflictor     The entity index of the inflictor.
+ * @param attacker      The client index of the attacker.
+ * @param damage        The amount of damage inflicted.
+ * @param damagetype    The type of damage inflicted.
+ * @param ammotype      The ammo type of the attacker's weapon. 
+ * @return              Return Plugin_Handled to stop the damage to client.
+ *                      Plugin_Continue to allow damage to client.
+ */
+public Action:DamagePropOnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damagetype)
+{
+    // If bullet damage is being done, then handle it here.
+    if (damagetype & DMG_CSS_BULLET)
+    {
+        // If the block bullets cvar is disabled, then allow damage.
+        new bool:block_bullets = GetConVarBool(g_hCvarsList[CVAR_PROPS_BLOCK_BULLETS]);
+        if (!block_bullets)
+        {
+            return Plugin_Continue;
+        }
+        
+        // If the entity is ignored in the cvar, then allow damage.
+        new bool:ignore = DamageIsEntityIgnored(victim, DamageProp_Bullets);
+        if (ignore)
+        {
+            return Plugin_Continue;
+        }
+        
+        // Block the damage.
+        return Plugin_Handled;
+    }
+    // If blast damage is being done, then handle it here.
+    else if (damagetype & DMG_BLAST)
+    {
+        // If the block blast cvar is enabled, then block.
+        new bool:block_blast = GetConVarBool(g_hCvarsList[CVAR_PROPS_BLOCK_BLAST]);
+        if (!block_blast)
+        {
+            return Plugin_Continue;
+        }
+        
+        // If the entity is ignored in the cvar, then allow damage.
+        new bool:ignore = DamageIsEntityIgnored(victim, DamageProp_Blast);
+        if (ignore)
+        {
+            return Plugin_Continue;
+        }
+        
+        // Block the damage.
+        return Plugin_Handled;
+    }
+    
+    // Allow damage.
+    return Plugin_Continue;
+}
+
+/**
+ * Checks if an entity is ignored in the prop_block_*_ignore cvars.
+ * 
+ * @param entity    The entity index.
+ * @param type      The type to check. (see enum DamagePropTypes at the top of the file)
+ * 
+ * @return          True if the entity is ignored, false if not.
+ */
+stock bool:DamageIsEntityIgnored(entity, DamagePropTypes:type)
+{
+    // Get the classname of the entity.
+    decl String:classname[64];
+    GetEdictClassname(entity, classname, sizeof(classname));
+    
+    // Create array to store classnames.
+    new String:arrayClassnames[DAMAGE_PROPS_MAX_CLASSNAMES][DAMAGE_PROPS_MAX_LENGTH];
+    
+    // Separate the list into an array.
+    new classnamecount;
+    if (type == DamageProp_Bullets)
+    {
+        classnamecount = CvarsListToArray(g_hCvarsList[CVAR_PROPS_BLOCK_BULLETS_IGNORE], arrayClassnames, DAMAGE_PROPS_MAX_CLASSNAMES, DAMAGE_PROPS_MAX_LENGTH, ",");
+    }
+    else if (type == DamageProp_Blast)
+    {
+        classnamecount = CvarsListToArray(g_hCvarsList[CVAR_PROPS_BLOCK_BLAST_IGNORE], arrayClassnames, DAMAGE_PROPS_MAX_CLASSNAMES, DAMAGE_PROPS_MAX_LENGTH, ",");
+    }
+    
+    // x = Array index.
+    // arrayClassnames[x] = classname, or partial classname.
+    for (new x = 0; x <= classnamecount - 1; x++)
+    {
+        TrimString(arrayClassnames[x]);
+        if (StrContains(classname, arrayClassnames[x], false) > -1)
+        {
+            return true;
+        }
+    }
+    
+    // Didn't match any classnames.
+    return false;
 }
 
 /**
@@ -364,6 +498,8 @@ public ZRTools_Action:DamageOnTakeDamage(client, inflictor, attacker, Float:dama
     // Allow damage.
     return ACTION_CONTINUE;
 }
+
+// Suicide Intercept
 
 /**
  * Command listener. (See zr_suicide_cmds cvar)
