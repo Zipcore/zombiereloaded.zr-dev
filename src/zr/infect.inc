@@ -374,7 +374,7 @@ Action:InfectOnPlayerRunCmd(client, &impulse)
     }
     
     // If the cvar doesn't disallow it, then stop.
-    new bool:flashlight_block = GetConVarBool(g_hCvarsList[CVAR_INFECT_FLASHLIGHT_BLOCK]);
+    new bool:flashlight_block = GetConVarBool(g_hCvarsList[CVAR_FLASHLIGHT_BLOCK]);
     if (!flashlight_block)
     {
         return Plugin_Continue;
@@ -413,8 +413,8 @@ InfectOnRoundFreezeEnd()
     }
     
     // Get min and max times.
-    new Float:infectspawntimemin = GetConVarFloat(g_hCvarsList[CVAR_INFECT_SPAWNTIME_MIN]);
-    new Float:infectspawntimemax = GetConVarFloat(g_hCvarsList[CVAR_INFECT_SPAWNTIME_MAX]);
+    new Float:infectspawntimemin = GetConVarFloat(g_hCvarsList[CVAR_SPAWNTIME_MIN]);
+    new Float:infectspawntimemax = GetConVarFloat(g_hCvarsList[CVAR_SPAWNTIME_MAX]);
     
     // Pick random time between min and max.
     new Float:randomtime = GetRandomFloat(infectspawntimemin, infectspawntimemax);
@@ -523,7 +523,7 @@ public Action:InfectMotherZombie(Handle:timer)
     new randindex;
     
     // Ratio of mother zombies to humans.
-    new ratio = GetConVarInt(g_hCvarsList[CVAR_INFECT_MZOMBIE_RATIO]);
+    new ratio = GetConVarInt(g_hCvarsList[CVAR_MZOMBIE_RATIO]);
     
     // If ratio is 0 or lower, then pick 1 zombie.
     if (ratio <= 0)
@@ -613,7 +613,7 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     bZombie[client] = true;
     
     // Check if consecutive infection protection is enabled.
-    new bool:infectconsecutiveblock = GetConVarBool(g_hCvarsList[CVAR_INFECT_CONSECUTIVE_BLOCK]);
+    new bool:infectconsecutiveblock = GetConVarBool(g_hCvarsList[CVAR_CONSECUTIVE_BLOCK]);
     
     // Flag player to be immune from being mother zombie twice, if consecutive infect protection is enabled.
     bInfectImmune[client][INFECT_TYPE_MOTHER] = infectconsecutiveblock ? motherinfect : false;
@@ -658,7 +658,7 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     WeaponsGetClientWeapons(client, weapons);
     
     // Check if weapons drop is enabled.
-    new bool:weaponsdrop = GetConVarBool(g_hCvarsList[CVAR_INFECT_WEAPONS_DROP]);
+    new bool:weaponsdrop = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_DROP]);
     
     // This must be after the event forwarding because it fixes a problem caused by changing models in ClassOnClientInfected.
     // Remove all weapons but knife.
@@ -674,14 +674,14 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     // If respawn is enabled, then teleport mother zombie back to spawnpoint.
     if (motherinfect)
     {
-        new bool:zombierespawn = GetConVarBool(g_hCvarsList[CVAR_INFECT_MZOMBIE_RESPAWN]);
+        new bool:zombierespawn = GetConVarBool(g_hCvarsList[CVAR_MZOMBIE_RESPAWN]);
         if(zombierespawn)
         {
             ZTeleTeleportClient(client);
         }
         
         // If the infect freeze cvar is above 0, then freeze the client.
-        new Float:infect_freeze = GetConVarFloat(g_hCvarsList[CVAR_INFECT_MZOMBIE_FREEZE]);
+        new Float:infect_freeze = GetConVarFloat(g_hCvarsList[CVAR_MZOMBIE_FREEZE]);
         if (infect_freeze > 0.0)
         {
             InfectFreezeClient(client, infect_freeze);
@@ -697,7 +697,7 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     }
     
     // Disable the zombie's flashlight if they are not allowed to use one.
-    new bool:flashlight_block = GetConVarBool(g_hCvarsList[CVAR_INFECT_FLASHLIGHT_BLOCK]);
+    new bool:flashlight_block = GetConVarBool(g_hCvarsList[CVAR_FLASHLIGHT_BLOCK]);
     if (flashlight_block)
     {
         // If the flashlight is on, then turn it off.
