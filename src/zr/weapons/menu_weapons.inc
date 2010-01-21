@@ -60,7 +60,7 @@ bool:WeaponsMenuMain(client)
     
     // Draw items, make unselectable if module is disabled.
     SetMenuTitle(menu_weapons_main, title);
-    AddMenuItem(menu_weapons_main, "restrict", restrict, MenuGetItemDraw(GetConVarBool(g_hCvarsList[CVAR_RESTRICT])));
+    AddMenuItem(menu_weapons_main, "restrict", restrict, MenuGetItemDraw(GetConVarBool(g_hCvarsList[CVAR_WEAPONS_RESTRICT])));
     AddMenuItem(menu_weapons_main, "zmarket", zmarket, MenuGetItemDraw(GetConVarBool(g_hCvarsList[CVAR_ZMARKET])));
     
     // Create a "Back" button to the weapons main menu.
