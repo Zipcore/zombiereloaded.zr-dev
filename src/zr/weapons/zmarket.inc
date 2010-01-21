@@ -105,19 +105,6 @@ ZMarketOnCookiesCreate()
 }
 
 /**
- * Find ZMarket-specific offsets here.
- */
-ZMarketOnOffsetsFound()
-{
-    // If offset "m_bInBuyZone" can't be found, then stop the plugin.
-    g_iToolsInBuyZone = FindSendPropInfo("CCSPlayer", "m_bInBuyZone");
-    if (g_iToolsInBuyZone == -1)
-    {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Offsets", "Offset \"CCSPlayer::m_bInBuyZone\" was not found.");
-    }
-}
-
-/**
  * Client is joining the server.
  * 
  * @param client    The client index.  
@@ -1047,7 +1034,7 @@ stock bool:ZMarketEquip(client, const String:weapon[], bool:rebuy = false)
     }
     
     new bool:zmarketbuyzone = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_ZMARKET_BUYZONE]);
-    if (!rebuy && zmarketbuyzone && !ZMarketIsClientInBuyZone(client))
+    if (!rebuy && zmarketbuyzone && !WeaponsIsClientInBuyZone(client))
     {
         // Update cookie with new weapon.
         ZMarketHandleRebuyCookie(client, slot, weapon);
@@ -1563,7 +1550,7 @@ ZMarketRebuySavedSetup(client, bool:autorebuy = false)
     }
     
     new bool:zmarketbuyzone = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_ZMARKET_BUYZONE]);
-    if (!autorebuy && zmarketbuyzone && !ZMarketIsClientInBuyZone(client))
+    if (!autorebuy && zmarketbuyzone && !WeaponsIsClientInBuyZone(client))
     {
         TranslationPrintToChat(client, "Weapons zmarket buyzone");
         return;
@@ -1649,15 +1636,4 @@ public Action:ZMarketCommand(client, argc)
     
     // This stops the "Unknown command" message in client's console.
     return Plugin_Handled;
-}
-
-/**
- * Checks if a client is in a buyzone.
- * 
- * @param client    The client index.
- */
-stock bool:ZMarketIsClientInBuyZone(client)
-{
-    // Return if client is in buyzone.
-    return bool:GetEntData(client, g_iToolsInBuyZone);
 }
