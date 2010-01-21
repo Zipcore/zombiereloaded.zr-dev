@@ -1018,7 +1018,7 @@ public InfectMenuClientsHandle(Handle:menu_infect_clients, MenuAction:action, cl
  */    
 stock bool:InfectIsClientInfected(client)
 {
-    // If client is invalid, then stop.
+    // If client isn't valid, then stop.
     if (!ZRIsClientValid(client))
     {
         return false;
@@ -1036,7 +1036,7 @@ stock bool:InfectIsClientInfected(client)
  */
 stock bool:InfectIsClientHuman(client)
 {
-    // If client is invalid, then stop.
+    // If client isn't valid, then stop.
     if (!ZRIsClientValid(client))
     {
         return true;
