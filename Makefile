@@ -6,7 +6,6 @@ SPCOMP=env/linux/bin/spcomp
 VERSIONDUMP=./updateversion.sh
 
 vpath %.sp $(SOURCEDIR)
-vpath %.inc $(SOURCEDIR)/include
 vpath %.smx $(BUILDDIR)
 
 SOURCEFILES=$(SOURCEDIR)/*.sp
@@ -18,7 +17,7 @@ prepare: prepare_newlines prepare_builddir
 
 prepare_newlines:
 	@echo "Removing windows newlines"
-	@find $(SOURCEDIR) -name \*.inc -exec dos2unix -p '{}' \;
+	@find $(SOURCEDIR)/zr -name \*.inc -exec dos2unix -p '{}' \;
 	@find $(SOURCEDIR)  -name \*.sp -exec dos2unix -p '{}' \;
 
 prepare_builddir:

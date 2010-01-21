@@ -752,7 +752,9 @@ stock bool:ClassGetNoFallDamage(index, cachetype = ZR_CLASS_CACHE_PLAYER)
 stock ClassGetWeaponProfile(index, cachetype = ZR_CLASS_CACHE_PLAYER)
 {
     new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);
-    if (weapons)
+    new bool:weaponsloaded = ConfigIsConfigLoaded(File_Weapons);
+    
+    if (weapons && weaponsloaded)
     {
         switch (cachetype)
         {
