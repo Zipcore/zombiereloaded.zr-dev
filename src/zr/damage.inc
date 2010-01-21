@@ -381,7 +381,7 @@ public Action:DamageSuicideIntercept(client, const String:command[], argc)
         return Plugin_Continue;
     }
     
-    // If client is invalid, then stop.  (Stop console.)
+    // If client isn't valid, then stop. (Stop console)
     if (!ZRIsClientValid(client))
     {
         return Plugin_Continue;

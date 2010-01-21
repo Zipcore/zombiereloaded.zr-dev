@@ -190,8 +190,14 @@ RestrictOnRoundEnd()
  */
 public Action:RestrictBuyCommand(client, const String:command[], argc)
 {
-    // If client isn't in-game, then stop.
-    if (!IsClientInGame(client))
+    // If client isn't valid, then stop.
+    if (!ZRIsClientValid(client))
+    {
+        return Plugin_Continue;
+    }
+    
+    // If the client isn't in a buyzone, then stop.
+    if (!WeaponsIsClientInBuyZone(client))
     {
         return Plugin_Continue;
     }
