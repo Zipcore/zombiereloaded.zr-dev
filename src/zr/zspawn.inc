@@ -108,7 +108,7 @@ ZSpawnOnRoundStart()
     SteamidCacheReset(g_hZSpawnSteamIDCache);
     
     // If zspawn timer is running, then kill it.
-    ZREndTimer(tZSpawn, true);
+    ZREndTimer(tZSpawn);
 }
 
 /**
@@ -117,7 +117,7 @@ ZSpawnOnRoundStart()
 ZSpawnOnRoundFreezeEnd()
 {
     // If infect timer is running, then kill it.
-    ZREndTimer(tZSpawn, true);
+    ZREndTimer(tZSpawn);
     
     // If zspawn is disabled, then stop.
     new bool:zspawn = GetConVarBool(g_hCvarsList[CVAR_ZSPAWN]);
@@ -146,7 +146,7 @@ ZSpawnOnRoundFreezeEnd()
 ZSpawnOnRoundEnd()
 {
     // If zspawn timer is running, then kill it.
-    ZREndTimer(tZSpawn, true);
+    ZREndTimer(tZSpawn);
 }
 
 /**

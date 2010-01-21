@@ -167,7 +167,7 @@ HealthRegenStart(client)
 HealthRegenStop(client)
 {
     // Kill the timer if it exists.
-    ZREndTimer(HealthRegenAttributes[client][RegenAttribute_Timer], true);
+    ZREndTimer(HealthRegenAttributes[client][RegenAttribute_Timer]);
 }
 
 /**

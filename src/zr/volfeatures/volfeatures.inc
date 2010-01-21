@@ -307,7 +307,7 @@ bool:VolStartUpdateTimer()
 VolStopUpdateTimer()
 {
     // Kill the timer if it's running.
-    ZREndTimer(hVolUpdateTimer, true);
+    ZREndTimer(hVolUpdateTimer);
     
     // Also stop trigger delay timer.
     VolStopTriggerTimer();
@@ -352,7 +352,7 @@ bool:VolStartTriggerTimer()
 VolStopTriggerTimer()
 {
     // Kill the timer if it's running.
-    ZREndTimer(hVolTriggerTimer, true);
+    ZREndTimer(hVolTriggerTimer);
 }
 
 /**

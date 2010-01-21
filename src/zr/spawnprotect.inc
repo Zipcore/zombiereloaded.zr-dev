@@ -54,7 +54,7 @@ SpawnProtectClientInit(client)
 SpawnProtectOnClientDisconnect(client)
 {
     // Reset timer handle.
-    ZREndTimer(tSpawnProtect[client], true);
+    ZREndTimer(tSpawnProtect[client]);
 }
 
 /**
@@ -71,7 +71,7 @@ SpawnProtectOnClientSpawnPost(client)
     }
     
     // If timer is currently running, kill it.
-    ZREndTimer(tSpawnProtect[client], true);
+    ZREndTimer(tSpawnProtect[client]);
     
     // If protect cvar is disabled, then stop.
     new bool:protect = GetConVarBool(g_hCvarsList[CVAR_SPAWNPROTECT]);
@@ -95,7 +95,7 @@ SpawnProtectOnClientSpawnPost(client)
 SpawnProtectOnClientDeath(client)
 {
     // If timer is running, kill it.
-    ZREndTimer(tSpawnProtect[client], true);
+    ZREndTimer(tSpawnProtect[client]);
 }
 
 /**

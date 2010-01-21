@@ -89,7 +89,7 @@ ZombieSoundsClientInit(client)
 ZombieSoundsOnClientDisconnect(client)
 {
     // Reset timer handle.
-    ZREndTimer(tSEffectsMoan[client], true);
+    ZREndTimer(tSEffectsMoan[client]);
 }
 
 /**
@@ -100,7 +100,7 @@ ZombieSoundsOnClientDisconnect(client)
 ZombieSoundsOnClientSpawn(client)
 {
     // If timer is running, kill it.
-    ZREndTimer(tSEffectsMoan[client], true);
+    ZREndTimer(tSEffectsMoan[client]);
 }
 
 /**
@@ -142,7 +142,7 @@ ZombieSoundsOnClientHurt(client)
 ZombieSoundsOnClientDeath(client)
 {
     // If timer is running, kill it.
-    ZREndTimer(tSEffectsMoan[client], true);
+    ZREndTimer(tSEffectsMoan[client]);
     
     // If player isn't a zombie, then stop.
     if (!InfectIsClientInfected(client))
@@ -179,7 +179,7 @@ ZombieSoundsOnClientInfected(client)
     }
     
     // If timer is currently running, kill it.
-    ZREndTimer(tSEffectsMoan[client], true);
+    ZREndTimer(tSEffectsMoan[client]);
     
     // Start repeating timer.
     tSEffectsMoan[client] = CreateTimer(interval, ZombieSoundsMoanTimer, client, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);

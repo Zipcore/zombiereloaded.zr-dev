@@ -94,7 +94,7 @@ ZHPClientInit(client)
 ZHPOnClientDisconnect(client)
 {
     // Reset timer handle.
-    ZREndTimer(tZHP[client], true);
+    ZREndTimer(tZHP[client]);
 }
 
 /**
@@ -105,7 +105,7 @@ ZHPOnClientDisconnect(client)
 ZHPOnClientSpawn(client)
 {
     // If timer is running, kill it.
-    ZREndTimer(tZHP[client], true);
+    ZREndTimer(tZHP[client]);
 }
 
 /**
@@ -116,7 +116,7 @@ ZHPOnClientSpawn(client)
 ZHPOnClientDeath(client)
 {
     // If timer is running, kill it.
-    ZREndTimer(tZHP[client], true);
+    ZREndTimer(tZHP[client]);
 }
 
 /**
@@ -137,7 +137,7 @@ ZHPOnClientInfected(client)
     ZHPUpdateHUD(client);
     
     // If timer is currently running, kill it.
-    ZREndTimer(tZHP[client], true);
+    ZREndTimer(tZHP[client]);
     
     // Start repeating timer to update display.
     tZHP[client] = CreateTimer(5.0, ZHPTimer, client, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);

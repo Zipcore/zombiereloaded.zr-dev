@@ -87,7 +87,7 @@ ZTeleOnClientSpawn(client)
     GetClientAbsOrigin(client, g_vecZTeleSpawn[client]);
     
     // If timer is running, kill it.
-    ZREndTimer(tZTele[client], true);
+    ZREndTimer(tZTele[client]);
 }
 
 /**
@@ -98,7 +98,7 @@ ZTeleOnClientSpawn(client)
 ZTeleOnClientDeath(client)
 {
     // If timer is running, kill it.
-    ZREndTimer(tZTele[client], true);
+    ZREndTimer(tZTele[client]);
 }
 
 /**
@@ -109,7 +109,7 @@ ZTeleOnClientDeath(client)
 ZTeleOnClientInfected(client)
 {
     // If timer is running, kill it.
-    ZREndTimer(tZTele[client], true);
+    ZREndTimer(tZTele[client]);
 }
 
 /**
@@ -120,7 +120,7 @@ ZTeleOnClientInfected(client)
 ZTeleOnClientHuman(client)
 {
     // If timer is running, kill it.
-    ZREndTimer(tZTele[client], true);
+    ZREndTimer(tZTele[client]);
 }
 
 /**
