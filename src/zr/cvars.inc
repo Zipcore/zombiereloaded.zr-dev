@@ -74,12 +74,12 @@ enum CvarsList
     Handle:CVAR_CLASSES_HUMAN_SELECT,
     Handle:CVAR_CLASSES_ADMIN_SELECT,
     Handle:CVAR_WEAPONS,
-    Handle:CVAR_WEAPONS_RESTRICT,
-    Handle:CVAR_WEAPONS_RESTRICT_ENDEQUIP,
-    Handle:CVAR_WEAPONS_ZMARKET,
-    Handle:CVAR_WEAPONS_ZMARKET_BUYZONE,
-    Handle:CVAR_WEAPONS_ZMARKET_REBUY,
-    Handle:CVAR_WEAPONS_ZMARKET_REBUY_AUTO,
+    Handle:CVAR_RESTRICT,
+    Handle:CVAR_RESTRICT_ENDEQUIP,
+    Handle:CVAR_ZMARKET,
+    Handle:CVAR_ZMARKET_BUYZONE,
+    Handle:CVAR_ZMARKET_REBUY,
+    Handle:CVAR_ZMARKET_REBUY_AUTO,
     Handle:CVAR_HITGROUPS,
     Handle:CVAR_PROPS_BLOCK_BULLETS,
     Handle:CVAR_PROPS_BLOCK_BULLETS_IGNORE,
@@ -100,14 +100,14 @@ enum CvarsList
     Handle:CVAR_ROUNDEND_OVERLAY,
     Handle:CVAR_ROUNDEND_OVERLAY_ZOMBIE,
     Handle:CVAR_ROUNDEND_OVERLAY_HUMAN,
-    Handle:CVAR_INFECT_MZOMBIE_RATIO,
-    Handle:CVAR_INFECT_MZOMBIE_RESPAWN,
-    Handle:CVAR_INFECT_MZOMBIE_FREEZE,
-    Handle:CVAR_INFECT_SPAWNTIME_MIN,
-    Handle:CVAR_INFECT_SPAWNTIME_MAX,
-    Handle:CVAR_INFECT_CONSECUTIVE_BLOCK,
-    Handle:CVAR_INFECT_FLASHLIGHT_BLOCK,
-    Handle:CVAR_INFECT_WEAPONS_DROP,
+    Handle:CVAR_MZOMBIE_RATIO,
+    Handle:CVAR_MZOMBIE_RESPAWN,
+    Handle:CVAR_MZOMBIE_FREEZE,
+    Handle:CVAR_SPAWNTIME_MIN,
+    Handle:CVAR_SPAWNTIME_MAX,
+    Handle:CVAR_CONSECUTIVE_BLOCK,
+    Handle:CVAR_FLASHLIGHT_BLOCK,
+    Handle:CVAR_WEAPONS_DROP,
     Handle:CVAR_INFECT_EXPLOSION,
     Handle:CVAR_INFECT_FIREBALL,
     Handle:CVAR_INFECT_SMOKE,
@@ -302,17 +302,17 @@ CvarsCreate()
     // ===========================
     
     // General
-    g_hCvarsList[CVAR_WEAPONS]                          =    CreateConVar("zr_weapons",                     "1",    "Enable weapons module, disabling this will disable any weapons-related features. (weapon restrictions, weapon knockback multipliers, etc)");
+    g_hCvarsList[CVAR_WEAPONS]                          =    CreateConVar("zr_weapons",             "1",    "Enable weapons module, disabling this will disable any weapons-related features. (weapon restrictions, weapon knockback multipliers, etc)");
     
     // Restrict
-    g_hCvarsList[CVAR_WEAPONS_RESTRICT]                 =    CreateConVar("zr_weapons_restrict",            "1",    "Enable weapon restriction module, disabling this will disable weapon restriction commands.");
-    g_hCvarsList[CVAR_WEAPONS_RESTRICT_ENDEQUIP]        =    CreateConVar("zr_weapons_restrict_endequip",   "1",    "Restricts zombies from picking up weapons after the round has ended but before the next round has begun.");
+    g_hCvarsList[CVAR_RESTRICT]                         =    CreateConVar("zr_restrict",            "1",    "Enable weapon restriction module, disabling this will disable weapon restriction commands. [Dependency: zr_weapons]");
+    g_hCvarsList[CVAR_RESTRICT_ENDEQUIP]                =    CreateConVar("zr_restrict_endequip",   "1",    "Restricts zombies from picking up weapons after the round has ended but before the next round has begun.");
     
     // ZMarket
-    g_hCvarsList[CVAR_WEAPONS_ZMARKET]                  =    CreateConVar("zr_weapons_zmarket",             "1",            "Allow player to buy from a list of weapons in the weapons config.");
-    g_hCvarsList[CVAR_WEAPONS_ZMARKET_BUYZONE]          =    CreateConVar("zr_weapons_zmarket_buyzone",     "1",            "Requires player to be inside a buyzone to use ZMarket. [Dependency: zr_weapons_zmarket]");
-    g_hCvarsList[CVAR_WEAPONS_ZMARKET_REBUY]            =    CreateConVar("zr_weapons_zmarket_rebuy",       "1",            "Allow players to rebuy their weapon setup. [Dependency: zr_weapons_zmarket]");
-    g_hCvarsList[CVAR_WEAPONS_ZMARKET_REBUY_AUTO]       =    CreateConVar("zr_weapons_zmarket_rebuy_auto",  "1",            "Allow players to automatically rebuy their weapon setup on spawn. [Dependency: zr_weapons_zmarket&zr_weapons_zmarket_rebuy]");
+    g_hCvarsList[CVAR_ZMARKET]                          =    CreateConVar("zr_zmarket",             "1",    "Allow player to buy from a list of weapons in the weapons config. [Dependency: zr_weapons]");
+    g_hCvarsList[CVAR_ZMARKET_BUYZONE]                  =    CreateConVar("zr_zmarket_buyzone",     "1",    "Requires player to be inside a buyzone to use ZMarket. [Dependency: zr_weapons_zmarket]");
+    g_hCvarsList[CVAR_ZMARKET_REBUY]                    =    CreateConVar("zr_zmarket_rebuy",       "1",    "Allow players to rebuy their weapon setup. [Dependency: zr_weapons_zmarket]");
+    g_hCvarsList[CVAR_ZMARKET_REBUY_AUTO]               =    CreateConVar("zr_zmarket_rebuy_auto",  "1",    "Allow players to automatically rebuy their weapon setup on spawn. [Dependency: zr_weapons_zmarket&zr_weapons_zmarket_rebuy]");
     
     
     // ===========================
@@ -326,26 +326,26 @@ CvarsCreate()
     // ===========================
     
     // General
-    g_hCvarsList[CVAR_INFECT_MZOMBIE_RATIO]             =    CreateConVar("zr_infect_mzombie_ratio",        "5",                                "Number of mother zombies to infect (when infect timer is up) in proportion to number of humans on the server.");
-    g_hCvarsList[CVAR_INFECT_MZOMBIE_RESPAWN]           =    CreateConVar("zr_infect_mzombie_respawn",      "0",                                "Teleport mother zombies back to spawn on infect.");
-    g_hCvarsList[CVAR_INFECT_MZOMBIE_FREEZE]            =    CreateConVar("zr_infect_mzombie_freeze",       "0",                                "Freeze mother zombies upon infection for this long ['0' = Disabled]");
-    g_hCvarsList[CVAR_INFECT_SPAWNTIME_MIN]             =    CreateConVar("zr_infect_spawntime_min",        "30.0",                             "Minimum time from the start of the round until picking the mother zombie(s).");
-    g_hCvarsList[CVAR_INFECT_SPAWNTIME_MAX]             =    CreateConVar("zr_infect_spawntime_max",        "50.0",                             "Maximum time from the start of the round until picking the mother zombie(s).");
-    g_hCvarsList[CVAR_INFECT_CONSECUTIVE_BLOCK]         =    CreateConVar("zr_infect_consecutive_block",    "1",                                "Prevent a player from being chosen as mother zombie two rounds in a row.");
-    g_hCvarsList[CVAR_INFECT_FLASHLIGHT_BLOCK]          =    CreateConVar("zr_infect_flashlight_block",     "0",                                "Disallow zombies from using a flashlight. [Recommended: Enable zombie attribute: 'nvgs']");
-    g_hCvarsList[CVAR_INFECT_WEAPONS_DROP]              =    CreateConVar("zr_infect_weapons_drop",         "1",                                "Force player to drop all weapons on infect, disabling this will strip weapons instead.");
+    g_hCvarsList[CVAR_MZOMBIE_RATIO]                    =    CreateConVar("zr_mzombie_ratio",           "5",                                "Number of mother zombies to infect (when infect timer is up) in proportion to number of humans on the server.");
+    g_hCvarsList[CVAR_MZOMBIE_RESPAWN]                  =    CreateConVar("zr_mzombie_respawn",         "0",                                "Teleport mother zombies back to spawn on infect.");
+    g_hCvarsList[CVAR_MZOMBIE_FREEZE]                   =    CreateConVar("zr_mzombie_freeze",          "0",                                "Freeze mother zombies upon infection for this long ['0' = Disabled]");
+    g_hCvarsList[CVAR_SPAWNTIME_MIN]                    =    CreateConVar("zr_spawntime_min",           "30.0",                             "Minimum time from the start of the round until picking the mother zombie(s).");
+    g_hCvarsList[CVAR_SPAWNTIME_MAX]                    =    CreateConVar("zr_spawntime_max",           "50.0",                             "Maximum time from the start of the round until picking the mother zombie(s).");
+    g_hCvarsList[CVAR_CONSECUTIVE_BLOCK]                =    CreateConVar("zr_consecutive_block",       "1",                                "Prevent a player from being chosen as mother zombie two rounds in a row.");
+    g_hCvarsList[CVAR_FLASHLIGHT_BLOCK]                 =    CreateConVar("zr_flashlight_block",        "0",                                "Disallow zombies from using a flashlight. [Recommended: Enable zombie attribute: 'nvgs']");
+    g_hCvarsList[CVAR_WEAPONS_DROP]                     =    CreateConVar("zr_weapons_drop",            "1",                                "Force player to drop all weapons on infect, disabling this will strip weapons instead.");
     
     // Effects
-    g_hCvarsList[CVAR_INFECT_EXPLOSION]                 =    CreateConVar("zr_infect_explosion",            "1",                                "Disabling this will disable the fireball, smoke cloud, and sparks in a more efficient way.");
-    g_hCvarsList[CVAR_INFECT_FIREBALL]                  =    CreateConVar("zr_infect_fireball",             "1",                                "Spawn a fireball effect around player on infection. [Dependency: zr_infect_explosion]");
-    g_hCvarsList[CVAR_INFECT_SMOKE]                     =    CreateConVar("zr_infect_smoke",                "1",                                "Spawn a smoke cloud effect around player on infection. [Dependency: zr_infect_explosion]");
-    g_hCvarsList[CVAR_INFECT_SPARKS]                    =    CreateConVar("zr_infect_sparks",               "1",                                "Emit sparks from player on infection. [Dependency: zr_infect_explosion]");
-    g_hCvarsList[CVAR_INFECT_SOUND]                     =    CreateConVar("zr_infect_sound",                "npc/fast_zombie/fz_scream1.wav",   "Sound, relative to \"sound\" folder, to play from player on infection. ['\"\"' = No sound]");
-    g_hCvarsList[CVAR_INFECT_ESPLASH]                   =    CreateConVar("zr_infect_esplash",              "1",                                "Emit an energy splash from player on infection.");
-    g_hCvarsList[CVAR_INFECT_SHAKE]                     =    CreateConVar("zr_infect_shake",                "1",                                "Shake player's view on infect.");
-    g_hCvarsList[CVAR_INFECT_SHAKE_AMP]                 =    CreateConVar("zr_infect_shake_amp",            "15.0",                             "Amplitude of shaking effect. [Dependency: zr_infect_shake]");
-    g_hCvarsList[CVAR_INFECT_SHAKE_FREQUENCY]           =    CreateConVar("zr_infect_shake_frequency",      "1.0",                              "Frequency of shaking effect. [Dependency: zr_infect_shake]");
-    g_hCvarsList[CVAR_INFECT_SHAKE_DURATION]            =    CreateConVar("zr_infect_shake_duration",       "5.0",                              "Duration of shaking effect. [Dependency: zr_infect_shake]"); 
+    g_hCvarsList[CVAR_INFECT_EXPLOSION]                 =    CreateConVar("zr_infect_explosion",        "1",                                "Disabling this will disable the fireball, smoke cloud, and sparks in a more efficient way.");
+    g_hCvarsList[CVAR_INFECT_FIREBALL]                  =    CreateConVar("zr_infect_fireball",         "1",                                "Spawn a fireball effect around player on infection. [Dependency: zr_infect_explosion]");
+    g_hCvarsList[CVAR_INFECT_SMOKE]                     =    CreateConVar("zr_infect_smoke",            "1",                                "Spawn a smoke cloud effect around player on infection. [Dependency: zr_infect_explosion]");
+    g_hCvarsList[CVAR_INFECT_SPARKS]                    =    CreateConVar("zr_infect_sparks",           "1",                                "Emit sparks from player on infection. [Dependency: zr_infect_explosion]");
+    g_hCvarsList[CVAR_INFECT_SOUND]                     =    CreateConVar("zr_infect_sound",            "npc/fast_zombie/fz_scream1.wav",   "Sound, relative to \"sound\" folder, to play from player on infection. ['\"\"' = No sound]");
+    g_hCvarsList[CVAR_INFECT_ESPLASH]                   =    CreateConVar("zr_infect_esplash",          "1",                                "Emit an energy splash from player on infection.");
+    g_hCvarsList[CVAR_INFECT_SHAKE]                     =    CreateConVar("zr_infect_shake",            "1",                                "Shake player's view on infect.");
+    g_hCvarsList[CVAR_INFECT_SHAKE_AMP]                 =    CreateConVar("zr_infect_shake_amp",        "15.0",                             "Amplitude of shaking effect. [Dependency: zr_infect_shake]");
+    g_hCvarsList[CVAR_INFECT_SHAKE_FREQUENCY]           =    CreateConVar("zr_infect_shake_frequency",  "1.0",                              "Frequency of shaking effect. [Dependency: zr_infect_shake]");
+    g_hCvarsList[CVAR_INFECT_SHAKE_DURATION]            =    CreateConVar("zr_infect_shake_duration",   "5.0",                              "Duration of shaking effect. [Dependency: zr_infect_shake]"); 
     
     
     // ===========================
@@ -537,7 +537,6 @@ CvarsCreate()
     // ===========================
     g_hCvarsList[CVAR_ZHP]                              =    CreateConVar("zr_zhp",             "1",    "Allow player to toggle real HP display as a zombie.");
     g_hCvarsList[CVAR_ZHP_DEFAULT]                      =    CreateConVar("zr_zhp_default",     "1",    "Default ZHP toggle state set on connecting player. [Dependency: zr_zhp]");
-    
     
     // Auto-generate config file if it doesn't exist, then execute.
     AutoExecConfig(true, "zombiereloaded", "sourcemod/zombiereloaded");
