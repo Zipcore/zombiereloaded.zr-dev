@@ -232,7 +232,8 @@ stock ClassValidateAttributes(classindex)
     // Weapon profile. Only validate if weapons module is enabled and the class
     // is a human class.
     new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);
-    if (weapons && ClassData[classindex][Class_Team] == ZR_CLASS_TEAM_HUMANS)
+    new bool:weaponsloaded = ConfigIsConfigLoaded(File_Weapons);
+    if (weapons && weaponsloaded && ClassData[classindex][Class_Team] == ZR_CLASS_TEAM_HUMANS)
     {
         new weapon_profile = ClassData[classindex][Class_WeaponProfile];
         if (!WeaponProfilesIsValidIndex(weapon_profile))
@@ -389,7 +390,8 @@ stock ClassValidateEditableAttributes(attributes[ClassEditableAttributes])
     // Weapon profile. Only validate if weapon module is enabled and the class
     // is a human class.
     new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);
-    if (weapons && attributes[Class_Team] == ZR_CLASS_TEAM_HUMANS)
+    new bool:weaponsloaded = ConfigIsConfigLoaded(File_Weapons);
+    if (weapons && weaponsloaded && attributes[Class_Team] == ZR_CLASS_TEAM_HUMANS)
     {
         new weapon_profile = attributes[Class_WeaponProfile];
         if (!WeaponProfilesIsValidIndex(weapon_profile))
