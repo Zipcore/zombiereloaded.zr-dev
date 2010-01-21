@@ -294,3 +294,15 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
     // Forward event to modules.
     return InfectOnPlayerRunCmd(client, impulse);
 }
+
+/**
+ * Called when an entity is created.
+ *
+ * @param entity    Entity index.
+ * @param classname Class name.
+ */
+public OnEntityCreated(entity, const String:classname[])
+{
+    // Forward event to modules.
+    DamageOnEntityCreated(entity);
+}

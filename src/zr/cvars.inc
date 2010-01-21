@@ -81,6 +81,10 @@ enum CvarsList
     Handle:CVAR_WEAPONS_ZMARKET_REBUY,
     Handle:CVAR_WEAPONS_ZMARKET_REBUY_AUTO,
     Handle:CVAR_HITGROUPS,
+    Handle:CVAR_PROPS_BLOCK_BULLETS,
+    Handle:CVAR_PROPS_BLOCK_BULLETS_IGNORE,
+    Handle:CVAR_PROPS_BLOCK_BLAST,
+    Handle:CVAR_PROPS_BLOCK_BLAST_IGNORE,
     Handle:CVAR_DAMAGE_HITGROUPS,
     Handle:CVAR_DAMAGE_BLOCK_FF,
     Handle:CVAR_DAMAGE_BLOCK_BLAST,
@@ -348,12 +352,18 @@ CvarsCreate()
     // Damage (core)
     // ===========================
     
+    // Prop Damage
+    g_hCvarsList[CVAR_PROPS_BLOCK_BULLETS]              =    CreateConVar("zr_props_block_bullets",         "0",                              "Block bullet damage to props.");
+    g_hCvarsList[CVAR_PROPS_BLOCK_BULLETS_IGNORE]       =    CreateConVar("zr_props_block_bullets_ignore",  "weapon_",                        "A list of classnames (including partial names) that won't be affected by zr_props_block_bullets. [Delimiter: \",\"]");
+    g_hCvarsList[CVAR_PROPS_BLOCK_BLAST]                =    CreateConVar("zr_props_block_blast",           "0",                              "Block blast damage to props.  Very effective in stopping cade bashing via grenade.");
+    g_hCvarsList[CVAR_PROPS_BLOCK_BLAST_IGNORE]         =    CreateConVar("zr_props_block_blast_ignore",    "weapon_",                        "A list of classnames (including partial names) that won't be affected by zr_props_block_blast. [Delimiter: \",\"]");
+    
     // Hitgroup Damage
-    g_hCvarsList[CVAR_DAMAGE_HITGROUPS]                 =    CreateConVar("zr_damage_hitgroups",        "1",                                    "Read hitgroup damage control from hitgroup config file, disabling this allows all zombie hitgroups to be shot.");
+    g_hCvarsList[CVAR_DAMAGE_HITGROUPS]                 =    CreateConVar("zr_damage_hitgroups",        "1",                                   "Read hitgroup damage control from hitgroup config file, disabling this allows all zombie hitgroups to be shot.");
     
     // Block Damage Types
-    g_hCvarsList[CVAR_DAMAGE_BLOCK_FF]                  =    CreateConVar("zr_damage_block_ff",         "1",                                    "Block friendly fire.");
-    g_hCvarsList[CVAR_DAMAGE_BLOCK_BLAST]               =    CreateConVar("zr_damage_block_blast",      "1",                                    "Block blast damage inflicted on self or teammates.");
+    g_hCvarsList[CVAR_DAMAGE_BLOCK_FF]                  =    CreateConVar("zr_damage_block_ff",         "1",                                   "Block friendly fire.");
+    g_hCvarsList[CVAR_DAMAGE_BLOCK_BLAST]               =    CreateConVar("zr_damage_block_blast",      "1",                                   "Block blast damage inflicted on self or teammates.");
     
     // Suicide Intercept
     g_hCvarsList[CVAR_SUICIDE_AFTER_INFECT]             =    CreateConVar("zr_suicide_after_infect",    "1",                                   "Intercept suicide commands only after the first zombie has spawned.");
@@ -633,4 +643,26 @@ public CvarsHookRestartGame(Handle:cvar, const String:oldvalue[], const String:n
     
     // If log flag check fails, then don't log.
     LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Cvars, "Restart Game", "\"mp_restartgame\" was caught and blocked, commencing round.");
+}
+
+/**
+ * Separates a list of items within a given cvar into an array.
+ * Note: Don't forget to trim the items, because there might be leftover whitespace. (TrimString) 
+ * 
+ * @param cvar          The cvar handle to separate.
+ * @param outputarray   The array to output the items to.
+ * @param maxitems      The max amount of items.
+ * @param maxlen        The max length of each item.
+ * @param delimiter     The token separating each item. (usually ",")
+ * 
+ * @return              The number of items separated.
+ */
+stock CvarsListToArray(Handle:cvar, String:outputarray[][], maxitems, maxlen, const String:delimiter[])
+{
+    // Get cvar value.
+    decl String:list[maxitems * maxlen]; 
+    GetConVarString(cvar, list, maxitems * maxlen);
+    
+    // Explode string into array indexes.
+    return ExplodeString(list, delimiter, outputarray, maxitems, maxlen);
 }
