@@ -53,7 +53,7 @@ RespawnClientInit(client)
 RespawnOnClientDisconnect(client)
 {
     // Reset timer handle.
-    ZREndTimer(tRespawn[client], true);
+    ZREndTimer(tRespawn[client]);
 }
 
 /**
@@ -64,7 +64,7 @@ RespawnOnClientDisconnect(client)
 RespawnOnClientSpawn(client)
 {
     // If timer is running, kill it.
-    ZREndTimer(tRespawn[client], true);
+    ZREndTimer(tRespawn[client]);
 }
 
 /**
@@ -82,7 +82,7 @@ RespawnOnClientDeath(client, attacker)
     }
     
     // If timer is running, kill it.
-    ZREndTimer(tRespawn[client], true);
+    ZREndTimer(tRespawn[client]);
     
     // If respawn is disabled, stop here.
     new bool:respawn = GetConVarBool(g_hCvarsList[CVAR_RESPAWN]);
@@ -111,7 +111,7 @@ RespawnOnRoundEnd()
         }
         
         // Kill the timer if it's running.
-        ZREndTimer(tRespawn[x], true);
+        ZREndTimer(tRespawn[x]);
     }
 }
 

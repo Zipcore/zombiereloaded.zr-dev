@@ -182,7 +182,7 @@ AmbientSoundsOnClientSpawnPost(client)
 AmbientSoundsRestart()
 {
     // If timer is running, kill it.
-    ZREndTimer(tAmbientSounds, true);
+    ZREndTimer(tAmbientSounds);
     
     // If ambience is disabled, then stop.
     if (!g_bAmbientSounds)

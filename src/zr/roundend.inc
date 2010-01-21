@@ -126,7 +126,7 @@ RoundEndOnRoundStart()
     RoundEndOverlayStop();
     
     // If round end timer is running, then kill it.
-    ZREndTimer(tRoundEnd, true);
+    ZREndTimer(tRoundEnd);
 }
 
 /**
@@ -153,7 +153,7 @@ RoundEndOnRoundFreezeEnd()
 RoundEndOnRoundEnd(reason)
 {
     // If round end timer is running, then kill it.
-    ZREndTimer(tRoundEnd, true);
+    ZREndTimer(tRoundEnd);
     
     // Tell plugin no zombies have been spawned.
     g_bZombieSpawned = false;

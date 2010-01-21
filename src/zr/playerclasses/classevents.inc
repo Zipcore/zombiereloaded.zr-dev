@@ -110,7 +110,7 @@ ClassOnClientDisconnect(client)
     ClassResetNextIndexes(client);
     
     // Kill instant change timer if running.
-    ZREndTimer(tClassInstantChange[client], true);
+    ZREndTimer(tClassInstantChange[client]);
     
     // Forward event to sub-modules.
     HealthRegenOnClientDisconnect(client);
@@ -218,7 +218,7 @@ ClassOnClientSpawn(client)
     ClassApplyAttributes(client);
     
     // Kill instant change timer if running.
-    ZREndTimer(tClassInstantChange[client], true);
+    ZREndTimer(tClassInstantChange[client]);
     
     // Check if instant class change cvar is set.
     new Float:instantspawn = GetConVarFloat(g_hCvarsList[CVAR_CLASSES_CHANGE_TIMELIMIT]);
@@ -264,7 +264,7 @@ ClassOnClientDeath(client)
     ToolsSetClientDefaultFOV(client, 90);
     
     // Kill instant change timer if running.
-    ZREndTimer(tClassInstantChange[client], true);
+    ZREndTimer(tClassInstantChange[client]);
     
     // Forward event to sub-modules.
     ClassOverlayOnClientDeath(client);
@@ -286,7 +286,7 @@ ClassOnClientInfected(client, bool:motherzombie = false)
     decl String:motherzombiesetting[64];
     
     // Make sure the player is not allowed to instantly change class.
-    ZREndTimer(tClassInstantChange[client], true);
+    ZREndTimer(tClassInstantChange[client]);
     ClassAllowInstantChange[client] = false;
     
     // Check if it's a mother zombie.

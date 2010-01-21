@@ -137,7 +137,7 @@ InfectClientInit(client)
 InfectOnClientDisconnect(client)
 {
     // Kill infect freeze timer.
-    ZREndTimer(tInfectFreeze[client], true);
+    ZREndTimer(tInfectFreeze[client]);
     
     // If the client is already out of the game, then stop.
     if (!IsClientInGame(client))
@@ -255,7 +255,7 @@ InfectOnClientTeam(client, team)
 InfectOnClientSpawn(client)
 {
     // Kill infect freeze timer.
-    ZREndTimer(tInfectFreeze[client], true);
+    ZREndTimer(tInfectFreeze[client]);
     
     // Disable zombie flag on client.
     bZombie[client] = false;
@@ -280,7 +280,7 @@ InfectOnClientSpawn(client)
 InfectOnClientDeath(client, attacker)
 {
     // Kill infect freeze timer.
-    ZREndTimer(tInfectFreeze[client], true);
+    ZREndTimer(tInfectFreeze[client]);
     
     // If attacker isn't valid, then stop.
     if (!ZRIsClientValid(attacker))
@@ -392,7 +392,7 @@ Action:InfectOnPlayerRunCmd(client, &impulse)
 InfectOnRoundStart()
 {
     // If infect timer is running, then kill it.
-    ZREndTimer(tInfect, true);
+    ZREndTimer(tInfect);
     
     // Tell plugin there are no zombies.
     g_bZombieSpawned = false;
@@ -404,7 +404,7 @@ InfectOnRoundStart()
 InfectOnRoundFreezeEnd()
 {
     // If infect timer is running, then kill it.
-    ZREndTimer(tInfect, true);
+    ZREndTimer(tInfect);
     
     // Get min and max times.
     new Float:infectspawntimemin = GetConVarFloat(g_hCvarsList[CVAR_INFECT_SPAWNTIME_MIN]);
@@ -422,7 +422,7 @@ InfectOnRoundFreezeEnd()
 InfectOnRoundEnd()
 {
     // If infect timer is running, then kill it.
-    ZREndTimer(tInfect, true);
+    ZREndTimer(tInfect);
     
     // x = client index.
     for (new x = 1; x <=  MaxClients; x++)
@@ -1063,7 +1063,7 @@ stock InfectManualInfect(client, targets[], count, bool:respawnoverride = false,
     if (!zombiespawned)
     {
         // Stop mother infect timer.
-        ZREndTimer(tInfect, true);
+        ZREndTimer(tInfect);
         
         // Move all clients to CT
         for (new x = 1; x <= MaxClients; x++)

@@ -80,11 +80,11 @@ stock bool:ZRIsTimerRunning(Handle:timer)
  * 
  * @param timer     The timer handle.
  * @param kill      True to kill the timer and reset the variable, false to only reset the variable.
- *                  This is useful when calling from the timer callback, because the timer is already killed.
+ *                  Using false is useful when calling from the timer callback, because the timer is already killed.
  * 
- * @return          True if the timer was ended successfully, false if the handle wasn't valid.
+ * @return          True if the handle wasn't INVALID_HANDLE, false if the handle wasn't valid.
  */
-stock bool:ZREndTimer(&Handle:timer, bool:kill)
+stock bool:ZREndTimer(&Handle:timer, bool:kill = true)
 {
     // If the timer is running, then kill it.
     if (ZRIsTimerRunning(timer))
