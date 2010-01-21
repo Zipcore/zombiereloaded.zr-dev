@@ -594,7 +594,7 @@ ZRTools_Action:RestrictCanUse(client, weapon)
     }
     
     // If restrict module is disabled, then stop.
-    new bool:restrict = GetConVarBool(g_hCvarsList[CVAR_RESTRICT]);
+    new bool:restrict = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_RESTRICT]);
     if (!restrict)
     {
         return ACTION_CONTINUE;
@@ -652,7 +652,7 @@ public Action:RestrictCommand(client, argc)
     }
     
     // If restrict module is disabled, then stop.
-    new bool:restrict = GetConVarBool(g_hCvarsList[CVAR_RESTRICT]);
+    new bool:restrict = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_RESTRICT]);
     if (!restrict)
     {
         // Tell client command is disabled.
@@ -714,7 +714,7 @@ public Action:UnrestrictCommand(client, argc)
     }
     
     // If restrict module is disabled, then stop.
-    new bool:restrict = GetConVarBool(g_hCvarsList[CVAR_RESTRICT]);
+    new bool:restrict = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_RESTRICT]);
     if (!restrict)
     {
         // Tell client command is disabled.
