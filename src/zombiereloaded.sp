@@ -25,9 +25,6 @@
  * ============================================================================
  */
 
-// Comment to use ZR Tools Extension, otherwise SDK Hooks Extension will be used.
-#define USE_SDKHOOKS
-
 #pragma semicolon 1
 #include <sourcemod>
 #include <adminmenu>
@@ -35,18 +32,7 @@
 #include <sdktools>
 #include <clientprefs>
 #include <cstrike>
-
-#if defined USE_SDKHOOKS
-    #include <sdkhooks>
-    
-    #define ACTION_CONTINUE     Plugin_Continue
-    #define ACTION_HANDLED      Plugin_Handled
-#else
-    #include <zrtools>
-    
-    #define ACTION_CONTINUE     ZRTools_Continue
-    #define ACTION_HANDLED      ZRTools_Handled
-#endif
+#include <sdkhooks>
 
 #define VERSION "3.0.0-dev"
 

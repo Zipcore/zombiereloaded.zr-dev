@@ -558,11 +558,7 @@ stock bool:RestrictIsTypeUniform(bool:restricted, index)
  * @return          Return ZRTools_Handled to stop weapon pickup.
  *                  ZRTools_Continue to allow weapon pickup.
  */
-#if defined USE_SDKHOOKS
 Action:RestrictCanUse(client, weapon)
-#else
-ZRTools_Action:RestrictCanUse(client, weapon)
-#endif
 {
     new String:weaponentity[WEAPONS_MAX_LENGTH];
     GetEdictClassname(weapon, weaponentity, sizeof(weaponentity));
@@ -570,19 +566,19 @@ ZRTools_Action:RestrictCanUse(client, weapon)
     // If weapon is a knife, then allow pickup.
     if (StrEqual(weaponentity, "weapon_knife"))
     {
-        return ACTION_CONTINUE;
+        return Plugin_Continue;
     }
     
     // If the player is a zombie, then prevent pickup.
     if (InfectIsClientInfected(client))
     {
-        return ACTION_HANDLED;
+        return Plugin_Handled;
     }
     
     // If client is flagged for not picking up weapons, then stop.
     if (g_bRestrictBlockWeapon[client])
     {
-        return ACTION_HANDLED;
+        return Plugin_Handled;
     }
     
     // If the module isn't enabled, or the weapons file isn't loaded, then stop.
@@ -590,14 +586,14 @@ ZRTools_Action:RestrictCanUse(client, weapon)
     new bool:weaponsloaded = ConfigIsConfigLoaded(File_Weapons);
     if (!weapons || !weaponsloaded)
     {
-        return ACTION_CONTINUE;
+        return Plugin_Continue;
     }
     
     // If restrict module is disabled, then stop.
     new bool:restrict = GetConVarBool(g_hCvarsList[CVAR_WEAPONS_RESTRICT]);
     if (!restrict)
     {
-        return ACTION_CONTINUE;
+        return Plugin_Continue;
     }
     
     // If the weapon is restricted, then prevent pickup.
@@ -608,17 +604,17 @@ ZRTools_Action:RestrictCanUse(client, weapon)
     if (weaponindex == -1)
     {
         // Allow pickup.
-        return ACTION_CONTINUE;
+        return Plugin_Continue;
     }
     
     // If weapon is restricted, then stop.
     if (RestrictIsWeaponRestricted(weaponindex))
     {
-        return ACTION_HANDLED;
+        return Plugin_Handled;
     }
     
     // Allow pickup.
-    return ACTION_CONTINUE;
+    return Plugin_Continue;
 }
 
 /**

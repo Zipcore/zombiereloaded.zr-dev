@@ -73,16 +73,6 @@ enum WeaponsData
 new g_iToolsActiveWeapon;
 
 /**
- * Array that stores the "HookID" to be later unhooked on player disconnect.
- */
-new g_iCanUseHookID[MAXPLAYERS + 1] = {-1, ...};
-
-/**
- * Array that stores the "HookID" to be later unhooked on player disconnect.
- */
-new g_iWeaponDropHookID[MAXPLAYERS + 1] = {-1, ...};
-
-/**
  * Weapon slots.
  */
 enum WeaponsSlot
@@ -328,34 +318,13 @@ public WeaponsOnConfigReload()
  */
 WeaponsClientInit(client)
 {
-    // Hook "Weapon_CanUse" on client.
-    #if defined USE_SDKHOOKS
-        SDKHook(client, SDKHook_WeaponCanUse, WeaponsCanUse);
-        
-        // Note: Do we need to use WeaponSwitch too? On infection all weapons
-        //       are removed anyways.
-        
-        // Set dummy value so it think it's hooked.
-        g_iCanUseHookID[client] = 1;
-    #else
-        g_iCanUseHookID[client] = ZRTools_HookWeapon_CanUse(client, WeaponsCanUse);
-    #endif
+    // Hook "Weapon_*" functions on client.
+    SDKHook(client, SDKHook_WeaponCanUse, WeaponsCanUse);
+    SDKHook(client, SDKHook_WeaponDrop, WeaponsDrop);
+    SDKHook(client, SDKHook_WeaponEquip, WeaponsEquip);
     
     // Reset block weapons flag.
     g_bRestrictBlockWeapon[client] = false;
-    
-    // Hook "Weapon_Drop" on client.
-    #if defined USE_SDKHOOKS
-        SDKHook(client, SDKHook_WeaponDrop, WeaponsDrop);
-        
-        // Set dummy value so it think it's hooked.
-        g_iWeaponDropHookID[client] = 1;
-    #else
-        g_iWeaponDropHookID[client] = ZRTools_HookWeapon_Drop(client, WeaponsDrop);
-    #endif
-    
-    // Hook "Weapon_Equip" on client.
-    SDKHook(client, SDKHook_WeaponEquip, WeaponsEquip);
     
     // Forward event to sub-modules.
     ZMarketClientInit(client);
@@ -368,31 +337,9 @@ WeaponsClientInit(client)
  */
 WeaponsOnClientDisconnect(client)
 {
-    // Unhook "Weapon_CanUse" callback, and reset variable.
-    if (g_iCanUseHookID[client] != -1)
-    {
-        #if defined USE_SDKHOOKS
-            SDKUnhook(client, SDKHook_WeaponCanUse, WeaponsCanUse);
-        #else
-            ZRTools_UnhookWeapon_CanUse(g_iCanUseHookID[client]);
-        #endif
-        
-        g_iCanUseHookID[client] = -1;
-    }
-    
-    // Unhook "Weapon_Drop" callback, and reset variable.
-    if (g_iWeaponDropHookID[client] != -1)
-    {
-        #if defined USE_SDKHOOKS
-            SDKUnhook(client, SDKHook_WeaponDrop, WeaponsDrop);
-        #else
-            ZRTools_UnhookWeapon_Drop(g_iWeaponDropHookID[client]);
-        #endif
-        
-        g_iWeaponDropHookID[client] = -1;
-    }
-    
-    // Hook "Weapon_Equip" on client.
+    // Unhook "Weapon_*" functions on client.
+    SDKUnhook(client, SDKHook_WeaponCanUse, WeaponsCanUse);
+    SDKUnhook(client, SDKHook_WeaponDrop, WeaponsDrop);
     SDKUnhook(client, SDKHook_WeaponEquip, WeaponsEquip);
     
     // Forward event to sub-modules.
@@ -407,14 +354,8 @@ WeaponsOnClientDisconnect(client)
 WeaponsOnClientSpawn(client)
 {
     // Re-hook "canuse" on client.
-    #if defined USE_SDKHOOKS
-        SDKUnhook(client, SDKHook_WeaponCanUse, WeaponsCanUse);     // <--- What happens if it's not already hooked???
-        SDKHook(client, SDKHook_WeaponCanUse, WeaponsCanUse);
-        g_iCanUseHookID[client] = 1;
-    #else
-        ZRTools_UnhookWeapon_CanUse(g_iCanUseHookID[client]);
-        g_iCanUseHookID[client] = ZRTools_HookWeapon_CanUse(client, WeaponsCanUse);
-    #endif
+    SDKUnhook(client, SDKHook_WeaponCanUse, WeaponsCanUse);
+    SDKHook(client, SDKHook_WeaponCanUse, WeaponsCanUse);
     
     // Forward event to sub-modules.
     RestrictOnClientSpawn(client);
@@ -451,22 +392,18 @@ WeaponsOnRoundEnd()
  * @return          Return ZRTools_Handled to stop weapon pickup.
  *                  ZRTools_Continue to allow weapon pickup.
  */
-#if defined USE_SDKHOOKS
 public Action:WeaponsCanUse(client, weapon)
-#else
-public ZRTools_Action:WeaponsCanUse(client, weapon)
-#endif
 {
     new Action:result;
     
     // Forward event to sub-modules.
     result = RestrictCanUse(client, weapon);
-    if (result == ACTION_HANDLED)
+    if (result == Plugin_Handled)
     {
-        return ACTION_HANDLED;
+        return Plugin_Handled;
     }
     
-    return ACTION_CONTINUE;
+    return Plugin_Continue;
 }
 
 /**
@@ -476,11 +413,7 @@ public ZRTools_Action:WeaponsCanUse(client, weapon)
  * @param client    The client index.
  * @param weapon    The weapon index.
  */
-#if defined USE_SDKHOOKS
 public Action:WeaponsDrop(client, weapon)
-#else
-public ZRTools_Action:WeaponsDrop(client, weapon)
-#endif
 {
     // Forward event to sub-modules.
     WeaponAlphaDrop(weapon);
