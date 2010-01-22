@@ -9,48 +9,6 @@
 
 		"Offsets"
 		{
-			"TraceAttack"
-			{
-				"windows"	"58"
-				"linux"		"59"
-			}
-
-			"OnTakeDamage"
-			{
-				"windows"	"60"
-				"linux"		"61"
-			}
-
-			"StartTouch"
-			{
-				"windows"	"88"
-				"linux"		"89"
-			}
-
-			"Touch"
-			{
-				"windows"	"89"
-				"linux"		"90"
-			}
-
-			"EndTouch"
-			{
-				"windows"	"90"
-				"linux"		"91"
-			}
-
-			"Weapon_CanUse"
-			{
-				"windows"	"216"
-				"linux"		"217"
-			}
-
-			"Weapon_Drop"
-			{
-				"windows"	"219"
-				"linux"		"220"
-			}
-
 			"FlashlightIsOn"
 			{
 				"windows"	"290"

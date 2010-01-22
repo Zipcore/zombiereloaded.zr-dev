@@ -69,7 +69,7 @@ NapalmOnOffsetsFound()
  *                      ZRTools_Continue to allow damage to client.
  *                      Return -1 to not return anything and let the damage module continue as usual.
  */
-NapalmOnTakeDamage(client, damagetype)
+Action:NapalmOnTakeDamage(client, damagetype)
 {
     // Client was damaged by fire.
     if (damagetype & DMG_CSS_BURN)
@@ -103,18 +103,12 @@ NapalmOnTakeDamage(client, damagetype)
                         LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Napalm, "Napalm Douse", "Found unexpected entity in prop \"m_flLifetime\": \"%s\"", classname);
                     }
                 }
-                
-                #if defined USE_SDKHOOKS
-                    return _:Plugin_Continue;
-                #else
-                    return _:ZRTools_Continue;
-                #endif
             }
         }
     }
     
     // Let the damage module continue as usual.
-    return -1;
+    return Plugin_Continue;
 }
 
 /**
