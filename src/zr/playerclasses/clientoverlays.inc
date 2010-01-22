@@ -95,7 +95,7 @@ ClassOverlayClientInit(client)
     {
         // Set cookie to default value from cvar.
         new bool:overlayvalue = overlaytoggle ? overlaydefault : true;
-        CookiesSetClientCookieBool(client, g_hOverlayEnabledCookie, overlayvalue);
+        CookiesSetBool(client, g_hOverlayEnabledCookie, overlayvalue);
     }
 }
 
@@ -140,7 +140,7 @@ ClassOverlayInitialize(client, const String:overlay[])
     
     // Display class overlays.
     OverlaysClientSetChannelPath(client, OVERLAYS_CHANNEL_CLASSES, overlay);
-    OverlaysClientSetChannelState(client, OVERLAYS_CHANNEL_CLASSES, true, false, CookiesGetClientCookieBool(client, g_hOverlayEnabledCookie));
+    OverlaysClientSetChannelState(client, OVERLAYS_CHANNEL_CLASSES, true, false, CookiesGetBool(client, g_hOverlayEnabledCookie));
 }
 
 /**
@@ -167,5 +167,5 @@ public Action:ClassOverlayEnableCommand(client, const String:command[], argc)
     
     // Toggle current overlay channel, retrieve new value, and update cookie.
     new bool:overlayenabled = OverlaysClientSetChannelState(client, OVERLAYS_CHANNEL_CLASSES, true, true);
-    CookiesSetClientCookieBool(client, g_hOverlayEnabledCookie, overlayenabled);
+    CookiesSetBool(client, g_hOverlayEnabledCookie, overlayenabled);
 }

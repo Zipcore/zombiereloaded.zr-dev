@@ -79,7 +79,7 @@ ZHPClientInit(client)
     if (!zhpenabled[0])
     {
         // Set cookie to default value from cvar.
-        CookiesSetClientCookieBool(client, g_hZHPEnabledCookie, zhp);
+        CookiesSetBool(client, g_hZHPEnabledCookie, zhp);
     }
     
     // Reset timer handle.
@@ -184,10 +184,10 @@ bool:ZHPToggle(client)
     }
     
     // Get the cookie value.
-    new bool:zhpstate = CookiesGetClientCookieBool(client, g_hZHPEnabledCookie);
+    new bool:zhpstate = CookiesGetBool(client, g_hZHPEnabledCookie);
     
     // Toggle the value.
-    CookiesSetClientCookieBool(client, g_hZHPEnabledCookie, !zhpstate);
+    CookiesSetBool(client, g_hZHPEnabledCookie, !zhpstate);
     
     // If ZHP was enabled, then tell client it has been disabled.
     if (zhpstate)
@@ -221,7 +221,7 @@ ZHPUpdateHUD(client)
     }
     
     // Get ZHP enabled cookie as a bool.
-    new bool:zhpstate = CookiesGetClientCookieBool(client, g_hZHPEnabledCookie);
+    new bool:zhpstate = CookiesGetBool(client, g_hZHPEnabledCookie);
     
     // If player is a zombie, or has ZHP disabled, then stop.
     if (!InfectIsClientInfected(client) || !zhpstate)

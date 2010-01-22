@@ -52,9 +52,9 @@ ZCookiesMenuMain(client)
     decl String:overlayenabled[MENU_LINE_SMALL_LENGTH];
     
     // Get the current toggle state of the cookies.
-    ConfigBoolToSetting(CookiesGetClientCookieBool(client, g_hZMarketAutoRebuyCookie), autorebuyenabled, sizeof(autorebuyenabled), false, client);
-    ConfigBoolToSetting(CookiesGetClientCookieBool(client, g_hZHPEnabledCookie), zhpenabled, sizeof(zhpenabled), false, client);
-    ConfigBoolToSetting(CookiesGetClientCookieBool(client, g_hOverlayEnabledCookie), overlayenabled, sizeof(overlayenabled), false, client);
+    ConfigBoolToSetting(CookiesGetBool(client, g_hZMarketAutoRebuyCookie), autorebuyenabled, sizeof(autorebuyenabled), false, client);
+    ConfigBoolToSetting(CookiesGetBool(client, g_hZHPEnabledCookie), zhpenabled, sizeof(zhpenabled), false, client);
+    ConfigBoolToSetting(CookiesGetBool(client, g_hOverlayEnabledCookie), overlayenabled, sizeof(overlayenabled), false, client);
     
     decl String:title[MENU_LINE_TITLE_LENGTH];
     decl String:autorebuy[MENU_LINE_REG_LENGTH];
@@ -128,7 +128,7 @@ public ZCookiesMenuMainHandle(Handle:menu, MenuAction:action, client, slot)
                 {
                     // Toggle current overlay channel, retrieve new value, and update cookie.
                     new bool:overlayenabled = OverlaysClientSetChannelState(client, OVERLAYS_CHANNEL_CLASSES, true, true);
-                    CookiesSetClientCookieBool(client, g_hOverlayEnabledCookie, overlayenabled);
+                    CookiesSetBool(client, g_hOverlayEnabledCookie, overlayenabled);
                 }
             }
             // View ZMarket weapon setup.
