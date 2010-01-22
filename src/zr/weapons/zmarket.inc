@@ -60,7 +60,7 @@ new g_iZMarketCurType[MAXPLAYERS + 1];
 new Handle:g_hZMarketPurchaseCount[MAXPLAYERS + 1];
 
 /**
- * Cookie handle for auti-rebuy.
+ * Cookie handle for auto-rebuy.
  */
 new Handle:g_hZMarketAutoRebuyCookie = INVALID_HANDLE;
 
@@ -78,6 +78,9 @@ ZMarketOnCommandsCreate()
     RegConsoleCmd(SAYHOOKS_KEYWORD_ZMARKET, ZMarketCommand, "Opens custom buymenu.");
 }
 
+/**
+ * Create ZMarket-related cookies here.
+ */
 ZMarketOnCookiesCreate()
 {
     // Create auto-rebuy cookie handle if doesn't exist.
@@ -128,7 +131,7 @@ ZMarketClientInit(client)
     if (!zmarketautorebuy[0])
     {
         // Set cookie to false.
-        CookiesSetClientCookieBool(client, g_hZMarketAutoRebuyCookie, false);
+        CookiesSetBool(client, g_hZMarketAutoRebuyCookie, false);
     }
 }
 
@@ -163,7 +166,7 @@ ZMarketOnClientSpawnPost(client)
     new bool:zmarketrebuyauto = GetConVarBool(g_hCvarsList[CVAR_ZMARKET_REBUY_AUTO]);
     if (!zmarketrebuyauto)
     {
-        CookiesSetClientCookieBool(client, g_hZMarketAutoRebuyCookie, false);
+        CookiesSetBool(client, g_hZMarketAutoRebuyCookie, false);
     }
     
     // If client isn't on a team, then stop.
@@ -179,7 +182,7 @@ ZMarketOnClientSpawnPost(client)
     }
     
     // If auto-rebuy is enabled, then force client to rebuy weapons.
-    if (CookiesGetClientCookieBool(client, g_hZMarketAutoRebuyCookie))
+    if (CookiesGetBool(client, g_hZMarketAutoRebuyCookie))
     {
         ZMarketRebuySavedSetup(client, true);
     }
@@ -279,7 +282,7 @@ bool:ZMarketMenuMain(client)
     
     // Get auto-rebuy setting.
     decl String:autorebuysetting[MENU_LINE_SMALL_LENGTH];
-    ConfigBoolToSetting(CookiesGetClientCookieBool(client, g_hZMarketAutoRebuyCookie), autorebuysetting, sizeof(autorebuysetting), true, client);
+    ConfigBoolToSetting(CookiesGetBool(client, g_hZMarketAutoRebuyCookie), autorebuysetting, sizeof(autorebuysetting), true, client);
     
     // Format menu options.
     Format(title, sizeof(title), "%t\n ", "Weapons menu zmarket main title");
@@ -1598,10 +1601,10 @@ ZMarketToggleAutoRebuy(client)
     }
     
     // Get the cookie value.
-    new bool:autorebuystate = CookiesGetClientCookieBool(client, g_hZMarketAutoRebuyCookie);
+    new bool:autorebuystate = CookiesGetBool(client, g_hZMarketAutoRebuyCookie);
     
     // Toggle the value.
-    CookiesSetClientCookieBool(client, g_hZMarketAutoRebuyCookie, !autorebuystate);
+    CookiesSetBool(client, g_hZMarketAutoRebuyCookie, !autorebuystate);
     
     // If auto-rebuy was enabled, then tell client it has been disabled.
     if (autorebuystate)

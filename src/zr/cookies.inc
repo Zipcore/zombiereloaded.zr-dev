@@ -33,17 +33,18 @@ CookiesInit()
     // Forward "OnCookiesCreate" event to modules.
     ClassOnCookiesCreate();
     WeaponsOnCookiesCreate();
+    CreditsOnCookiesCreate();
     ZHPOnCookiesCreate();
 }
 
 /**
- * Accepts a bools for setting client cookies.
+ * Accepts a bool for setting client cookies.
  * 
  * @param client        The client index.
  * @param cookie        The handle to the cookie.
  * @param cookievalue   The bool value to set cookie as.
  */
-CookiesSetClientCookieBool(client, Handle:cookie, bool:cookievalue)
+CookiesSetBool(client, Handle:cookie, bool:cookievalue)
 {
     // Convert bool to string.
     decl String:strCookievalue[8];
@@ -59,7 +60,7 @@ CookiesSetClientCookieBool(client, Handle:cookie, bool:cookievalue)
  * @param client    The client index.
  * @param cookie    The handle to the cookie.
  */
-bool:CookiesGetClientCookieBool(client, Handle:cookie)
+bool:CookiesGetBool(client, Handle:cookie)
 {
     // Get cookie string.
     decl String:cookievalue[8];

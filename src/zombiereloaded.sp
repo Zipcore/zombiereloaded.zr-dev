@@ -66,6 +66,7 @@
 #include "zr/log"
 #include "zr/config"
 #include "zr/tools"
+#include "zr/credits"
 #include "zr/steamidcache"
 #include "zr/sayhooks"
 #include "zr/menu"

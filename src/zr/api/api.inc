@@ -42,6 +42,7 @@
  */
 
 #include "zr/api/tools.api"
+#include "zr/api/credits.api"
 #include "zr/api/infect.api"
 #include "zr/api/respawn.api"
 
@@ -59,6 +60,7 @@ APIInit()
     
     // Forward event to sub-modules.
     APIToolsInit();
+    APICreditsInit();
     APIInfectInit();
     APIRespawnInit();
     

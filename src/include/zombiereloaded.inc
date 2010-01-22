@@ -32,6 +32,7 @@
 #define _zr_included
 
 #include <zr/tools.zr>
+#include <zr/credits.zr>
 #include <zr/infect.zr>
 #include <zr/respawn.zr>
 // #include <zr/[module].zr>
