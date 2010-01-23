@@ -275,6 +275,41 @@ stock TranslationPrintCenterText(client, any:...)
 }
 
 /**
+ * Print center text to all clients. (with style)
+ * 
+ * @param client    The client index.
+ * @param ...       Translation formatting parameters.  
+ */
+stock TranslationPrintCenterTextAll(bool:admin, any:...)
+{
+    // x = client index.
+    for (new x = 1; x <= MaxClients; x++)
+    {
+        // If client isn't in-game, then stop.
+        if (!IsClientInGame(x))
+        {
+            continue;
+        }
+        
+        // If client isn't an admin, and we're only printing to admins, then stop.
+        if (admin && !ZRIsClientAdmin(x))
+        {
+            continue;
+        }
+        
+        // Set translation target
+        SetGlobalTransTarget(x);
+        
+        // Translate phrase.
+        decl String:translation[TRANSLATION_MAX_LENGTH_CHAT];
+        VFormat(translation, sizeof(translation), "%t", 2);
+        
+        // Print translated phrase to client.
+        PrintCenterText(x, translation);
+    }
+}
+
+/**
  * Print HUD text to client. (with style)
  * 
  * @param client    The client index.
