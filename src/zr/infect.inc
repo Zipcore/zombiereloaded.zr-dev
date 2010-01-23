@@ -46,9 +46,13 @@
  */
 
 /**
- * Global variable to store infect timer handle.
+ * @section Global variables to store infect timer handles.
  */
 new Handle:tInfect = INVALID_HANDLE;
+new Handle:tInfectCountdown = INVALID_HANDLE;
+/**
+ * @endsection
+ */
 
 /**
  * Global array to store infect freeze timer handles per client.
@@ -79,8 +83,9 @@ new bool:bInfectImmune[MAXPLAYERS + 1][2];
  */
 InfectOnMapStart()
 {
-    // Reset timer handle.
+    // Reset timer handles.
     ZREndTimer(tInfect, false);
+    ZREndTimer(tInfectCountdown, false);
 }
 
 /**
@@ -271,41 +276,6 @@ InfectOnClientSpawn(client)
     }
 }
 
-/**
- * Client has been killed.
- * 
- * @param client    The client index.
- * @param attacker  The attacker index.
- */
-InfectOnClientDeath(client, attacker)
-{
-    // Kill infect freeze timer.
-    ZREndTimer(tInfectFreeze[client]);
-    
-    // If attacker isn't valid, then stop.
-    if (!ZRIsClientValid(attacker))
-    {
-        return;
-    }
-    
-    // If attacker isn't a human, then stop.
-    if (!InfectIsClientHuman(attacker))
-    {
-        return;
-    }
-    
-    // If client isn't a zombie, then stop.
-    if (!InfectIsClientInfected(client))
-    {
-        return;
-    }
-    
-    // Add kill bonus to attacker's score.
-    new bonus = ClassGetKillBonus(client);
-    new kills = ToolsGetClientScore(attacker, ScoreProp_Kills);
-    ToolsSetClientScore(attacker, ScoreProp_Kills, kills + bonus);
-}
-
 /** Client has been hurt.
  *
  * @param client        The client index.
@@ -346,6 +316,41 @@ InfectOnClientHurt(client, attacker, const String:weapon[])
     
     // Infect client.
     InfectHumanToZombie(client, attacker);
+}
+
+/**
+ * Client has been killed.
+ * 
+ * @param client    The client index.
+ * @param attacker  The attacker index.
+ */
+InfectOnClientDeath(client, attacker)
+{
+    // Kill infect freeze timer.
+    ZREndTimer(tInfectFreeze[client]);
+    
+    // If attacker isn't valid, then stop.
+    if (!ZRIsClientValid(attacker))
+    {
+        return;
+    }
+    
+    // If attacker isn't a human, then stop.
+    if (!InfectIsClientHuman(attacker))
+    {
+        return;
+    }
+    
+    // If client isn't a zombie, then stop.
+    if (!InfectIsClientInfected(client))
+    {
+        return;
+    }
+    
+    // Add kill bonus to attacker's score.
+    new bonus = ClassGetKillBonus(client);
+    new kills = ToolsGetClientScore(attacker, ScoreProp_Kills);
+    ToolsSetClientScore(attacker, ScoreProp_Kills, kills + bonus);
 }
 
 /**
@@ -391,8 +396,9 @@ Action:InfectOnPlayerRunCmd(client, &impulse)
  */
 InfectOnRoundStart()
 {
-    // If infect timer is running, then kill it.
+    // If either infect timer is running, then kill it.
     ZREndTimer(tInfect);
+    ZREndTimer(tInfectCountdown);
     
     // Tell plugin there are no zombies.
     g_bZombieSpawned = false;
@@ -403,8 +409,9 @@ InfectOnRoundStart()
  */
 InfectOnRoundFreezeEnd()
 {
-    // If infect timer is running, then kill it.
+    // If either infect timer is running, then kill it.
     ZREndTimer(tInfect);
+    ZREndTimer(tInfectCountdown);
     
     // If the zombie has spawned already (had to be through admin) then stop.
     if (g_bZombieSpawned)
@@ -419,7 +426,21 @@ InfectOnRoundFreezeEnd()
     // Pick random time between min and max.
     new Float:randomtime = GetRandomFloat(infectspawntimemin, infectspawntimemax);
     
+    // Round to the nearest whole number (and convert back to a float) so the countdown is synched with it.
+    float(RoundToNearest(randomtime));
+    
     tInfect = CreateTimer(randomtime, InfectMotherZombie, _, TIMER_FLAG_NO_MAPCHANGE);
+    
+    // Check cvar and start a countdown timer if enabled.
+    new bool:countdown = GetConVarBool(g_hCvarsList[CVAR_MZOMBIE_COUNTDOWN]);
+    if (countdown)
+    {
+        // Store the time until infection, and initialize the counter.
+        new Handle:hCountdownData = CreateDataPack();
+        WritePackFloat(hCountdownData, randomtime);
+        WritePackFloat(hCountdownData, 0.0);
+        tInfectCountdown = CreateTimer(1.0, InfectCountdown, hCountdownData, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+    }
 }
 
 /**
@@ -586,6 +607,52 @@ public Action:InfectMotherZombie(Handle:timer)
     
     // Destroy handle.
     CloseHandle(arrayEligibleClients);
+}
+
+/**
+ * Timer callback, displays countdown to clients.
+ * 
+ * @param timer     The timer handle.  
+ */ 
+public Action:InfectCountdown(Handle:timer, Handle:hCountdownData)
+{
+    new bool:countdown = GetConVarBool(g_hCvarsList[CVAR_MZOMBIE_COUNTDOWN]);
+    if (!countdown)
+    {
+        // Kill the timer.
+        ZREndTimer(tInfectCountdown, false);
+        CloseHandle(hCountdownData);
+        return Plugin_Stop;
+    }
+    
+    // Read the info from the datapack.
+    ResetPack(hCountdownData);
+    new Float:length = ReadPackFloat(hCountdownData);
+    new Float:counter = ReadPackFloat(hCountdownData);
+    
+    counter += 1.0;
+    
+    // Check if the countdown has finished.
+    if (counter >= length)
+    {
+        // Print the end countdown text to the client.
+        TranslationPrintCenterTextAll(false, "Infect countdown end");
+        
+        // Kill timer.
+        ZREndTimer(tInfectCountdown, false);
+        CloseHandle(hCountdownData);
+        return Plugin_Stop;
+    }
+    
+    // Print the countdown text to the client.
+    TranslationPrintCenterTextAll(false, "Infect countdown", RoundToNearest(length - counter));
+    
+    // Write the new counter value to the datapack.
+    ResetPack(hCountdownData);
+    WritePackFloat(hCountdownData, length);
+    WritePackFloat(hCountdownData, counter);
+    
+    return Plugin_Continue;
 }
 
 /**

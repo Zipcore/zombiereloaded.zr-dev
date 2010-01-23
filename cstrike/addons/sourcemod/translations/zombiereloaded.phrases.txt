@@ -377,6 +377,19 @@
 		"en"		"The last zombie has left the game, and has passed the infection on to you."
 	}
 
+	// Center Text
+
+	"Infect countdown"
+	{
+		"#format"	"{1:d}"
+		"en"		"Time remaining until first infection: {1} seconds."
+	}
+
+	"Infect countdown end"
+	{
+		"en"		"Time remaining until first infection: None."
+	}
+
 	// Menu
 
 	"Infect menu clients title"
