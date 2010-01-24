@@ -210,6 +210,7 @@ public OnConfigsExecuted()
     DownloadsLoad();
     WeaponsLoad();
     HitgroupsLoad();
+    RoundEndLoad();
     InfectLoad();
     VEffectsLoad();
     SEffectsLoad();

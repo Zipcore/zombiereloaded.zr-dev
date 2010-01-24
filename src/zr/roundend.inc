@@ -79,6 +79,72 @@ RoundEndOnMapStart()
 }
 
 /**
+ * Configs just finished executing.
+ */
+RoundEndLoad()
+{
+    new bool:overlays = GetConVarBool(g_hCvarsList[CVAR_ROUNDEND_OVERLAY]);
+    if (!overlays)
+    {
+        return;
+    }
+    
+    // Get the overlay paths from cvars and then format on the rest of the path.
+    decl String:zombie_overlaypath_vmt[PLATFORM_MAX_PATH];
+    decl String:zombie_overlaypath_vtf[PLATFORM_MAX_PATH];
+    decl String:human_overlaypath_vmt[PLATFORM_MAX_PATH];
+    decl String:human_overlaypath_vtf[PLATFORM_MAX_PATH];
+    
+    GetConVarString(g_hCvarsList[CVAR_ROUNDEND_OVERLAY_ZOMBIE], zombie_overlaypath_vmt, sizeof(zombie_overlaypath_vmt));
+    GetConVarString(g_hCvarsList[CVAR_ROUNDEND_OVERLAY_ZOMBIE], zombie_overlaypath_vtf, sizeof(zombie_overlaypath_vtf));
+    GetConVarString(g_hCvarsList[CVAR_ROUNDEND_OVERLAY_HUMAN], human_overlaypath_vmt, sizeof(human_overlaypath_vmt));
+    GetConVarString(g_hCvarsList[CVAR_ROUNDEND_OVERLAY_HUMAN], human_overlaypath_vtf, sizeof(human_overlaypath_vtf));
+    
+    Format(zombie_overlaypath_vmt, sizeof(zombie_overlaypath_vmt), "materials/%s.vmt", zombie_overlaypath_vmt);
+    Format(zombie_overlaypath_vtf, sizeof(zombie_overlaypath_vtf), "materials/%s.vtf", zombie_overlaypath_vtf);
+    Format(human_overlaypath_vmt, sizeof(human_overlaypath_vmt), "materials/%s.vmt", human_overlaypath_vmt);
+    Format(human_overlaypath_vtf, sizeof(human_overlaypath_vtf), "materials/%s.vtf", human_overlaypath_vtf);
+    
+    // Add files if they exist.
+    
+    if (FileExists(zombie_overlaypath_vmt, true))
+    {
+        AddFileToDownloadsTable(zombie_overlaypath_vmt);
+    }
+    else
+    {
+        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_RoundEnd, "Overlays", "Zombie overlay file \"%s\" (zr_roundend_overlay_zombie) does not exist.", zombie_overlaypath_vmt);
+    }
+    
+    if (FileExists(zombie_overlaypath_vtf, true))
+    {
+        AddFileToDownloadsTable(zombie_overlaypath_vtf);
+    }
+    else
+    {
+        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_RoundEnd, "Overlays", "Zombie overlay file \"%s\" (zr_roundend_overlay_zombie) does not exist.", zombie_overlaypath_vtf);
+    }
+    
+    if (FileExists(human_overlaypath_vmt, true))
+    {
+        AddFileToDownloadsTable(human_overlaypath_vmt);
+    }
+    else
+    {
+        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_RoundEnd, "Overlays", "Zombie overlay file \"%s\" (zr_roundend_overlay_human) does not exist.", human_overlaypath_vmt);
+    }
+    
+    if (FileExists(human_overlaypath_vtf, true))
+    {
+        AddFileToDownloadsTable(human_overlaypath_vtf);
+    }
+    else
+    {
+        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_RoundEnd, "Overlays", "Human overlay file \"%s\" (zr_roundend_overlay_human) does not exist.", human_overlaypath_vtf);
+    }
+}
+
+/**
  * Client has been killed.
  */
 RoundEndOnClientDeath()

@@ -181,6 +181,12 @@ NapalmOnClientDeath(client)
  */
 NapalmOnWeaponFire(client, const String:weapon[])
 {
+    // If weapon isn't a grenade, then stop.
+    if (!StrEqual(weapon, "hegrenade", false))
+    {
+        return;
+    }
+    
     // If grenade fire is disabled, then stop.
     new bool:napalmignite = GetConVarBool(g_hCvarsList[CVAR_NAPALM_IGNITE]);
     if (!napalmignite)
@@ -194,13 +200,6 @@ NapalmOnWeaponFire(client, const String:weapon[])
         return;
     }
     
-    // If weapon isn't a grenade, then stop.
-    if (!StrEqual(weapon, "hegrenade", false))
-    {
-        return;
-    }
-    
-    // Wait .1 seconds.
     CreateTimer(0.1, NapalmIgniteGrenade);
 }
 

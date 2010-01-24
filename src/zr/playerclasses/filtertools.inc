@@ -207,7 +207,12 @@ stock ClassValidateAttributes(classindex)
     {
         // Check if the file exists.
         Format(overlay, sizeof(overlay), "materials/%s.vmt", overlay_path);
-        if (!FileExists(overlay))
+        if (FileExists(overlay, true))
+        {
+            // Automatically download the file.
+            AddFileToDownloadsTable(overlay);
+        }
+        else
         {
             flags += ZR_CLASS_OVERLAY_PATH;
         }
