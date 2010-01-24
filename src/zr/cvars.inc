@@ -101,6 +101,9 @@ enum CvarsList
     Handle:CVAR_ROUNDEND_OVERLAY_ZOMBIE,
     Handle:CVAR_ROUNDEND_OVERLAY_HUMAN,
     Handle:CVAR_MZOMBIE_RATIO,
+    Handle:CVAR_MZOMBIE_REINFECT_TIME,
+    Handle:CVAR_MZOMBIE_REINFECT_RATIO,
+    Handle:CVAR_MZOMBIE_REINFECT_PERSIST,
     Handle:CVAR_MZOMBIE_COUNTDOWN,
     Handle:CVAR_MZOMBIE_RESPAWN,
     Handle:CVAR_MZOMBIE_FREEZE,
@@ -327,27 +330,30 @@ CvarsCreate()
     // ===========================
     
     // General
-    g_hCvarsList[CVAR_MZOMBIE_RATIO]                    =    CreateConVar("zr_mzombie_ratio",           "5",                                "Number of mother zombies to infect (when infect timer is up) in proportion to number of humans on the server.");
-    g_hCvarsList[CVAR_MZOMBIE_COUNTDOWN]                =    CreateConVar("zr_mzombie_countdown",       "0",                                "Counts down to the first infection of the round.  Countdown is printed in the middle of the client's screen.");
-    g_hCvarsList[CVAR_MZOMBIE_RESPAWN]                  =    CreateConVar("zr_mzombie_respawn",         "0",                                "Teleport mother zombies back to spawn on infect.");
-    g_hCvarsList[CVAR_MZOMBIE_FREEZE]                   =    CreateConVar("zr_mzombie_freeze",          "0",                                "Freeze mother zombies upon infection for this long ['0' = Disabled]");
-    g_hCvarsList[CVAR_SPAWNTIME_MIN]                    =    CreateConVar("zr_spawntime_min",           "30.0",                             "Minimum time from the start of the round until picking the mother zombie(s).");
-    g_hCvarsList[CVAR_SPAWNTIME_MAX]                    =    CreateConVar("zr_spawntime_max",           "50.0",                             "Maximum time from the start of the round until picking the mother zombie(s).");
-    g_hCvarsList[CVAR_CONSECUTIVE_BLOCK]                =    CreateConVar("zr_consecutive_block",       "1",                                "Prevent a player from being chosen as mother zombie two rounds in a row.");
-    g_hCvarsList[CVAR_FLASHLIGHT_BLOCK]                 =    CreateConVar("zr_flashlight_block",        "0",                                "Disallow zombies from using a flashlight. [Recommended: Enable zombie attribute: 'nvgs']");
-    g_hCvarsList[CVAR_WEAPONS_DROP]                     =    CreateConVar("zr_weapons_drop",            "1",                                "Force player to drop all weapons on infect, disabling this will strip weapons instead.");
+    g_hCvarsList[CVAR_MZOMBIE_RATIO]                    =    CreateConVar("zr_mzombie_ratio",               "5",                                "Number of humans to infect as mother zombies (when infect timer is up) in proportion to number of humans on the server. ['0' = Always one mother zombie]");
+    g_hCvarsList[CVAR_MZOMBIE_REINFECT_TIME]            =    CreateConVar("zr_mzombie_reinfect_time",       "0",                                "Choose another human to infect as mother zombie if the first zombie(s) can't infect anyone after this long. ['0' = Disabled]");
+    g_hCvarsList[CVAR_MZOMBIE_REINFECT_RATIO]           =    CreateConVar("zr_mzombie_reinfect_ratio",      "0",                                "Number of additional humans to infect as mother zombies (when re-infect timer is up) in proportion to number of humans on the server. ['0' = Always one mother zombie]");
+    g_hCvarsList[CVAR_MZOMBIE_REINFECT_PERSIST]         =    CreateConVar("zr_mzombie_reinfect_persist",    "0",                                "Continue infecting humans every 'zr_mzombie_reinfect_time' seconds until someone else is infected. (not by this feature) [Dependency: zr_mzombie_reinfect_time]");
+    g_hCvarsList[CVAR_MZOMBIE_COUNTDOWN]                =    CreateConVar("zr_mzombie_countdown",           "0",                                "Counts down to the first infection(s) of the round.  Countdown is printed in the middle of the client's screen.");
+    g_hCvarsList[CVAR_MZOMBIE_RESPAWN]                  =    CreateConVar("zr_mzombie_respawn",             "0",                                "Teleport mother zombies back to spawn on infect.");
+    g_hCvarsList[CVAR_MZOMBIE_FREEZE]                   =    CreateConVar("zr_mzombie_freeze",              "0",                                "Freeze mother zombies upon infection for this long ['0' = Disabled]");
+    g_hCvarsList[CVAR_SPAWNTIME_MIN]                    =    CreateConVar("zr_spawntime_min",               "30.0",                             "Minimum time from the start of the round until picking the mother zombie(s).");
+    g_hCvarsList[CVAR_SPAWNTIME_MAX]                    =    CreateConVar("zr_spawntime_max",               "50.0",                             "Maximum time from the start of the round until picking the mother zombie(s).");
+    g_hCvarsList[CVAR_CONSECUTIVE_BLOCK]                =    CreateConVar("zr_consecutive_block",           "1",                                "Prevent a player from being chosen as mother zombie two rounds in a row.");
+    g_hCvarsList[CVAR_FLASHLIGHT_BLOCK]                 =    CreateConVar("zr_flashlight_block",            "0",                                "Disallow zombies from using a flashlight. [Recommended: Enable zombie attribute: 'nvgs']");
+    g_hCvarsList[CVAR_WEAPONS_DROP]                     =    CreateConVar("zr_weapons_drop",                "1",                                "Force player to drop all weapons on infect, disabling this will strip weapons instead.");
     
     // Effects
-    g_hCvarsList[CVAR_INFECT_EXPLOSION]                 =    CreateConVar("zr_infect_explosion",        "1",                                "Disabling this will disable the fireball, smoke cloud, and sparks in a more efficient way.");
-    g_hCvarsList[CVAR_INFECT_FIREBALL]                  =    CreateConVar("zr_infect_fireball",         "1",                                "Spawn a fireball effect around player on infection. [Dependency: zr_infect_explosion]");
-    g_hCvarsList[CVAR_INFECT_SMOKE]                     =    CreateConVar("zr_infect_smoke",            "1",                                "Spawn a smoke cloud effect around player on infection. [Dependency: zr_infect_explosion]");
-    g_hCvarsList[CVAR_INFECT_SPARKS]                    =    CreateConVar("zr_infect_sparks",           "1",                                "Emit sparks from player on infection. [Dependency: zr_infect_explosion]");
-    g_hCvarsList[CVAR_INFECT_SOUND]                     =    CreateConVar("zr_infect_sound",            "npc/fast_zombie/fz_scream1.wav",   "Sound, relative to \"sound\" folder, to play from player on infection. ['\"\"' = No sound]");
-    g_hCvarsList[CVAR_INFECT_ESPLASH]                   =    CreateConVar("zr_infect_esplash",          "1",                                "Emit an energy splash from player on infection.");
-    g_hCvarsList[CVAR_INFECT_SHAKE]                     =    CreateConVar("zr_infect_shake",            "1",                                "Shake player's view on infect.");
-    g_hCvarsList[CVAR_INFECT_SHAKE_AMP]                 =    CreateConVar("zr_infect_shake_amp",        "15.0",                             "Amplitude of shaking effect. [Dependency: zr_infect_shake]");
-    g_hCvarsList[CVAR_INFECT_SHAKE_FREQUENCY]           =    CreateConVar("zr_infect_shake_frequency",  "1.0",                              "Frequency of shaking effect. [Dependency: zr_infect_shake]");
-    g_hCvarsList[CVAR_INFECT_SHAKE_DURATION]            =    CreateConVar("zr_infect_shake_duration",   "5.0",                              "Duration of shaking effect. [Dependency: zr_infect_shake]"); 
+    g_hCvarsList[CVAR_INFECT_EXPLOSION]                 =    CreateConVar("zr_infect_explosion",            "1",                                "Disabling this will disable the fireball, smoke cloud, and sparks in a more efficient way.");
+    g_hCvarsList[CVAR_INFECT_FIREBALL]                  =    CreateConVar("zr_infect_fireball",             "1",                                "Spawn a fireball effect around player on infection. [Dependency: zr_infect_explosion]");
+    g_hCvarsList[CVAR_INFECT_SMOKE]                     =    CreateConVar("zr_infect_smoke",                "1",                                "Spawn a smoke cloud effect around player on infection. [Dependency: zr_infect_explosion]");
+    g_hCvarsList[CVAR_INFECT_SPARKS]                    =    CreateConVar("zr_infect_sparks",               "1",                                "Emit sparks from player on infection. [Dependency: zr_infect_explosion]");
+    g_hCvarsList[CVAR_INFECT_SOUND]                     =    CreateConVar("zr_infect_sound",                "npc/fast_zombie/fz_scream1.wav",   "Sound, relative to \"sound\" folder, to play from player on infection. ['\"\"' = No sound]");
+    g_hCvarsList[CVAR_INFECT_ESPLASH]                   =    CreateConVar("zr_infect_esplash",              "1",                                "Emit an energy splash from player on infection.");
+    g_hCvarsList[CVAR_INFECT_SHAKE]                     =    CreateConVar("zr_infect_shake",                "1",                                "Shake player's view on infect.");
+    g_hCvarsList[CVAR_INFECT_SHAKE_AMP]                 =    CreateConVar("zr_infect_shake_amp",            "15.0",                             "Amplitude of shaking effect. [Dependency: zr_infect_shake]");
+    g_hCvarsList[CVAR_INFECT_SHAKE_FREQUENCY]           =    CreateConVar("zr_infect_shake_frequency",      "1.0",                              "Frequency of shaking effect. [Dependency: zr_infect_shake]");
+    g_hCvarsList[CVAR_INFECT_SHAKE_DURATION]            =    CreateConVar("zr_infect_shake_duration",       "5.0",                              "Duration of shaking effect. [Dependency: zr_infect_shake]"); 
     
     
     // ===========================

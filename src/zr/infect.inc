@@ -429,7 +429,7 @@ InfectOnRoundFreezeEnd()
     // Round to the nearest whole number (and convert back to a float) so the countdown is synched with it.
     float(RoundToNearest(randomtime));
     
-    tInfect = CreateTimer(randomtime, InfectMotherZombie, _, TIMER_FLAG_NO_MAPCHANGE);
+    tInfect = CreateTimer(randomtime, InfectMotherZombie, false, TIMER_FLAG_NO_MAPCHANGE);
     
     // Check cvar and start a countdown timer if enabled.
     new bool:countdown = GetConVarBool(g_hCvarsList[CVAR_MZOMBIE_COUNTDOWN]);
@@ -470,7 +470,7 @@ InfectOnRoundEnd()
  * 
  * @param timer     The timer handle.  
  */ 
-public Action:InfectMotherZombie(Handle:timer)
+public Action:InfectMotherZombie(Handle:timer, any:reinfect)
 {
     // Reset timer handle.
     ZREndTimer(tInfect, false);
@@ -521,23 +521,27 @@ public Action:InfectMotherZombie(Handle:timer)
         }
     }
     
-    // Move all clients to CT
-    for (new x = 1; x <= MaxClients; x++)
+    // Don't move everyone to CT if this is a re-infection.
+    if (!bool:reinfect)
     {
-        // If client isn't in-game, then stop.
-        if (!IsClientInGame(x))
+        // Move all clients to CT
+        for (new x = 1; x <= MaxClients; x++)
         {
-            continue;
+            // If client isn't in-game, then stop.
+            if (!IsClientInGame(x))
+            {
+                continue;
+            }
+            
+            // If client is dead, then stop.
+            if (!IsPlayerAlive(x))
+            {
+                continue;
+            }
+            
+            // Switch client to CT team.
+            CS_SwitchTeam(x, CS_TEAM_CT);
         }
-        
-        // If client is dead, then stop.
-        if (!IsPlayerAlive(x))
-        {
-            continue;
-        }
-        
-        // Switch client to CT team.
-        CS_SwitchTeam(x, CS_TEAM_CT);
     }
     
     // Variable to store randomly chosen array index.
@@ -546,7 +550,13 @@ public Action:InfectMotherZombie(Handle:timer)
     // Ratio of mother zombies to humans.
     new ratio = GetConVarInt(g_hCvarsList[CVAR_MZOMBIE_RATIO]);
     
-    // If ratio is 0 or lower, then pick 1 zombie.
+    // If this is a re-infection, then use the re-infect ratio.
+    if (bool:reinfect)
+    {
+        ratio = GetConVarInt(g_hCvarsList[CVAR_MZOMBIE_REINFECT_RATIO]);
+    }
+    
+    // If ratio is 0 or lower, or this is a re-infection, then pick 1 zombie.
     if (ratio <= 0)
     {
         // Get a random valid array index.
@@ -582,8 +592,8 @@ public Action:InfectMotherZombie(Handle:timer)
             // Recount eligible clients.
             eligibleclients = GetArraySize(arrayEligibleClients);
             
-            // If there are no more eligible clients, then break loop.
-            if (!eligibleclients)
+            // The mother infection function should never infect all eligible clients, leave at least 1 human.
+            if (eligibleclients <= 1)
             {
                 break;
             }
@@ -607,6 +617,18 @@ public Action:InfectMotherZombie(Handle:timer)
     
     // Destroy handle.
     CloseHandle(arrayEligibleClients);
+    
+    // Only start a timer for a new zombie if either the reinfect_persist cvar is enabled, or if this is the original infection.
+    new bool:reinfect_persist = GetConVarBool(g_hCvarsList[CVAR_MZOMBIE_REINFECT_PERSIST]);
+    if (reinfect_persist || !bool:reinfect)
+    {
+        // Call this function again after x seconds if this zombie hasn't infected anybody.
+        new Float:reinfect_time = GetConVarFloat(g_hCvarsList[CVAR_MZOMBIE_REINFECT_TIME]);
+        if (reinfect_time > 0.0)
+        {
+            tInfect = CreateTimer(reinfect_time, InfectMotherZombie, true, TIMER_FLAG_NO_MAPCHANGE);
+        }
+    }
 }
 
 /**
@@ -679,6 +701,10 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     // Mark player as zombie.
     bZombie[client] = true;
     
+    // Stop mother infect timers if they are running, this will also stop the re-infect timer.
+    ZREndTimer(tInfect);
+    ZREndTimer(tInfectCountdown);
+    
     // Check if consecutive infection protection is enabled.
     new bool:infectconsecutiveblock = GetConVarBool(g_hCvarsList[CVAR_CONSECUTIVE_BLOCK]);
     
@@ -734,7 +760,6 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     // Switch the player to terrorists.
     // TODO: A solution to stop confusing bots? Respawn and teleport?
     CS_SwitchTeam(client, CS_TEAM_T);
-    
     
     // Respawn/Freeze shit.
     
@@ -1135,9 +1160,6 @@ stock InfectManualInfect(client, targets[], count, bool:respawnoverride = false,
     // If zombie hasn't spawned, then make targetted player(s) mother zombies.
     if (!zombiespawned)
     {
-        // Stop mother infect timer.
-        ZREndTimer(tInfect);
-        
         // Move all clients to CT
         for (new x = 1; x <= MaxClients; x++)
         {
