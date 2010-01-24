@@ -76,6 +76,7 @@ enum LogModules
     bool:LogModule_Damage,
     bool:LogModule_Downloads,
     bool:LogModule_Hitgroups,
+    bool:LogModule_RoundEnd,
     bool:LogModule_Infect,
     bool:LogModule_Models,
     bool:LogModule_Napalm,

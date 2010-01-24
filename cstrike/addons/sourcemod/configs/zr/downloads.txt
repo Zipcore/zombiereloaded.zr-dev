@@ -53,9 +53,3 @@ materials/models/player/zh/
 
 // Hellknight materials
 materials/models/player/ics/hellknight_red/*.v[mt][tf]
-
-// Team win overlays.
-materials/overlays/zr/*_win.v[mt][tf]
-
-// ZVision overlay.
-materials/overlays/zr/zvision.v[mt][tf]

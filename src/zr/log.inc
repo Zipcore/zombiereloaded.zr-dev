@@ -83,6 +83,10 @@ LogGetModuleNameString(String:buffer[], maxlen, LogModules:module, bool:shortNam
         {
             return shortName ? strcopy(buffer, maxlen, "hitgroups") : strcopy(buffer, maxlen, "Hit Groups");
         }
+        case LogModule_RoundEnd:
+        {
+            return shortName ? strcopy(buffer, maxlen, "roundend") : strcopy(buffer, maxlen, "Round End");
+        }
         case LogModule_Infect:
         {
             return shortName ? strcopy(buffer, maxlen, "infect") : strcopy(buffer, maxlen, "Infect");
@@ -173,6 +177,10 @@ LogModules:LogGetModule(const String:moduleName[])
     else if (StrEqual(moduleName, "hitgroups", false))
     {
         return LogModule_Hitgroups;
+    }
+    else if (StrEqual(moduleName, "roundend", false))
+    {
+        return LogModule_RoundEnd;
     }
     else if (StrEqual(moduleName, "infect", false))
     {

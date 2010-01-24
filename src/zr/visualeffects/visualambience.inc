@@ -72,6 +72,13 @@ VAmbienceLoad()
     // Prepend materials/skybox to the path.
     Format(downloadpath, sizeof(downloadpath), "materials/skybox/%s", skypath);
     
+    // Log an error if the file doesn't exist.
+    if (!FileExists(downloadpath, true))
+    {
+        LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_VEffects, "VAmbience (Sky)", "Skybox texture file \"%s\" does not exist.", downloadpath);
+        return;
+    }
+    
     // Add skybox file to downloads table.
     AddFileToDownloadsTable(downloadpath);
 }
