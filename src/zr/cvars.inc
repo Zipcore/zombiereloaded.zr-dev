@@ -107,8 +107,8 @@ enum CvarsList
     Handle:CVAR_MZOMBIE_COUNTDOWN,
     Handle:CVAR_MZOMBIE_RESPAWN,
     Handle:CVAR_MZOMBIE_FREEZE,
-    Handle:CVAR_SPAWNTIME_MIN,
-    Handle:CVAR_SPAWNTIME_MAX,
+    Handle:CVAR_MZOMBIE_MIN_TIME,
+    Handle:CVAR_MZOMBIE_MAX_TIME,
     Handle:CVAR_CONSECUTIVE_BLOCK,
     Handle:CVAR_FLASHLIGHT_BLOCK,
     Handle:CVAR_WEAPONS_DROP,
@@ -337,8 +337,8 @@ CvarsCreate()
     g_hCvarsList[CVAR_MZOMBIE_COUNTDOWN]                =    CreateConVar("zr_mzombie_countdown",           "0",                                "Counts down to the first infection(s) of the round.  Countdown is printed in the middle of the client's screen.");
     g_hCvarsList[CVAR_MZOMBIE_RESPAWN]                  =    CreateConVar("zr_mzombie_respawn",             "0",                                "Teleport mother zombies back to spawn on infect.");
     g_hCvarsList[CVAR_MZOMBIE_FREEZE]                   =    CreateConVar("zr_mzombie_freeze",              "0",                                "Freeze mother zombies upon infection for this long ['0' = Disabled]");
-    g_hCvarsList[CVAR_SPAWNTIME_MIN]                    =    CreateConVar("zr_spawntime_min",               "30.0",                             "Minimum time from the start of the round until picking the mother zombie(s).");
-    g_hCvarsList[CVAR_SPAWNTIME_MAX]                    =    CreateConVar("zr_spawntime_max",               "50.0",                             "Maximum time from the start of the round until picking the mother zombie(s).");
+    g_hCvarsList[CVAR_MZOMBIE_MIN_TIME]                 =    CreateConVar("zr_mzombie_min_time",            "30.0",                             "Minimum time from the start of the round until picking the mother zombie(s).");
+    g_hCvarsList[CVAR_MZOMBIE_MAX_TIME]                 =    CreateConVar("zr_mzombie_max_time",            "50.0",                             "Maximum time from the start of the round until picking the mother zombie(s).");
     g_hCvarsList[CVAR_CONSECUTIVE_BLOCK]                =    CreateConVar("zr_consecutive_block",           "1",                                "Prevent a player from being chosen as mother zombie two rounds in a row.");
     g_hCvarsList[CVAR_FLASHLIGHT_BLOCK]                 =    CreateConVar("zr_flashlight_block",            "0",                                "Disallow zombies from using a flashlight. [Recommended: Enable zombie attribute: 'nvgs']");
     g_hCvarsList[CVAR_WEAPONS_DROP]                     =    CreateConVar("zr_weapons_drop",                "1",                                "Force player to drop all weapons on infect, disabling this will strip weapons instead.");

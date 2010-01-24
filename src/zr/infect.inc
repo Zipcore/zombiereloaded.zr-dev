@@ -420,8 +420,8 @@ InfectOnRoundFreezeEnd()
     }
     
     // Get min and max times.
-    new Float:infectspawntimemin = GetConVarFloat(g_hCvarsList[CVAR_SPAWNTIME_MIN]);
-    new Float:infectspawntimemax = GetConVarFloat(g_hCvarsList[CVAR_SPAWNTIME_MAX]);
+    new Float:infectspawntimemin = GetConVarFloat(g_hCvarsList[CVAR_MZOMBIE_MIN_TIME]);
+    new Float:infectspawntimemax = GetConVarFloat(g_hCvarsList[CVAR_MZOMBIE_MAX_TIME]);
     
     // Pick random time between min and max.
     new Float:randomtime = GetRandomFloat(infectspawntimemin, infectspawntimemax);
