@@ -133,6 +133,13 @@ public Plugin:myinfo =
  */
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
+    decl String:gamefolder[32];
+    GetGameFolderName(gamefolder, sizeof(gamefolder));
+    if (!StrEqual(gamefolder, "cstrike"))
+    {
+        SetFailState("This mod is not supported by Zombie:Reloaded.");
+    }
+    
     // Forward event to the API module.
     APIInit();
     
