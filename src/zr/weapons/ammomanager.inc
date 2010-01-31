@@ -44,8 +44,15 @@ AmmoManagerDisable(index)
     AmmoManagerStopTimer(index);
 }
 
-AmmoManagerInit(index)
+/**
+ * Initialize the specified ammo manager with the specified profile.
+ *
+ * @param index         Ammo manager index.
+ * @param ammoProfile   Ammo profile index.
+ */
+AmmoManagerInit(index, ammoProfile)
 {
+    
 }
 
 /**
