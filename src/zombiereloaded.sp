@@ -219,6 +219,7 @@ public OnConfigsExecuted()
     HitgroupsLoad();
     RoundEndLoad();
     InfectLoad();
+    DamageLoad();
     VEffectsLoad();
     SEffectsLoad();
     AntiStickLoad();

@@ -68,9 +68,16 @@ new bool:g_bDamageMotherZombie[MAXPLAYERS + 1];
 
 /**
  * Hook commands related to damage here.
+ * Note: This isn't OnCommandsHook because this depends on cvars.
  */
-DamageOnCommandsHook()
+new bool:g_bSuicideCmdsHooked = false;
+DamageLoad()
 {
+    if (g_bSuicideCmdsHooked)
+    {
+        return;
+    }
+    
     // Create array to store cmds.
     new String:arrayCmds[DAMAGE_SUICIDE_MAX_CMDS][DAMAGE_SUICIDE_MAX_LENGTH];
     
@@ -84,6 +91,9 @@ DamageOnCommandsHook()
         TrimString(arrayCmds[x]);
         AddCommandListener(DamageSuicideIntercept, arrayCmds[x]);
     }
+    
+    // Important:  If ZR can be unloaded some day, make sure to remove the listeners and set this to false.
+    g_bSuicideCmdsHooked = true;
 }
 
 /**
