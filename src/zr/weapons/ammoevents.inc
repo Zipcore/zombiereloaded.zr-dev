@@ -82,10 +82,21 @@ AmmoOnClientDeath(client)
  *
  * @param client    Client index.
  */
-AmmoOnClientInfected(client)
+AmmoOnClientZombie(client)
 {
     // Forward to death event.
     AmmoOnClientDeath(client);
+}
+
+/**
+ * Client was turned into a human (usually by admin command).
+ *
+ * @param client    Client index.
+ */
+AmmoOnClientHuman(client)
+{
+    // Forward to spawn event.
+    AmmoOnClientSpawn(client);
 }
 
 /**
