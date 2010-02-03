@@ -26,6 +26,11 @@
  */
 
 /**
+ * Array that stores the client's current speed.
+ */
+new Float:g_flClassApplySpeed[MAXPLAYERS + 1];
+
+/**
  * Applies all class attributes on a player. Changing model, hp, speed, health,
  * effects etc. The players current team will be used to get the class index.
  *
@@ -406,18 +411,35 @@ bool:ClassApplyHealthRegen(client, classindex, cachetype = ZR_CLASS_CACHE_PLAYER
  */
 bool:ClassApplySpeed(client, classindex, cachetype = ZR_CLASS_CACHE_PLAYER)
 {
-    new Float:speed;
-    
     // Get the health points from the specified cache.
     if (cachetype == ZR_CLASS_CACHE_PLAYER)
     {
-        speed = ClassGetSpeed(client, cachetype);
+        g_flClassApplySpeed[client] = ClassGetSpeed(client, cachetype);
     }
     else
     {
-        speed = ClassGetSpeed(classindex, cachetype);
+        g_flClassApplySpeed[client] = ClassGetSpeed(classindex, cachetype);
     }
     
-    ToolsSetClientLMV(client, speed);
+    //ToolsSetClientLMV(client, speed);    // Goodbye old shitty method!
     return true;
+}
+
+/**
+ * Called before the client can "think"
+ * Here we can change the client's speed through m_flMaxSpeed.
+ * 
+ * @param client    The client index.
+ */
+public ClassPreThinkPost(client)
+{
+    if (!IsPlayerAlive(client))
+    {
+        return;
+    }
+    
+    // Note: Default is around 200.0 - 250.0
+    PrintToServer("%N: %f", client, g_flClassApplySpeed[client]);
+    new Float:newspeed = GetEntPropFloat(client, Prop_Data, "m_flMaxspeed") + g_flClassApplySpeed[client];
+    SetEntPropFloat(client, Prop_Data, "m_flMaxspeed", newspeed);
 }
