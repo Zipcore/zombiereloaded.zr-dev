@@ -79,6 +79,9 @@ ClassOnMapStart()
  */
 ClassClientInit(client)
 {
+    // Hook "PreThinkPost" on the client.
+    SDKHook(client, SDKHook_PreThinkPost, ClassPreThinkPost);
+    
     // Check if there are valid classes and the client is valid.
     // To prevent bots or SourceTV causing errors. If classes are invalid this
     // event was executed before classes were loaded. 
@@ -106,6 +109,9 @@ ClassClientInit(client)
  */
 ClassOnClientDisconnect(client)
 {
+    // Unhook "PreThinkPost" on the client.
+    SDKUnhook(client, SDKHook_PreThinkPost, ClassPreThinkPost);
+    
     // Reset previously selected class indexes.
     ClassResetNextIndexes(client);
     

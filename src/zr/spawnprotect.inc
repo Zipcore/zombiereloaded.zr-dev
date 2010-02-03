@@ -189,7 +189,7 @@ public Action:SpawnProtectTimer(Handle:timer, any:client)
         
         // Fix attributes.
         ToolsSetClientAlpha(client, ClassGetAlphaInitial(client));
-        ToolsSetClientLMV(client, ClassGetSpeed(client));
+        ToolsSetClientLMV(client, 1.0);
         
         // Clear timer handle.
         ZREndTimer(tSpawnProtect[client], false);
