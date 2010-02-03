@@ -791,7 +791,7 @@ stock WeaponsGetClientWeapons(client, weapons[WeaponsSlot])
 stock WeaponsGetDeployedWeaponIndex(client)
 {
     // Return the client's active weapon.
-    return GetEntDataEnt2(client, offsActiveWeapon);
+    return GetEntDataEnt2(client, g_iToolsActiveWeapon);
 }
 
 /**
