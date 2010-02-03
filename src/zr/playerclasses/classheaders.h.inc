@@ -109,7 +109,7 @@
 #define ZR_CLASS_DEFAULT_HEALTH_REGEN_AMOUNT    2
 #define ZR_CLASS_DEFAULT_HEALTH_INFECT_GAIN     800
 #define ZR_CLASS_DEFAULT_KILL_BONUS             2
-#define ZR_CLASS_DEFAULT_SPEED                  360.0
+#define ZR_CLASS_DEFAULT_SPEED                  75.0
 #define ZR_CLASS_DEFAULT_KNOCKBACK              2.0
 #define ZR_CLASS_DEFAULT_JUMP_HEIGHT            10.0
 #define ZR_CLASS_DEFAULT_JUMP_DISTANCE          0.2
@@ -149,8 +149,8 @@
 #define ZR_CLASS_HEALTH_INFECT_GAIN_MAX     20000
 #define ZR_CLASS_KILL_BONUS_MIN             0
 #define ZR_CLASS_KILL_BONUS_MAX             16
-#define ZR_CLASS_SPEED_MIN                  10.0
-#define ZR_CLASS_SPEED_MAX                  2000.0
+#define ZR_CLASS_SPEED_MIN                  -150.0
+#define ZR_CLASS_SPEED_MAX                  250.0
 #define ZR_CLASS_KNOCKBACK_MIN              -30.0
 #define ZR_CLASS_KNOCKBACK_MAX              30.0
 #define ZR_CLASS_KNOCKBACK_IGNORE           -31.0   /** Used by class editor volumetric feature. */
