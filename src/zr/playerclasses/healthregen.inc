@@ -65,17 +65,17 @@ HealthRegenOnClientDisconnect(client)
  * Set the health regen attributes on a client.
  */
 
-HealthRegenSetInterval(client, Float:interval)
+stock HealthRegenSetInterval(client, Float:interval)
 {
     HealthRegenAttributes[client][RegenAttribute_Interval] = interval;
 }
 
-HealthRegenSetAmount(client, amount)
+stock HealthRegenSetAmount(client, amount)
 {
     HealthRegenAttributes[client][RegenAttribute_Amount] = amount;
 }
 
-HealthRegenSetMaxHealth(client, maxhealth)
+stock HealthRegenSetMaxHealth(client, maxhealth)
 {
     HealthRegenAttributes[client][RegenAttribute_MaxHealth] = maxhealth;
 }
@@ -100,6 +100,12 @@ HealthRegenOnClientHurt(client)
 {
     // If the client is regenerating health already, then stop.
     if (ZRIsTimerRunning(HealthRegenAttributes[client][RegenAttribute_Timer]))
+    {
+        return;
+    }
+    
+    // If the interval isn't a positive number, then stop.
+    if (ClassGetHealthRegenInterval(client) <= 0)
     {
         return;
     }
@@ -150,7 +156,7 @@ HealthRegenOnClientHuman(client)
  * @param client        The client index.
  * @param interval      Regeneration interval.
  */
-HealthRegenStart(client)
+stock HealthRegenStart(client)
 {
     // Stop timer if it already exists.
     HealthRegenStop(client);
@@ -164,7 +170,7 @@ HealthRegenStart(client)
  *
  * @param client    The client index.
  */
-HealthRegenStop(client)
+stock HealthRegenStop(client)
 {
     // Kill the timer if it exists.
     ZREndTimer(HealthRegenAttributes[client][RegenAttribute_Timer]);
@@ -190,13 +196,18 @@ public Action:HealthRegenTimer(Handle:timer, any:client)
     {
         // Increase health.
         SetEntityHealth(client, health);
+        
+        // Forward event to modules.
+        ZHPOnClientHealthRegen(client);
     }
-    
     // If their health is now either the max health or beyond, then end health regen.
     if (health >= HealthRegenAttributes[client][RegenAttribute_MaxHealth])
     {
         // Set their HP to the max health before ending.
         SetEntityHealth(client, HealthRegenAttributes[client][RegenAttribute_MaxHealth]);
+        
+        // Forward event to modules.
+        ZHPOnClientHealthRegen(client);
         
         ZREndTimer(HealthRegenAttributes[client][RegenAttribute_Timer], false);
         return Plugin_Stop;

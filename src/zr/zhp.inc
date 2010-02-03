@@ -155,6 +155,17 @@ ZHPOnClientHurt(client)
 }
 
 /**
+ * Client has regenerated health.
+ * 
+ * @param client    The client index.
+ */
+ZHPOnClientHealthRegen(client)
+{
+    // Update HP display.
+    ZHPUpdateHUD(client);
+}
+
+/**
  * Zombie has gained health for infecting a player.
  * 
  * @param client    The client index.
