@@ -439,7 +439,6 @@ public ClassPreThinkPost(client)
     }
     
     // Note: Default is around 200.0 - 250.0
-    PrintToServer("%N: %f", client, g_flClassApplySpeed[client]);
     new Float:newspeed = GetEntPropFloat(client, Prop_Data, "m_flMaxspeed") + g_flClassApplySpeed[client];
     SetEntPropFloat(client, Prop_Data, "m_flMaxspeed", newspeed);
 }
