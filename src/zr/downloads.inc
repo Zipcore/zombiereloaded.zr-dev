@@ -52,6 +52,9 @@ DownloadsLoad()
     // Set the path to the config file.
     ConfigSetConfigPath(File_Downloads, pathdownloads);
     
+    // Log what models file that is loaded.
+    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "Loading downloads from file \"%s\".", pathdownloads);
+    
     // Load config from file and create array structure.
     new bool:success = ConfigLoadConfig(File_Downloads, arrayDownloads, PLATFORM_MAX_PATH);
     
@@ -63,6 +66,7 @@ DownloadsLoad()
     
     new downloadcount;
     new downloadvalidcount;
+    new downloadinvalidcount;
     
     decl String:downloadpath[PLATFORM_MAX_PATH];
     decl String:filepath[PLATFORM_MAX_PATH];
@@ -73,7 +77,7 @@ DownloadsLoad()
     new FileType:filetype;
     decl String:fullpath[PLATFORM_MAX_PATH];
     
-    new downloads = downloadcount = GetArraySize(arrayDownloads);
+    new downloads = GetArraySize(arrayDownloads);
     
     // x = download array index.
     for (new x = 0; x < downloads; x++)
@@ -84,7 +88,8 @@ DownloadsLoad()
         // If file exists, then add to the downloads table and increment valid count.
         if (FileExists(downloadpath))
         {
-            // Increment downloadvalidcount
+            // Increment both counts.
+            downloadcount++;
             downloadvalidcount++;
             
             // Precache model file and add to downloads table.
@@ -130,6 +135,9 @@ DownloadsLoad()
                         }
                     }
                     
+                    // Increase the total count.
+                    downloadcount++;
+                    
                     // Format the filepath.
                     if (filepath[strlen(filepath) - 1] == '/')
                     {
@@ -156,6 +164,10 @@ DownloadsLoad()
             }
             else
             {
+                // Increment both counts.
+                downloadcount++;
+                downloadinvalidcount++;
+                
                 // Remove client from array.
                 RemoveFromArray(arrayDownloads, x);
                 
@@ -171,7 +183,7 @@ DownloadsLoad()
     }
     
     // Log model validation info.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "Total: %d | Successful: %d | Unsuccessful: %d", downloadcount, downloadvalidcount, downloadcount - downloadvalidcount);
+    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "Total: %d | Successful: %d | Unsuccessful: %d", downloadcount, downloadvalidcount, downloadinvalidcount);
     
     // Set config data.
     ConfigSetConfigLoaded(File_Downloads, true);
