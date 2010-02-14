@@ -271,7 +271,7 @@ public ZSpawnForceHandle(Handle:menu_zspawn_force, MenuAction:action, client, sl
         if (target == 0)
         {
             // Re-send the menu.
-            MenuClientList(client, ZTeleForceHandle, true, true, false, "ZTele clients title");
+            MenuClientList(client, ZSpawnForceHandle, true, true, false, "ZSpawn clients title");
             
             return;
         }
