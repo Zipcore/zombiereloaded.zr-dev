@@ -331,6 +331,17 @@ WeaponsClientInit(client)
 }
 
 /**
+ * Called once a client's saved cookies have been loaded from the database.
+ * 
+ * @param client		Client index.
+ */
+WeaponsOnCookiesCached(client)
+{
+    // Forward event to sub-modules.
+    ZMarketOnCookiesCached(client);
+}
+
+/**
  * Client is leaving the server.
  * 
  * @param client    The client index.
