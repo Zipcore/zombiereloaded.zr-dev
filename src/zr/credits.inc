@@ -56,6 +56,25 @@ CreditsOnCookiesCreate()
     }
 }
 
+/**
+ * Called once a client's saved cookies have been loaded from the database.
+ * 
+ * @param client		Client index.
+ */
+CreditsOnCookiesCached(client)
+{
+    // Initialize auto-rebuy data.
+    decl String:credits[8];
+    GetClientCookie(client, g_hCreditsCookie, credits, sizeof(credits));
+    
+    // If the cookie is empty, then set the default value.
+    if (!credits[0])
+    {
+        // Set cookie to false.
+        CookiesSetInt(client, g_hCreditsCookie, 0);
+    }
+}
+
 // Credit storage API functions.
 
 /**
