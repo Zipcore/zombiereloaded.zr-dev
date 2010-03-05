@@ -55,7 +55,7 @@ NapalmOnOffsetsFound()
     g_iToolsWaterLevel = FindSendPropInfo("CBasePlayer", "m_nWaterLevel");
     if (g_iToolsWaterLevel == -1)
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Napalm, "Offsets", "Offset \"CBaseEntity::m_nWaterLevel\" was not found.");
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Napalm, "Offsets", "Offset \"CBaseEntity::m_nWaterLevel\" was not found.");
     }
 }
 
@@ -100,7 +100,7 @@ Action:NapalmOnTakeDamage(client, damagetype)
                     // Log what entity was in that property, for future reference.
                     else
                     {
-                        LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Napalm, "Napalm Douse", "Found unexpected entity in prop \"m_flLifetime\": \"%s\"", classname);
+                        LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Napalm, "Napalm Douse", "Found unexpected entity in prop \"m_flLifetime\": \"%s\"", classname);
                     }
                 }
             }

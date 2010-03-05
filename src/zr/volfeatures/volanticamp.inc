@@ -106,11 +106,11 @@ VolAnticampEnable(volumeIndex)
         if (interval > 0.0)
         {
             AnticampData[dataindex][Anticamp_Timer] = CreateTimer(interval, Event_VolAnticampTrigger, volumeIndex, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
-            LogEvent(_, LogType_Normal, LOG_DEBUG, LogModule_Volfeatures, "Vol state", "Enabled anticamp volume %d.", volumeIndex);
+            LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Vol state", "Enabled anticamp volume %d.", volumeIndex);
         }
         else
         {
-            LogEvent(_, LogType_Error, LOG_CORE_EVENTS, LogModule_Volfeatures, "Config Validation", "Warning: Invalid interval %.2f in anticamp volume %d.", interval, volumeIndex);
+            LogEvent(_, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Volfeatures, "Config Validation", "Warning: Invalid interval %.2f in anticamp volume %d.", interval, volumeIndex);
         }
     }
 }
@@ -151,11 +151,11 @@ stock VolAnticampEnableAll()
             if (interval > 0.0)
             {
                 AnticampData[dataindex][Anticamp_Timer] = CreateTimer(interval, Event_VolAnticampTrigger, volumeindex, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
-                LogEvent(_, LogType_Normal, LOG_DEBUG, LogModule_Volfeatures, "Vol state", "Enabled anticamp volume %d.", volumeIndex);
+                LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Vol state", "Enabled anticamp volume %d.", volumeIndex);
             }
             else
             {
-                LogEvent(_, LogType_Error, LOG_CORE_EVENTS, LogModule_Volfeatures, "Config Validation", "Warning: Invalid interval %.2f in anticamp volume %d.", interval, volumeIndex);
+                LogEvent(_, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Volfeatures, "Config Validation", "Warning: Invalid interval %.2f in anticamp volume %d.", interval, volumeIndex);
             }
         }
     }
@@ -187,7 +187,7 @@ VolAnticampDisable(volumeIndex)
         // Stop timer.
         ZREndTimer(AnticampData[dataindex][Anticamp_Timer]);
         
-        LogEvent(_, LogType_Normal, LOG_DEBUG, LogModule_Volfeatures, "Vol state", "Disabled anticamp volume %d.", volumeIndex);
+        LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Vol state", "Disabled anticamp volume %d.", volumeIndex);
     }
 }
 
@@ -344,7 +344,7 @@ VolAnticampApplyAction(client, dataIndex, volumeIndex)
                 ForcePlayerSuicide(client);
                 
                 // Log event.
-                LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Slay", name, volumeIndex);
+                LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Slay", name, volumeIndex);
             }
         }
         case Anticamp_Slay:
@@ -353,7 +353,7 @@ VolAnticampApplyAction(client, dataIndex, volumeIndex)
             ForcePlayerSuicide(client);
             
             // Log event.
-            LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Slay", name, volumeIndex);
+            LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Slay", name, volumeIndex);
         }
         case Anticamp_Drug:
         {
@@ -371,7 +371,7 @@ VolAnticampApplyAction(client, dataIndex, volumeIndex)
                 IgniteEntity(client, amount);
                 
                 // Log event.
-                LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Ignite", name, volumeIndex);
+                LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Ignite", name, volumeIndex);
             }
         }
     }

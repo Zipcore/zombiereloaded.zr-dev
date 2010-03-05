@@ -75,7 +75,7 @@ VAmbienceLoad()
     // Log an error if the file doesn't exist.
     if (!FileExists(downloadpath, true))
     {
-        LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_VEffects, "VAmbience (Sky)", "Skybox texture file \"%s\" does not exist.", downloadpath);
+        LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_VEffects, "VAmbience (Sky)", "Skybox texture file \"%s\" does not exist.", downloadpath);
         return;
     }
     
@@ -344,7 +344,7 @@ stock VAmbienceApplyFog(bool:disable = false)
     // Check if the map is missing a sky_camera entity
     if (skyreference == INVALID_ENT_REFERENCE)
     {
-        LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_VEffects, "Fog Manipulation", "Failed to find a sky_camera entity on this map, sky fog couldn't be synced with level fog.");
+        LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_VEffects, "Fog Manipulation", "Failed to find a sky_camera entity on this map, sky fog couldn't be synced with level fog.");
     }
     else
     {

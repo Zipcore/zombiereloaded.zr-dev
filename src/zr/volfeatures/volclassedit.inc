@@ -480,7 +480,7 @@ VolClassEditApply(client, dataIndex)
         }
     }
     
-    LogEvent(_, LogType_Normal, LOG_DEBUG, LogModule_Volfeatures, "ClassEdit", "Applied class data on client %d.", client);
+    LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "ClassEdit", "Applied class data on client %d.", client);
     
     // Apply the updated attributes.
     ClassApplyAttributes(client);
@@ -513,7 +513,7 @@ VolClassEditRestore(client, dataIndex)
     // Apply the restored attributes.
     if (ClassApplyAttributes(client))
     {
-        LogEvent(_, LogType_Normal, LOG_DEBUG, LogModule_Volfeatures, "ClassEdit", "Restored class data on client %d.", client);
+        LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "ClassEdit", "Restored class data on client %d.", client);
     }
 }
 
@@ -1269,7 +1269,7 @@ VolClassEditUpdateAttributes(client, const attributes[])
         numChanges++;
     }
     
-    LogEvent(_, LogType_Normal, LOG_DEBUG, LogModule_Volfeatures, "ClassEdit", "Applied %d attribute(s).", numChanges);
+    LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "ClassEdit", "Applied %d attribute(s).", numChanges);
     return numChanges;
 }
 
@@ -1407,6 +1407,6 @@ VolClassEditRestoreAttributes(client, classindex, const attributes[])
         numChanges++;
     }
     
-    LogEvent(_, LogType_Normal, LOG_DEBUG, LogModule_Volfeatures, "ClassEdit", "Applied %d attribute(s).", numChanges);
+    LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "ClassEdit", "Applied %d attribute(s).", numChanges);
     return numChanges;
 }

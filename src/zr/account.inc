@@ -44,7 +44,7 @@ AccountOnOffsetsFound()
     g_iToolsAccount = FindSendPropInfo("CCSPlayer", "m_iAccount");
     if (g_iToolsAccount == -1)
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Account, "Offsets", "Offset \"CCSPlayer::m_iAccount\" was not found.");
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Account, "Offsets", "Offset \"CCSPlayer::m_iAccount\" was not found.");
     }
 }
 

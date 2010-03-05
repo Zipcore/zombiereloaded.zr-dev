@@ -161,7 +161,7 @@ enum ConfigFile
 /**
  * Data container for each config file.
  */
-enum ConfigData
+enum ConfigDataContainer
 {
     bool:               Data_Loaded,                    /** True if config is loaded, false if not. */
     ConfigStructure:    Data_Structure,                 /** Format of the config */
@@ -174,7 +174,7 @@ enum ConfigData
 /**
  * Stores all config data.
  */
-new g_ConfigData[ConfigFile][ConfigData];
+new g_ConfigData[ConfigFile][ConfigDataContainer];
 
 /**
  * Actions to use when working on key/values.
@@ -222,7 +222,7 @@ ConfigLoad()
     ServerCommand("exec %s", mapconfig);
     
     // Log action.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Config, "Map Configs", "Executed map config file: %s", path);
+    LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Config, "Map Configs", "Executed map config file: %s", path);
 }
 
 /**
@@ -260,7 +260,7 @@ ConfigOnModulesLoaded()
     ServerCommand("exec %s", mapconfig);
     
     // Log action.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Config, "Post Map Configs", "Executed post map config file: %s", path);
+    LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Config, "Post Map Configs", "Executed post map config file: %s", path);
 }
 
 /**
@@ -565,7 +565,7 @@ stock bool:ConfigReloadConfig(ConfigFile:config)
         ConfigGetConfigAlias(config, configalias, sizeof(configalias));
         
         // Print reload failure to logs.
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Config, "Reload Function", "Invalid reload function for config: \"%s\"", configalias);
+        LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Config, "Reload Function", "Invalid reload function for config: \"%s\"", configalias);
         
         return false;
     }
@@ -845,7 +845,7 @@ public Action:ConfigReloadCommand(client, argc)
         }
         
         // Log action to game events.
-        LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Config, "Reload Config", logmessage);
+        LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Config, "Reload Config", logmessage);
     }
     
     return Plugin_Handled;
@@ -892,7 +892,7 @@ public Action:ConfigReloadAllCommand(client, argc)
     }
     
     // Log action to game events.
-    LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Config, "Reload All Config", "Admin \"%L\" reloaded all config files.", client);
+    LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Config, "Reload All Config", "Admin \"%L\" reloaded all config files.", client);
     
     return Plugin_Handled;
 }

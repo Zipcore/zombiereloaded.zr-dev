@@ -46,14 +46,14 @@ DownloadsLoad()
     if (!exists)
     {
         // Log failure and stop plugin.
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "Missing downloads file: \"%s\"", pathdownloads);
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "Missing downloads file: \"%s\"", pathdownloads);
     }
     
     // Set the path to the config file.
     ConfigSetConfigPath(File_Downloads, pathdownloads);
     
     // Log what models file that is loaded.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "Loading downloads from file \"%s\".", pathdownloads);
+    LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "Loading downloads from file \"%s\".", pathdownloads);
     
     // Load config from file and create array structure.
     new bool:success = ConfigLoadConfig(File_Downloads, arrayDownloads, PLATFORM_MAX_PATH);
@@ -61,7 +61,7 @@ DownloadsLoad()
     // Unexpected error, stop plugin.
     if (!success)
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "Unexpected error encountered loading: %s", pathdownloads);
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "Unexpected error encountered loading: %s", pathdownloads);
     }
     
     new downloadcount;
@@ -151,7 +151,7 @@ DownloadsLoad()
                     // Verify that the file exists.
                     if (!FileExists(fullpath))
                     {
-                        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "File iteration failure: %s  Contact plugin support.", fullpath);
+                        LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "File iteration failure: %s  Contact plugin support.", fullpath);
                         continue;
                     }
                     
@@ -177,13 +177,13 @@ DownloadsLoad()
                 // Backtrack one index, because we deleted it out from under the loop.
                 x--;
                 
-                LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "Invalid path: \"%s\"", filepath);
+                LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "Invalid path: \"%s\"", filepath);
             }
         }
     }
     
     // Log model validation info.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "Total: %d | Successful: %d | Unsuccessful: %d", downloadcount, downloadvalidcount, downloadinvalidcount);
+    LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Downloads, "Config Validation", "Total: %d | Successful: %d | Unsuccessful: %d", downloadcount, downloadvalidcount, downloadinvalidcount);
     
     // Set config data.
     ConfigSetConfigLoaded(File_Downloads, true);

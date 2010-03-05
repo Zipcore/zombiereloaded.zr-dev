@@ -113,7 +113,7 @@ RoundEndLoad()
     }
     else
     {
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_RoundEnd, "Overlays", "Zombie overlay file \"%s\" (zr_roundend_overlay_zombie) does not exist.", zombie_overlaypath_vmt);
+        LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_RoundEnd, "Overlays", "Zombie overlay file \"%s\" (zr_roundend_overlay_zombie) does not exist.", zombie_overlaypath_vmt);
     }
     
     if (FileExists(zombie_overlaypath_vtf, true))
@@ -122,7 +122,7 @@ RoundEndLoad()
     }
     else
     {
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_RoundEnd, "Overlays", "Zombie overlay file \"%s\" (zr_roundend_overlay_zombie) does not exist.", zombie_overlaypath_vtf);
+        LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_RoundEnd, "Overlays", "Zombie overlay file \"%s\" (zr_roundend_overlay_zombie) does not exist.", zombie_overlaypath_vtf);
     }
     
     if (FileExists(human_overlaypath_vmt, true))
@@ -131,7 +131,7 @@ RoundEndLoad()
     }
     else
     {
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_RoundEnd, "Overlays", "Zombie overlay file \"%s\" (zr_roundend_overlay_human) does not exist.", human_overlaypath_vmt);
+        LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_RoundEnd, "Overlays", "Zombie overlay file \"%s\" (zr_roundend_overlay_human) does not exist.", human_overlaypath_vmt);
     }
     
     if (FileExists(human_overlaypath_vtf, true))
@@ -140,7 +140,7 @@ RoundEndLoad()
     }
     else
     {
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_RoundEnd, "Overlays", "Human overlay file \"%s\" (zr_roundend_overlay_human) does not exist.", human_overlaypath_vtf);
+        LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_RoundEnd, "Overlays", "Human overlay file \"%s\" (zr_roundend_overlay_human) does not exist.", human_overlaypath_vtf);
     }
 }
 

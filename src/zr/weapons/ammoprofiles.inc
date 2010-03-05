@@ -54,7 +54,7 @@ AmmoLoad()
     if (!exists)
     {
         // Log failure and stop plugin.
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Config Validation", "Missing ammo profiles: \"%s\"", ammpProfilesPath);
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Config Validation", "Missing ammo profiles: \"%s\"", ammpProfilesPath);
     }
     
     // Set the path to the config file.
@@ -64,7 +64,7 @@ AmmoLoad()
     kvAmmoProfiles = CreateKeyValues(CONFIG_FILE_ALIAS_AMMOPROFILES);
     
     // Log that ammo profiles file is loading.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Weapons, "Config Validation", "Loading ammo profiles from file \"%s\".", ammpProfilesPath);
+    LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Weapons, "Config Validation", "Loading ammo profiles from file \"%s\".", ammpProfilesPath);
     
     // Load ammo profiles file.
     FileToKeyValues(kvAmmoProfiles, ammpProfilesPath);
@@ -73,7 +73,7 @@ AmmoLoad()
     KvRewind(kvAmmoProfiles);
     if (!KvGotoFirstSubKey(kvAmmoProfiles))
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Config Validation", "Can't find any ammo profiles in \"%s\"", ammpProfilesPath);
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Config Validation", "Can't find any ammo profiles in \"%s\"", ammpProfilesPath);
     }
     
     //decl String:buffer[256];
@@ -89,7 +89,7 @@ AmmoLoad()
         if (AmmoProfileCount > AMMO_PROFILES_MAX)
         {
             // Maximum number of profiles reached. Log a warning and exit the loop.
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Maximum number of ammo profiles reached (%d). Skipping other profiles.", AMMO_PROFILES_MAX + 1);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Maximum number of ammo profiles reached (%d). Skipping other profiles.", AMMO_PROFILES_MAX + 1);
             
             break;
         }
@@ -118,7 +118,7 @@ AmmoLoad()
         // Verify name length.
         if (!strlen(name))
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Empty \"name\" setting at index %d.", AmmoProfileCount + failedCount);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Empty \"name\" setting at index %d.", AmmoProfileCount + failedCount);
             failedCount++;
             continue;
         }
@@ -126,7 +126,7 @@ AmmoLoad()
         // Validate mode.
         if (AmmoProfiles[AmmoProfileCount][AmmoProfile_Mode] == AmmoMode_Invalid)
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Invalid \"mode setting\" setting at index %d: \"%s\".", AmmoProfileCount + failedCount, mode);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Invalid \"mode setting\" setting at index %d: \"%s\".", AmmoProfileCount + failedCount, mode);
             failedCount++;
             continue;
         }
@@ -135,7 +135,7 @@ AmmoLoad()
         new clipSize = AmmoProfiles[AmmoProfileCount][AmmoProfile_ClipSize];
         if (clipSize < AMMO_CLIP_SIZE_MIN && clipSize > AMMO_CLIP_SIZE_MAX)
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"clip_size\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, clipSize);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"clip_size\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, clipSize);
             failedCount++;
             continue;
         }
@@ -144,7 +144,7 @@ AmmoLoad()
         new clipReserve = AmmoProfiles[AmmoProfileCount][AmmoProfile_ClipReserve];
         if (clipReserve < AMMO_CLIP_RESERVE_MIN && clipReserve > AMMO_CLIP_RESERVE_MAX)
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"clip_reserve\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, clipReserve);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"clip_reserve\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, clipReserve);
             failedCount++;
             continue;
         }
@@ -153,7 +153,7 @@ AmmoLoad()
         new Float:interval = AmmoProfiles[AmmoProfileCount][AmmoProfile_Interval];
         if (interval < AMMO_INTERVAL_MIN && interval > AMMO_INTERVAL_MAX)
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"interval\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, interval);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"interval\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, interval);
             failedCount++;
             continue;
         }
@@ -162,7 +162,7 @@ AmmoLoad()
         new amount = AmmoProfiles[AmmoProfileCount][AmmoProfile_Amount];
         if (amount < AMMO_AMOUNT_MIN && amount > AMMO_AMOUNT_MAX)
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"amount\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, amount);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"amount\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, amount);
             failedCount++;
             continue;
         }
@@ -171,7 +171,7 @@ AmmoLoad()
         new max = AmmoProfiles[AmmoProfileCount][AmmoProfile_Max];
         if (max < AMMO_MAX_MIN && max > AMMO_MAX_MAX)
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"max\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, max);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"max\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, max);
             failedCount++;
             continue;
         }
@@ -184,17 +184,17 @@ AmmoLoad()
     // Check if there are no ammo profiles.
     if (!AmmoProfileCount)
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Config Validation", "No valid ammo profiles in \"%s\". There must be at least one profile named \"default\".", ammpProfilesPath);
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Config Validation", "No valid ammo profiles in \"%s\". There must be at least one profile named \"default\".", ammpProfilesPath);
     }
     
     // Check if the default profile exist.
     if (AmmoGetIndex("default") < 0)
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Couldn't find default ammo profile in \"%s\". There must a profile named \"default\".", ammpProfilesPath);
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Couldn't find default ammo profile in \"%s\". There must a profile named \"default\".", ammpProfilesPath);
     }
     
     // Log model validation info.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Config Validation", "Successful: %d | Unsuccessful: %d", AmmoProfileCount, failedCount);
+    LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Config Validation", "Successful: %d | Unsuccessful: %d", AmmoProfileCount, failedCount);
     
     // Set config data.
     ConfigSetConfigLoaded(File_AmmoProfiles, true);

@@ -96,7 +96,7 @@ HitgroupsLoad()
     if (!exists)
     {
         // Log failure.
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Hitgroups, "Config Validation", "Missing hitgroups config file: %s", pathhitgroups);
+        LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Hitgroups, "Config Validation", "Missing hitgroups config file: %s", pathhitgroups);
         
         return;
     }
@@ -110,7 +110,7 @@ HitgroupsLoad()
     // Unexpected error, stop plugin.
     if (!success)
     {
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Hitgroups, "Config Validation", "Unexpected error encountered loading: %s", pathhitgroups);
+        LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Hitgroups, "Config Validation", "Unexpected error encountered loading: %s", pathhitgroups);
         
         return;
     }
@@ -119,7 +119,7 @@ HitgroupsLoad()
     new size = GetArraySize(arrayHitgroups);
     if (!size)
     {
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Hitgroups, "Config Validation", "No usable data found in hitgroups config file: %s", pathhitgroups);
+        LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Hitgroups, "Config Validation", "No usable data found in hitgroups config file: %s", pathhitgroups);
     }
     
     // Now copy data to array structure.
@@ -146,7 +146,7 @@ HitgroupsCacheData()
     
     if (!success)
     {
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Hitgroups, "Config Validation", "Unexpected error caching data from hitgroups config file: %s", pathhitgroups);
+        LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Hitgroups, "Config Validation", "Unexpected error caching data from hitgroups config file: %s", pathhitgroups);
     }
     
     decl String:hitgroupname[HITGROUPS_MAX_LENGTH];
@@ -160,7 +160,7 @@ HitgroupsCacheData()
         KvRewind(kvHitgroups);
         if (!KvJumpToKey(kvHitgroups, hitgroupname))
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Hitgroups, "Config Validation", "Couldn't cache hitgroup data for: %s (check hitgroup config)", hitgroupname);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Hitgroups, "Config Validation", "Couldn't cache hitgroup data for: %s (check hitgroup config)", hitgroupname);
             continue;
         }
         
@@ -588,7 +588,7 @@ public Action:HitgroupsCommand(client, argc)
     }
     
     // Log action to game events.
-    LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Hitgroups, "Headshots Toggle", "Admin \"%L\" toggled hitgroup \"%s\" to \"%d\". (zr_hitgroup)", client, target, hitgroupdamage);
+    LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Hitgroups, "Headshots Toggle", "Admin \"%L\" toggled hitgroup \"%s\" to \"%d\". (zr_hitgroup)", client, target, hitgroupdamage);
     
     return Plugin_Handled;
 }
@@ -630,7 +630,7 @@ public Action:HitgroupsEnableAllCommand(client, argc)
     TranslationPrintToChatAll(true, false, "Hitgroups command enable all successful");
     
     // Log action to game events.
-    LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Hitgroups, "Enable All", "Admin \"%L\" enabled all zombie hitgroups. (zr_hitgroup_enable_all)", client);
+    LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Hitgroups, "Enable All", "Admin \"%L\" enabled all zombie hitgroups. (zr_hitgroup_enable_all)", client);
     
     return Plugin_Handled;
 }
@@ -679,7 +679,7 @@ public Action:HitgroupsHeadshotsOnlyCommand(client, argc)
     TranslationPrintToChatAll(true, false, "Hitgroups command headshots only successful");
     
     // Log action to game events.
-    LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Hitgroups, "Headshots Only", "Admin \"%L\" enabled headshots only. (zr_hitgroup_headshots_only)", client);
+    LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Hitgroups, "Headshots Only", "Admin \"%L\" enabled headshots only. (zr_hitgroup_headshots_only)", client);
     
     return Plugin_Handled;
 }

@@ -1193,13 +1193,13 @@ stock ClassGetDefaultSpawnClass(teamid, filter[ClassFilter] = ClassNoSpecialClas
                 // in the specified team, and log a warning.
                 classindex = ClassGetFirstClass(teamid, filter, cachetype);
                 
-                LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Default Spawn Class", "Warning: Failed to set \"%s\" as default spawn class for team %d. The class doesn't exist or the team IDs doesn't match. Falling back to the first class in the team.", classname, teamid);
+                LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Default Spawn Class", "Warning: Failed to set \"%s\" as default spawn class for team %d. The class doesn't exist or the team IDs doesn't match. Falling back to the first class in the team.", classname, teamid);
                 
                 // Validate the new index.
                 if (ClassValidateIndex(classindex))
                 {
                     // Log a warning.
-                    //LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Default Spawn Class", "Warning: The default class name \"%s\" does not exist or matches the team ID.", classname);
+                    //LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Default Spawn Class", "Warning: The default class name \"%s\" does not exist or matches the team ID.", classname);
                     return classindex;
                 }
                 else

@@ -193,7 +193,7 @@ VolDisable()
     VolStopUpdateTimer();
     VolDisableVolumes();
     
-    LogEvent(_, LogType_Normal, LOG_DEBUG, LogModule_Volfeatures, "Disabled", "Volfeatures disabled.");
+    LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Disabled", "Volfeatures disabled.");
 }
 
 /**
@@ -205,7 +205,7 @@ VolEnable()
     VolStartUpdateTimer();
     VolEnableVolumes();
     
-    LogEvent(_, LogType_Normal, LOG_DEBUG, LogModule_Volfeatures, "Enabled", "Volfeatures enabled.");
+    LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Enabled", "Volfeatures enabled.");
 }
 
 /**
@@ -296,7 +296,7 @@ bool:VolStartUpdateTimer()
     else
     {
         // Volumetric features disabled.
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Volfeatures, "Config Validation", "Warning: Console variable \"zr_vol_update_interval\" is zero or negative. Must be positive.");
+        LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Volfeatures, "Config Validation", "Warning: Console variable \"zr_vol_update_interval\" is zero or negative. Must be positive.");
         return false;
     }
 }
@@ -341,7 +341,7 @@ bool:VolStartTriggerTimer()
     else
     {
         // Trigger timer not running. Either disabled or invalid interval.
-        LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Volfeatures, "Config Validation", "Warning: Console variable \"zr_vol_trigger_interval\" is zero or negative. Must be positive.");
+        LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Volfeatures, "Config Validation", "Warning: Console variable \"zr_vol_trigger_interval\" is zero or negative. Must be positive.");
         return false;
     }
 }

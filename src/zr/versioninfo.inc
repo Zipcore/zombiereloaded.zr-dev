@@ -3,7 +3,7 @@
  *
  *  Zombie:Reloaded
  *
- *  File:          version.inc
+ *  File:          versioninfo.inc
  *  Description:   Command for version information.
  *
  *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
