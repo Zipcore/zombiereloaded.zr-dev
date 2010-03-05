@@ -351,7 +351,7 @@ public Action:ZTeleForceCommand(client, argc)
         }
         
         // Log action to game events.
-        LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_ZTele, "Force ZTele", "\"%L\" teleported \"%L\" to spawn.", client, targets[x]);
+        LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_ZTele, "Force ZTele", "\"%L\" teleported \"%L\" to spawn.", client, targets[x]);
     }
     
     return Plugin_Handled;

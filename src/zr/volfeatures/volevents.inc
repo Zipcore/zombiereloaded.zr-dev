@@ -40,7 +40,7 @@ VolOnPlayerEnter(client, volumeIndex)
         return;
     }
     
-    LogEvent(_, LogType_Normal, LOG_DEBUG, LogModule_Volfeatures, "Event", "Player %N entered volume %d.", client, volumeIndex);
+    LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Event", "Player %N entered volume %d.", client, volumeIndex);
     
     // Forward event to features.
     new VolumeFeatureTypes:voltype = Volumes[volumeIndex][Vol_Type];
@@ -68,7 +68,7 @@ VolOnPlayerLeave(client, volumeIndex)
         return;
     }
     
-    LogEvent(_, LogType_Normal, LOG_DEBUG, LogModule_Volfeatures, "Event", "Player %N left volume %d.", client, volumeIndex);
+    LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Event", "Player %N left volume %d.", client, volumeIndex);
     
     // Forward event to features.
     new VolumeFeatureTypes:voltype = Volumes[volumeIndex][Vol_Type];

@@ -695,7 +695,7 @@ VolSetAttributes(volumeIndex, const String:attributes[])
         // Get attribute value.
         GetParameterValue(attribValue, sizeof(attribValue), attributes, attribName);
         
-        LogEvent(_, LogType_Normal, LOG_DEBUG, LogModule_Volfeatures, "Set attribute", "Got parameter: \"%s\" = \"%s\"", attribName, attribValue);
+        LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Set attribute", "Got parameter: \"%s\" = \"%s\"", attribName, attribValue);
         
         // Check generic attributes.
         if (StrEqual(attribName, "teamfilter", false))

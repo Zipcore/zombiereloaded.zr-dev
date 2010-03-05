@@ -28,18 +28,18 @@
 /**
  * Init function for event module.
  */
-EventInit()
+/*EventInit()
 {
     // Hook all events used by plugin.
     EventHook();
-}
+}*/
 
 /**
  * Hook events used by plugin.
  * 
  * @param unhook    If true, then unhook all events, if false, then hook.
  */ 
-EventHook(bool:unhook = false)
+/*EventHook(bool:unhook = false)
 {
     // If unhook is true, then continue.
     if (unhook)
@@ -69,7 +69,7 @@ EventHook(bool:unhook = false)
     HookEvent("player_death", EventPlayerDeath);
     HookEvent("player_jump", EventPlayerJump);
     HookEvent("weapon_fire", EventWeaponFire);
-}
+}*/
 
 /**
  * Event callback (round_start)
@@ -79,7 +79,7 @@ EventHook(bool:unhook = false)
  * @param name      Name of the event.
  * @dontBroadcast   If true, event is broadcasted to all clients, false if not.
  */
-public Action:EventRoundStart(Handle:event, const String:name[], bool:dontBroadcast)
+/*public Action:EventRoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
     // Forward event to sub-modules.
     OverlaysOnRoundStart();
@@ -92,7 +92,7 @@ public Action:EventRoundStart(Handle:event, const String:name[], bool:dontBroadc
     
     // Fire post round_start event.
     //CreateTimer(0.0, EventRoundStartPost);
-}
+}*/
 
 /**
  * Event callback (round_start)
@@ -115,13 +115,13 @@ public Action:EventRoundStart(Handle:event, const String:name[], bool:dontBroadc
  * @param name      Name of the event.
  * @dontBroadcast   If true, event is broadcasted to all clients, false if not.
  */
-public Action:EventRoundFreezeEnd(Handle:event, const String:name[], bool:dontBroadcast)
+/*public Action:EventRoundFreezeEnd(Handle:event, const String:name[], bool:dontBroadcast)
 {
     // Forward events to modules.
     RoundEndOnRoundFreezeEnd();
     InfectOnRoundFreezeEnd();
     ZSpawnOnRoundFreezeEnd();
-}
+}*/
 
 /**
  * Event callback (round_end)
@@ -131,7 +131,7 @@ public Action:EventRoundFreezeEnd(Handle:event, const String:name[], bool:dontBr
  * @param name      Name of the event.
  * @dontBroadcast   If true, event is broadcasted to all clients, false if not.
  */
-public Action:EventRoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
+/*public Action:EventRoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
 {
     // Get all required event info.
     new reason = GetEventInt(event, "reason");
@@ -144,7 +144,7 @@ public Action:EventRoundEnd(Handle:event, const String:name[], bool:dontBroadcas
     RespawnOnRoundEnd();
     ZSpawnOnRoundEnd();
     VolOnRoundEnd();
-}
+}*/
 
 /**
  * Event callback (player_team)
@@ -154,7 +154,7 @@ public Action:EventRoundEnd(Handle:event, const String:name[], bool:dontBroadcas
  * @param name      Name of the event.
  * @dontBroadcast   If true, event is broadcasted to all clients, false if not.
  */
-public Action:EventPlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)
+/*public Action:EventPlayerTeam(Handle:event, const String:name[], bool:dontBroadcast)
 {
     // Get all required event info.
     new index = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -164,7 +164,7 @@ public Action:EventPlayerTeam(Handle:event, const String:name[], bool:dontBroadc
     InfectOnClientTeam(index, team);
     
     return Plugin_Handled;
-}
+}*/
 
 /**
  * Event callback (player_spawn)
@@ -174,7 +174,7 @@ public Action:EventPlayerTeam(Handle:event, const String:name[], bool:dontBroadc
  * @param name      Name of the event.
  * @dontBroadcast   If true, event is broadcasted to all clients, false if not.
  */
-public Action:EventPlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
+/*public Action:EventPlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
     // Get all required event info.
     new index = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -193,7 +193,7 @@ public Action:EventPlayerSpawn(Handle:event, const String:name[], bool:dontBroad
     
     // Fire post player_spawn event.
     CreateTimer(0.0, EventPlayerSpawnPost, index);
-}
+}*/
 
 /**
  * Event callback (player_spawn)
@@ -203,7 +203,7 @@ public Action:EventPlayerSpawn(Handle:event, const String:name[], bool:dontBroad
  * @param name      Name of the event.
  * @dontBroadcast   If true, event is broadcasted to all clients, false if not.
  */
-public Action:EventPlayerSpawnPost(Handle:timer, any:client)
+/*public Action:EventPlayerSpawnPost(Handle:timer, any:client)
 {
     // If client isn't in-game, then stop.
     if (!IsClientInGame(client))
@@ -215,7 +215,7 @@ public Action:EventPlayerSpawnPost(Handle:timer, any:client)
     WeaponsOnClientSpawnPost(client);
     SEffectsOnClientSpawnPost(client);
     SpawnProtectOnClientSpawnPost(client);
-}
+}*/
 
 /**
  * Event callback (player_hurt)
@@ -225,7 +225,7 @@ public Action:EventPlayerSpawnPost(Handle:timer, any:client)
  * @param name      Name of the event.
  * @dontBroadcast   If true, event is broadcasted to all clients, false if not.
  */
-public Action:EventPlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
+/*public Action:EventPlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
 {
     // Get all required event info.
     new index = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -244,7 +244,7 @@ public Action:EventPlayerHurt(Handle:event, const String:name[], bool:dontBroadc
     KnockbackOnClientHurt(index, attacker, weapon, hitgroup, dmg_health);
     NapalmOnClientHurt(index, attacker, weapon);
     ZHPOnClientHurt(index);
-}
+}*/
 
 /**
  * Event callback (player_death)
@@ -254,7 +254,7 @@ public Action:EventPlayerHurt(Handle:event, const String:name[], bool:dontBroadc
  * @param name      Name of the event.
  * @dontBroadcast   If true, event is broadcasted to all clients, false if not.
  */
-public Action:EventPlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
+/*public Action:EventPlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 {
     // Get the weapon name.
     decl String:weapon[WEAPONS_MAX_LENGTH];
@@ -285,7 +285,7 @@ public Action:EventPlayerDeath(Handle:event, const String:name[], bool:dontBroad
     VolOnPlayerDeath(index);
     RoundEndOnClientDeath();
     APIOnClientDeath(index, attacker, weapon, headshot);
-}
+}*/
 
 /**
  * Event callback (player_jump)
@@ -295,14 +295,14 @@ public Action:EventPlayerDeath(Handle:event, const String:name[], bool:dontBroad
  * @param name      Name of the event.
  * @dontBroadcast   If true, event is broadcasted to all clients, false if not.
  */
-public Action:EventPlayerJump(Handle:event, const String:name[], bool:dontBroadcast)
+/*public Action:EventPlayerJump(Handle:event, const String:name[], bool:dontBroadcast)
 {
     // Get all required event info.
     new index = GetClientOfUserId(GetEventInt(event, "userid"));
     
     // Fire post player_jump event.
     CreateTimer(0.0, EventPlayerJumpPost, index);
-}
+}*/
 
 /**
  * Event callback (player_jump)
@@ -312,7 +312,7 @@ public Action:EventPlayerJump(Handle:event, const String:name[], bool:dontBroadc
  * @param name      Name of the event.
  * @dontBroadcast   If true, event is broadcasted to all clients, false if not.
  */
-public Action:EventPlayerJumpPost(Handle:timer, any:client)
+/*public Action:EventPlayerJumpPost(Handle:timer, any:client)
 {
     // If client isn't in-game, then stop.
     if (!IsClientInGame(client))
@@ -322,7 +322,7 @@ public Action:EventPlayerJumpPost(Handle:timer, any:client)
     
     // Forward event to modules.
     JumpBoostOnClientJumpPost(client);
-}
+}*/
 
 /**
  * Event callback (weapon_fire)
@@ -332,7 +332,7 @@ public Action:EventPlayerJumpPost(Handle:timer, any:client)
  * @param name      Name of the event.
  * @dontBroadcast   If true, event is broadcasted to all clients, false if not.
  */
-public Action:EventWeaponFire(Handle:event, const String:name[], bool:dontBroadcast)
+/*public Action:EventWeaponFire(Handle:event, const String:name[], bool:dontBroadcast)
 {
     // Get all required event info.
     new index = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -341,4 +341,4 @@ public Action:EventWeaponFire(Handle:event, const String:name[], bool:dontBroadc
     
     // Forward event to modules.
     NapalmOnWeaponFire(index, weapon);
-}
+}*/

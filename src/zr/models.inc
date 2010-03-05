@@ -58,7 +58,7 @@ ModelsLoad()
     if (!exists)
     {
         // Log failure and stop plugin.
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Missing model list: \"%s\"", modelPath);
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Missing model list: \"%s\"", modelPath);
     }
     
     // Set the path to the config file.
@@ -68,7 +68,7 @@ ModelsLoad()
     kvModels = CreateKeyValues(CONFIG_FILE_ALIAS_MODELS);
     
     // Log what models file that is loaded.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Loading models from file \"%s\".", modelPath);
+    LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Loading models from file \"%s\".", modelPath);
     
     // Load model data file.
     FileToKeyValues(kvModels, modelPath);
@@ -77,7 +77,7 @@ ModelsLoad()
     KvRewind(kvModels);
     if (!KvGotoFirstSubKey(kvModels))
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Can't find any models in \"%s\"", modelPath);
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Can't find any models in \"%s\"", modelPath);
     }
     
     decl String:buffer[256];
@@ -98,7 +98,7 @@ ModelsLoad()
         if (ModelCount > MODELS_MAX)
         {
             // Maximum number of models reached. Log a warning and exit the loop.
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Warning: Maximum number of models reached (%d). Skipping other models.", MODELS_MAX + 1);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Warning: Maximum number of models reached (%d). Skipping other models.", MODELS_MAX + 1);
             
             break;
         }
@@ -127,7 +127,7 @@ ModelsLoad()
         StrCat(buffer, sizeof(buffer), ".mdl");
         if (!FileExists(buffer))
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Warning: Invalid model name/path setting at index %d. File not found: \"%s\".", ModelCount + failedCount, buffer);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Warning: Invalid model name/path setting at index %d. File not found: \"%s\".", ModelCount + failedCount, buffer);
             failedCount++;
             continue;
         }
@@ -135,7 +135,7 @@ ModelsLoad()
         // Validate team.
         if (ModelData[ModelCount][Model_Team] == ModelTeam_Invalid)
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Warning: Invalid model team setting at index %d: \"%s\".", ModelCount + failedCount, team);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Warning: Invalid model team setting at index %d: \"%s\".", ModelCount + failedCount, team);
             failedCount++;
             continue;
         }
@@ -143,7 +143,7 @@ ModelsLoad()
         // Validate access.
         if (ModelData[ModelCount][Model_Access] == ModelAccess_Invalid)
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Warning: Invalid model access setting at index %d: \"%s\".", ModelCount + failedCount, access);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Warning: Invalid model access setting at index %d: \"%s\".", ModelCount + failedCount, access);
             failedCount++;
             continue;
         }
@@ -160,7 +160,7 @@ ModelsLoad()
         if (ModelData[ModelCount][Model_Access] == ModelAccess_Group &&
             FindAdmGroup(group) == INVALID_GROUP_ID)
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Warning: Invalid model group setting at index %d. Couldn't find SourceMod group \"%s\".", ModelCount + failedCount, group);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Warning: Invalid model group setting at index %d. Couldn't find SourceMod group \"%s\".", ModelCount + failedCount, group);
             failedCount++;
             continue;
         }
@@ -171,7 +171,7 @@ ModelsLoad()
         // Check if failed.
         if (dir == INVALID_HANDLE)
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Error opening directory: %s", dir);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Error opening directory: %s", dir);
             continue;
         }
         
@@ -216,7 +216,7 @@ ModelsLoad()
         // Check if no model files were found.
         if (!downloadCount)
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Couldn't find any model files for \"%s\". Check name and path.", name);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Couldn't find any model files for \"%s\". Check name and path.", name);
         }
         else
         {
@@ -229,14 +229,14 @@ ModelsLoad()
     // Check if there are no public models.
     if (!publicCount)
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Missing public model in \"%s\". There must be at least one public model.", modelPath);
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Missing public model in \"%s\". There must be at least one public model.", modelPath);
     }
     
     // Precache models.
     ModelsPrecache();
     
     // Log model validation info.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Successful: %d | Unsuccessful: %d", ModelCount, failedCount);
+    LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Models, "Config Validation", "Successful: %d | Unsuccessful: %d", ModelCount, failedCount);
     
     // Set config data.
     ConfigSetConfigLoaded(File_Models, true);

@@ -54,7 +54,7 @@ FlashlightOnGameDataPrepped()
     // If offset "FlashlightIsOn" can't be found, then stop the plugin.
     if(g_hToolsFlashlightIsOn == INVALID_HANDLE)
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Tools, "GameData", "Virtual offset \"CBasePlayer::FlashlightIsOn\" was not found.");
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Tools, "GameData", "Virtual offset \"CBasePlayer::FlashlightIsOn\" was not found.");
     }
     
     // Prep the SDKCall for "FlashlightTurnOn"
@@ -65,7 +65,7 @@ FlashlightOnGameDataPrepped()
     // If offset "FlashlightTurnOn" can't be found, then stop the plugin.
     if(g_hToolsFlashlightTurnOn == INVALID_HANDLE)
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Tools, "GameData", "Virtual offset \"CBasePlayer::FlashlightTurnOn\" was not found.");
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Tools, "GameData", "Virtual offset \"CBasePlayer::FlashlightTurnOn\" was not found.");
     }
     
     // Prep the SDKCall for "FlashlightTurnOff"
@@ -76,7 +76,7 @@ FlashlightOnGameDataPrepped()
     // If offset "FlashlightTurnOff" can't be found, then stop the plugin.
     if(g_hToolsFlashlightTurnOff == INVALID_HANDLE)
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Tools, "GameData", "Virtual offset \"CBasePlayer::FlashlightTurnOff\" was not found.");
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Tools, "GameData", "Virtual offset \"CBasePlayer::FlashlightTurnOff\" was not found.");
     }
 }
 

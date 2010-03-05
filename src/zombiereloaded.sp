@@ -27,18 +27,32 @@
 
 #pragma semicolon 1
 #include <sourcemod>
-#include <adminmenu>
-#include <regex>
-#include <sdktools>
-#include <clientprefs>
-#include <cstrike>
-#include <sdkhooks>
 
 #define VERSION "3.0.0-dev"
 
 // Comment this line to exclude version info command. Enable this if you have
 // the repository and HG installed (Mercurial or TortoiseHG).
 #define ADD_VERSION_INFO
+
+#if defined ADD_VERSION_INFO
+#include "zr/hgversion.h"
+#include "zr/versioninfo"
+#endif
+
+#include "zr/project"
+#include "zr/base/wrappers"
+
+// Base project includes.
+#include "zr/base/versioninfo"
+#include "zr/base/accessmanager"
+#include "zr/base/logmanager"
+#include "zr/base/translationsmanager"
+#include "zr/base/configmanager"
+#include "zr/base/eventmanager"
+#include "zr/base/modulemanager"
+
+// Module includes (for the new base)
+#include "zr/baseadapter"
 
 // Header includes.
 #include "zr/log.h"
@@ -49,16 +63,8 @@
 //#include "zr/weapons/restrictheaders.h"
 #include "zr/weapons/weaponprofileheaders.h"
 
-#if defined ADD_VERSION_INFO
-#include "zr/hgversion.h"
-#endif
-
 // Core includes.
 #include "zr/zombiereloaded"
-
-#if defined ADD_VERSION_INFO
-#include "zr/versioninfo"
-#endif
 
 #include "zr/translation"
 #include "zr/cvars"
@@ -86,7 +92,7 @@
 #include "zr/flashlight"
 #include "zr/infect"
 #include "zr/damage"
-#include "zr/event"
+//#include "zr/event"
 #include "zr/zadmin"
 #include "zr/commands"
 
@@ -152,167 +158,90 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
  */
 public OnPluginStart()
 {
-    // Forward event to modules.
-    LogInit();          // Doesn't depend on CVARs.
-    TranslationInit();
-    CvarsInit();
-    ToolsInit();
-    MenuAttachInit();
-    CookiesInit();
-    CommandsInit();
-    WeaponsInit();
-    EventInit();
-}
-
-/**
- * All plugins have finished loading.
- */
-public OnAllPluginsLoaded()
-{
-    // Forward event to modules.
-    WeaponsOnAllPluginsLoaded();
-}
-
-/**
- * The map is starting.
- */
-public OnMapStart()
-{
-    // Forward event to modules.
-    ClassOnMapStart();
-    OverlaysOnMapStart();
-    RoundEndOnMapStart();
-    InfectOnMapStart();
-    SEffectsOnMapStart();
-    ZSpawnOnMapStart();
-    VolInit();
-}
-
-/**
- * The map is ending.
- */
-public OnMapEnd()
-{
-    // Forward event to modules.
-    VEffectsOnMapEnd();
-    VolOnMapEnd();
-}
-
-/**
- * Main configs were just executed.
- */
-public OnAutoConfigsBuffered()
-{
-	// Load map configurations.
-    ConfigLoad();
-}
-
-/**
- * Configs just finished getting executed.
- */
-public OnConfigsExecuted()
-{
-    // Forward event to modules. (OnConfigsExecuted)
-    ModelsLoad();
-    DownloadsLoad();
-    WeaponsLoad();
-    HitgroupsLoad();
-    RoundEndLoad();
-    InfectLoad();
-    DamageLoad();
-    VEffectsLoad();
-    SEffectsLoad();
-    AntiStickLoad();
-    ClassLoad();
-    VolLoad();
+    // Forward event to other project base components.
     
-    // Forward event to modules. (OnModulesLoaded)
-    ConfigOnModulesLoaded();
-    ClassOnModulesLoaded();
+    ModuleMgr_OnPluginStart();
+    
+    #if defined EVENT_MANAGER
+        EventMgr_OnPluginStart();
+    #endif
+    
+    #if defined CONFIG_MANAGER
+        ConfigMgr_OnPluginStart();
+    #endif
+    
+    #if defined TRANSLATIONS_MANAGER
+        TransMgr_OnPluginStart();
+    #else
+        Project_LoadExtraTranslations(false); // Call this to load translations if the translations manager isn't included.
+    #endif
+    
+    #if defined LOG_MANAGER
+        LogMgr_OnPluginStart();
+    #endif
+    
+    #if defined ACCESS_MANAGER
+        AccessMgr_OnPluginStart();
+    #endif
+    
+    #if defined VERSION_INFO
+        VersionInfo_OnPluginStart();
+    #endif
+    
+    // Forward the OnPluginStart event to all modules.
+    ForwardOnPluginStart();
+    
+    // All modules should be registered by this point!
+    
+    #if defined EVENT_MANAGER
+        // Forward the OnAllModulesLoaded to all modules.
+        EventMgr_Forward(Event_OnAllModulesLoaded, g_CommonEventData1, 0, 0, g_CommonDataType1);
+    #endif
 }
 
 /**
- * Client has just connected to the server.
+ * Plugin is ending.
  */
-public OnClientConnected(client)
+public OnPluginEnd()
 {
-    // Forward event to modules.
-    ClassOnClientConnected(client);
+    // Unload in reverse order of loading.
+    
+    #if defined EVENT_MANAGER
+        // Forward event to all modules.
+        EventMgr_Forward(Event_OnPluginEnd, g_CommonEventData1, 0, 0, g_CommonDataType1);
+    #endif
+    
+    // Forward event to other project base components.
+    
+    #if defined VERSION_INFO
+        VersionInfo_OnPluginEnd();
+    #endif
+    
+    #if defined ACCESS_MANAGER
+        AccessMgr_OnPluginEnd();
+    #endif
+    
+    #if defined LOG_MANAGER
+        LogMgr_OnPluginEnd();
+    #endif
+    
+    #if defined TRANSLATIONS_MANAGER
+        TransMgr_OnPluginEnd();
+    #endif
+    
+    #if defined CONFIG_MANAGER
+        ConfigMgr_OnPluginEnd();
+    #endif
+    
+    #if defined EVENT_MANAGER
+        EventMgr_OnPluginEnd();
+    #endif
+    
+    ModuleMgr_OnPluginEnd();
 }
 
 /**
- * Client is joining the server.
- * 
- * @param client    The client index.
- */
-public OnClientPutInServer(client)
-{
-    // Forward event to modules.
-    ClassClientInit(client);
-    OverlaysClientInit(client);
-    WeaponsClientInit(client);
-    InfectClientInit(client);
-    DamageClientInit(client);
-    SEffectsClientInit(client);
-    AntiStickClientInit(client);
-    SpawnProtectClientInit(client);
-    RespawnClientInit(client);
-    ZTeleClientInit(client);
-    ZHPClientInit(client);
-}
-
-/**
- * Client is leaving the server.
- * 
- * @param client    The client index.
- */
-public OnClientDisconnect(client)
-{
-    // Forward event to modules.
-    ClassOnClientDisconnect(client);
-    WeaponsOnClientDisconnect(client);
-    InfectOnClientDisconnect(client);
-    DamageOnClientDisconnect(client);
-    SEffectsOnClientDisconnect(client);
-    AntiStickOnClientDisconnect(client);
-    SpawnProtectOnClientDisconnect(client);
-    RespawnOnClientDisconnect(client);
-    ZSpawnOnClientDisconnect(client);
-    ZHPOnClientDisconnect(client);
-    VolOnPlayerDisconnect(client);
-}
-
-/**
- * Called once a client's saved cookies have been loaded from the database.
- * 
- * @param client		Client index.
- */
-public OnClientCookiesCached(client)
-{
-    // Forward "OnCookiesCached" event to modules.
-    ClassOnCookiesCached(client);
-    WeaponsOnCookiesCached(client);
-    CreditsOnCookiesCached(client);
-    ZHPOnCookiesCached(client);
-}
-
-/**
- * Called once a client is authorized and fully in-game, and 
- * after all post-connection authorizations have been performed.  
- *
- * This callback is gauranteed to occur on all clients, and always 
- * after each OnClientPutInServer() call.
- *
- * @param client		Client index.
- * @noreturn
- */
-public OnClientPostAdminCheck(client)
-{
-    // Forward authorized event to modules that depend on client admin info.
-    ClassOnClientPostAdminCheck(client);
-}
-
-/**
+ * TODO: Add this forward to the new base.
  * Called when a clients movement buttons are being processed.
  * 
  * @param client	Index of the client.
@@ -331,6 +260,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 }
 
 /**
+ * TODO: Add this forward to the new base.
  * Called when an entity is created.
  *
  * @param entity    Entity index.

@@ -52,7 +52,7 @@ RagdollOnOffsetsFound()
     g_iToolsRagdoll = FindSendPropInfo("CCSPlayer", "m_hRagdoll");
     if (g_iToolsRagdoll == -1)
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_VEffects, "Offsets", "Offset \"CCSPlayer::m_hRagdoll\" was not found.");
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_VEffects, "Offsets", "Offset \"CCSPlayer::m_hRagdoll\" was not found.");
     }
 }
 

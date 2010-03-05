@@ -288,10 +288,10 @@ bool:LogCheckModuleFilter(LogModules:module)
  * @param text          Log message. Can be formatted.
  * @param ...           Formatting parameters.
  */
-LogEvent(bool:isConsole = false, LogTypes:logType = LogType_Normal, eventType = LOG_CORE_EVENTS, LogModules:module, const String:description[], const String:text[], any:...)
+LogEvent(bool:isConsole = false, LogTypes_Old:logType = LogTypeOld_Normal, eventType = LOG_CORE_EVENTS, LogModules:module, const String:description[], const String:text[], any:...)
 {
     // Check filter overrides. Always log fatal errors, and check error override setting on error log types.
-    if ((logType != LogType_Fatal && logType != LogType_Error) || (logType == LogType_Error && !GetConVarBool(g_hCvarsList[CVAR_LOG_ERROR_OVERRIDE])))
+    if ((logType != LogTypeOld_Fatal && logType != LogTypeOld_Error) || (logType == LogTypeOld_Error && !GetConVarBool(g_hCvarsList[CVAR_LOG_ERROR_OVERRIDE])))
     {
         // Check if logging is disabled.
         if (!GetConVarBool(g_hCvarsList[CVAR_LOG]))
@@ -337,17 +337,17 @@ LogEvent(bool:isConsole = false, LogTypes:logType = LogType_Normal, eventType = 
     switch (logType)
     {
         // Log type is normal.
-        case LogType_Normal:
+        case LogTypeOld_Normal:
         {
             LogMessage(logbuffer);
         }
         // Log type is error.
-        case LogType_Error:
+        case LogTypeOld_Error:
         {
             LogError(logbuffer);
         }
         // Log type is fatal error.
-        case LogType_Fatal:
+        case LogTypeOld_Fatal:
         {
             SetFailState(logbuffer);
         }

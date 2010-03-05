@@ -606,7 +606,7 @@ public CvarsHookLocked(Handle:cvar, const String:oldvalue[], const String:newval
         SetConVarInt(g_hAutoTeamBalance, CVARS_AUTOTEAMBALANCE_LOCKED);
         
         // If log flag check fails, then don't log.
-        LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Cvars, "Cvar Locked", "Cvar \"mp_autoteambalance\" was reverted back to %d.", CVARS_AUTOTEAMBALANCE_LOCKED);
+        LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Cvars, "Cvar Locked", "Cvar \"mp_autoteambalance\" was reverted back to %d.", CVARS_AUTOTEAMBALANCE_LOCKED);
     }
     // If cvar is mp_limitteams, then continue.
     else if (cvar == g_hLimitTeams)
@@ -621,7 +621,7 @@ public CvarsHookLocked(Handle:cvar, const String:oldvalue[], const String:newval
         SetConVarInt(g_hLimitTeams, CVARS_LIMITTEAMS_LOCKED);
         
         // If log flag check fails, then don't log.
-        LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Cvars, "Cvar Locked", "Cvar \"mp_limitteams\" was reverted back to %d.", CVARS_LIMITTEAMS_LOCKED);
+        LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Cvars, "Cvar Locked", "Cvar \"mp_limitteams\" was reverted back to %d.", CVARS_LIMITTEAMS_LOCKED);
     }
 }
 
@@ -649,7 +649,7 @@ public CvarsHookRestartGame(Handle:cvar, const String:oldvalue[], const String:n
     RoundEndTerminateRound(delay);
     
     // If log flag check fails, then don't log.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Cvars, "Restart Game", "\"mp_restartgame\" was caught and blocked, commencing round.");
+    LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Cvars, "Restart Game", "\"mp_restartgame\" was caught and blocked, commencing round.");
 }
 
 /**

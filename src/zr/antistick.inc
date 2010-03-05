@@ -155,7 +155,7 @@ stock bool:AntiStickLoadData()
     BuildPath(Path_SM, fullpath, PLATFORM_MAX_PATH, filepath);
     
     // Log action to game events.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_AntiStick, "Loaded Data", "Antistick data has been loaded from \"%s\"", fullpath);
+    LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_AntiStick, "Loaded Data", "Antistick data has been loaded from \"%s\"", fullpath);
     
     // Retrieve keyvalue data from a file, and store in server's memory.
     KvRewind(g_kvAntiStick);
@@ -176,7 +176,7 @@ stock AntiStickSaveData()
     BuildPath(Path_SM, fullpath, PLATFORM_MAX_PATH, filepath);
     
     // Log action to game events.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_AntiStick, "Saved Data", "Antistick data has been saved to \"%s\"", fullpath);
+    LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_AntiStick, "Saved Data", "Antistick data has been saved to \"%s\"", fullpath);
     
     // Dump keyvalue structure into a file from the server's memory.
     KvRewind(g_kvAntiStick);
@@ -293,7 +293,7 @@ public AntiStickStartTouch(client, entity)
     }
         
     // From this point we know that client and entity is more or less within eachother.
-    LogEvent(false, LogType_Normal, LOG_DEBUG, LogModule_AntiStick, "Collision", "Player \"%N\" and \"%N\" are intersecting. Removing collisions.", client, entity);
+    LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_AntiStick, "Collision", "Player \"%N\" and \"%N\" are intersecting. Removing collisions.", client, entity);
     
     // Get current collision groups of client and entity.
     new clientcollisiongroup = AntiStickGetCollisionGroup(client);
@@ -368,7 +368,7 @@ public Action:AntiStickSolidifyTimer(Handle:timer, any:client)
     AntiStickSetCollisionGroup(client, ANTISTICK_COLLISIONS_ON);
     
     // Debug message. May be useful when calibrating antistick.
-    LogEvent(false, LogType_Normal, LOG_DEBUG, LogModule_AntiStick, "Collision", "Player \"%N\" is no longer intersecting anyone. Applying normal collisions.", client);
+    LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_AntiStick, "Collision", "Player \"%N\" is no longer intersecting anyone. Applying normal collisions.", client);
     
     return Plugin_Stop;
 }

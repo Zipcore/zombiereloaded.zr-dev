@@ -49,11 +49,11 @@
 /**
  * Log format types.
  */
-enum LogTypes
+enum LogTypes_Old
 {
-    LogType_Normal = 0,     // Normal log message. Printed in SourceMod logs.
-    LogType_Error,          // Error message. Printed in SourceMod error logs.
-    LogType_Fatal           // Fatal error. Stops the plugin with the specified message.
+    LogTypeOld_Normal = 0,     // Normal log message. Printed in SourceMod logs.
+    LogTypeOld_Error,          // Error message. Printed in SourceMod error logs.
+    LogTypeOld_Fatal           // Fatal error. Stops the plugin with the specified message.
 }
 
 /**

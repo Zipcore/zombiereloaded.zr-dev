@@ -496,7 +496,7 @@ public Action:DamageSuicideIntercept(client, const String:command[], argc)
         {
             // Tell client their command has been intercepted, and log.
             TranslationPrintToChat(client, "Damage suicide intercept");
-            LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Damage, "Suicide Intercept", "Player \"%L\" attempted suicide.", client);
+            LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Damage, "Suicide Intercept", "Player \"%L\" attempted suicide.", client);
             
             return Plugin_Handled;
         }
@@ -506,7 +506,7 @@ public Action:DamageSuicideIntercept(client, const String:command[], argc)
         {
             // Tell client their command has been intercepted, and log.
             TranslationPrintToChat(client, "Damage suicide intercept");
-            LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Damage, "Suicide Intercept", "Player \"%L\" attempted suicide.", client);
+            LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Damage, "Suicide Intercept", "Player \"%L\" attempted suicide.", client);
             
             return Plugin_Handled;
         }
@@ -517,7 +517,7 @@ public Action:DamageSuicideIntercept(client, const String:command[], argc)
     {
         // Tell client their command has been intercepted, and log.
         TranslationPrintToChat(client, "Damage suicide intercept");
-        LogEvent(false, LogType_Normal, LOG_GAME_EVENTS, LogModule_Damage, "Suicide Intercept", "Player \"%L\" attempted suicide.", client);
+        LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Damage, "Suicide Intercept", "Player \"%L\" attempted suicide.", client);
         
         return Plugin_Handled;
     }

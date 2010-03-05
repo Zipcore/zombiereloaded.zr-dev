@@ -54,7 +54,7 @@ WeaponProfilesLoad()
     if (!exists)
     {
         // Log failure and stop plugin.
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Config Validation", "Missing weapon profiles: \"%s\"", weaponProfilesPath);
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Config Validation", "Missing weapon profiles: \"%s\"", weaponProfilesPath);
     }
     
     // Set the path to the config file.
@@ -64,7 +64,7 @@ WeaponProfilesLoad()
     kvWeaponProfiles = CreateKeyValues(CONFIG_FILE_ALIAS_WEAPONPROF);
     
     // Log that ammo profiles file is loading.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Weapons, "Config Validation", "Loading weapon profiles from file \"%s\".", weaponProfilesPath);
+    LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Weapons, "Config Validation", "Loading weapon profiles from file \"%s\".", weaponProfilesPath);
     
     // Load ammo profiles file.
     FileToKeyValues(kvWeaponProfiles, weaponProfilesPath);
@@ -73,7 +73,7 @@ WeaponProfilesLoad()
     KvRewind(kvWeaponProfiles);
     if (!KvGotoFirstSubKey(kvWeaponProfiles))
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Config Validation", "Can't find any weapon profiles in \"%s\"", weaponProfilesPath);
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Config Validation", "Can't find any weapon profiles in \"%s\"", weaponProfilesPath);
     }
     
     decl String:name[32];
@@ -94,7 +94,7 @@ WeaponProfilesLoad()
         if (WeaponProfileCount > WEAPON_PROFILES_MAX)
         {
             // Maximum number of profiles reached. Log a warning and exit the loop.
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Warning: Maximum number of weapon profiles reached (%d). Skipping other profiles.", WEAPON_PROFILES_MAX + 1);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Warning: Maximum number of weapon profiles reached (%d). Skipping other profiles.", WEAPON_PROFILES_MAX + 1);
             
             break;
         }
@@ -106,7 +106,7 @@ WeaponProfilesLoad()
         }
         else
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Warning: Empty name string at index %d.", WeaponProfileCount + failedCount);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Warning: Empty name string at index %d.", WeaponProfileCount + failedCount);
             failedCount++;
             continue;
         }
@@ -120,7 +120,7 @@ WeaponProfilesLoad()
         }
         else
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Warning: Invalid primary ammo profile name at index %d: \"%s\"", WeaponProfileCount + failedCount, priAmmoProfile);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Warning: Invalid primary ammo profile name at index %d: \"%s\"", WeaponProfileCount + failedCount, priAmmoProfile);
             failedCount++;
             continue;
         }
@@ -142,7 +142,7 @@ WeaponProfilesLoad()
             }
             else
             {
-                LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Warning: Invalid secondary ammo profile name at index %d: \"%s\"", WeaponProfileCount + failedCount, secAmmoProfile);
+                LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Warning: Invalid secondary ammo profile name at index %d: \"%s\"", WeaponProfileCount + failedCount, secAmmoProfile);
                 failedCount++;
                 continue;
             }
@@ -158,7 +158,7 @@ WeaponProfilesLoad()
         }
         else
         {
-            LogEvent(false, LogType_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Warning: Invalid restriction profile name at index %d: \"%s\"", WeaponProfileCount + failedCount, restrictProfile);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Warning: Invalid restriction profile name at index %d: \"%s\"", WeaponProfileCount + failedCount, restrictProfile);
             failedCount++;
             continue;
         }*/
@@ -171,17 +171,17 @@ WeaponProfilesLoad()
     // Check if there are no weapon profiles.
     if (!WeaponProfileCount)
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "No valid weapon profiles in \"%s\". There must be at least one profile named \"default\".", weaponProfilesPath);
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "No valid weapon profiles in \"%s\". There must be at least one profile named \"default\".", weaponProfilesPath);
     }
     
     // Check if the default profile exist.
     if (WeaponProfilesGetIndex("default") < 0)
     {
-        LogEvent(false, LogType_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Couldn't find default weapon profile in \"%s\". There must a profile named \"default\".", weaponProfilesPath);
+        LogEvent(false, LogTypeOld_Fatal, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Couldn't find default weapon profile in \"%s\". There must a profile named \"default\".", weaponProfilesPath);
     }
     
     // Log model validation info.
-    LogEvent(false, LogType_Normal, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Successful: %d | Unsuccessful: %d", WeaponProfileCount, failedCount);
+    LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Weapons, "Weapon Profile Validation", "Successful: %d | Unsuccessful: %d", WeaponProfileCount, failedCount);
     
     // Set config data.
     ConfigSetConfigLoaded(File_WeaponProfiles, true);
