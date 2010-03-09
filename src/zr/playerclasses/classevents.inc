@@ -118,16 +118,12 @@ ClassClientInit(client)
  */
 ClassOnClientPostAdminCheck(client)
 {
-    PrintToServer("AUTHORIZED1");
-    
     // Client has been checked.
     g_bAdminChecked[client] = true;
     
     // Below this depends on client cookies.
     if (!AreClientCookiesCached(client))
         return;
-    
-    PrintToServer("AUTHORIZED2");
     
     // Check if classes are loaded successfully and the client is valid.
     if (ClassValidated)
@@ -151,13 +147,9 @@ ClassOnCookiesCached(client)
         ClassOverlayOnCookiesCached(client);
     }
     
-    PrintToServer("CACHED1");
-    
     // Below this depends on client authorization.
     if (!g_bAdminChecked[client])
         return;
-    
-    PrintToServer("CACHED2");
     
     // Check if classes are loaded successfully and the client is valid.
     if (ClassValidated)
