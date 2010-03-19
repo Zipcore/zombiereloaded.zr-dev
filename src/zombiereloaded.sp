@@ -27,6 +27,13 @@
 
 #pragma semicolon 1
 #include <sourcemod>
+#include <sdktools>
+#include <adminmenu>
+#include <regex>
+#include <sdktools>
+#include <clientprefs>
+#include <cstrike>
+#include <sdkhooks>
 
 #define VERSION "3.0.0-dev"
 

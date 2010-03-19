@@ -41,18 +41,6 @@
 //#define PROJECT_GAME_L4D2
 
 /**
- * Additional includes.
- * Include files like sdktools.inc here.
- */
-#include <sdktools>
-#include <adminmenu>
-#include <regex>
-#include <sdktools>
-#include <clientprefs>
-#include <cstrike>
-#include <sdkhooks>
-
-/**
  * This is where it all begins.
  * Forward the OnPluginStart event here to all modules so they can register.
  */
