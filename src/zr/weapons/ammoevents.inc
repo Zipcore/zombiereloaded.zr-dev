@@ -64,7 +64,10 @@ AmmoOnWeaponSwitch(client, WeaponsSlot:weaponSlot)
  */
 AmmoOnClientSpawn(client)
 {
-
+    // Get free ammo managers if they don't exist.
+    AmmoAssignManagers();
+    
+    // Load profiles.
 }
 
 /**
