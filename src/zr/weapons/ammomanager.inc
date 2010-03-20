@@ -27,9 +27,14 @@
 #include "zr/weapons/ammomanager.h.inc"
 
 /**
- * Player ammo managers.
+ * All ammo managers.
  */
 new AmmoManagers[AMMO_MANAGER_MAX][AmmoManager];
+
+/**
+ * Ammo manager index for assigning ammo managers to clients.
+ */
+new AmmoManagerIndex[MAXPLAYERS + 1][AMMO_MANAGED_SLOTS];
 
 
 AmmoManagerEnable(index)
@@ -45,14 +50,50 @@ AmmoManagerDisable(index)
 }
 
 /**
- * Initialize the specified ammo manager with the specified profile.
+ * Initializes the ammo manager.
+ */
+AmmoManagerInit()
+{
+    // Clear all ammo managers.
+    for (new manager = 0; manager < AMMO_MANAGER_MAX; manager++)
+    {
+        AmmoManagerClear(manager);
+    }
+    
+    // Reset indexes.
+    for (new client = 0; client < MAXPLAYERS + 1; client++)
+    {
+        for (new slot = 0; slot < AMMO_MANAGED_SLOTS; slot++)
+        {
+            AmmoManagerIndex[client][slot] = -1;
+        }
+    }
+}
+
+/**
+ * Load the specified ammo manager with the specified profile.
  *
  * @param index         Ammo manager index.
  * @param ammoProfile   Ammo profile index.
  */
-AmmoManagerInit(index, ammoProfile)
+AmmoManagerLoad(index, ammoProfile)
 {
     
+}
+
+/**
+ * Resets data in the specified ammo manager and marks it as free.
+ *
+ * @param index     Ammo manager index.
+ */
+AmmoManagerClear(index)
+{
+    AmmoManagers[index][AmmoManager_InUse] = false;
+    AmmoManagers[index][AmmoManager_Slot] = Slot_Invalid;
+    AmmoManagers[index][AmmoManager_Clip] = 0;
+    AmmoManagers[index][AmmoManager_Reserve] = 0;
+    AmmoManagers[index][AmmoManager_ProfileIndex] = -1;
+    AmmoManagers[index][AmmoManager_Timer] = INVALID_HANDLE;
 }
 
 /**
@@ -102,11 +143,10 @@ bool:AmmoManagerStartTimer(index)
     {
         new Float:interval = AmmoGetInterval(ammoProfile);
         AmmoManagers[index][AmmoManager_Timer] = CreateTimer(interval, AmmoManagerTimer, index, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+        return true;
     }
-    else
-    {
-        return false;
-    }
+    
+    return false;
 }
 
 /**
@@ -143,7 +183,7 @@ public Action:AmmoManagerTimer(Handle:timer, any:index)
  * @param index     Index to validate.
  * @return          True if valid, false otherwise.
  */
-bool:AmmoManagerIsValid(index)
+bool:AmmoIsValidManager(index)
 {
     if (index >= 0 && index < AMMO_MANAGER_MAX)
     {
@@ -168,13 +208,39 @@ AmmoGetFreeManager()
         // Check if unused.
         if (!AmmoManagers[manager][AmmoManager_InUse])
         {
-            // Mark as in use and return index.
+            // Clear data.
+            AmmoManagerClear(manager);
+            
+            // Mark as in use and return the index.
             AmmoManagers[manager][AmmoManager_InUse] = true;
             return manager;
         }
     }
     
     return -1;
+}
+
+AmmoAssignManagers()
+{
+    // Get free ammo managers if they don't exist.
+    for (new slot = 0; slot < AMMO_MANAGED_SLOTS; slot++)
+    {
+        if (AmmoManagerIndex[client][slot] < 0)
+        {
+            new manager = AmmoGetFreeManager();
+            
+            // Verify index.
+            if (manager < 0)
+            {
+                // This should never happen. It's just here to help catching bugs.
+                LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo manager error", "Unable to get a free ammo manager for client %d. No free managers.", client);
+                return;
+            }
+            
+            // Assign manager to client.
+            AmmoManagerIndex[client][slot] = manager;
+        }
+    }
 }
 
 /**
@@ -197,4 +263,26 @@ AmmoManagerSetProfile(index, profile)
 AmmoManagerGetProfile(index)
 {
     return AmmoManagers[index][AmmoManager_ProfileIndex];
+}
+
+/**
+ * Sets the slot ID in a ammo manager.
+ *
+ * @param index     Ammo manager.
+ * @param slot      What weapon slot the manager is managing.
+ */
+AmmoManagerSetSlot(index, WeaponsSlot:slot)
+{
+    AmmoManagers[index][AmmoManager_Slot] = slot;
+}
+
+/**
+ * Gets the slot ID in a ammo manager.
+ *
+ * @param index     Ammo manager.
+ * @return          What weapon slot the manager is managing.
+ */
+WeaponsSlot:AmmoManagerGetSlot(index)
+{
+    return AmmoManagers[index][AmmoManager_Slot];
 }

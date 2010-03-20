@@ -31,7 +31,7 @@
 
 /**
  * @section Number of managed slots. So far it's for primary and secondary
- *          weapons. This can be expanded later to support grenades.
+ *          weapons. The slot ID's should match WeaponsSlot.
  */
 #define AMMO_MANAGED_SLOTS 2
 /**
@@ -40,18 +40,19 @@
 
 /**
  * @section Maximum number of ammo managers. There must be one manager per
- *          slot that is managed.
+ *          client and per slot that is managed.
  */
-#define AMMO_MANAGER_MAX    MAXPLAYERS * AMMO_MANAGED_SLOTS
+#define AMMO_MANAGER_MAX    (MAXPLAYERS + 1) * AMMO_MANAGED_SLOTS
 /**
  * @endsection
  */
 
 enum AmmoManager
 {
-    bool:AmmoManager_InUse,     /** Specifies whether the profile is used or not. */
-    AmmoManager_Clip,           /** Current weapon clip value. */
-    AmmoManager_Reserve,        /** Current weapon reserve value. */
-    AmmoManager_ProfileIndex,   /** Index to a ammo profile. */
-    Handle:AmmoManager_Timer    /** Timer used for refilling, if enabled. */
+    bool:AmmoManager_InUse,         /** Specifies whether the profile is used or not. */
+    WeaponsSlot:AmmoManager_Slot,   /** What weapon slot that's managed. TODO: Change tag to use WepLib_Slots when it's imported. */
+    AmmoManager_Clip,               /** Current weapon clip value. */
+    AmmoManager_Reserve,            /** Current weapon reserve value. */
+    AmmoManager_ProfileIndex,       /** Index to a ammo profile. */
+    Handle:AmmoManager_Timer        /** Timer used for refilling, if enabled. */
 }
