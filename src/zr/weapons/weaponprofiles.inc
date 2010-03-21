@@ -199,7 +199,7 @@ public WeaponProfilesOnConfigReload(ConfigFile:config)
 /**
  * Returns if the specified index is valid or not.
  *
- * @param index     The index to validate.
+ * @param index     Weapon profile index to validate.
  * @return          True if valid, false otherwise.
  */
 bool:WeaponProfilesIsValidIndex(index)
@@ -247,7 +247,7 @@ WeaponProfilesGetIndex(const String:profileName[])
 /**
  * Gets the profile name at the specified index.
  *
- * @param index     Profile index.
+ * @param index     Weapon profile index.
  * @param buffer    Destination string buffer.
  * @param maxlen    Size of string buffer.
  * @return          Number of cells written.
@@ -261,4 +261,26 @@ WeaponProfilesGetName(index, String:buffer[], maxlen)
     }
     
     return strcopy(buffer, maxlen, WeaponProfiles[index][WeaponProfile_Name]);
+}
+
+/**
+ * Returns the primary ammo profile index at the specified index.
+ *
+ * @param index     Weapon profile index.
+ * @return          Primary ammo profile index.
+ */
+stock WeaponProfilesGetPriProfile(index)
+{
+    return WeaponProfiles[index][WeaponProfile_PriAmmoProfile];
+}
+
+/**
+ * Returns the secondary ammo profile index at the specified index.
+ *
+ * @param index     Weapon profile index.
+ * @return          Secondary ammo profile index.
+ */
+stock WeaponProfilesGetSecProfile(index)
+{
+    return WeaponProfiles[index][WeaponProfile_SecAmmoProfile];
 }

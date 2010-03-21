@@ -87,11 +87,17 @@ enum WeaponsSlot
 }
 
 /**
+ * Dummy array to be used with sizeof operators for WeaponsSlot.
+ */
+stock g_WeaponsSlotDummy[WeaponsSlot];
+
+/**
  * Array handle to store weapon config data.
  */
 new Handle:arrayWeapons = INVALID_HANDLE;
 
 #include "zr/weapons/ammoprofiles"
+#include "zr/weapons/ammomanager"
 //#include "zr/weapons/restrictprofiles"
 #include "zr/weapons/weaponprofiles"
 #include "zr/weapons/restrict"

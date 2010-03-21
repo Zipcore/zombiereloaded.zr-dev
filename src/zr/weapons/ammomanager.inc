@@ -34,7 +34,7 @@ new AmmoManagers[AMMO_MANAGER_MAX][AmmoManager];
 /**
  * Ammo manager index for assigning ammo managers to clients.
  */
-new AmmoManagerIndex[MAXPLAYERS + 1][AMMO_MANAGED_SLOTS];
+new AmmoManagerIndex[MAXPLAYERS + 1][WeaponsSlot];
 
 
 AmmoManagerEnable(index)
@@ -47,6 +47,84 @@ AmmoManagerDisable(index)
 {
     // Make sure the timer is stopped.
     AmmoManagerStopTimer(index);
+}
+
+/**
+ * Assigns new ammo managers to the specified client if they aren't assigned.
+ *
+ * @param client    Client index to assign ammo managers to.
+ */
+AmmoAssignManagers(client)
+{
+    // Get free ammo managers if they don't exist.
+    for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
+    {
+        if (AmmoManagerIndex[client][slot] < 0)
+        {
+            new manager = AmmoGetFreeManager();
+            
+            // Verify index.
+            if (manager < 0)
+            {
+                // This should never happen. It's just here to help catching bugs.
+                LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo manager error", "Unable to get a free ammo manager for client %d. No free managers.", client);
+                return;
+            }
+            
+            // Assign manager to client.
+            AmmoManagerIndex[client][slot] = manager;
+        }
+    }
+}
+
+/**
+ * Attaches and enables ammo managers for the specified client.
+ *
+ * @param client    Client index.
+ */
+AmmoManagerAttach(client)
+{
+    // Get free ammo managers if they don't exist.
+    AmmoAssignManagers(client);
+    
+    // Get indexes.
+    new weaponProfile = ClassGetWeaponProfile(client);
+    new primaryProfile = WeaponProfilesGetPriProfile(weaponProfile);
+    new secondaryProfile = WeaponProfilesGetSecProfile(weaponProfile);
+    
+    // Load profiles.
+    AmmoManagerLoad(AmmoManagerIndex[client][Slot_Primary], primaryProfile);
+    AmmoManagerLoad(AmmoManagerIndex[client][Slot_Secondary], secondaryProfile);
+    
+    // Enable managers for each slot.
+    for (new manager = 0; manager < sizeof(g_WeaponsSlotDummy); manager++)
+    {
+        AmmoManagerEnable(manager);
+    }
+}
+
+/**
+ * Detaches and disables ammo managers for the specified client.
+ *
+ * @param client    Client index.
+ */
+AmmoManagerDetach(client)
+{
+    // Disable managers for each slot.
+    for (new manager = 0; manager < sizeof(g_WeaponsSlotDummy); manager++)
+    {
+        AmmoManagerDisable(manager);
+    }
+    
+    // Clear managers.
+    AmmoManagerClear(AmmoManagerIndex[client][Slot_Primary]);
+    AmmoManagerClear(AmmoManagerIndex[client][Slot_Secondary]);
+    
+    // Remove indexes.
+    for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
+    {
+        AmmoManagerIndex[client][slot] = -1;
+    }
 }
 
 /**
@@ -63,7 +141,7 @@ AmmoManagerInit()
     // Reset indexes.
     for (new client = 0; client < MAXPLAYERS + 1; client++)
     {
-        for (new slot = 0; slot < AMMO_MANAGED_SLOTS; slot++)
+        for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
         {
             AmmoManagerIndex[client][slot] = -1;
         }
@@ -76,7 +154,7 @@ AmmoManagerInit()
  * @param index         Ammo manager index.
  * @param ammoProfile   Ammo profile index.
  */
-AmmoManagerLoad(index, ammoProfile)
+stock AmmoManagerLoad(index, ammoProfile)
 {
     
 }
@@ -85,10 +163,12 @@ AmmoManagerLoad(index, ammoProfile)
  * Resets data in the specified ammo manager and marks it as free.
  *
  * @param index     Ammo manager index.
+ * @param inUse     Optional. Specifies whether the ammo manager should still
+ *                  be marked as in use.
  */
-AmmoManagerClear(index)
+AmmoManagerClear(index, bool:inUse = false)
 {
-    AmmoManagers[index][AmmoManager_InUse] = false;
+    AmmoManagers[index][AmmoManager_InUse] = inUse;
     AmmoManagers[index][AmmoManager_Slot] = Slot_Invalid;
     AmmoManagers[index][AmmoManager_Clip] = 0;
     AmmoManagers[index][AmmoManager_Reserve] = 0;
@@ -103,7 +183,7 @@ AmmoManagerClear(index)
  * @param index     Ammo manager to apply.
  * @return          True on success, false otherwise.
  */
-bool:AmmoManagerApply(client, index)
+stock bool:AmmoManagerApply(client, index)
 {
     
 }
@@ -136,8 +216,8 @@ bool:AmmoManagerStopTimer(index)
 bool:AmmoManagerStartTimer(index)
 {
     // Only start if the current mode needs a timer.
-    ammoProfile = AmmoManagers[managerIndex][AmmoManager_ProfileIndex];
-    AmmoMode:mode = AmmoGetMode(ammoProfile);
+    new ammoProfile = AmmoManagers[index][AmmoManager_ProfileIndex];
+    new AmmoMode:mode = AmmoGetMode(ammoProfile);
     if (mode == AmmoMode_FillClip ||
         mode == AmmoMode_FillReserve)
     {
@@ -154,8 +234,8 @@ bool:AmmoManagerStartTimer(index)
  */
 public Action:AmmoManagerTimer(Handle:timer, any:index)
 {
-    ammoProfile = AmmoManagers[index][AmmoManager_ProfileIndex];
-    AmmoMode:mode = AmmoGetMode(ammoProfile);
+    new ammoProfile = AmmoManagers[index][AmmoManager_ProfileIndex];
+    new AmmoMode:mode = AmmoGetMode(ammoProfile);
     
     switch (mode)
     {
@@ -183,7 +263,7 @@ public Action:AmmoManagerTimer(Handle:timer, any:index)
  * @param index     Index to validate.
  * @return          True if valid, false otherwise.
  */
-bool:AmmoIsValidManager(index)
+stock bool:AmmoIsValidManager(index)
 {
     if (index >= 0 && index < AMMO_MANAGER_MAX)
     {
@@ -220,36 +300,13 @@ AmmoGetFreeManager()
     return -1;
 }
 
-AmmoAssignManagers()
-{
-    // Get free ammo managers if they don't exist.
-    for (new slot = 0; slot < AMMO_MANAGED_SLOTS; slot++)
-    {
-        if (AmmoManagerIndex[client][slot] < 0)
-        {
-            new manager = AmmoGetFreeManager();
-            
-            // Verify index.
-            if (manager < 0)
-            {
-                // This should never happen. It's just here to help catching bugs.
-                LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo manager error", "Unable to get a free ammo manager for client %d. No free managers.", client);
-                return;
-            }
-            
-            // Assign manager to client.
-            AmmoManagerIndex[client][slot] = manager;
-        }
-    }
-}
-
 /**
  * Sets ammo profile index in a ammo manager.
  *
  * @param index     Ammo manager.
  * @param profile   Ammo profile.
  */
-AmmoManagerSetProfile(index, profile)
+stock AmmoManagerSetProfile(index, profile)
 {
     AmmoManagers[index][AmmoManager_ProfileIndex] = profile;
 }
@@ -260,7 +317,7 @@ AmmoManagerSetProfile(index, profile)
  * @param index     Ammo manager.
  * @return          Ammo profile.
  */
-AmmoManagerGetProfile(index)
+stock AmmoManagerGetProfile(index)
 {
     return AmmoManagers[index][AmmoManager_ProfileIndex];
 }
@@ -271,7 +328,7 @@ AmmoManagerGetProfile(index)
  * @param index     Ammo manager.
  * @param slot      What weapon slot the manager is managing.
  */
-AmmoManagerSetSlot(index, WeaponsSlot:slot)
+stock AmmoManagerSetSlot(index, WeaponsSlot:slot)
 {
     AmmoManagers[index][AmmoManager_Slot] = slot;
 }
@@ -282,7 +339,7 @@ AmmoManagerSetSlot(index, WeaponsSlot:slot)
  * @param index     Ammo manager.
  * @return          What weapon slot the manager is managing.
  */
-WeaponsSlot:AmmoManagerGetSlot(index)
+stock WeaponsSlot:AmmoManagerGetSlot(index)
 {
     return AmmoManagers[index][AmmoManager_Slot];
 }

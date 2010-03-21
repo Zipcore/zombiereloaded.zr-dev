@@ -64,10 +64,8 @@ AmmoOnWeaponSwitch(client, WeaponsSlot:weaponSlot)
  */
 AmmoOnClientSpawn(client)
 {
-    // Get free ammo managers if they don't exist.
-    AmmoAssignManagers();
-    
-    // Load profiles.
+    // Attach managers to the client.
+    AmmoManagerAttach(client);
 }
 
 /**
@@ -77,7 +75,8 @@ AmmoOnClientSpawn(client)
  */
 AmmoOnClientDeath(client)
 {
-    
+    // Detatch managers from the client.
+    AmmoManagerDetach(client);
 }
 
 /**
@@ -87,8 +86,8 @@ AmmoOnClientDeath(client)
  */
 AmmoOnClientZombie(client)
 {
-    // Forward to death event.
-    AmmoOnClientDeath(client);
+    // Detatch managers from the client.
+    AmmoManagerDetach(client);
 }
 
 /**
@@ -98,8 +97,8 @@ AmmoOnClientZombie(client)
  */
 AmmoOnClientHuman(client)
 {
-    // Forward to spawn event.
-    AmmoOnClientSpawn(client);
+    // Attach managers to the client.
+    AmmoManagerAttach(client);
 }
 
 /**
@@ -107,7 +106,9 @@ AmmoOnClientHuman(client)
  */
 AmmoOnRoundEnd()
 {
-
+    // What to do here? Remove manager or just disable? Keep clip info?
+    // Players might want to keep their current weapons and their states
+    // if they survive.
 }
 
 /**
@@ -117,5 +118,6 @@ AmmoOnRoundEnd()
  */
 AmmoOnClientDisconnect(client)
 {
-
+    // Detatch managers from the client.
+    AmmoManagerDetach(client);
 }
