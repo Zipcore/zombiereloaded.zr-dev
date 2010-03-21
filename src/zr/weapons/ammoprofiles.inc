@@ -314,3 +314,14 @@ AmmoMode:AmmoStringToMode(const String:modeString[])
     
     return AmmoMode_Invalid;
 }
+
+/**
+ * Gets the interval value at the specified index.
+ *
+ * @param index     Profile index.
+ * @return          Ammo mode.
+ */
+Float:AmmoGetInterval(index)
+{
+    return AmmoProfiles[index][AmmoProfile_Interval];
+}
