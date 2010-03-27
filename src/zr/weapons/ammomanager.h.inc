@@ -30,27 +30,48 @@
 #define _ammomanager_included
 
 /**
+ * Specifies what slots that are managed and supported by the ammo manager.
+ *
+ * Note: Do not modify these values unless you're making support for a slot.
+ */
+new const bool:AmmoManagedSlots[WeaponsSlot] = 
+{
+    //false,  /* Dummy for invalid slot */
+    true,   /* Primary */
+    true,   /* Secondary */
+    false,  /* Melee */
+    false,  /* Projectile */
+    false,  /* Explosive */
+    false   /* NVGs */
+};
+
+/**
  * @section Number of managed slots. So far it's for primary and secondary
  *          weapons. The slot ID's should match WeaponsSlot.
+ *
+ *          Might not needed anymore.
  */
-#define AMMO_MANAGED_SLOTS 2
+//#define AMMO_MANAGED_SLOTS 2
 /**
  * @endsection
  */
 
 /**
  * @section Maximum number of ammo managers. There must be one manager per
- *          client and per slot that is managed.
+ *          client and per weapon slot.
  */
-#define AMMO_MANAGER_MAX    (MAXPLAYERS + 1) * AMMO_MANAGED_SLOTS
+#define AMMO_MANAGER_MAX    (MAXPLAYERS + 1) * sizeof(g_WeaponsSlotDummy)
 /**
  * @endsection
  */
 
+/**
+ * Ammo manager attributes.
+ */
 enum AmmoManager
 {
     bool:AmmoManager_InUse,         /** Specifies whether the profile is used or not. */
-    WeaponsSlot:AmmoManager_Slot,   /** What weapon slot that's managed. TODO: Change tag to use WepLib_Slots when it's imported. */
+    WeaponsSlot:AmmoManager_Slot,   /** What weapon slot that's managed.  TODO: Change tags to use WepLib_Slots when it's imported. */
     AmmoManager_Clip,               /** Current weapon clip value. */
     AmmoManager_Reserve,            /** Current weapon reserve value. */
     AmmoManager_ProfileIndex,       /** Index to a ammo profile. */

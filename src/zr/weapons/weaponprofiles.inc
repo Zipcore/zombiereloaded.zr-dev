@@ -269,7 +269,7 @@ WeaponProfilesGetName(index, String:buffer[], maxlen)
  * @param index     Weapon profile index.
  * @return          Primary ammo profile index.
  */
-stock WeaponProfilesGetPriProfile(index)
+WeaponProfilesGetPriProfile(index)
 {
     return WeaponProfiles[index][WeaponProfile_PriAmmoProfile];
 }
@@ -280,7 +280,27 @@ stock WeaponProfilesGetPriProfile(index)
  * @param index     Weapon profile index.
  * @return          Secondary ammo profile index.
  */
-stock WeaponProfilesGetSecProfile(index)
+WeaponProfilesGetSecProfile(index)
 {
     return WeaponProfiles[index][WeaponProfile_SecAmmoProfile];
+}
+
+/**
+ * Returns a WeaponsSlot array with all available ammo profiles.
+ *
+ * @param index     Weapon profile index.
+ * @param profiles  Array to store profile indexes in. The type is WeaponsSlot.
+ * @return          Number of valid profiles returned.
+ */
+WeaponProfilesGetAmmoProfiles(index, profiles[WeaponsSlot])
+{
+    // Initialize/reset array.
+    for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
+    {
+        profiles[slot] = -1;
+    }
+    
+    // Set supported profiles.
+    profiles[Slot_Primary] = WeaponProfilesGetPriProfile(index);
+    profiles[Slot_Secondary] = WeaponProfilesGetSecProfile(index);
 }
