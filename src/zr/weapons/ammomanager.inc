@@ -56,15 +56,17 @@ AmmoManagerDisable(index)
  */
 AmmoAssignManagers(client)
 {
-    // Get free ammo managers if they don't exist.
+    // Get free ammo managers for each slot if they don't exist.
     for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
     {
-        if (AmmoManagerIndex[client][slot] < 0)
+        // Check if the slot is supported and that there's no ammo manager
+        // assigned to that slot.
+        if (AmmoManagedSlots[slot] && AmmoManagerIndex[client][slot] < 0)
         {
             new manager = AmmoGetFreeManager();
             
             // Verify index.
-            if (manager < 0)
+            if (!AmmoIsValidManager(manager))
             {
                 // This should never happen. It's just here to help catching bugs.
                 LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo manager error", "Unable to get a free ammo manager for client %d. No free managers.", client);
@@ -73,6 +75,9 @@ AmmoAssignManagers(client)
             
             // Assign manager to client.
             AmmoManagerIndex[client][slot] = manager;
+            
+            // Set slot type in manager.
+            AmmoManagers[manager][AmmoManager_Slot] = WeaponsSlot:slot;
         }
     }
 }
@@ -84,23 +89,63 @@ AmmoAssignManagers(client)
  */
 AmmoManagerAttach(client)
 {
-    // Get free ammo managers if they don't exist.
+    // Assign ammo managers if they don't exist.
     AmmoAssignManagers(client);
     
-    // Get indexes.
+    // Get profile indexes.
     new weaponProfile = ClassGetWeaponProfile(client);
-    new primaryProfile = WeaponProfilesGetPriProfile(weaponProfile);
-    new secondaryProfile = WeaponProfilesGetSecProfile(weaponProfile);
+    new profiles[WeaponsSlot];
+    WeaponProfilesGetAmmoProfiles(weaponProfile, profiles);
     
-    // Load profiles.
-    AmmoManagerLoad(AmmoManagerIndex[client][Slot_Primary], primaryProfile);
-    AmmoManagerLoad(AmmoManagerIndex[client][Slot_Secondary], secondaryProfile);
-    
-    // Enable managers for each slot.
-    for (new manager = 0; manager < sizeof(g_WeaponsSlotDummy); manager++)
+    // Load ammo profiles.
+    for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
     {
-        AmmoManagerEnable(manager);
+        // Try to attach the manager. If it fails the slot is not supported or
+        // the ammo profile index is invalid.
+        AmmoManagerAttachSlot(client, WeaponsSlot:slot, profiles[slot]);
     }
+}
+
+/**
+ * Attaches and enables a single ammo manager for a certain slot.
+ *
+ * @param client        Client index.
+ * @param slot          What slot to attach.
+ * @param ammoProfile   Ammo profile to use.
+ * @return              True if successful, false otherwise.
+ */
+bool:AmmoManagerAttachSlot(client, WeaponsSlot:slot, ammoProfile)
+{
+    // Verify that the slot is managed.
+    if (!AmmoManagedSlots[slot])
+    {
+        // The specified slot is not supported.
+        return false;
+    }
+    
+    // Verify ammo profile index.
+    if (!AmmoIsValidIndex(ammoProfile))
+    {
+        // Index out of bounds.
+        return false;
+    }
+    
+    // Get the client's manager index for the specified slot.
+    new manager = AmmoManagerIndex[client][slot];
+    
+    // Verify manager index.
+    if (!AmmoIsValidManager(manager))
+    {
+        return false;
+    }
+    
+    // Set ammo profile index.
+    AmmoManagers[manager][AmmoManager_ProfileIndex] = ammoProfile;
+    
+    // Enable the manager.
+    AmmoManagerEnable(manager);
+    
+    return true;
 }
 
 /**
@@ -110,21 +155,49 @@ AmmoManagerAttach(client)
  */
 AmmoManagerDetach(client)
 {
-    // Disable managers for each slot.
-    for (new manager = 0; manager < sizeof(g_WeaponsSlotDummy); manager++)
-    {
-        AmmoManagerDisable(manager);
-    }
-    
-    // Clear managers.
-    AmmoManagerClear(AmmoManagerIndex[client][Slot_Primary]);
-    AmmoManagerClear(AmmoManagerIndex[client][Slot_Secondary]);
-    
-    // Remove indexes.
+    // Loop through all slots.
     for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
     {
-        AmmoManagerIndex[client][slot] = -1;
+        // Try to detach ammo manager. If it fails it's already detached.
+        AmmoManagerDetachSlot(client, WeaponsSlot:slot);
     }
+}
+
+/**
+ * Detaches and disables a single ammo manager for a certain slot.
+ *
+ * @param client        Client index.
+ * @param slot          What slot to detach.
+ * @return              True if successful, false otherwise.
+ */
+bool:AmmoManagerDetachSlot(client, WeaponsSlot:slot)
+{
+    // Verify that the slot is managed.
+    if (!AmmoManagedSlots[slot])
+    {
+        // The specified slot is not supported.
+        return false;
+    }
+    
+    // Get the client's manager index for the specified slot.
+    new manager = AmmoManagerIndex[client][slot];
+    
+    // Verify manager index.
+    if (!AmmoIsValidManager(manager))
+    {
+        return false;
+    }
+    
+    // Disable the manager.
+    AmmoManagerDisable(manager);
+    
+    // Clear manager data.
+    AmmoManagerClear(manager);
+    
+    // Unassign manager from the client.
+    AmmoManagerIndex[client][slot] = -1;
+    
+    return true;
 }
 
 /**
@@ -138,7 +211,7 @@ AmmoManagerInit()
         AmmoManagerClear(manager);
     }
     
-    // Reset indexes.
+    // Reset manager indexes per client per slot.
     for (new client = 0; client < MAXPLAYERS + 1; client++)
     {
         for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
@@ -146,17 +219,6 @@ AmmoManagerInit()
             AmmoManagerIndex[client][slot] = -1;
         }
     }
-}
-
-/**
- * Load the specified ammo manager with the specified profile.
- *
- * @param index         Ammo manager index.
- * @param ammoProfile   Ammo profile index.
- */
-stock AmmoManagerLoad(index, ammoProfile)
-{
-    
 }
 
 /**
