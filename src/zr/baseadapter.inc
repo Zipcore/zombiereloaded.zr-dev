@@ -101,6 +101,7 @@ BaseAdapter_OnPluginStart()
     CookiesInit();
     CommandsInit();
     WeaponsInit();
+    AmmoManagerInit();
     //EventInit();
 }
 
@@ -272,6 +273,7 @@ public BaseAdapter_OnClientDisconnect(client)
     ZSpawnOnClientDisconnect(client);
     ZHPOnClientDisconnect(client);
     VolOnPlayerDisconnect(client);
+    AmmoOnClientDisconnect(client);
 }
 
 /**
@@ -343,6 +345,7 @@ public BaseAdapter_RoundEnd(winner, reason, const String:message[])
     RespawnOnRoundEnd();
     ZSpawnOnRoundEnd();
     VolOnRoundEnd();
+    AmmoOnRoundEnd();
 }
 
 /**
@@ -380,6 +383,7 @@ public BaseAdapter_PlayerSpawn(client)
     ZTeleOnClientSpawn(client);
     ZHPOnClientSpawn(client);
     VolOnPlayerSpawn(client);
+    AmmoOnClientSpawn(client);
     
     // Fire post player_spawn event.
     CreateTimer(0.0, BaseAdapter_PlayerSpawnPost, client);
@@ -460,6 +464,7 @@ public BaseAdapter_PlayerDeath(victim, attacker, const String:weapon[], bool:hea
     ZHPOnClientDeath(victim);
     VolOnPlayerDeath(victim);
     RoundEndOnClientDeath();
+    AmmoOnClientDeath(victim);
     APIOnClientDeath(victim, attacker, weapon, headshot);
 }
 

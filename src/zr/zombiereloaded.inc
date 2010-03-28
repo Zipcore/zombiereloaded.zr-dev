@@ -248,7 +248,7 @@ stock bool:ZRCountValidClients(&zombiecount = 0, &humancount = 0, bool:alive = t
  * Check if a client index is on a team.
  * 
  * @param client    The client index.
- * @param team      Team to check if player is on, -1 to check both. 
+ * @param team      Team to check if player is on, -1 to check both T and CT. 
  * @return          True if client is on a team, false otherwise. 
  */    
 stock bool:ZRIsClientOnTeam(client, team = -1)
