@@ -332,6 +332,8 @@ stock Action:EventMgr_Forward(ProjectEvents:event, any:eventdata[][], numValues,
             return Plugin_Stop;
         else if (result == Plugin_Handled)
             finalresult = Plugin_Handled;
+            // TODO: Should we exit the loop here? Since a module blocked the
+            //       event, the rest of the modules shouldn't get the event?
     }
     
     #if defined PROFILE_EVENTS

@@ -30,20 +30,31 @@
  * @param client        Client that reloaded weapon.
  * @param weaponSlot    Weapon slot.
  */
-AmmoOnWeaponReloaded(client, weaponsSlot:weaponSlot)
+stock AmmoOnWeaponReloaded(client, weaponsSlot:weaponSlot)
 {
     // TODO: Set clip and clip size according to client's ammo profile.
 }
 
 /**
- * Event callback. Client attempted to fire a weapon with no bullets in clip.
+ * Event callback. Client fired his weapon.
  *
  * @param client        Client index.
  * @param weaponSlot    Weapon slot.
  */
-AmmoOnWeaponFireOnEmpty(client, weaponsSlot:weaponSlot)
+stock AmmoOnWeaponFire(client, WeaponsSlot:weaponSlot)
 {
+    
+}
 
+/**
+ * Event callback. Client attempted to fire a weapon with no bullets.
+ *
+ * @param client        Client index.
+ * @param weaponSlot    Weapon slot.
+ */
+stock AmmoOnWeaponFireOnEmpty(client, weaponsSlot:weaponSlot)
+{
+    // TODO: Do a virtual reload and apply the new values.
 }
 
 /**
@@ -52,9 +63,9 @@ AmmoOnWeaponFireOnEmpty(client, weaponsSlot:weaponSlot)
  * @param client        Client index.
  * @param weaponSlot    Weapon slot switched to.
  */
-AmmoOnWeaponSwitch(client, WeaponsSlot:weaponSlot)
+stock AmmoOnWeaponSwitch(client, WeaponsSlot:weaponSlot)
 {
-
+    // TODO: Hook event using SDK Hooks.
 }
 
 /**
