@@ -25,6 +25,7 @@
  */
 
 #include "zr/weapons/ammomanager.h.inc"
+#include "zr/weapons/ammoevents.inc"
 
 /**
  * All ammo managers.
@@ -40,13 +41,19 @@ new AmmoManagerIndex[MAXPLAYERS + 1][WeaponsSlot];
 AmmoManagerEnable(index)
 {
     // Attempt to start the timer.
-    AmmoManagerStartTimer(index);
+    if (AmmoIsValidManager(index))
+    {
+        AmmoManagerStartTimer(index);
+    }
 }
 
 AmmoManagerDisable(index)
 {
     // Make sure the timer is stopped.
-    AmmoManagerStopTimer(index);
+    if (AmmoIsValidManager(index))
+    {
+        ZREndTimer(AmmoManagers[index][AmmoManager_Timer]);
+    }
 }
 
 /**
@@ -94,15 +101,22 @@ AmmoManagerAttach(client)
     
     // Get profile indexes.
     new weaponProfile = ClassGetWeaponProfile(client);
-    new profiles[WeaponsSlot];
-    WeaponProfilesGetAmmoProfiles(weaponProfile, profiles);
     
-    // Load ammo profiles.
-    for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
+    // Verify weapon profile. It might not be available.
+    if (WeaponProfilesIsValidIndex(weaponProfile))
     {
-        // Try to attach the manager. If it fails the slot is not supported or
-        // the ammo profile index is invalid.
-        AmmoManagerAttachSlot(client, WeaponsSlot:slot, profiles[slot]);
+        new profiles[WeaponsSlot];
+        WeaponProfilesGetAmmoProfiles(weaponProfile, profiles);
+        
+        // Load ammo profiles.
+        for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
+        {
+            // Try to attach the manager. If it fails the slot is not supported or
+            // the ammo profile index is invalid.
+            AmmoManagerAttachSlot(client, WeaponsSlot:slot, profiles[slot]);
+        }
+        
+        LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_Weapons, "Ammo manager", "Attatched ammo managers on %N.", client);
     }
 }
 
@@ -161,6 +175,8 @@ AmmoManagerDetach(client)
         // Try to detach ammo manager. If it fails it's already detached.
         AmmoManagerDetachSlot(client, WeaponsSlot:slot);
     }
+    
+    LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_Weapons, "Ammo manager", "Detached ammo managers on %N.", client);
 }
 
 /**
@@ -201,6 +217,20 @@ bool:AmmoManagerDetachSlot(client, WeaponsSlot:slot)
 }
 
 /**
+ * Detaches all ammo managers for all clients.
+ */
+AmmoManagerDetachAll()
+{
+    for (new client = 1; client < MaxClients; client++)
+    {
+        if (IsClientConnected(client))
+        {
+            AmmoManagerDetach(client);
+        }
+    }
+}
+
+/**
  * Initializes the ammo manager.
  */
 AmmoManagerInit()
@@ -226,7 +256,7 @@ AmmoManagerInit()
  *
  * @param index     Ammo manager index.
  * @param inUse     Optional. Specifies whether the ammo manager should still
- *                  be marked as in use.
+ *                  be marked as in use. Default is false.
  */
 AmmoManagerClear(index, bool:inUse = false)
 {
@@ -247,26 +277,8 @@ AmmoManagerClear(index, bool:inUse = false)
  */
 stock bool:AmmoManagerApply(client, index)
 {
-    
-}
-
-/**
- * Stops the timer if it's running.
- *
- * @param index Ammo manager.
- * @return      True if the timer was stopped, false otherwise.
- */
-bool:AmmoManagerStopTimer(index)
-{
-    new Handle:timer = AmmoManagers[index][AmmoManager_Timer];
-    if (timer != INVALID_HANDLE)
-    {
-        KillTimer(timer);
-        AmmoManagers[index][AmmoManager_Timer] = INVALID_HANDLE;
-        return true;
-    }
-    
-    return false;
+    // TODO: Here it should set player clip and clip reserve based on the
+    //       current values in its ammo manager.
 }
 
 /**

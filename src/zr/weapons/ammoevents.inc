@@ -64,8 +64,13 @@ AmmoOnWeaponSwitch(client, WeaponsSlot:weaponSlot)
  */
 AmmoOnClientSpawn(client)
 {
-    // Attach managers to the client.
-    AmmoManagerAttach(client);
+    // Verify that the player is a live because the spawn event is also
+    // triggered in the connection process.
+    if (IsPlayerAlive(client))
+    {
+        // Attach managers to the client.
+        AmmoManagerAttach(client);
+    }
 }
 
 /**
@@ -84,7 +89,7 @@ AmmoOnClientDeath(client)
  *
  * @param client    Client index.
  */
-AmmoOnClientZombie(client)
+AmmoOnClientInfected(client)
 {
     // Detatch managers from the client.
     AmmoManagerDetach(client);
@@ -109,6 +114,8 @@ AmmoOnRoundEnd()
     // What to do here? Remove manager or just disable? Keep clip info?
     // Players might want to keep their current weapons and their states
     // if they survive.
+    
+    AmmoManagerDetachAll();
 }
 
 /**
