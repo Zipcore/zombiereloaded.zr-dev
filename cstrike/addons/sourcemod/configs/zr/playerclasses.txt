@@ -35,7 +35,7 @@
 // immunity_mode            number      Sets the immunity mode.
 // immunity_amount          decimal     Sets the immunity value.
 // no_fall_damage           on/off      Disables fall damage.
-// weapon_profile           text        Weapon profile to apply to class, for ammo control and weapon restrictions. Humans only.
+// weapon_profile           text        Weapon profile to use, for ammo control and weapon restrictions. Humans only.
 // health                   number      How many health points to give.
 // health_regen_interval    decimal     Sets the regeneration interval. 0 to disable.
 // health_regen_amount      number      How much HP to give per interval.
