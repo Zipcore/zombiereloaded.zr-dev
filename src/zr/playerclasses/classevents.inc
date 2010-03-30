@@ -121,9 +121,11 @@ ClassOnClientPostAdminCheck(client)
     // Client has been checked.
     g_bAdminChecked[client] = true;
     
-    // Below this depends on client cookies.
+    // Check if the client's cookies are loaded.
     if (!AreClientCookiesCached(client))
+    {
         return;
+    }
     
     // Check if classes are loaded successfully and the client is valid.
     if (ClassValidated)
@@ -147,9 +149,11 @@ ClassOnCookiesCached(client)
         ClassOverlayOnCookiesCached(client);
     }
     
-    // Below this depends on client authorization.
+    // Check if the client is authorized.
     if (!g_bAdminChecked[client])
+    {
         return;
+    }
     
     // Check if classes are loaded successfully and the client is valid.
     if (ClassValidated)
