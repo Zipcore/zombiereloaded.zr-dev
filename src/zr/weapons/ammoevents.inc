@@ -32,7 +32,20 @@
  */
 stock AmmoOnWeaponReloaded(client, weaponsSlot:weaponSlot)
 {
-    // TODO: Set clip and clip size according to client's ammo profile.
+    // Check if the slot is supported by the manager.
+    if (!AmmoIsSlotManaged(weaponSlot))
+    {
+        // Not supported, ignore event.
+        return;
+    }
+    
+    // TODO: How to get a event hook when the weapon is just _done_ reloading?
+    
+    // Simulate reload event on ammo manager.
+    AmmoManagerReload(ammoManager);
+    
+    // Apply the new values to the active weapon.
+    AmmoManagerApply(client, ammoManager);
 }
 
 /**
@@ -41,9 +54,20 @@ stock AmmoOnWeaponReloaded(client, weaponsSlot:weaponSlot)
  * @param client        Client index.
  * @param weaponSlot    Weapon slot.
  */
-stock AmmoOnWeaponFire(client, WeaponsSlot:weaponSlot)
+AmmoOnWeaponFire(client, WeaponsSlot:weaponSlot)
 {
+    // Check if the slot is supported by the manager.
+    if (!AmmoIsSlotManaged(weaponSlot))
+    {
+        // Not supported, ignore event.
+        return;
+    }
     
+    // Get the ammo manager for this slot.
+    new ammoManager = AmmoManagerIndex[client][weaponSlot];
+    
+    // Simulate fire even on ammo manager.
+    AmmoManagerFire(ammoManager);
 }
 
 /**
@@ -52,9 +76,23 @@ stock AmmoOnWeaponFire(client, WeaponsSlot:weaponSlot)
  * @param client        Client index.
  * @param weaponSlot    Weapon slot.
  */
-stock AmmoOnWeaponFireOnEmpty(client, weaponsSlot:weaponSlot)
+AmmoOnWeaponFireOnEmpty(client, WeaponsSlot:weaponSlot)
 {
-    // TODO: Do a virtual reload and apply the new values.
+    // Check if the slot is supported by the manager.
+    if (!AmmoIsSlotManaged(weaponSlot))
+    {
+        // Not supported, ignore event.
+        return;
+    }
+    
+    // Get the ammo manager for this slot.
+    new ammoManager = AmmoManagerIndex[client][weaponSlot];
+    
+    // Simulate fire on empty event on ammo manager.
+    AmmoManagerFireOnEmpty(ammoManager);
+    
+    // Apply the new values to the active weapon.
+    AmmoManagerApply(client, ammoManager);
 }
 
 /**
@@ -65,7 +103,68 @@ stock AmmoOnWeaponFireOnEmpty(client, weaponsSlot:weaponSlot)
  */
 stock AmmoOnWeaponSwitch(client, WeaponsSlot:weaponSlot)
 {
+    // Check if the slot is supported by the manager.
+    if (!AmmoIsSlotManaged(weaponSlot))
+    {
+        // Not supported, ignore event.
+        return;
+    }
+    
     // TODO: Hook event using SDK Hooks.
+    //       Do the hook in base adapter so other modules can make use of the hook?
+    
+    // Get the ammo manager for this slot.
+    new ammoManager = AmmoManagerIndex[client][weaponSlot];
+    
+    // Apply the new values to the active weapon.
+    AmmoManagerApply(client, ammoManager);
+}
+
+/**
+ * Event callback. Client picked up a weapon.
+ *
+ * @param client        Client index.
+ * @param weaponSlot    Weapon slot.
+ */
+stock AmmoOnWeaponPickup(client, WeaponsSlot:weaponSlot)
+{
+    // Check if the slot is supported by the manager.
+    if (!AmmoIsSlotManaged(weaponSlot))
+    {
+        // Not supported, ignore event.
+        return;
+    }
+    
+    // Since a ammo manager may not exist for this slot, the AmmoGetManager
+    // function is used to create and assign a new one.
+    AmmoGetManager(client, slot);
+    
+    // Get ammo profile.
+    new ammoProfile = AmmoProfileIndex[client][slot];
+    
+    // Attach the ammo manager for this slot.
+    AmmoManagerAttachSlot(client, slot, ammoProfile)
+    
+    // TODO: Apply weapon's clip value in ammo manager, or fill clip?
+}
+
+/**
+ * Event callback. Client dropped a weapon.
+ *
+ * @param client        Client index.
+ * @param weaponSlot    Weapon slot.
+ */
+stock AmmoOnWeaponDrop(client, WeaponsSlot:weaponSlot)
+{
+    // Check if the slot is supported by the manager.
+    if (!AmmoIsSlotManaged(weaponSlot))
+    {
+        // Not supported, ignore event.
+        return;
+    }
+    
+    // Detach manager.
+    AmmoManagerDetachSlot(client, weaponSlot);
 }
 
 /**
@@ -79,7 +178,10 @@ AmmoOnClientSpawn(client)
     // triggered in the connection process.
     if (IsPlayerAlive(client))
     {
-        // Attach managers to the client.
+        // Assign ammo managers.
+        AmmoAssignManagers(client);
+        
+        // Attach ammo managers to the client.
         AmmoManagerAttach(client);
     }
 }

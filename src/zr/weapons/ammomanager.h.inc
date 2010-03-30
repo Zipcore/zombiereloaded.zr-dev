@@ -30,6 +30,15 @@
 #define _ammomanager_included
 
 /**
+ * Specifies whether the ammo manager should apply settings to a weapon. This
+ * setting is made for debug purposes so the ammo manager won't break anything
+ * while testing other stuff in the plugin.
+ *
+ * Comment to not apply values to weapons.
+ */
+//#define AMMO_MANAGER_APPLY
+
+/**
  * Specifies what slots that are managed and supported by the ammo manager.
  *
  * Note: Do not modify these values unless you're making support for a slot.
@@ -77,3 +86,14 @@ enum AmmoManager
     AmmoManager_ProfileIndex,       /** Index to a ammo profile. */
     Handle:AmmoManager_Timer        /** Timer used for refilling, if enabled. */
 }
+
+
+/**
+ * All ammo managers.
+ */
+new AmmoManagers[AMMO_MANAGER_MAX][AmmoManager];
+
+/**
+ * Ammo manager index for assigning ammo managers to clients.
+ */
+new AmmoManagerIndex[MAXPLAYERS + 1][WeaponsSlot];

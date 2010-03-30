@@ -59,6 +59,7 @@
 #define AMMO_DEFAULT_MODE           "disabled"
 #define AMMO_DEFAULT_CLIP_SIZE      AMMO_CLIP_SIZE_MIN
 #define AMMO_DEFAULT_CLIP_RESERVE   AMMO_CLIP_RESERVE_MIN
+#define AMMO_DEFAULT_RELOAD_MODE    "default"
 #define AMMO_DEFAULT_INTERVAL       AMMO_INTERVAL_MIN
 #define AMMO_DEFAULT_AMOUNT         AMMO_AMOUNT_MIN
 #define AMMO_DEFAULT_MAX            AMMO_MAX_MAX
@@ -79,6 +80,16 @@ enum AmmoMode
 }
 
 /**
+ * Reloading modes. How the ammo manger should behave when a weapon is reloaded.
+ */
+enum AmmoReloadMode
+{
+    AmmoReloadMode_Invalid = -1,    /** Default behavior in the game. Do not trow away bullets left in the clip. */
+    AmmoReloadMode_Default,         /** Default behavior in the game. Do not trow away bullets left in the clip. */
+    AmmoReloadMode_Realistic        /** Trow away bullets left in the clip when reloading and get a full clip from the reserve. */
+}
+
+/**
  * Ammo profile attributes.
  */
 enum AmmoProfile
@@ -87,6 +98,7 @@ enum AmmoProfile
     AmmoMode:AmmoProfile_Mode,
     AmmoProfile_ClipSize,
     AmmoProfile_ClipReserve,
+    AmmoReloadMode:AmmoProfile_ReloadMode,
     Float:AmmoProfile_Interval,
     AmmoProfile_Amount,
     AmmoProfile_Max
