@@ -384,7 +384,7 @@ public BaseAdapter_PlayerSpawn(client)
     ZTeleOnClientSpawn(client);
     ZHPOnClientSpawn(client);
     VolOnPlayerSpawn(client);
-    AmmoOnClientSpawn(client);
+    AmmoOnClientSpawn(client);		// Depends on class attributes!
     
     // Fire post player_spawn event.
     CreateTimer(0.0, BaseAdapter_PlayerSpawnPost, client);
@@ -409,7 +409,8 @@ public Action:BaseAdapter_PlayerSpawnPost(Handle:timer, any:client)
     // Forward event to modules.
     WeaponsOnClientSpawnPost(client);
     SEffectsOnClientSpawnPost(client);
-    SpawnProtectOnClientSpawnPost(client);
+    ClassOnClientSpawnPost(client);
+    SpawnProtectOnClientSpawnPost(client);	// Must be executed after class attributes are applied.
 }
 
 /**
