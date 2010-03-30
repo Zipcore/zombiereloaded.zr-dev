@@ -65,18 +65,19 @@ BaseAdapter_Register()
     EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnClientDisconnect,       "BaseAdapter_OnClientDisconnect");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnClientCookiesCached,    "BaseAdapter_OnClientCookiesChed");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnClientPostAdminCheck,   "BaseAdapter_OnClientPostAdmChk");
-
-    #if defined PROJECT_GAME_CSS
-    
     EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_RoundStart,               "BaseAdapter_RoundStart");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_RoundFreezeEnd,           "BaseAdapter_RoundFreezeEnd");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_RoundEnd,                 "BaseAdapter_RoundEnd");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_PlayerTeam,               "BaseAdapter_PlayerTeam");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_PlayerSpawn,              "BaseAdapter_PlayerSpawn");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_PlayerJump,               "BaseAdapter_PlayerJump");
+
+    #if defined PROJECT_GAME_CSS
+    
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_RoundFreezeEnd,           "BaseAdapter_RoundFreezeEnd");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_PlayerHurt,               "BaseAdapter_PlayerHurt");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_PlayerDeath,              "BaseAdapter_PlayerDeath");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_PlayerJump,               "BaseAdapter_PlayerJump");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_WeaponFire,               "BaseAdapter_WeaponFire");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_WeaponFireOnEmpty,        "BaseAdapter_WeaponFireOnEmpty");
     
     #endif
     
@@ -507,6 +508,36 @@ public Action:BaseAdapter_PlayerJumpPost(Handle:timer, any:client)
  */
 public BaseAdapter_WeaponFire(client, const String:weapon[])
 {
+    // TODO: Does this function have a performance impact when called 600 times/sec (60 players, 10 bullets/sec)?
+    new weaponIndex = WeaponsNameToIndex(weapon);
+    
     // Forward event to modules.
     NapalmOnWeaponFire(client, weapon);
+    
+    // Validate weapon index.
+    if (weaponIndex >= 0)
+    {
+        new WeaponsSlot:weaponSlot = WeaponsGetSlot(weaponIndex);
+        AmmoOnWeaponFire(client, weaponSlot);
+    }
+}
+
+/**
+ * Client attempted to fire a weapon with no bullets.
+ * 
+ * @param client        The client index.
+ * @param weapon        The weapon classname fired. (No weapon_ prefix)
+ */
+public BaseAdapter_WeaponFireOnEmpty(client, const String:weapon[])
+{
+    new weaponIndex = WeaponsNameToIndex(weapon);
+    
+    // Forward event to modules.
+    
+    // Validate weapon index.
+    if (weaponIndex >= 0)
+    {
+        new WeaponsSlot:weaponSlot = WeaponsGetSlot(weaponIndex);
+        AmmoOnWeaponFireOnEmpty(client, weaponSlot);
+    }
 }

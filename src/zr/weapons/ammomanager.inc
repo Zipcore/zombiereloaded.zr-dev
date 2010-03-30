@@ -28,25 +28,25 @@
 #include "zr/weapons/ammoevents.inc"
 
 /**
- * All ammo managers.
+ * Enables a ammo manager.
+ *
+ * @param index     Ammo manager index.
  */
-new AmmoManagers[AMMO_MANAGER_MAX][AmmoManager];
-
-/**
- * Ammo manager index for assigning ammo managers to clients.
- */
-new AmmoManagerIndex[MAXPLAYERS + 1][WeaponsSlot];
-
-
 AmmoManagerEnable(index)
 {
     // Attempt to start the timer.
     if (AmmoIsValidManager(index))
     {
+        // Attempt to start the timer, depending on the mode.
         AmmoManagerStartTimer(index);
     }
 }
 
+/**
+ * Disables a ammo manager.
+ *
+ * @param index     Ammo manager index.
+ */
 AmmoManagerDisable(index)
 {
     // Make sure the timer is stopped.
@@ -66,27 +66,45 @@ AmmoAssignManagers(client)
     // Get free ammo managers for each slot if they don't exist.
     for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
     {
-        // Check if the slot is supported and that there's no ammo manager
-        // assigned to that slot.
-        if (AmmoManagedSlots[slot] && AmmoManagerIndex[client][slot] < 0)
-        {
-            new manager = AmmoGetFreeManager();
-            
-            // Verify index.
-            if (!AmmoIsValidManager(manager))
-            {
-                // This should never happen. It's just here to help catching bugs.
-                LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo manager error", "Unable to get a free ammo manager for client %d. No free managers.", client);
-                return;
-            }
-            
-            // Assign manager to client.
-            AmmoManagerIndex[client][slot] = manager;
-            
-            // Set slot type in manager.
-            AmmoManagers[manager][AmmoManager_Slot] = WeaponsSlot:slot;
-        }
+        AmmoAssignManager(client, WeaponsSlot:slot);
     }
+}
+
+/**
+ * Assigns a ammo manager on the specified slot for the client, if it isn't
+ * assigned already.
+ *
+ * @param client    Client index
+ * @param slot      Weapon slot.
+ * @return          The ammo manager index if assigned. -1 if not. -2 if no
+ *                  free managers (bug in code somewhere!).
+ */
+AmmoAssignManager(client, WeaponsSlot:slot)
+{
+    // Check if the slot is supported and that there's no ammo manager
+    // assigned to that slot.
+    if (AmmoManagedSlots[slot] && AmmoManagerIndex[client][slot] < 0)
+    {
+        new manager = AmmoGetFreeManager();
+        
+        // Verify index.
+        if (!AmmoIsValidManager(manager))
+        {
+            // This should never happen. It's just here to help catch potential bugs.
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo manager error", "Unable to get a free ammo manager for client %d. No free managers.", client);
+            return -2;
+        }
+        
+        // Assign manager to client.
+        AmmoManagerIndex[client][slot] = manager;
+        
+        // Set slot type in manager.
+        AmmoManagers[manager][AmmoManager_Slot] = WeaponsSlot:slot;
+        
+        return manager;
+    }
+    
+    return -1;
 }
 
 /**
@@ -96,9 +114,6 @@ AmmoAssignManagers(client)
  */
 AmmoManagerAttach(client)
 {
-    // Assign ammo managers if they don't exist.
-    AmmoAssignManagers(client);
-    
     // Get profile indexes.
     new weaponProfile = ClassGetWeaponProfile(client);
     
@@ -143,6 +158,9 @@ bool:AmmoManagerAttachSlot(client, WeaponsSlot:slot, ammoProfile)
         // Index out of bounds.
         return false;
     }
+    
+    // Make sure a ammo manager is assigned if it doesn't exist.
+    AmmoAssignManager(client, slot);
     
     // Get the client's manager index for the specified slot.
     new manager = AmmoManagerIndex[client][slot];
@@ -269,7 +287,7 @@ AmmoManagerClear(index, bool:inUse = false)
 }
 
 /**
- * Applies current state of a ammo manager on a client.
+ * Applies current state of a ammo manager on a client to the active weapon.
  *
  * @param client    Client to apply to.
  * @param index     Ammo manager to apply.
@@ -277,8 +295,21 @@ AmmoManagerClear(index, bool:inUse = false)
  */
 stock bool:AmmoManagerApply(client, index)
 {
-    // TODO: Here it should set player clip and clip reserve based on the
-    //       current values in its ammo manager.
+    // Only apply if enabled.
+    #if defined AMMO_MANAGER_APPLY
+        // Get weapon entity index currently in use by the player.
+        new weapon = WeaponsGetDeployedWeaponIndex(client);
+        
+        // Get clip values.
+        new clip = AmmoManagerGetClip(index);
+        new clipReserve = AmmoManagerGetClipReserve(index);
+        
+        // Set weapon clip value.
+        WeaponAmmoSetAmmo(weapon, true, clip, false);
+        
+        // Set clip reserve.
+        WeaponAmmoSetAmmo(weapon, false, clipReserve, false);
+    #endif
 }
 
 /**
@@ -350,11 +381,54 @@ stock bool:AmmoIsValidManager(index)
 }
 
 /**
+ * Returns whether a slot is managed/supported or not.
+ *
+ * @param slot      Weapon slot to check.
+ * @return          True if supported, false otherwise.
+ */
+stock bool:AmmoIsSlotManaged(WeaponsSlot:slot)
+{
+    return AmmoManagedSlots[slot];
+}
+
+/**
+ * Gets a ammo manager on the specified slot for the client. If it doesn't
+ * exist a new manager is assigned.
+ *
+ * @param client    Client index
+ * @param slot      Weapon slot.
+ * @return          Ammo manager index.
+ */
+stock AmmoGetManager(client, WeaponSlot:slot)
+{
+    new ammoManager = AmmoAssignManager(client, slot);
+    
+    // Check if a new manager was assigned.
+    if (AmmoIsValidManager(ammoManager))
+    {
+        // Get client's weapon profile.
+        new weaponProfile = ClassGetWeaponProfile(client);
+        
+        // Set ammo profile.
+        new ammoProfile = WeaponProfilesGetAmmoProfile(index, slot);
+        AmmoManagerSetProfile(ammoManager, ammoProfile);
+    }
+    else
+    {
+        // There's already a ammo manager assigned, return its index.
+        return AmmoManagerIndex[client][slot];
+    }
+}
+
+/**
  * Returns a free ammo manager index and marks it as in use.
+ *
+ * Note: Detach the ammo mangager when it's no longer in use so it's marked as
+ * free again.
  *
  * @return  Ammo manager index, or -1 if there are no free managers.
  */
-AmmoGetFreeManager()
+stock AmmoGetFreeManager()
 {
     // Loop through all managers.
     for (new manager = 0; manager < AMMO_MANAGER_MAX; manager++)
@@ -416,4 +490,168 @@ stock AmmoManagerSetSlot(index, WeaponsSlot:slot)
 stock WeaponsSlot:AmmoManagerGetSlot(index)
 {
     return AmmoManagers[index][AmmoManager_Slot];
+}
+
+/**
+ * Gets the clip value in a ammo manager.
+ *
+ * @param index     Ammo manager.
+ * @return          Clip value.
+ */
+stock AmmoManagerGetClip(index)
+{
+    return AmmoManagers[index][AmmoManager_Clip];
+}
+
+/**
+ * Sets the clip value in a ammo manager.
+ *
+ * @param index     Ammo manager.
+ * @param clip      New clip value to set.
+ */
+stock AmmoManagerSetClip(index, clip)
+{
+    AmmoManagers[index][AmmoManager_Clip] = clip;
+}
+
+/**
+ * Gets the clip reserve value in a ammo manager.
+ *
+ * @param index     Ammo manager.
+ * @return          Clip reserve value.
+ */
+stock AmmoManagerGetClipReserve(index)
+{
+    return AmmoManagers[index][AmmoManager_Reserve];
+}
+
+/**
+ * Sets the clip reserve value in a ammo manager.
+ *
+ * @param index     Ammo manager.
+ * @param clip      New clip reserve value to set.
+ */
+stock AmmoManagerSetClipReserve(index, clipReserve)
+{
+    AmmoManagers[index][AmmoManager_Reserve] = clipReserve;
+}
+
+
+/***************************************
+ *                                     *
+ *   WEAPON CLIP SIMULATOR FUNCTIONS   *
+ *                                     *
+ ***************************************/
+
+/**
+ * Simulates a weapon fire event for the specified ammo manager.
+ * Substracts clip value by one if possible.
+ *
+ * @param index     Ammo manager.
+ */
+AmmoManagerFire(index)
+{
+    new clip = AmmoManagerGetClip(index);
+    
+    // Make sure we don't get negative clip values.
+    if (clip - 1 < 0)
+    {
+        clip = 0;
+    }
+    else
+    {
+        clip--;
+    }
+    
+    AmmoManagerSetClip(index, clip);
+}
+
+/**
+ * Simulates a reload event for the specified ammo manager.
+ *
+ * @param index     Ammo manager.
+ */
+stock AmmoManagerReload(index)
+{
+    new ammoProfile = AmmoManagerGetProfile(index);
+    new AmmoMode:mode = AmmoGetMode(ammoProfile);
+    new AmmoReloadMode:reloadMode = AmmoGetReloadMode(ammoProfile);
+    
+    new clip = AmmoManagerGetClip(index);
+    new clipSize = AmmoGetClipSize(ammoProfile);
+    new clipReserve = AmmoManagerGetClipReserve(index);
+    
+    // Check if unlimited ammo is enabled on this manager.
+    if (mode = AmmoMode_Unlimited)
+    {
+        // Fill clip.
+        AmmoManagerSetClip(index, clipSize);
+        return;
+    }
+    
+    // TODO: Is there a way to avoid this repeated code?
+    
+    switch (reloadMode)
+    {
+        case AmmoReloadMode_Default:
+        {
+            // Check clip reserve has enough bullets to fill a whole clip.
+            if (clipReserve - clipSize < 0)
+            {
+                // Not enough bullets. Fill whatever is left.
+                if (clipReserve > 0)
+                {
+                    AmmoManagerSetClip(index, clipReserve - clipSize);
+                    AmmoManagerSetclipReserve(index, 0);
+                }
+            }
+            else
+            {
+                // Fill the existing clip. Don't waste any bullets.
+                AmmoManagerSetClip(index, clipSize);
+                AmmoManagerSetclipReserve(index, clipReserve - clipSize + clip);
+            }
+        }
+        case AmmoReloadMode_Realistic:
+        {
+            // Check clip reserve has enough bullets to fill a whole clip.
+            if (clipReserve - clipSize < 0)
+            {
+                // Not enough bullets. Fill whatever is left.
+                if (clipReserve > 0)
+                {
+                    AmmoManagerSetClip(index, clipReserve - clipSize);
+                    AmmoManagerSetclipReserve(index, 0);
+                }
+            }
+            else
+            {
+                // Get a whole clip from the clip reserve. Trow away bullets in
+                // the current clip.
+                AmmoManagerSetClip(index, clipSize);
+                AmmoManagerSetclipReserve(index, clipReserve - clipSize);
+            }
+        }
+    }
+}
+
+/**
+ * Simulates a fire on empty event for the specified ammo manager. If unlimited
+ * ammo is enabled it will fill the clip.
+ *
+ * @param index     Ammo manager.
+ */
+AmmoManagerFireOnEmpty(index)
+{
+    new ammoProfile = AmmoManagerGetProfile(index);
+    new AmmoMode:mode = AmmoGetMode(ammoProfile);
+    new clipSize = AmmoGetClipSize(ammoProfile);
+    
+    // Check if unlimited ammo is enabled on this manager.
+    if (mode == AmmoMode_Unlimited)
+    {
+        // Fill clip.
+        AmmoManagerSetClip(index, clipSize);
+        return;
+    }
 }

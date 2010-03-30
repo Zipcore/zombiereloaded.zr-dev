@@ -79,6 +79,7 @@ AmmoLoad()
     //decl String:buffer[256];
     decl String:name[32];
     decl String:mode[16];
+    decl String:reloadMode[16];
     
     AmmoProfileCount = 0;
     new failedCount;
@@ -109,6 +110,9 @@ AmmoLoad()
         AmmoProfiles[AmmoProfileCount][AmmoProfile_ClipSize] = KvGetNum(kvAmmoProfiles, "clip_size", AMMO_DEFAULT_CLIP_SIZE);
         AmmoProfiles[AmmoProfileCount][AmmoProfile_ClipReserve] = KvGetNum(kvAmmoProfiles, "clip_reserve", AMMO_DEFAULT_CLIP_RESERVE);
         
+        KvGetString(kvAmmoProfiles, "reload_mode", reloadMode, sizeof(reloadMode), AMMO_DEFAULT_RELOAD_MODE);
+        AmmoProfiles[AmmoProfileCount][AmmoProfile_ReloadMode] = AmmoStringToReloadMode(reloadMode);
+        
         AmmoProfiles[AmmoProfileCount][AmmoProfile_Interval] = KvGetFloat(kvAmmoProfiles, "interval", AMMO_DEFAULT_INTERVAL);
         AmmoProfiles[AmmoProfileCount][AmmoProfile_Amount] = KvGetNum(kvAmmoProfiles, "amount", AMMO_DEFAULT_AMOUNT);
         AmmoProfiles[AmmoProfileCount][AmmoProfile_Max] = KvGetNum(kvAmmoProfiles, "max", AMMO_DEFAULT_MAX);
@@ -126,7 +130,7 @@ AmmoLoad()
         // Validate mode.
         if (AmmoProfiles[AmmoProfileCount][AmmoProfile_Mode] == AmmoMode_Invalid)
         {
-            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Invalid \"mode setting\" setting at index %d: \"%s\".", AmmoProfileCount + failedCount, mode);
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Invalid \"mode\" setting at index %d: \"%s\".", AmmoProfileCount + failedCount, mode);
             failedCount++;
             continue;
         }
@@ -145,6 +149,14 @@ AmmoLoad()
         if (clipReserve < AMMO_CLIP_RESERVE_MIN && clipReserve > AMMO_CLIP_RESERVE_MAX)
         {
             LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Out of range \"clip_reserve\" setting at index %d: \"%d\".", AmmoProfileCount + failedCount, clipReserve);
+            failedCount++;
+            continue;
+        }
+        
+        // Validate reload mode.
+        if (AmmoProfiles[AmmoProfileCount][AmmoProfile_ReloadMode] == AmmoReloadMode_Invalid)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Weapons, "Ammo Profile Validation", "Warning: Invalid \"reload mode\" setting at index %d: \"%s\".", AmmoProfileCount + failedCount, reloadMode);
             failedCount++;
             continue;
         }
@@ -215,7 +227,7 @@ public AmmoOnConfigReload(ConfigFile:config)
  * @param index     The index to validate.
  * @return          True if valid, false otherwise.
  */
-bool:AmmoIsValidIndex(index)
+stock bool:AmmoIsValidIndex(index)
 {
     if (index >= 0 && index < AmmoProfileCount)
     {
@@ -233,7 +245,7 @@ bool:AmmoIsValidIndex(index)
  * @param profileName   Name to resolve.
  * @return              Profile index, or -1 if not found.
  */
-AmmoGetIndex(const String:profileName[])
+stock AmmoGetIndex(const String:profileName[])
 {
     // Verify that ammo profiles exist.
     if (AmmoProfileCount <= 0)
@@ -265,7 +277,7 @@ AmmoGetIndex(const String:profileName[])
  * @param maxlen    Size of string buffer.
  * @return          Number of cells written.
  */
-AmmoGetName(index, String:buffer[], maxlen)
+stock AmmoGetName(index, String:buffer[], maxlen)
 {
     // Validate index.
     if (!AmmoIsValidIndex(index))
@@ -282,7 +294,7 @@ AmmoGetName(index, String:buffer[], maxlen)
  * @param index     Profile index.
  * @return          Ammo mode.
  */
-AmmoMode:AmmoGetMode(index)
+stock AmmoMode:AmmoGetMode(index)
 {
     return AmmoProfiles[index][AmmoProfile_Mode];
 }
@@ -293,7 +305,7 @@ AmmoMode:AmmoGetMode(index)
  * @param modeString    String to convert.
  * @param return        Ammo mode or AmmoMode_Invalid on error.
  */
-AmmoMode:AmmoStringToMode(const String:modeString[])
+stock AmmoMode:AmmoStringToMode(const String:modeString[])
 {
     if (StrEqual(modeString, "disabled", false))
     {
@@ -316,12 +328,87 @@ AmmoMode:AmmoStringToMode(const String:modeString[])
 }
 
 /**
+ * Converts a ammo reload mode string to a reload mode type.
+ *
+ * @param reloadModeString  String to convert.
+ * @param return            Ammo reload mode or AmmoReloadMode_Invalid on error.
+ */
+stock AmmoReloadMode:AmmoStringToReloadMode(const String:reloadModeString[])
+{
+    if (StrEqual(reloadModeString, "default", false))
+    {
+        return AmmoReloadMode_Default;
+    }
+    else if (StrEqual(reloadModeString, "realistic", false))
+    {
+        return AmmoReloadMode_Realistic;
+    }
+    
+    return AmmoReloadMode_Invalid;
+}
+
+/**
+ * Gets the reload mode at the specified index.
+ *
+ * @param index     Profile index.
+ * @return          Reload mode.
+ */
+stock AmmoReloadMode:AmmoGetReloadMode(index)
+{
+    return AmmoProfiles[index][AmmoProfile_ReloadMode];
+}
+
+/**
  * Gets the interval value at the specified index.
  *
  * @param index     Profile index.
- * @return          Ammo mode.
+ * @return          Interval value.
  */
-Float:AmmoGetInterval(index)
+stock Float:AmmoGetInterval(index)
 {
     return AmmoProfiles[index][AmmoProfile_Interval];
+}
+
+/**
+ * Gets the interval amount value at the specified index.
+ *
+ * @param index     Profile index.
+ * @return          Interval amount.
+ */
+stock AmmoGetIntervalAmount(index)
+{
+    return AmmoProfiles[index][AmmoProfile_Amount];
+}
+
+/**
+ * Gets the maximum interval amount value at the specified index.
+ *
+ * @param index     Profile index.
+ * @return          Maximum interval amount.
+ */
+stock AmmoGetMaxAmount(index)
+{
+    return AmmoProfiles[index][AmmoProfile_Max];
+}
+
+/**
+ * Gets the clip size at the specified index.
+ *
+ * @param index     Profile index.
+ * @return          Clip size.
+ */
+stock AmmoGetClipSize(index)
+{
+    return AmmoProfiles[index][AmmoProfile_ClipSize];
+}
+
+/**
+ * Gets the clip reserve size at the specified index.
+ *
+ * @param index     Profile index.
+ * @return          Clip reserve size.
+ */
+stock AmmoGetClipReserve(index)
+{
+    return AmmoProfiles[index][AmmoProfile_ClipReserveSize];
 }

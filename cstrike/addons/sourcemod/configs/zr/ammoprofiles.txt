@@ -18,19 +18,31 @@
 // ----------------------------------------------------------------------------
 // mode             A ammo mode that specifies weapon behavior. Options:
 //                  "disabled"      - Do nothing but setting clip settings.
-//                  "unlimited"     - Remove need for reloading. Unlimited bullets in clip.
-//                  "fill_clip"     - Give "amount" bullets to clip every "interval" second as long it's below "max".
+//                  "unlimited"     - Remove need for reloading. Unlimited
+//                                    bullets in clip.
+//                  "fill_clip"     - Give "amount" bullets to clip every
+//                                    "interval" second as long it's below
+//                                    "max".
 //                  "fill_reserve"  - Same as fill_clip, but on clip reserve.
 //
 // clip_size        Maximum number of bullets in primary weapon clip. Use "-1"
-//                  to ignore setting (do nothing with clip).
+//                  for default game setting (do nothing with clip).
 //
 // clip_reserve     Maximum number of bullets in primary weapon clip reserve.
-//                  Use "-1" to ignore setting (do nothing with clip reserve).
+//                  Use "-1" for default game setting (do nothing with clip
+//                  reserve).
 //
-// interval         How often to fill clip or clip reserve. Time is in seconds.
-//                  Set to "0" to disable. Note: Mode must be fill_clip or
-//                  fill_reserve for this setting to take effect.
+// reload_mode      What to do with bullets left in the clip when reloading.
+//                  Options:
+//                  "default"       - Default behavior in the game. Do not
+//                                    waste any bullets left in the clip.
+//                  "realistic"     - Trow away bullets left in the clip and
+//                                    get a full clip from the reserve.
+//
+// interval         How often to fill clip or clip reserve. Set to "0" to 
+//                  disable. Time is in seconds.
+//                  Note: Mode must be fill_clip or fill_reserve for this
+//                  setting to take effect.
 //
 // amount           Number of bullets to give per interval.
 //
@@ -44,6 +56,7 @@
         "mode"          "disabled"
         "clip_size"     "-1"
         "clip_reserve"  "-1"
+        "reload_mode"   "default"
         "interval"      "0"
         "amount"        "0"
         "max"           "0"

@@ -286,13 +286,37 @@ WeaponProfilesGetSecProfile(index)
 }
 
 /**
+ * Gets the ammo profile index for the specified slot.
+ *
+ * @param index     Weapon profile index.
+ * @param slot      Weapon slot.
+ * @return          Ammo profile index. -1 on error.
+ */
+stock WeaponProfilesGetAmmoProfile(index, WeaponsSlot:slot)
+{
+    switch (slot)
+    {
+        case Slot_Primary:
+        {
+            return WeaponProfilesGetPriProfile(index);
+        }
+        case Slot_Secondary:
+        {
+            return WeaponProfilesGetSecProfile(index);
+        }
+    }
+    
+    return -1;
+}
+
+/**
  * Returns a WeaponsSlot array with all available ammo profiles.
  *
  * @param index     Weapon profile index.
  * @param profiles  Array to store profile indexes in. The type is WeaponsSlot.
  * @return          Number of valid profiles returned.
  */
-WeaponProfilesGetAmmoProfiles(index, profiles[WeaponsSlot])
+stock WeaponProfilesGetAmmoProfiles(index, profiles[WeaponsSlot])
 {
     // Initialize/reset array.
     for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
