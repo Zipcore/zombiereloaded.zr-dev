@@ -274,9 +274,10 @@ ClassOnClientSpawn(client)
         }
     }
     
-    // Apply class attributes for the active class.
+    // Load class attributes for the active class.
     ClassReloadPlayerCache(client, ClassGetActiveIndex(client));
-    ClassApplyAttributes(client);
+    
+    // Note: Class attributes are applied in ClassOnClientSpawnPost.
     
     // Kill instant change timer if running.
     ZREndTimer(tClassInstantChange[client]);
@@ -299,6 +300,23 @@ ClassOnClientSpawn(client)
     
     // Forward event to sub-modules.
     HealthRegenOnClientSpawn(client);
+}
+
+/**
+ * Client have just spawned (delayed event).
+ * 
+ * @param client    The client index.
+ */
+ClassOnClientSpawnPost(client)
+{
+    // Check if there are no valid classes. Block this event if classes aren't
+    // done loading.
+    if (!ClassValidated)
+    {
+        return;
+    }
+    
+    ClassApplyAttributes(client);
 }
 
 /**
