@@ -106,6 +106,7 @@ SEffectsOnRoundEnd()
     // Forward event to sub-modules.
     VoiceOnRoundEnd();
     AmbientSoundsOnRoundEnd();
+    ZombieSoundsOnRoundEnd();
 }
 
 /**
