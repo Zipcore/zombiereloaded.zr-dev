@@ -284,6 +284,8 @@ public BaseAdapter_OnClientDisconnect(client)
  */
 public BaseAdapter_OnClientCookiesChed(client)
 {
+    LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_Config, "Event", "OnCookiesCached fired on client %d", client);
+    
     // Forward "OnCookiesCached" event to modules.
     ClassOnCookiesCached(client);
     WeaponsOnCookiesCached(client);
