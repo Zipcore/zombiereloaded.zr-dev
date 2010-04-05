@@ -46,6 +46,15 @@
 #include "zr/versioninfo"
 #endif
 
+// Header includes.
+#include "zr/log.h"
+#include "zr/tools.h"
+#include "zr/models.h"
+#include "zr/playerclasses/classheaders.h"
+#include "zr/weapons/ammoheaders.h"
+//#include "zr/weapons/restrictheaders.h"
+#include "zr/weapons/weaponprofileheaders.h"
+
 #include "zr/project"
 #include "zr/base/wrappers"
 
@@ -60,15 +69,6 @@
 
 // Module includes (for the new base)
 #include "zr/baseadapter"
-
-// Header includes.
-#include "zr/log.h"
-#include "zr/tools.h"
-#include "zr/models.h"
-#include "zr/playerclasses/classheaders.h"
-#include "zr/weapons/ammoheaders.h"
-//#include "zr/weapons/restrictheaders.h"
-#include "zr/weapons/weaponprofileheaders.h"
 
 // Core includes.
 #include "zr/zombiereloaded"
