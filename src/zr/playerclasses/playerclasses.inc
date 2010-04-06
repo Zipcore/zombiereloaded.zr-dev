@@ -202,13 +202,20 @@ ClassLoad()
     }
     
     // Attribute string buffers.
-    // Use 'new' to initialize the string to empty.
-    new String:name[64];
-    new String:group[64];
-    new String:description[256];
-    new String:model_path[PLATFORM_MAX_PATH];
-    new String:overlay_path[PLATFORM_MAX_PATH];
-    new String:weapon_profile[32];
+    decl String:name[64];
+    decl String:group[64];
+    decl String:description[256];
+    decl String:model_path[PLATFORM_MAX_PATH];
+    decl String:overlay_path[PLATFORM_MAX_PATH];
+    decl String:weapon_profile[32];
+    
+    // Quick string init.
+    name[0] = 0;
+    group[0] = 0;
+    description[0] = 0;
+    model_path[0] = 0;
+    overlay_path[0] = 0;
+    weapon_profile[0] = 0;
     
     ClassCount = 0;
     new failedcount;
