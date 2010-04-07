@@ -145,6 +145,17 @@ new String:ClassOriginalPlayerModel[MAXPLAYERS + 1][PLATFORM_MAX_PATH];
  */
 new bool:ClassPlayerSpawned[MAXPLAYERS + 1];
 
+/**
+ * Keeps track of if a client has been authorized as an admin.
+ */
+new bool:ClassAdminChecked[MAXPLAYERS + 1];
+
+/**
+ * Keeps track of if a client's cookies are loaded.
+ */
+new bool:ClassCookiesLoaded[MAXPLAYERS + 1];
+
+
 #include "zr/playerclasses/filtertools"
 #include "zr/playerclasses/attributes"
 #include "zr/playerclasses/apply"
@@ -651,6 +662,54 @@ ClassRestoreNextIndexes(client, excludeTeam = -1)
         
         // Reset index.
         ClassSelectedNext[client][ZR_CLASS_TEAM_ADMINS] = -1;
+    }
+}
+
+/**
+ * Reset cached states for the client ready event.
+ *
+ * @param client    Client index.
+ */
+ClassResetReadyState(client)
+{
+    ClassAdminChecked[client] = false;
+    ClassCookiesLoaded[client] = false;
+}
+
+/**
+ * Returns whether the client is ready or not.
+ *
+ * Note: This function is called in the following events in classevents.inc:
+ *       ClassOnClientConnected
+ *       ClassOnPostAdminCheck
+ *       ClassOnCookiesCached
+ *
+ * @param client    Client index.
+ * @return          True if ready, false otherwise.
+ */
+bool:ClassIsClientReady(client)
+{
+    if (IsClientConnected(client) &&
+        ClassAdminChecked[client] &&
+        ClassCookiesLoaded[client])
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+/**
+ * Fires the ready event if the client is ready.
+ *
+ * @param client    Client index.
+ */
+ClassCheckReadyState(client)
+{
+    if (ClassIsClientReady(client))
+    {
+        // Fire ready event.
+        ClassOnClientReady(client);
     }
 }
 
