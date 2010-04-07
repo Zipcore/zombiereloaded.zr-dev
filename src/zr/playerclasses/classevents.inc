@@ -25,11 +25,6 @@
  * ============================================================================
  */
 
-/**
- * Keeps track of if a client has been authorized as an admin.
- */
-new bool:g_bAdminChecked[MAXPLAYERS + 1];
-
 /* ------------------------------------
  *
  * GAME EVENTS
@@ -84,8 +79,8 @@ ClassOnMapStart()
  */
 ClassOnClientConnected(client)
 {
-    // Initialize the admin checked variable.
-    g_bAdminChecked[client] = false;
+    // Fire ready event if ready.
+    ClassCheckReadyState(client);
 }
 
 /**
@@ -119,20 +114,10 @@ ClassClientInit(client)
 ClassOnClientPostAdminCheck(client)
 {
     // Client has been checked.
-    g_bAdminChecked[client] = true;
+    ClassAdminChecked[client] = true;
     
-    // Check if the client's cookies are loaded.
-    if (!AreClientCookiesCached(client))
-    {
-        return;
-    }
-    
-    // Check if classes are loaded successfully and the client is valid.
-    if (ClassValidated)
-    {
-        // Set default class indexes on the player.
-        ClassClientSetDefaultIndexes(client);
-    }
+    // Fire ready event if ready.
+    ClassCheckReadyState(client);
 }
 
 /**
@@ -149,18 +134,11 @@ ClassOnCookiesCached(client)
         ClassOverlayOnCookiesCached(client);
     }
     
-    // Check if the client is authorized.
-    if (!g_bAdminChecked[client])
-    {
-        return;
-    }
+    // Client cookes are loaded.
+    ClassCookiesLoaded[client] = true;
     
-    // Check if classes are loaded successfully and the client is valid.
-    if (ClassValidated)
-    {
-        // Set default class indexes on the player.
-        ClassClientSetDefaultIndexes(client);
-    }
+    // Fire ready event if ready.
+    ClassCheckReadyState(client);
 }
 
 /**
@@ -176,6 +154,9 @@ ClassOnClientDisconnect(client)
     
     // Kill instant change timer if running.
     ZREndTimer(tClassInstantChange[client]);
+    
+    // Reset ready states.
+    ClassResetReadyState(client);
     
     // Forward event to sub-modules.
     HealthRegenOnClientDisconnect(client);
@@ -313,14 +294,28 @@ ClassOnClientSpawn(client)
  */
 ClassOnClientSpawnPost(client)
 {
-    // Check if there are no valid classes. Block this event if classes aren't
-    // done loading.
-    if (!ClassValidated)
+    // Check if classes are loaded successfully and the client is ready.
+    if (ClassValidated && ClassIsClientReady(client))
     {
-        return;
+        ClassApplyAttributes(client);
     }
+}
+
+/**
+ * Client is connected, admin checked and cookies are loaded.
+ *
+ * @param client    The client index.
+ */
+ClassOnClientReady(client)
+{
+    LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_Playerclasses, "Event", "Client %d is ready.", client);
     
-    ClassApplyAttributes(client);
+    // Check if classes are loaded successfully.
+    if (ClassValidated)
+    {
+        // Set default class indexes on the player.
+        ClassClientSetDefaultIndexes(client);
+    }
 }
 
 /**
