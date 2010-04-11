@@ -155,6 +155,16 @@ new bool:ClassAdminChecked[MAXPLAYERS + 1];
  */
 new bool:ClassCookiesLoaded[MAXPLAYERS + 1];
 
+/**
+ * Keeps track of if all modules are done loading (configs executed).
+ */
+new bool:ClassModulesLoaded;
+
+/**
+ * Keeps track of if the ready event has been fired on a client.
+ */
+new bool:ClassReadyEventFired[MAXPLAYERS + 1];
+
 
 #include "zr/playerclasses/filtertools"
 #include "zr/playerclasses/attributes"
@@ -674,22 +684,19 @@ ClassResetReadyState(client)
 {
     ClassAdminChecked[client] = false;
     ClassCookiesLoaded[client] = false;
+    ClassReadyEventFired[client] = false;
 }
 
 /**
  * Returns whether the client is ready or not.
- *
- * Note: This function is called in the following events in classevents.inc:
- *       ClassOnClientConnected
- *       ClassOnPostAdminCheck
- *       ClassOnCookiesCached
  *
  * @param client    Client index.
  * @return          True if ready, false otherwise.
  */
 bool:ClassIsClientReady(client)
 {
-    if (IsClientConnected(client) &&
+    if (ClassModulesLoaded &&
+        IsClientConnected(client) &&
         ClassAdminChecked[client] &&
         ClassCookiesLoaded[client])
     {
@@ -702,6 +709,11 @@ bool:ClassIsClientReady(client)
 /**
  * Fires the ready event if the client is ready.
  *
+ * Note: This function is called in the following events in classevents.inc:
+ *       ClassOnClientConnected
+ *       ClassOnPostAdminCheck
+ *       ClassOnCookiesCached
+ *
  * @param client    Client index.
  */
 ClassCheckReadyState(client)
@@ -709,7 +721,32 @@ ClassCheckReadyState(client)
     if (ClassIsClientReady(client))
     {
         // Fire ready event.
-        ClassOnClientReady(client);
+        if (!ClassReadyEventFired[client])
+        {
+            ClassReadyEventFired[client] = true;
+            ClassOnClientReady(client);
+        }
+    }
+}
+
+/**
+ * Fires the ready event for any client that is ready.
+ *
+ * Note: This function is called in ClassOnModulesLoaded.
+ */
+ClassCheckReadyStates()
+{
+    for (new client = 1; client < MaxClients; client++)
+    {
+        if (ClassIsClientReady(client))
+        {
+            // Fire ready event.
+            if (!ClassReadyEventFired[client])
+            {
+                ClassReadyEventFired[client] = true;
+                ClassOnClientReady(client);
+            }
+        }
     }
 }
 

@@ -60,8 +60,13 @@ ClassOnCookiesCreate()
  */
 ClassOnModulesLoaded()
 {
+    ClassModulesLoaded = true;
+    
+    // Fire ready event on all classes that are ready to be initialized.
+    ClassCheckReadyStates();
+    
     // Set default classes on all player slots.
-    ClassClientSetDefaultIndexes();
+    //ClassClientSetDefaultIndexes();
 }
 
 /**
@@ -79,7 +84,9 @@ ClassOnMapStart()
  */
 ClassOnClientConnected(client)
 {
-    // Fire ready event if ready.
+    LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_Playerclasses, "Event", "Client %d connected.", client);
+    
+    // Fire ready event if ready to be initialized.
     ClassCheckReadyState(client);
 }
 
@@ -113,6 +120,8 @@ ClassClientInit(client)
  */
 ClassOnClientPostAdminCheck(client)
 {
+    LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_Playerclasses, "Event", "Client %d admin checked.", client);
+    
     // Client has been checked.
     ClassAdminChecked[client] = true;
     
@@ -127,6 +136,8 @@ ClassOnClientPostAdminCheck(client)
  */
 ClassOnCookiesCached(client)
 {
+    LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_Playerclasses, "Event", "Client %d's cookies cached.", client);
+    
     // Check if classes are loaded successfully.
     if (ClassValidated)
     {
@@ -137,7 +148,7 @@ ClassOnCookiesCached(client)
     // Client cookes are loaded.
     ClassCookiesLoaded[client] = true;
     
-    // Fire ready event if ready.
+    // Fire ready event if ready to be initialized.
     ClassCheckReadyState(client);
 }
 
@@ -146,6 +157,8 @@ ClassOnCookiesCached(client)
  */
 ClassOnClientDisconnect(client)
 {
+    LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_Playerclasses, "Event", "Client %d disconnect.", client);
+    
     // Unhook "PreThinkPost" on the client.
     SDKUnhook(client, SDKHook_PreThinkPost, ClassPreThinkPost);
     
@@ -180,6 +193,8 @@ ClassOnClientSpawn(client)
     {
         return;
     }
+    
+    LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_Playerclasses, "Event", "Client %d spawn.", client);
     
     // Check if there are no valid classes. Block this event if classes aren't
     // done loading.
