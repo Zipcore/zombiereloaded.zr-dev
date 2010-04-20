@@ -150,7 +150,7 @@
 #define ZR_CLASS_KILL_BONUS_MIN             0
 #define ZR_CLASS_KILL_BONUS_MAX             16
 #define ZR_CLASS_SPEED_MIN                  -150.0
-#define ZR_CLASS_SPEED_MAX                  250.0
+#define ZR_CLASS_SPEED_MAX                  300.0   /** Also limited by sv_maxspeed, cl_forwardspeed, cl_backspeed and cl_sidespeed. */
 #define ZR_CLASS_KNOCKBACK_MIN              -30.0
 #define ZR_CLASS_KNOCKBACK_MAX              30.0
 #define ZR_CLASS_KNOCKBACK_IGNORE           -31.0   /** Used by class editor volumetric feature. */
@@ -255,7 +255,7 @@ enum ClassAttributes
     Class_HealthInfectGain,
     Class_KillBonus,
     
-    Float:Class_Speed,
+    Float:Class_Speed,          // This is a offset value.
     Float:Class_KnockBack,
     Float:Class_JumpHeight,
     Float:Class_JumpDistance

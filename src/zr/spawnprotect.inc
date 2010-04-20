@@ -26,6 +26,16 @@
  */
 
 /**
+ * @section
+ * Default attribute values to use in case of invalid values in config.
+ */
+#define SPAWNPROTECT_DEFAULT_SPEED 300.0
+#define SPAWNPROTECT_DEFAULT_ALPHA 0
+/**
+ * @endsection
+ */
+
+/**
  * Array for storing spawn protect timer handles per client.
  */
 new Handle:tSpawnProtect[MAXPLAYERS + 1];
@@ -130,8 +140,22 @@ SpawnProtectStart(client)
     new Float:speed = GetConVarFloat(g_hCvarsList[CVAR_SPAWNPROTECT_SPEED]);
     new alpha = GetConVarInt(g_hCvarsList[CVAR_SPAWNPROTECT_ALPHA]);
     
+    // Validate attributes
+    if (speed < ZR_CLASS_SPEED_MIN && speed > ZR_CLASS_SPEED_MAX)
+    {
+        // Reset to default and log a warning.
+        speed = SPAWNPROTECT_DEFAULT_SPEED;
+        LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModules:LogModule_Spawnprotect, "Config validation", "Out of range value in cvar zr_spawnprotect_speed (%f). Using default value.", speed);
+    }
+    if (alpha < ZR_CLASS_ALPHA_INITIAL_MIN && alpha > ZR_CLASS_ALPHA_INITIAL_MAX)
+    {
+        // Reset to default and log a warning.
+        alpha = SPAWNPROTECT_DEFAULT_ALPHA;
+        LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModules:LogModule_Spawnprotect, "Config validation", "Out of range value in cvar zr_spawnprotect_alpha (%d). Using default value.", alpha);
+    }
+    
     // Set spawn protect attributes.
-    ToolsSetClientLMV(client, speed);
+    g_flClassApplySpeed[client] = speed;    // This one is used and applied in playerclasses/apply.inc
     ToolsSetClientAlpha(client, alpha);
     
     // Set time left to zr_protect_time's value.
@@ -187,9 +211,10 @@ public Action:SpawnProtectTimer(Handle:timer, any:client)
         // Tell client spawn protection is over.
         TranslationPrintHintText(client, "Spawn protection end");
         
-        // Fix attributes.
-        ToolsSetClientAlpha(client, ClassGetAlphaInitial(client));
-        ToolsSetClientLMV(client, 1.0);
+        // Restore class attributes.
+        new classindex = ClassGetActiveIndex(client);
+        ClassApplyAlpha(client, classindex);
+        ClassApplySpeed(client, classindex);
         
         // Clear timer handle.
         ZREndTimer(tSpawnProtect[client], false);
