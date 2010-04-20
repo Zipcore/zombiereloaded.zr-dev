@@ -135,6 +135,10 @@ LogGetModuleNameString(String:buffer[], maxlen, LogModules:module, bool:shortNam
         {
             return shortName ? strcopy(buffer, maxlen, "ztele") : strcopy(buffer, maxlen, "ZTele");
         }
+        case LogModule_Spawnprotect:
+        {
+            return shortName ? strcopy(buffer, maxlen, "spawnprotect") : strcopy(buffer, maxlen, "Spawn protection");
+        }
     }
     
     // Module mismatch.
@@ -229,6 +233,10 @@ LogModules:LogGetModule(const String:moduleName[])
     else if (StrEqual(moduleName, "ztele", false))
     {
         return LogModule_ZTele;
+    }
+    else if (StrEqual(moduleName, "spawnprotect", false))
+    {
+        return LogModule_Spawnprotect;
     }
     
     // No match.

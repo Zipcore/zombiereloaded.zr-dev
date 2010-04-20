@@ -89,6 +89,7 @@ enum LogModules
     bool:LogModule_Weaponrestrict,
     bool:LogModule_ZSpawn,
     bool:LogModule_ZTele,
+    bool:LogModule_Spawnprotect
 }
 
 /**
