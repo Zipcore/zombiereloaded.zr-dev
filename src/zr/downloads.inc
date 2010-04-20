@@ -310,10 +310,10 @@ stock DownloadsWildcardPrepRegex(const String:input[], String:regex[], maxlen)
  * 
  * @param input     The input string to be checked.
  */
-stock DownloadsWildcardContains(const String:input[])
+stock bool:DownloadsWildcardContains(const String:input[])
 {
-    return (StrContains(input, "*") ||
-            StrContains(input, "?") ||
-            StrContains(input, "[") ||
-            StrContains(input, "]"));
+    return (StrContains(input, "*") >= 0 ||
+             StrContains(input, "?") >= 0 ||
+             StrContains(input, "[") >= 0 ||
+             StrContains(input, "]") >= 0);
 }
