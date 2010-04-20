@@ -389,14 +389,12 @@ bool:LogModuleFilterAdd(LogModules:module)
 {
     decl String:modulename[64];
     
-    // Check if empty.
-    if (strlen(modulename) == 0)
+    // Convert module name.
+    if (LogGetModuleNameString(modulename, sizeof(modulename), module, true) == 0)
     {
+        // Name parse error.
         return false;
     }
-    
-    // Convert module name.
-    LogGetModuleNameString(modulename, sizeof(modulename), module, true);
     
     // Check if the module isn't already is listed.
     if (FindStringInArray(hLogModuleFilter, modulename) < 0)
