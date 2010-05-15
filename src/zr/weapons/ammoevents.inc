@@ -66,8 +66,11 @@ AmmoOnWeaponFire(client, WeaponsSlot:weaponSlot)
     // Get the ammo manager for this slot.
     new ammoManager = AmmoManagerIndex[client][weaponSlot];
     
-    // Simulate fire even on ammo manager.
-    AmmoManagerFire(ammoManager);
+    // Simulate fire even on ammo manager if valid index.
+    if (AmmoIsValidManager(ammoManager))
+    {
+        AmmoManagerFire(ammoManager);
+    }
 }
 
 /**
