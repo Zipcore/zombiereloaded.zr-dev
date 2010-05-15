@@ -142,24 +142,20 @@ RespawnSpawnClient(client, bool:zombie = false, bool:zombie_if_suicide = false)
     // Spawn player.
     CS_RespawnPlayer(client);
     
-    // Stop here if the first zombie hasn't spawned yet.
-    if (!g_bZombieSpawned)
+    // Check if first zombie has spawned.
+    if (g_bZombieSpawned)
     {
-        return;
-    }
-    
-    // Infect if zombie is true.
-    if (zombie)
-    {
-        InfectHumanToZombie(client);
-        return;
-    }
-    
-    // Infect if they committed suicide.
-    if (zombie_if_suicide && g_bKilledByWorld[client])
-    {
-        InfectHumanToZombie(client);
-        g_bKilledByWorld[client] = false;
+        // Infect if player should spawn as zombie.
+        if (zombie)
+        {
+            InfectHumanToZombie(client);
+        }
+        // Infect if player committed suicide by world damage.
+        else if (zombie_if_suicide && g_bKilledByWorld[client])
+        {
+            InfectHumanToZombie(client);
+            g_bKilledByWorld[client] = false;
+        }
     }
     
     // Forward event to modules.
