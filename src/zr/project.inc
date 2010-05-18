@@ -308,4 +308,4 @@ stock Project_LoadExtraTranslations(bool:transmanagerloaded)
  * Name of the public cvar for the plugin.
  * Comment this define out to not create a public cvar.
  */
-#define PROJECT_PUBLIC_CVAR "project_version_public"
+//#define PROJECT_PUBLIC_CVAR "gs_zombiereloaded_version"
