@@ -25,6 +25,11 @@
  * ============================================================================
  */
 
+#if defined _voltools_included
+ #endinput
+#endif
+#define _voltools_included
+
 /**
  * Returns wether a point is within a certain location.
  *

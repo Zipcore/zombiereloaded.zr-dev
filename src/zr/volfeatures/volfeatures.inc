@@ -536,6 +536,8 @@ public Action:Event_VolTriggerTimer(Handle:timer)
 {
     new Float:countDown;
     
+    // TODO: Optimize - Swap loops. Loop through volumes first and check if in use.
+    
     // Loop through all players.
     for (new client = 1; client <= MaxClients; client++)
     {
