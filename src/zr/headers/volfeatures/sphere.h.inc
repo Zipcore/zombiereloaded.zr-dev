@@ -1,0 +1,81 @@
+/*
+ * ============================================================================
+ *
+ *  Zombie:Reloaded
+ *
+ *  File:           sphere.h.inc
+ *  Type:           Header
+ *  Description:    Sphere volume headers.
+ *
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * ============================================================================
+ */
+
+#if defined _volfeatures_sphere_included
+ #endinput
+#endif
+#define _volfeatures_sphere_included
+
+/**
+ * Total cuboids allowed.
+ */
+#define ZR_SPHERES_MAX 32
+
+/**
+ * Represents a sphere.
+ */
+enum Sphere
+{
+    bool:Sphere_InUse,          /** Marks if the sphere is in use. */
+
+    /* Location (center point) */
+    Float:Sphere_LocX,          /** X position. */
+    Float:Sphere_LocY,          /** Y position. */
+    Float:Sphere_LocZ,          /** Z position. */
+    
+    /* Dimensions */
+    Float:Sphere_Radius,        /** Size. */
+    
+    bool:Sphere_Fade,           /** Enable fade. Note: Not all volumetric features support fading. */
+    FadeTypes:SphereFadeType,   /** Fade method. */
+    Float:Sphere_MinDistance,   /** Minimum fade distance. */
+    Float:Sphere_MaxDistance,   /** Maximum fade distance. */
+}
+
+/**
+ * Valid fade types.
+ */
+enum FadeTypes
+{
+    FadeType_Invalid = -1,      /** Invalid type (used by parser). */
+    FadeType_None,              /** Disable fading. */
+    FadeType_LinearCenter,      /** Use a linear fade algorithm based on the sphere's center point. */
+    FadeType_LinearDistance     /** Use a linear fade algorithm based on max and min distance. */
+    
+    /* Note: Exponential and inversely proportional fade distances can be also
+     *       be implemented later */
+}
+
+/*
+ * Sphere data.
+ */
+new Cuboids[ZR_CUBOIDS_MAX][Cuboid];
+
+/*
+ * Number of spheres in use.
+ */
+new SphereCount;
