@@ -464,64 +464,47 @@ public Action:DamageOnTakeDamage(client, &attacker, &inflictor, &Float:damage, &
  */     
 public Action:DamageSuicideIntercept(client, const String:command[], argc)
 {
-    // If zombie hasn't spawned, and the cvar requires it, then stop.
-    new bool:suicideafterinfect = GetConVarBool(g_hCvarsList[CVAR_SUICIDE_AFTER_INFECT]);
-    if (suicideafterinfect && !g_bZombieSpawned)
+    // Get suicide interception settings.
+    new bool:suicideAfterInfect = GetConVarBool(g_hCvarsList[CVAR_SUICIDE_AFTER_INFECT]);
+    new bool:suicideZombie = GetConVarBool(g_hCvarsList[CVAR_SUICIDE_ZOMBIE]);
+    new bool:suicideZombieMother = GetConVarBool(g_hCvarsList[CVAR_SUICIDE_MZOMBIE]);
+    new bool:suicideHuman = GetConVarBool(g_hCvarsList[CVAR_SUICIDE_HUMAN]);
+    
+    // Check various criterias that will _allow_ the command. If no criterias
+    // match, block it.
+    
+    // Check general criterias.
+    if ((suicideAfterInfect && !g_bZombieSpawned) ||    // Check if it should block suicides before mother zombie.
+        !ZRIsClientValid(client) ||                     // Validate client (to stop console).
+        !IsPlayerAlive(client))                         // Check if dead.
     {
+        // Allow command.
         return Plugin_Continue;
     }
     
-    // If client isn't valid, then stop. (Stop console)
-    if (!ZRIsClientValid(client))
-    {
-        return Plugin_Continue;
-    }
-    
-    // If client is dead, then stop.
-    if (!IsPlayerAlive(client))
-    {
-        return Plugin_Continue;
-    }
-    
-    // Get cvar values for suicide interception.
-    new bool:suicidezombie = GetConVarBool(g_hCvarsList[CVAR_SUICIDE_ZOMBIE]);
-    new bool:suicidezombiemother = GetConVarBool(g_hCvarsList[CVAR_SUICIDE_MZOMBIE]);
-    new bool:suicidehuman = GetConVarBool(g_hCvarsList[CVAR_SUICIDE_HUMAN]);
-    
-    // Check if client is a zombie.
+    // Check zombie criterias.
     if (InfectIsClientInfected(client))
     {
-        // If client is a mother zombie, and suicide intercept is enabled for mother zombies zombies, then block command.
-        if (g_bDamageMotherZombie[client] && suicidezombiemother)
+        if (g_bDamageMotherZombie[client] && !suicideZombieMother ||    // Check if suicide is allowed for mother zombies.
+            (!g_bDamageMotherZombie[client] && !suicideZombie))         // Check if suicide is allowed for regular zombies.
         {
-            // Tell client their command has been intercepted, and log.
-            TranslationPrintToChat(client, "Damage suicide intercept");
-            LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Damage, "Suicide Intercept", "Player \"%L\" attempted suicide.", client);
-            
-            return Plugin_Handled;
-        }
-        
-        // If client is a zombie, and suicide intercept is enabled for zombies, then block command.
-        if (!g_bDamageMotherZombie[client] && suicidezombie)
-        {
-            // Tell client their command has been intercepted, and log.
-            TranslationPrintToChat(client, "Damage suicide intercept");
-            LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Damage, "Suicide Intercept", "Player \"%L\" attempted suicide.", client);
-            
-            return Plugin_Handled;
+            // Allow command.
+            return Plugin_Continue;
         }
     }
     
-    // If client is a human, and suicide intercept is enabled for humans, then block command.
-    if (InfectIsClientHuman(client) && suicidehuman)
+    // Check human criterias.
+    // Allow suicide if player is a human and humans can suicide.
+    if (InfectIsClientHuman(client) && !suicideHuman)
     {
-        // Tell client their command has been intercepted, and log.
-        TranslationPrintToChat(client, "Damage suicide intercept");
-        LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Damage, "Suicide Intercept", "Player \"%L\" attempted suicide.", client);
-        
-        return Plugin_Handled;
+        // Allow command.
+        return Plugin_Continue;
     }
     
-    // Allow command.
-    return Plugin_Continue;
+    // Tell client their command has been intercepted, and log.
+    TranslationPrintToChat(client, "Damage suicide intercept");
+    LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Damage, "Suicide Intercept", "\"%L\" attempted suicide.", client);
+    
+    // Block command.
+    return Plugin_Handled;
 }
