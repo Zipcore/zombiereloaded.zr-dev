@@ -33,12 +33,12 @@
 /**
  * Total cuboids allowed.
  */
-#define ZR_SPHERES_MAX 32
+#define ZR_SPHERES_MAX ZR_VOLUMES_MAX
 
 /**
  * Represents a sphere.
  */
-enum Sphere
+enum SphereAttributes
 {
     bool:Sphere_InUse,          /** Marks if the sphere is in use. */
 
@@ -69,13 +69,3 @@ enum FadeTypes
     /* Note: Exponential and inversely proportional fade distances can be also
      *       be implemented later */
 }
-
-/*
- * Sphere data.
- */
-new Cuboids[ZR_CUBOIDS_MAX][Cuboid];
-
-/*
- * Number of spheres in use.
- */
-new SphereCount;

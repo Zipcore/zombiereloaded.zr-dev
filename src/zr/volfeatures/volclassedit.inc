@@ -25,78 +25,53 @@
  * ============================================================================
  */
 
-#define VOL_CLASSNAME_SIZE  64
-
-/**
- * Empty attribute structure with all settings set to be ignored.
- */
-new VolEmptyAttributes[ClassEditableAttributes] = {
-    -1,                             /** AlphaInitial */
-    -1,                             /** AlphaDamaged */
-    -1,                             /** AlphaDamage */
-    
-    "nochange",                     /** OverlayPath */
-    -1,                             /** Nvgs */
-    -1,                             /** Fov */
-    
-    -1,                             /** HasNapalm */
-    -1.0,                           /** NapalmTime */
-    -1,                             /** ImmunityMode */
-    -1.0,                           /** ImmunityAmount */
-    -1,                             /** NoFallDamage */
-    -1,                             /** WeaponProfile */
-    
-    -1.0,                           /** RegenInterval */
-    -1,                             /** RegenAmount */
-    -1,                             /** InfectGain */
-    -1,                             /** KillBonus */
-    
-    -1.0,                           /** Speed */
-    ZR_CLASS_KNOCKBACK_IGNORE,      /** KnockBack */
-    -1.0,                           /** JumpHeight */
-    -1.0,                           /** JumpDistance */
-};
-
-/**
- * List of class edit modes.
- */
-enum VolClassEditMode
-{
-    ClassEditMode_Name,         /** Change whole player class. */
-    ClassEditMode_Attributes    /** Override class attributes. */
-}
-
-/**
- * Data structure for class editor.
- */
-enum VolTypeClassEdit
-{
-    bool:VolClassEdit_InUse,
-    
-    VolClassEditMode:VolClassEdit_Mode,
-    String:VolClassEdit_ClassName[VOL_CLASSNAME_SIZE],
-    VolClassEdit_ClassData[ClassEditableAttributes]
-}
-
-/**
- * Class editor data.
- */
-new VolClassEditData[ZR_VOLUMES_MAX][VolTypeClassEdit];
-
 /**
  * The player's selected class index. Used by volumes in "name" mode.
  */
 new VolClassEditSelectedClass[MAXPLAYERS + 1];
 
 /**
- * Checks if the specified index is in use.
+ * Returns whether the specified class editor is in use.
  *
- * @param dataIndex     Index to check.
+ * @param dataIndex     Class editor to check.
  * @return              True if in use, false otherwise.
  */
 bool:VolClassEditInUse(dataIndex)
 {
     return VolClassEditData[dataIndex][VolClassEdit_InUse];
+}
+
+/**
+ * Returns whether the specified class editor is enabled.
+ *
+ * @param dataIndex     Class editor to check.
+ * @return              True if enabled, false otherwise.
+ */
+bool:VolClassEditIsEnabled(dataIndex)
+{
+    return VolClassEditData[dataIndex][VolClassEdit_Enabled];
+}
+
+/**
+ * Gets the volume the class editor is linked to.
+ *
+ * @param dataIndex     Class editor to check.
+ * @return              Volume index.
+ */
+VolClassEditGetVolumeIndex(dataIndex)
+{
+    return VolClassEditData[dataIndex][VolClassEdit_VolumeIndex];
+}
+
+/**
+ * Sets the volume index to a class editor.
+ *
+ * @param dataIndex     Class editor data index.
+ * @param volumeIndex   New volume index.
+ */
+VolClassEditSetVolumeIndex(dataIndex, volumeIndex)
+{
+    VolClassEditData[dataIndex][VolClassEdit_VolumeIndex] = volumeIndex;
 }
 
 /**
@@ -114,6 +89,7 @@ VolClassEditGetFreeIndex()
         {
             // Mark as in use.
             VolClassEditData[dataindex][VolClassEdit_InUse] = true;
+            ClassEditCount++;
             
             // Unused index found.
             return dataindex;
@@ -124,13 +100,27 @@ VolClassEditGetFreeIndex()
     return -1;
 }
 
-VolClassEditReset(dataIndex)
+/**
+ * Resets the specified class edit volume.
+ *
+ * @param dataIndex         Class editor.
+ * @param decrementCounter  Optional. Decrement class editor counter by one.
+ *                          Default is true.
+ */
+VolClassEditReset(dataIndex, bool:decrementCounter = true)
 {
-    VolClassEditData[dataIndex][VolClassEdit_InUse] = false;
-    VolClassEditData[dataIndex][VolClassEdit_Mode] = ClassEditMode_Attributes;
+    VolClassEditData[dataIndex][VolClassEdit_InUse]         = VOL_CLASSEDIT_DEF_IN_USE;
+    VolClassEditData[dataIndex][VolClassEdit_Enabled]       = VOL_CLASSEDIT_DEF_ENABLED;
+    VolClassEditData[dataIndex][VolClassEdit_VolumeIndex]   = VOL_CLASSEDIT_DEF_VOLUME_INDEX;
+    VolClassEditData[dataIndex][VolClassEdit_Mode]          = VOL_CLASSEDIT_DEF_MODE;
     
-    strcopy(VolClassEditData[dataIndex][VolClassEdit_ClassName], 64, "");
-    VolClassEditData[dataIndex][VolClassEdit_ClassData] = VolEmptyAttributes;
+    strcopy(VolClassEditData[dataIndex][VolClassEdit_ClassName], 64, VOL_CLASSEDIT_DEF_CLASS_NAME);
+    VolClassEditData[dataIndex][VolClassEdit_ClassData]     = VOL_CLASSEDIT_DEF_CLASS_DATA;
+    
+    if (decrementCounter)
+    {
+        ClassEditCount--;
+    }
 }
 
 /**
@@ -140,8 +130,10 @@ VolClassEditInit()
 {
     for (new dataindex = 0; dataindex < ZR_VOLUMES_MAX; dataindex++)
     {
-        VolClassEditReset(dataindex);
+        VolClassEditReset(dataindex, false);
     }
+    
+    ClassEditCount = 0;
 }
 
 /**
@@ -521,22 +513,22 @@ VolClassEditRestore(client, dataIndex)
  * Event callback. A player entered a class edit volume.
  *
  * @param client        The client index.
- * @param volumeIndex   The volume index.
+ * @param dataIndex     Class editor index.
  */
-VolClassEditOnPlayerEnter(client, volumeIndex)
+VolClassEditOnPlayerEnter(client, dataIndex)
 {
-    VolClassEditApply(client, Volumes[volumeIndex][Vol_DataIndex]);
+    VolClassEditApply(client, dataIndex);
 }
 
 /**
  * Event callback. A player left a class edit volume.
  *
  * @param client        The client index.
- * @param volumeIndex   The volume index.
+ * @param dataIndex     Class editor index.
  */
-VolClassEditOnPlayerLeave(client, volumeIndex)
+VolClassEditOnPlayerLeave(client, dataIndex)
 {
-    VolClassEditRestore(client, Volumes[volumeIndex][Vol_DataIndex]);
+    VolClassEditRestore(client, dataIndex);
 }
 
 /**
@@ -552,10 +544,12 @@ VolClassEditOnPlayerLeave(client, volumeIndex)
 /**
  * Event callback. A class edit volume was enabled.
  *
- * @param volumeIndex   The volume index.
+ * @param dataIndex     Class editor index.
  */
-VolClassEditOnDisabled(volumeIndex)
+VolClassEditOnDisabled(dataIndex)
 {
+    new volumeIndex = VolClassEditGetVolumeIndex(dataIndex);
+    
     for (new client = 1; client < MaxClients; client++)
     {
         if (IsClientConnected(client) && IsClientInGame(client))
@@ -563,7 +557,7 @@ VolClassEditOnDisabled(volumeIndex)
             // Only forward event if the player really is in the volume..
             if (VolPlayerInVolume[client][volumeIndex] && VolClassEditSelectedClass[client] >= 0)
             {
-                VolClassEditOnPlayerLeave(client, volumeIndex);
+                VolClassEditOnPlayerLeave(client, dataIndex);
             }
         }
     }

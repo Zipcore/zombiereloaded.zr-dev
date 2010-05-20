@@ -33,13 +33,20 @@
 #include "zr/headers/cuboid.h"
 #include "zr/headers/sphere.h"
 #include "zr/headers/volume.h"
+#include "zr/headers/anticamp.h"
+#include "zr/headers/classedit.h"
+
+/**
+ * Number of available volumetric features.
+ */
+#define VOL_NUM_FEATURES 2
 
 /**
  * Available volumetric feature types.
  */
 enum VolumeFeatureTypes
 {
-    VolFeature_Invalid = 0,
+    VolFeature_Invalid = -1,
     VolFeature_Anticamp,
     VolFeature_ClassEdit
 }

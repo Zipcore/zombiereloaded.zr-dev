@@ -31,6 +31,25 @@
 #define _volfeatures_volume_included
 
 /**
+ * @section Default attribute values.
+ */
+#define ZR_VOL_DEFAULT_ENABLED          false
+#define ZR_VOL_DEFAULT_IN_USE           false
+#define ZR_VOL_DEFAULT_FEATURE_TYPES    INVALID_HANDLE
+#define ZR_VOL_DEFAULT_FEATURE_INDEXES  INVALID_HANDLE
+#define ZR_VOL_DEFAULT_SHAPE            VolShape_Cuboid
+#define ZR_VOL_DEFAULT_SHAPE_DATA       -1
+#define ZR_VOL_DEFAULT_EFFECT           VolEffect_None
+#define ZR_VOL_DEFAULT_EFFECT_COLOR     {255, 255, 255}
+#define ZR_VOL_DEFAULT_TEAM_FILTER      VolTeam_Humans
+#define ZR_VOL_DEFAULT_TRIGGER_DELAY    0.0
+#define ZR_VOL_DEFAULT_PRIORITY         0
+#define ZR_VOL_DEFAULT_CONFLICT_ACTION  VolPriority
+/**
+ * @endsection
+ */
+
+/**
  * Total volumes that can be created in a map.
  */
 #define ZR_VOLUMES_MAX 32
@@ -45,7 +64,11 @@ enum VolumeAttributes
     bool:Vol_InUse,                     /** Marks if the volume is used. */
     VolumeShapes:Vol_Shape,             /** Shape type. */
     Vol_ShapeData,                      /** Index in remote shape array, depending on shape type. */
-
+    
+    /* Features */
+    Handle:Vol_FeatureTypes,            /** List of feature types linked to the volume. */
+    Handle:Vol_FeatureIndexes,          /** List the feature indexes. */
+    
     /* Style */
     VolumeEffects:Vol_Effect,           /** Visual effect to apply on the volume. */
     Vol_EffectColor[3],                 /** Render color of the effect. RGB colors. */
@@ -63,12 +86,12 @@ enum VolumeAttributes
 enum VolumeShapes
 {
     VolShape_Invalid = -1,   /** Invalid shape (used by parser) */
-    VolShape_Cubiod,         /** Rectangular volume */
+    VolShape_Cuboid,         /** Rectangular volume */
     VolShape_Sphere          /** Ball */
 }
 
 /**
- * Effects that can be applied on a volume. (Currently no effects.)
+ * Effects that can be applied on a volume. (Currently no effects implemented.)
  */
 enum VolumeEffects
 {
@@ -95,46 +118,3 @@ enum VolumeConflictActions
     VolPriority = 0,    /** Use the volume with highest priority, ignore others. */
     VolMerge            /** Try to merge volume settings/attributes, or use priority if there's a merge conflict. */
 }
-
-/**
- * Volume data.
- */
-new Volumes[ZR_VOLUMES_MAX][VolumeAttributes];
-
-/**
- * Number of volumes in use.
- */
-new VolumeCount;
-
-/**
- * List of player locations. Updated by a timer.
- */
-new Float:VolPlayerLoc[MAXPLAYERS + 1][3];
-
-/**
- * Cache that specifies if a player is in a volume or not.
- */
-new bool:VolPlayerInVolume[MAXPLAYERS + 1][ZR_VOLUMES_MAX];
-
-/**
- * Counter for trigger delay.
- */
-new Float:VolPlayerCountDown[MAXPLAYERS + 1][ZR_VOLUMES_MAX];
-
-/**
- * The handle for a timer that updates player locations. This is the main timer
- * and any feature events can't be updated faster than this interval.
- *
- * Note: Some features may have its own timer for actions on players.
- */
-new Handle:hVolUpdateTimer = INVALID_HANDLE;
-
-/**
- * The handle for a timer that do count down on trigger delays.
- */
-new Handle:hVolTriggerTimer = INVALID_HANDLE;
-
-/**
- * Cached interval value for trigger timer.
- */
-new Float:VolTriggerInterval;

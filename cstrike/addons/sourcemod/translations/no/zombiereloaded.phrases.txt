@@ -1053,6 +1053,11 @@
 		"no"		"Drepte \"{1}\" for opphold i sperret område (ID: {2})."
 	}
 
+	"Vol Drug"
+	{
+		"en"		"Dopet \"{1}\" for opphold i sperret område (ID: {2})."
+	}
+
 	"Vol Ignite"
 	{
 		"no"		"Satt fyr på \"{1}\" for opphold i sperret område (ID: {2})."

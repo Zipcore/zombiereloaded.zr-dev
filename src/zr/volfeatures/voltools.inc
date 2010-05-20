@@ -31,182 +31,7 @@
 #define _voltools_included
 
 /**
- * Returns wether a point is within a certain location.
- *
- * @param point     The point to check.
- * @param min       Minimum x, y and z values of the location.
- * @param max       Maximum x, y and z values of the location.
- * @return          True if the position is within min and max values. False
- *                  otherwise.
- */
-bool:IsPointInLocation(Float:point[3], Float:min[3], Float:max[3])
-{
-    // Cache to avoid re-indexing arrays.
-    new Float:posX = point[0];
-    new Float:posY = point[1];
-    new Float:posZ = point[2];
-    
-    // Check if within x boundaries.
-    if ((posX >= min[0]) && (posX <= max[0]))
-    {
-        // Check if within y boundaries.
-        if ((posY >= min[1]) && (posY <= max[1]))
-        {
-            // Check if within x boundaries.
-            if ((posZ >= min[2]) && (posZ <= max[2]))
-            {
-                // The point is within the location boundaries.
-                return true;
-            }
-        }
-    }
-    
-    // The point is outside the location boundaries.
-    return false;
-}
-
-/**
- * Returns wether a volume is marked as in use.
- *
- * Note: Does not validate index.
- *
- * @param volumeIndex   The volume index.
- * @return              True if in use, false otherwise.
- */
-bool:VolInUse(volumeIndex)
-{
-    return Volumes[volumeIndex][Vol_InUse];
-}
-
-/**
- * Returns wether a volume is enabled or not.
- *
- * Note: Does not validate index.
- *
- * @param volumeIndex   The volume index.
- * @return              True if enabled, false otherwise.
- */
-bool:VolIsEnabled(volumeIndex)
-{
-    return Volumes[volumeIndex][Vol_Enabled];
-}
-
-/**
- * Validates a volume index.
- *
- * @param volumeIndex   The volume index.
- * @return              True if valid, false otherwise.
- */
-bool:VolIsValidIndex(volumeIndex)
-{
-    if (volumeIndex >= 0 && volumeIndex < ZR_VOLUMES_MAX)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-/**
- * Gets the first free volume index.
- *
- * @return      The first free volume index if successful, or -1 if there are
- *              no free volumes.
- */
-VolGetFreeVolume()
-{
-    // Loop through all volumes.
-    for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
-    {
-        // Check if it's free.
-        if (!VolInUse(volumeIndex))
-        {
-            return volumeIndex;
-        }
-    }
-    
-    // No free volumes found.
-    return -1;
-}
-
-/**
- * Gets a free index in the data array for the specified volume type.
- *
- * @param volumeType    Volumetric feature type.
- * @return              Data index, or -1 on error.
- */
-VolGetFreeDataIndex(VolumeFeatureTypes:volumeType)
-{
-    switch (volumeType)
-    {
-        case VolFeature_Anticamp:
-        {
-            return VolAnticampGetFreeIndex();
-        }
-        case VolFeature_ClassEdit:
-        {
-            return VolClassEditGetFreeIndex();
-        }
-    }
-    
-    // No match.
-    return -1;
-}
-
-/**
- * Checks if the specified client match the team filtering for the specified
- * volume.
- *
- * @param client        The client index.
- * @param volumeIndex   The volume to check team filtering on.
- * @return              True if client pass the team filtering, false otherwise.
- */
-bool:VolTeamFilterMatch(client, volumeIndex)
-{
-    new VolumeTeamFilters:filter;
-    
-    // Chache filter value.
-    filter = Volumes[volumeIndex][Vol_TeamFilter];
-    
-    switch (filter)
-    {
-        case VolTeam_All:
-        {
-            // All maches everyone.
-            return true;
-        }
-        case VolTeam_Humans:
-        {
-            // Check if client is a human.
-            return InfectIsClientHuman(client);
-        }
-        case VolTeam_Zombies:
-        {
-            // Check if client is a zombie.
-            return InfectIsClientInfected(client);
-        }
-    }
-    
-    // Invalid filter value.
-    return false;
-}
-
-/**
- * Checs if a volume is a certain type.
- *
- * @param volumeIndex   Volume to check.
- * @param volType       Type to match.
- * @return              True if the types match, false otherwise.
- */
-bool:VolIsType(volumeIndex, VolumeFeatureTypes:volType)
-{
-    return Volumes[volumeIndex][Vol_Type] == volType;
-}
-
-/**
- * Gets wether a client is within volumes or not. Result is stored in a boolean
+ * Gets whether a client is within volumes or not. Result is stored in a boolean
  * array.
  *
  * @param client    The client index.
@@ -216,32 +41,15 @@ bool:VolIsType(volumeIndex, VolumeFeatureTypes:volType)
  */
 VolGetPlayerStates(client, bool:buffer[], maxlen)
 {
-    new volumeBuffer[VolumeAttributes];
-    new volCount;
-    
-    new Float:volMinBuffer[3];
-    new Float:volMaxBuffer[3];
+    new volCount = 0;
     
     // Loop through all available volumes.
-    for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX && volumeIndex < maxlen; volumeIndex++)
+    for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX && volCount < maxlen; volumeIndex++)
     {
         if (VolInUse(volumeIndex))
         {
-            // Chache volume to avoid re-indexing.
-            volumeBuffer = Volumes[volumeIndex];
-            
-            // Get min positions.
-            volMinBuffer[0] = volumeBuffer[Vol_xMin];
-            volMinBuffer[1] = volumeBuffer[Vol_yMin];
-            volMinBuffer[2] = volumeBuffer[Vol_zMin];
-            
-            // Get max positions.
-            volMaxBuffer[0] = volumeBuffer[Vol_xMax];
-            volMaxBuffer[1] = volumeBuffer[Vol_yMax];
-            volMaxBuffer[2] = volumeBuffer[Vol_zMax];
-            
-            // Check the cached player location.
-            if (IsPointInLocation(VolPlayerLoc[client], volMinBuffer, volMaxBuffer))
+            // Check if player is inside the volume.
+            if (VolIsPointInVolume(VolPlayerLoc[client], volumeIndex))
             {
                 // Mark player as in volume.
                 buffer[volumeIndex] = true;

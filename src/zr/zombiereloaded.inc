@@ -412,3 +412,28 @@ ZRBoolToString(bool:value, String:output[], maxlen)
         strcopy(output, maxlen, "0");
     }
 }
+
+/**
+ * CloseHandle wrapper that ignore INVALID_HANDLE.
+ * The handle is also set to INVALID_HANDLE if closed.
+ *
+ * @param handle    Handle to close.
+ */
+ZR_CloseHandle(&Handle:handle)
+{
+    if (handle != INVALID_HANDLE)
+    {
+        CloseHandle(handle);
+        handle = INVALID_HANDLE;
+    }
+}
+
+/**
+ * Returns whether the handle value is different from INVALID_HANDLE or not.
+ *
+ * @param handle    Handle to check.
+ */
+bool:ZR_HasHandle(Handle:handle)
+{
+    return handle == INVALID_HANDLE ? false : true;
+}
