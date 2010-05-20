@@ -55,16 +55,18 @@ Example:
  */
 VolOnCommandsCreate()
 {
+    /*
     RegConsoleCmd("zr_vol_add", VolAddVolumeCommand, "Creates a rectangular volume in the map. Usage: zr_vol_add <x1> <y1> <z1> <x2> <y2> <z2> <type> [params]");
     RegConsoleCmd("zr_vol_remove", VolRemoveVolumeCommand, "Removes an existing volume in the map. Usage: zr_vol_remove <volume index>");
     RegConsoleCmd("zr_vol_list", VolListCommand, "Lists existing volumes in the map, or dumps detail data to the specified volume. Usage: zr_vol_list [volume index]");
     RegConsoleCmd("zr_vol_dumpstates", VolDumpStatesCommand, "Dumps volume states for the specified player. Usage: zr_vol_dumpstates <index|targetname>");
+    */
 }
 
 /**
  * Command callback for creating a new volume.
  */
-public Action:VolAddVolumeCommand(client, argc)
+/*public Action:VolAddVolumeCommand(client, argc)
 {
     decl String:buffer[640];
     buffer[0] = 0;
@@ -252,12 +254,12 @@ public Action:VolAddVolumeCommand(client, argc)
     
     ReplyToCommand(client, "Added volume at index %d. %s", volindex, buffer);
     return Plugin_Handled;
-}
+}*/
 
 /**
  * Command callback for removing a volume.
  */
-public Action:VolRemoveVolumeCommand(client, argc)
+/*public Action:VolRemoveVolumeCommand(client, argc)
 {
     decl String:arg[16];
     new volindex;
@@ -299,12 +301,12 @@ public Action:VolRemoveVolumeCommand(client, argc)
     
     ReplyToCommand(client, "Successfully disabled and removed volume %d.", volindex);
     return Plugin_Handled;
-}
+}*/
 
 /**
  * Command callback for listing volumes or dumping data.
  */
-public Action:VolListCommand(client, argc)
+/*public Action:VolListCommand(client, argc)
 {
     decl String:buffer[1022];       // Two chars reserved for newline and null terminator.
     decl String:linebuffer[128];
@@ -447,9 +449,9 @@ public Action:VolListCommand(client, argc)
         
         return Plugin_Handled;
     }
-}
+}*/
 
-public Action:VolDumpStatesCommand(client, argc)
+/*public Action:VolDumpStatesCommand(client, argc)
 {
     decl String:target[64];
     new targetclient;
@@ -500,7 +502,7 @@ public Action:VolDumpStatesCommand(client, argc)
     }
     
     return Plugin_Handled;
-}
+}*/
 
 /**
  * Creates a new volume with minimum parameters.
@@ -515,7 +517,7 @@ public Action:VolDumpStatesCommand(client, argc)
  *
  * @return              The new volume index, or -1 if failed.
  */
-VolAdd(volumeIndex = -1, Float:locMin[3], Float:locMax[3], VolumeFeatureTypes:volumeType, dataIndex)
+/*VolAdd(volumeIndex = -1, Float:locMin[3], Float:locMax[3], VolumeFeatureTypes:volumeType, dataIndex)
 {
     if (volumeIndex < 0)
     {
@@ -554,7 +556,7 @@ VolAdd(volumeIndex = -1, Float:locMin[3], Float:locMax[3], VolumeFeatureTypes:vo
         // No free volumes or invalid index.
         return -1;
     }
-}
+}*/
 
 /**
  * Removes the specified volume.
@@ -562,7 +564,7 @@ VolAdd(volumeIndex = -1, Float:locMin[3], Float:locMax[3], VolumeFeatureTypes:vo
  * @param volumeIndex   The volume index.
  * @return              True if successful, false otherwise.
  */
-bool:VolRemove(volumeIndex)
+/*bool:VolRemove(volumeIndex)
 {
     // Validate index.
     if (VolIsValidIndex(volumeIndex))
@@ -589,14 +591,14 @@ bool:VolRemove(volumeIndex)
         // Invalid index.
         return false;
     }
-}
+}*/
 
 /**
  * Clears volume data at the specified index.
  *
  * @param volumeIndex   The volume index.
  */
-VolClear(volumeIndex)
+/*VolClear(volumeIndex)
 {
     Volumes[volumeIndex][Vol_Enabled] = false;
     Volumes[volumeIndex][Vol_InUse] = false;
@@ -635,18 +637,18 @@ VolClear(volumeIndex)
     
     Volumes[volumeIndex][Vol_TeamFilter] = VolTeam_All;
     Volumes[volumeIndex][Vol_TriggerDelay] = 0.0;
-}
+}*/
 
 /**
  * Clears all volumes.
  */
-VolClearAll()
+/*VolClearAll()
 {
     for (new volindex = 0; volindex < ZR_VOLUMES_MAX; volindex++)
     {
         VolClear(volindex);
     }
-}
+}*/
 
 /**
  * Sets extra attributes on a volume.
@@ -656,7 +658,7 @@ VolClearAll()
  *                      format.
  * @return              Number of successful attributes set, -1 on error.
  */
-VolSetAttributes(volumeIndex, const String:attributes[])
+/*VolSetAttributes(volumeIndex, const String:attributes[])
 {
     new attribCount;
     new successfulCount;
@@ -764,4 +766,4 @@ VolSetAttributes(volumeIndex, const String:attributes[])
     
     // Return number of successfully attributes set.
     return successfulCount;
-}
+}*/

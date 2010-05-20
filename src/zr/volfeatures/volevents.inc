@@ -28,10 +28,12 @@
 /**
  * Called when a player enters a volume.
  *
- * @param client        The client index.
- * @param volumeIndex   The volume index.
+ * @param client            The client index.
+ * @param volumeIndex       The volume index.
+ * @param featureTypes      List of feature types linked to the volume.
+ * @param featureIndexes    List of the feature indexes.
  */
-VolOnPlayerEnter(client, volumeIndex)
+VolOnPlayerEnter(client, volumeIndex, Handle:featureTypes, Handle:featureIndexes)
 {
     // Check if volumetric features is enabled.
     if (!VolEnabled)
@@ -42,13 +44,26 @@ VolOnPlayerEnter(client, volumeIndex)
     
     LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Event", "Player %N entered volume %d.", client, volumeIndex);
     
-    // Forward event to features.
-    new VolumeFeatureTypes:voltype = Volumes[volumeIndex][Vol_Type];
-    switch (voltype)
+    // Check if any features are linked to this volume.
+    if (ZR_HasHandle(featureTypes))
     {
-        case VolFeature_ClassEdit:
+        // Get number of linked features.
+        new size = GetArraySize(featureTypes);
+        
+        // Loop through each feature.
+        for (new i = 0; i < size; i++)
         {
-            VolClassEditOnPlayerEnter(client, volumeIndex);
+            new featureIndex = GetArrayCell(featureIndexes, i);
+            new VolumeFeatureTypes:featureType = GetArrayCell(featureTypes, i);
+            
+            // Forward event to feature.
+            switch (featureType)
+            {
+                case VolFeature_ClassEdit:
+                {
+                    VolClassEditOnPlayerEnter(client, featureIndex);
+                }
+            }
         }
     }
 }
@@ -56,10 +71,12 @@ VolOnPlayerEnter(client, volumeIndex)
 /**
  * Called when a player leaves a volume.
  *
- * @param client        The client index.
- * @param volumeIndex   The volume index.
+ * @param client            The client index.
+ * @param volumeIndex       The volume index.
+ * @param featureTypes      List of feature types linked to the volume.
+ * @param featureIndexes    List of the feature indexes.
  */
-VolOnPlayerLeave(client, volumeIndex)
+VolOnPlayerLeave(client, volumeIndex, Handle:featureTypes, Handle:featureIndexes)
 {
     // Check if volumetric features is enabled.
     if (!VolEnabled)
@@ -70,17 +87,30 @@ VolOnPlayerLeave(client, volumeIndex)
     
     LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Event", "Player %N left volume %d.", client, volumeIndex);
     
-    // Forward event to features.
-    new VolumeFeatureTypes:voltype = Volumes[volumeIndex][Vol_Type];
-    switch (voltype)
+    // Check if any features are linked to this volume.
+    if (ZR_HasHandle(featureTypes))
     {
-        case VolFeature_Anticamp:
+        // Get number of linked features.
+        new size = GetArraySize(featureTypes);
+        
+        // Loop through each feature.
+        for (new i = 0; i < size; i++)
         {
-            VolAnticampOnPlayerLeave(client, volumeIndex);
-        }
-        case VolFeature_ClassEdit:
-        {
-            VolClassEditOnPlayerLeave(client, volumeIndex);
+            new featureIndex = GetArrayCell(featureIndexes, i);
+            new VolumeFeatureTypes:featureType = GetArrayCell(featureTypes, i);
+            
+            // Forward event to feature.
+            switch (featureType)
+            {
+                case VolFeature_Anticamp:
+                {
+                    VolAnticampOnPlayerLeave(client, featureIndex);
+                }
+                case VolFeature_ClassEdit:
+                {
+                    VolClassEditOnPlayerLeave(client, featureIndex);
+                }
+            }
         }
     }
 }
@@ -111,26 +141,30 @@ VolOnPlayerSpawn(client)
 VolOnPlayerDeath(client)
 {
     // Send player left volume event to all volumes the player was in.
-    for (new volindex = 0; volindex < ZR_VOLUMES_MAX; volindex++)
+    for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
     {
         // Check if volume is unused.
-        if (!Volumes[volindex][Vol_InUse])
+        if (!Volumes[volumeIndex][Vol_InUse])
         {
             continue;
         }
         
         // Check if volume is disabled.
-        if (!Volumes[volindex][Vol_Enabled])
+        if (!Volumes[volumeIndex][Vol_Enabled])
         {
             continue;
         }
         
+        // Get the list of features linked to the current volume.
+        new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
+        new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureTypes];
+        
         // Check if player is inside the volume.
-        if (VolPlayerInVolume[client][volindex])
+        if (VolPlayerInVolume[client][volumeIndex])
         {
-            // Mark as not in the volume and trigger event.
-            VolPlayerInVolume[client][volindex] = false;
-            VolOnPlayerLeave(client, volindex);
+            // Mark as not in the volume and trigger leave-event.
+            VolPlayerInVolume[client][volumeIndex] = false;
+            VolOnPlayerLeave(client, volumeIndex, featureTypes, featureIndexes);
         }
     }
 }
@@ -191,9 +225,12 @@ VolOnMapEnd()
 
 /**
  * Called when a volume is disabled.
- * @param volumeIndex   The volume index.
+ *
+ * @param volumeIndex       The volume index.
+ * @param featureTypes      List of feature types linked to the volume.
+ * @param featureIndexes    List of the feature indexes.
  */
-VolOnDisabled(volumeIndex)
+VolOnDisabled(volumeIndex, Handle:featureTypes, Handle:featureIndexes)
 {
     // Check if volumetric features is enabled.
     if (!VolEnabled)
@@ -202,27 +239,45 @@ VolOnDisabled(volumeIndex)
         return;
     }
     
-    new VolumeFeatureTypes:voltype = Volumes[volumeIndex][Vol_Type];
-    
-    // Forward stop event to features.
-    switch (voltype)
+    // Check if any features are linked to this volume.
+    if (ZR_HasHandle(featureTypes))
     {
-        case VolFeature_Anticamp:
+        // Get number of linked features.
+        new size = GetArraySize(featureTypes);
+        
+        // Loop through each feature.
+        for (new i = 0; i < size; i++)
         {
-            VolAnticampDisable(volumeIndex);
+            new featureIndex = GetArrayCell(featureIndexes, i);
+            new VolumeFeatureTypes:featureType = GetArrayCell(featureTypes, i);
+            
+            // Forward event to feature.
+            switch (featureType)
+            {
+                case VolFeature_Anticamp:
+                {
+                    VolAnticampOnDisabled(featureIndex);
+                }
+                case VolFeature_ClassEdit:
+                {
+                    VolClassEditOnDisabled(featureIndex);
+                }
+            }
         }
-        case VolFeature_ClassEdit:
-        {
-            VolClassEditOnDisabled(volumeIndex);
-        }
+        
+        // Log debug message.
+        LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Event", "Volume %d disabled.", volumeIndex);
     }
 }
 
 /**
  * Called when a volume is enabled.
- * @param volumeIndex   The volume index.
+ *
+ * @param volumeIndex       The volume index.
+ * @param featureTypes      List of feature types linked to the volume.
+ * @param featureIndexes    List of the feature indexes.
  */
-VolOnEnabled(volumeIndex)
+VolOnEnabled(volumeIndex, Handle:featureTypes, Handle:featureIndexes)
 {
     // Check if volumetric features is enabled.
     if (!VolEnabled)
@@ -231,14 +286,29 @@ VolOnEnabled(volumeIndex)
         return;
     }
     
-    new VolumeFeatureTypes:voltype = Volumes[volumeIndex][Vol_Type];
-    
-    // Forward enable event to features.
-    switch (voltype)
+    // Check if any features are linked to this volume.
+    if (ZR_HasHandle(featureTypes))
     {
-        case VolFeature_Anticamp:
+        // Get number of linked features.
+        new featureCount = GetArraySize(featureTypes);
+        
+        // Loop through each feature.
+        for (new i = 0; i < featureCount; i++)
         {
-            VolAnticampEnable(volumeIndex);
+            new featureIndex = GetArrayCell(featureIndexes, i);
+            new VolumeFeatureTypes:featureType = GetArrayCell(featureTypes, i);
+            
+            // Forward event to feature.
+            switch (featureType)
+            {
+                case VolFeature_Anticamp:
+                {
+                    VolAnticampOnEnabled(featureIndex);
+                }
+            }
         }
+        
+        // Log debug message.
+        LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Event", "Volume %d enabled.", volumeIndex);
     }
 }

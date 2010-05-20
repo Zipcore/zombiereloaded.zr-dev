@@ -1174,12 +1174,18 @@
 	"Vol Slay"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"Slayed player \"{1}\" for camping in a restricted area (ID: {2})."
+		"en"		"Slayed player \"{1}\" for not leaving a restricted area (ID: {2})."
+	}
+
+	"Vol Drug"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"Drugged player \"{1}\" for not leaving a restricted area (ID: {2})."
 	}
 
 	"Vol Ignite"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"Ignited player \"{1}\" for camping in a restricted area (ID: {2})."
+		"en"		"Ignited player \"{1}\" for not leaving a restricted area (ID: {2})."
 	}
 }

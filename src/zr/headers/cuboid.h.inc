@@ -33,12 +33,12 @@
 /**
  * Total cuboids allowed.
  */
-#define ZR_CUBOIDS_MAX 32
+#define ZR_CUBOIDS_MAX ZR_VOLUMES_MAX
 
 /**
  * Represents a rectangular volume.
  */
-enum Cuboid
+enum CuboidAttributes
 {
     bool:Cuboid_InUse,  /** Marks if the volume is used. */
 
@@ -51,13 +51,3 @@ enum Cuboid
     Float:Cuboid_zMin,  /** Minimum z position. */
     Float:Cuboid_zMax,  /** Maximum z position. */
 }
-
-/*
- * Cuboid data.
- */
-new Cuboids[ZR_CUBOIDS_MAX][Cuboid];
-
-/*
- * Number of cuboids in use.
- */
-new CuboidCount;

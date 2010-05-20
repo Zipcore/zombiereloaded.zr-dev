@@ -54,7 +54,7 @@
 #include "zr/weapons/ammoheaders.h"
 //#include "zr/weapons/restrictheaders.h"
 #include "zr/weapons/weaponprofileheaders.h"
-//#include "zr/headers/volfeatures.h"
+#include "zr/headers/volfeatures.h"
 
 #include "zr/project"
 #include "zr/base/wrappers"
