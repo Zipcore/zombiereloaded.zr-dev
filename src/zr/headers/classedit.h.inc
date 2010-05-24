@@ -33,6 +33,11 @@
 #define VOL_CLASSNAME_SIZE  64
 
 /**
+ * Maximum number of class editors.
+ */
+#define ZR_CLASSEDIT_MAX ZR_VOLUMES_MAX
+
+/**
  * @section Default attribute values.
  */
 #define VOL_CLASSEDIT_DEF_IN_USE        false
@@ -101,7 +106,7 @@ enum VolTypeClassEdit
 /**
  * Class editor data.
  */
-new VolClassEditData[ZR_VOLUMES_MAX][VolTypeClassEdit];
+new VolClassEditData[ZR_CLASSEDIT_MAX][VolTypeClassEdit];
 
 /**
  * Number of class editors in use.

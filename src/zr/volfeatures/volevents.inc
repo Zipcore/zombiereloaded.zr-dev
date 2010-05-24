@@ -30,10 +30,8 @@
  *
  * @param client            The client index.
  * @param volumeIndex       The volume index.
- * @param featureTypes      List of feature types linked to the volume.
- * @param featureIndexes    List of the feature indexes.
  */
-VolOnPlayerEnter(client, volumeIndex, Handle:featureTypes, Handle:featureIndexes)
+VolOnPlayerEnter(client, volumeIndex)
 {
     // Check if volumetric features is enabled.
     if (!VolEnabled)
@@ -43,6 +41,10 @@ VolOnPlayerEnter(client, volumeIndex, Handle:featureTypes, Handle:featureIndexes
     }
     
     LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Event", "Player %N entered volume %d.", client, volumeIndex);
+    
+    // Get the list of features linked to the current volume.
+    new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
+    new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureTypes];
     
     // Check if any features are linked to this volume.
     if (ZR_HasHandle(featureTypes))
@@ -73,10 +75,8 @@ VolOnPlayerEnter(client, volumeIndex, Handle:featureTypes, Handle:featureIndexes
  *
  * @param client            The client index.
  * @param volumeIndex       The volume index.
- * @param featureTypes      List of feature types linked to the volume.
- * @param featureIndexes    List of the feature indexes.
  */
-VolOnPlayerLeave(client, volumeIndex, Handle:featureTypes, Handle:featureIndexes)
+VolOnPlayerLeave(client, volumeIndex)
 {
     // Check if volumetric features is enabled.
     if (!VolEnabled)
@@ -86,6 +86,10 @@ VolOnPlayerLeave(client, volumeIndex, Handle:featureTypes, Handle:featureIndexes
     }
     
     LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Event", "Player %N left volume %d.", client, volumeIndex);
+    
+    // Get the list of features linked to the current volume.
+    new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
+    new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureTypes];
     
     // Check if any features are linked to this volume.
     if (ZR_HasHandle(featureTypes))
@@ -155,16 +159,12 @@ VolOnPlayerDeath(client)
             continue;
         }
         
-        // Get the list of features linked to the current volume.
-        new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
-        new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureTypes];
-        
         // Check if player is inside the volume.
         if (VolPlayerInVolume[client][volumeIndex])
         {
             // Mark as not in the volume and trigger leave-event.
             VolPlayerInVolume[client][volumeIndex] = false;
-            VolOnPlayerLeave(client, volumeIndex, featureTypes, featureIndexes);
+            VolOnPlayerLeave(client, volumeIndex);
         }
     }
 }
@@ -227,10 +227,8 @@ VolOnMapEnd()
  * Called when a volume is disabled.
  *
  * @param volumeIndex       The volume index.
- * @param featureTypes      List of feature types linked to the volume.
- * @param featureIndexes    List of the feature indexes.
  */
-VolOnDisabled(volumeIndex, Handle:featureTypes, Handle:featureIndexes)
+VolOnDisabled(volumeIndex)
 {
     // Check if volumetric features is enabled.
     if (!VolEnabled)
@@ -238,6 +236,10 @@ VolOnDisabled(volumeIndex, Handle:featureTypes, Handle:featureIndexes)
         // Volumetric features disabled.
         return;
     }
+    
+    // Get the list of features linked to the current volume.
+    new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
+    new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureTypes];
     
     // Check if any features are linked to this volume.
     if (ZR_HasHandle(featureTypes))
@@ -273,11 +275,9 @@ VolOnDisabled(volumeIndex, Handle:featureTypes, Handle:featureIndexes)
 /**
  * Called when a volume is enabled.
  *
- * @param volumeIndex       The volume index.
- * @param featureTypes      List of feature types linked to the volume.
- * @param featureIndexes    List of the feature indexes.
+ * @param volumeIndex       The volume index..
  */
-VolOnEnabled(volumeIndex, Handle:featureTypes, Handle:featureIndexes)
+VolOnEnabled(volumeIndex)
 {
     // Check if volumetric features is enabled.
     if (!VolEnabled)
@@ -285,6 +285,10 @@ VolOnEnabled(volumeIndex, Handle:featureTypes, Handle:featureIndexes)
         // Volumetric features disabled.
         return;
     }
+    
+    // Get the list of features linked to the current volume.
+    new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
+    new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureTypes];
     
     // Check if any features are linked to this volume.
     if (ZR_HasHandle(featureTypes))
