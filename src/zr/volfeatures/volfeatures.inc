@@ -70,6 +70,7 @@ new Float:VolTriggerInterval;
 #include "zr/volfeatures/voltools"
 #include "zr/volfeatures/volevents"
 #include "zr/volfeatures/volgenericattributes"
+#include "zr/volfeatures/volmanager"
 #include "zr/volfeatures/volcommands"
 
 // Sub features.
@@ -136,10 +137,6 @@ VolDisableVolumes()
             // Mark as disabled.
             Volumes[volumeIndex][Vol_Enabled] = false;
             
-            // Get the list of features linked to the current volume.
-            new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
-            new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureTypes];
-            
             // Trigger player left volume event if inside a volume.
             for (new client = 1; client <= MaxClients; client++)
             {
@@ -154,12 +151,12 @@ VolDisableVolumes()
                 {
                     // Mark as not in the volume and trigger event.
                     VolPlayerInVolume[client][volumeIndex] = false;
-                    VolOnPlayerLeave(client, volumeIndex, featureTypes, featureIndexes);
+                    VolOnPlayerLeave(client, volumeIndex);
                 }
             }
             
             // Trigger disabled event.
-            VolOnDisabled(volumeIndex, featureTypes, featureIndexes);
+            VolOnDisabled(volumeIndex);
         }
     }
 }
@@ -174,12 +171,8 @@ VolEnableVolumes()
     {
         if (Volumes[volumeIndex][Vol_InUse] && !Volumes[volumeIndex][Vol_Enabled])
         {
-            // Get the list of features linked to the current volume.
-            new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
-            new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureTypes];
-            
             Volumes[volumeIndex][Vol_Enabled] = true;
-            VolOnEnabled(volumeIndex, featureTypes, featureIndexes);
+            VolOnEnabled(volumeIndex);
         }
     }
 }
@@ -379,10 +372,6 @@ VolUpdatePlayerChanges()
             continue;
         }
         
-        // Get the list of features linked to the current volume.
-        new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
-        new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureTypes];
-        
         // Loop through players.
         for (new client = 1; client <= MaxClients; client++)
         {
@@ -429,7 +418,7 @@ VolUpdatePlayerChanges()
                     VolPlayerInVolume[client][volumeIndex] = true;
                     
                     // No trigger delay, trigger event instantly.
-                    VolOnPlayerEnter(client, volumeIndex, featureTypes, featureIndexes);
+                    VolOnPlayerEnter(client, volumeIndex);
                 }
             }
             
@@ -448,7 +437,7 @@ VolUpdatePlayerChanges()
                     VolPlayerInVolume[client][volumeIndex] = false;
                     
                     // Trigger event.
-                    VolOnPlayerLeave(client, volumeIndex, featureTypes, featureIndexes);
+                    VolOnPlayerLeave(client, volumeIndex);
                 }
             }
         }
@@ -480,10 +469,6 @@ public Action:Event_VolTriggerTimer(Handle:timer)
             continue;
         }
         
-        // Get the list of features linked to the current volume.
-        new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
-        new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureTypes];
-        
         // Loop through players.
         for (new client = 1; client <= MaxClients; client++)
         {
@@ -510,7 +495,7 @@ public Action:Event_VolTriggerTimer(Handle:timer)
                     VolPlayerInVolume[client][volumeIndex] = true;
                     
                     // Trigger volume enter event.
-                    VolOnPlayerEnter(client, volumeIndex, featureTypes, featureIndexes);
+                    VolOnPlayerEnter(client, volumeIndex);
                     
                     // Reset count down value.
                     VolPlayerCountDown[client][volumeIndex] = -1.0;

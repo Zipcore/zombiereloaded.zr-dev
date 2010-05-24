@@ -411,6 +411,17 @@ bool:VolAnticampIsValidIndex(anticampIndex)
 }
 
 /**
+ * Returns whether a anti camp is valid and in use.
+ *
+ * @param volumeIndex   Anti camp to validate.
+ * @return              True if valid and in use, false otherwise. 
+ */
+bool:VolAnticampIsValid(anticampIndex)
+{
+    return VolAnticampIsValidIndex(anticampIndex) && VolAnticampInUse(anticampIndex);
+}
+
+/**
  * Returns the volume index that the specified feature is linked to.
  *
  * @param anticampIndex     Anti camp data index.

@@ -42,8 +42,10 @@ VolClear()
 {
     for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
     {
-        VolClearIndex(volumeIndex);
+        VolClearIndex(volumeIndex, false);
     }
+    
+    VolumeCount = 0;
 }
 
 /**
@@ -51,11 +53,13 @@ VolClear()
  *
  * Note: Does not validate index.
  *
- * @param volumeIndex   Volume to clear.
- * @param inUse         Optional. Whether to mark volume as in use or not.
- *                      Default is false.
+ * @param volumeIndex       Volume to clear.
+ * @param inUse             Optional. Whether to mark volume as in use or not.
+ *                          Default is false.
+ * @param decrementCounter  Optional. Decrement the volume counter. Default is
+ *                          true.
  */
-VolClearIndex(volumeIndex, bool:inUse = ZR_VOL_DEFAULT_IN_USE)
+VolClearIndex(volumeIndex, bool:inUse = ZR_VOL_DEFAULT_IN_USE, bool:decrementCounter = true)
 {
     Volumes[volumeIndex][Vol_Enabled]           = ZR_VOL_DEFAULT_ENABLED;
     Volumes[volumeIndex][Vol_InUse]             = inUse;
@@ -69,16 +73,19 @@ VolClearIndex(volumeIndex, bool:inUse = ZR_VOL_DEFAULT_IN_USE)
     Volumes[volumeIndex][Vol_ConflictAction]    = ZR_VOL_DEFAULT_CONFLICT_ACTION;
     
     // Destroy links and detach features.
-    new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
-    new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureIndexes];
-    VolDetachFeatures(volumeIndex, featureTypes, featureIndexes);
+    VolDetachFeatures(volumeIndex);
     
     Volumes[volumeIndex][Vol_FeatureTypes]      = ZR_VOL_DEFAULT_FEATURE_TYPES;
     Volumes[volumeIndex][Vol_FeatureIndexes]    = ZR_VOL_DEFAULT_FEATURE_INDEXES;
+    
+    if (decrementCounter)
+    {
+        VolumeCount--;
+    }
 }
 
 /**
- * Returns wether a volume is marked as in use.
+ * Returns whether a volume is marked as in use.
  *
  * Note: Does not validate index.
  *
@@ -91,7 +98,7 @@ bool:VolInUse(volumeIndex)
 }
 
 /**
- * Returns wether a volume is enabled or not.
+ * Returns whether a volume is enabled or not.
  *
  * Note: Does not validate index.
  *
@@ -122,6 +129,17 @@ bool:VolIsValidIndex(volumeIndex)
 }
 
 /**
+ * Returns whether a volume is valid and in use.
+ *
+ * @param volumeIndex   Volume to validate.
+ * @return              True if valid and in use, false otherwise. 
+ */
+bool:VolIsValid(volumeIndex)
+{
+    return VolIsValidIndex(volumeIndex) && VolInUse(volumeIndex);
+}
+
+/**
  * Gets the first free volume index.
  *
  * @return      The first free volume index if successful, or -1 if there are
@@ -135,6 +153,8 @@ VolGetFreeVolume()
         // Check if it's free.
         if (!VolInUse(volumeIndex))
         {
+            Volumes[volumeIndex][Vol_InUse] = true;
+            VolumeCount++;
             return volumeIndex;
         }
     }
@@ -180,95 +200,6 @@ bool:VolTeamFilterMatch(client, volumeIndex)
     
     // Invalid filter value.
     return false;
-}
-
-/**
- * Attaches a feature to a volume.
- *
- * @param volumeIndex       Volume data index.
- * @param featureType       Feature types.
- * @param featureIndex      Feature data index.
- */
-VolAttachFeature(volumeIndex, VolumeFeatureTypes:featureType, featureIndex)
-{
-    new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
-    new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureIndexes];
-    
-    // Create link arrays if they don't exist.
-    if (!ZR_HasHandle(featureTypes))
-    {
-        featureTypes = CreateArray();
-        featureIndexes = CreateArray();
-        
-        // Assign arrays to volume.
-        Volumes[volumeIndex][Vol_FeatureTypes] = featureTypes;
-        Volumes[volumeIndex][Vol_FeatureIndexes] = featureIndexes;
-    }
-    
-    // Add feature to arrays.
-    PushArrayCell(featureTypes, _:featureType);
-    PushArrayCell(featureIndexes, featureIndex);
-}
-
-/**
- * Removes all references to a volume.
- *
- * @param volumeIndex       Volume to derefer.
- * @param featureTypes      List of feature types linked to the volume.
- * @param featureIndexes    List of the feature indexes.
- */
-VolDetachFeatures(volumeIndex, Handle:featureTypes, Handle:featureIndexes)
-{
-    // Check if link arrays exists.
-    if (ZR_HasHandle(featureTypes))
-    {
-        new size = GetArraySize(featureTypes);
-        
-        if (size > 0)
-        {
-            // Loop through each feature in the list.
-            for (new i = 0; i < size; i++)
-            {
-                // Get type and index.
-                new VolumeFeatureTypes:featureType = VolumeFeatureTypes:GetArrayCell(featureTypes, i);
-                new feature = GetArrayCell(featureIndexes, i);
-                
-                // Detach from volume; disable and reset volume index.
-                switch (featureType)
-                {
-                    case VolFeature_Anticamp:
-                    {
-                        VolAnticampOnDisabled(feature);
-                        VolAnticampSetVolumeIndex(feature, -1);
-                    }
-                    case VolFeature_ClassEdit:
-                    {
-                        VolClassEditOnDisabled(feature);
-                        VolClassEditSetVolumeIndex(feature, -1);
-                    }
-                }
-            }
-        }
-        
-        // Attempt to close existing handles.
-        ZR_CloseHandle(featureTypes);
-        ZR_CloseHandle(featureIndexes);
-        
-        // Update handles.
-        Volumes[volumeIndex][Vol_FeatureTypes] = featureTypes;
-        Volumes[volumeIndex][Vol_FeatureIndexes] = featureTypes;
-    }
-}
-
-/**
- * Destroys all link arrays on all volumes.
- */
-VolDetatchAll()
-{
-    for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
-    {
-        VolDetachFeatures(volumeIndex);
-    }
 }
 
 /**

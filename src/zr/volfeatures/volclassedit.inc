@@ -53,6 +53,35 @@ bool:VolClassEditIsEnabled(dataIndex)
 }
 
 /**
+ * Validates the specified class edit index.
+ *
+ * @param dataIndex     Index to validate.
+ * @return              True if valid, false otherwise.
+ */
+bool:VolClassEditIsValidIndex(dataIndex)
+{
+    if (dataIndex >= 0 && dataIndex < ZR_CLASSEDIT_MAX)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/**
+ * Returns whether a class editor is valid and in use.
+ *
+ * @param dataIndex     Class editor index to validate.
+ * @return              True if valid and in use, false otherwise. 
+ */
+bool:VolClassEditIsValid(dataIndex)
+{
+    return VolClassEditIsValidIndex(dataIndex) && VolClassEditInUse(dataIndex);
+}
+
+/**
  * Gets the volume the class editor is linked to.
  *
  * @param dataIndex     Class editor to check.
