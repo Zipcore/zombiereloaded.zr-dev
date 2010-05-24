@@ -60,11 +60,17 @@ VolSphereClear()
  */
 VolSphereClearIndex(sphere, bool:decrementCounter = true)
 {
-    Spheres[sphere][Sphere_InUse]      = false;
+    Spheres[sphere][Sphere_InUse]       = false;
     
-    Spheres[sphere][Sphere_LocX]    = 0;
-    Spheres[sphere][Sphere_LocY]    = 0;
-    Spheres[sphere][Sphere_LocZ]    = 0;
+    Spheres[sphere][Sphere_LocX]        = 0;
+    Spheres[sphere][Sphere_LocY]        = 0;
+    Spheres[sphere][Sphere_LocZ]        = 0;
+    
+    Spheres[sphere][Sphere_Radius]      = ZR_SPHERE_DEF_RADIUS;
+    
+    Spheres[sphere][Sphere_FadeType]    = ZR_SPHERE_DEF_FADE_TYPE;
+    Spheres[sphere][Sphere_MinDistance] = ZR_SPHERE_DEF_MIN_DISTANCE;
+    Spheres[sphere][Sphere_MaxDistance] = ZR_SPHERE_DEF_MAX_DISTANCE;
     
     if (decrementCounter)
     {
@@ -104,6 +110,17 @@ bool:VolSphereIsValidIndex(sphere)
 }
 
 /**
+ * Returns whether a sphere is valid and in use.
+ *
+ * @param sphere    Sphere to validate.
+ * @return          True if valid, false otherwise.
+ */
+bool:VolSphereIsValid(sphere)
+{
+    return VolSphereIsValidIndex(sphere) && VolSphereInUse(sphere);
+}
+
+/**
  * Gets the first free sphere index.
  *
  * @return      The first free sphere index if successful, or -1 if there are
@@ -117,6 +134,8 @@ VolGetFreeSphere()
         // Check if it's free.
         if (!VolCuboidInUse(sphere))
         {
+            Spheres[sphere][Sphere_InUse] = true;
+            SphereCount++;
             return sphere;
         }
     }
