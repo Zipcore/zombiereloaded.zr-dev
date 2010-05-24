@@ -60,7 +60,7 @@ VolCuboidClear()
  */
 VolCuboidClearIndex(cuboid, bool:decrementCounter = true)
 {
-    Cuboids[cuboid][Cuboid_InUse]      = false;
+    Cuboids[cuboid][Cuboid_InUse]   = false;
     
     Cuboids[cuboid][Cuboid_xMin]    = 0;
     Cuboids[cuboid][Cuboid_xMax]    = 0;
@@ -109,6 +109,17 @@ bool:VolCuboidIsValidIndex(cuboid)
 }
 
 /**
+ * Returns whether a cuboid is valid and in use, or not.
+ *
+ * @param cuboid    Cuboid index.
+ * @return          True if valid and in use, false otherwise.
+ */
+bool:VolCuboidIsValid(cuboid)
+{
+    return VolCuboidIsValidIndex(cuboid) && VolCuboidInUse(cuboid);
+}
+
+/**
  * Gets the first free cuboid index.
  *
  * @return      The first free cuboid index if successful, or -1 if there are
@@ -122,6 +133,8 @@ VolGetFreeCuboid()
         // Check if it's free.
         if (!VolCuboidInUse(cuboid))
         {
+            Cuboid[cuboid][Cuboid_InUse] = true;
+            CuboidCount++;
             return cuboid;
         }
     }
