@@ -55,6 +55,7 @@
  */
 enum VolAnticampAction
 {
+    Anticamp_InvalidAction = -1,
     Anticamp_NoAction,      /** Do nothing but give a warning. */
     Anticamp_Damage,        /** Give damage to player. */
     Anticamp_Slay,          /** Slay player. */
@@ -67,6 +68,7 @@ enum VolAnticampAction
  */
 enum VolAnticampeWarningType
 {
+    Anticamp_InvalidWarning = -1,
     Anticamp_NoWarning,     /** No warning messages. */
     Anticamp_Chat,          /** Print warning in chat area. */
     Anticamp_Center,        /** Print centered warning message. */
