@@ -85,6 +85,7 @@ new VolEmptyAttributes[ClassEditableAttributes] = {
  */
 enum VolClassEditMode
 {
+    ClassEditMode_Invalid = -1,
     ClassEditMode_Name,         /** Change whole player class. */
     ClassEditMode_Attributes    /** Override class attributes. */
 }

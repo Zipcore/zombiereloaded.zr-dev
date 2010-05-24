@@ -44,7 +44,7 @@
 #define ZR_VOL_DEFAULT_TEAM_FILTER      VolTeam_Humans
 #define ZR_VOL_DEFAULT_TRIGGER_DELAY    0.0
 #define ZR_VOL_DEFAULT_PRIORITY         0
-#define ZR_VOL_DEFAULT_CONFLICT_ACTION  VolPriority
+#define ZR_VOL_DEFAULT_CONFLICT_ACTION  VolConflict_Priority
 /**
  * @endsection
  */
@@ -95,7 +95,8 @@ enum VolumeShapes
  */
 enum VolumeEffects
 {
-    VolEffect_None = 0,
+    VolEffect_Invalid = -1,
+    VolEffect_None,
     VolEffect_Wireframe,
     VolEffect_Smoke
 }
@@ -105,7 +106,8 @@ enum VolumeEffects
  */
 enum VolumeTeamFilters
 {
-    VolTeam_All = 0,
+    VolTeam_Invalid = -1,
+    VolTeam_All,
     VolTeam_Humans,
     VolTeam_Zombies
 }
@@ -115,6 +117,7 @@ enum VolumeTeamFilters
  */
 enum VolumeConflictActions
 {
-    VolPriority = 0,    /** Use the volume with highest priority, ignore others. */
-    VolMerge            /** Try to merge volume settings/attributes, or use priority if there's a merge conflict. */
+    VolConflict_Invalid = -1,
+    VolConflict_Priority,       /** Use the volume with highest priority, ignore others. */
+    VolConflict_Merge           /** Try to merge volume settings/attributes, or use priority if there's a merge conflict. */
 }
