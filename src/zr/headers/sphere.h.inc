@@ -31,9 +31,20 @@
 #define _volfeatures_sphere_included
 
 /**
- * Total cuboids allowed.
+ * Total spheres allowed.
  */
 #define ZR_SPHERES_MAX ZR_VOLUMES_MAX
+
+/**
+ * @section Default sphere attribute values.
+ */
+#define ZR_SPHERE_DEF_RADIUS        0.0
+#define ZR_SPHERE_DEF_FADE_TYPE     FadeType_None
+#define ZR_SPHERE_DEF_MIN_DISTANCE  0.0
+#define ZR_SPHERE_DEF_MAX_DISTANCE  0.0
+/**
+ * @endsection
+ */
 
 /**
  * Represents a sphere.
@@ -50,8 +61,7 @@ enum SphereAttributes
     /* Dimensions */
     Float:Sphere_Radius,        /** Size. */
     
-    bool:Sphere_Fade,           /** Enable fade. Note: Not all volumetric features support fading. */
-    FadeTypes:SphereFadeType,   /** Fade method. */
+    FadeTypes:Sphere_FadeType,  /** Fade method. Note: Not all volumetric features support fading. */
     Float:Sphere_MinDistance,   /** Minimum fade distance. */
     Float:Sphere_MaxDistance,   /** Maximum fade distance. */
 }

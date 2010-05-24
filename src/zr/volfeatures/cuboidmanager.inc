@@ -134,7 +134,7 @@ bool:VolCuboidRemove(cuboid, bool:recursive = true)
                 Volumes[volumeIndex][Vol_ShapeData] == cuboid)
             {
                 // Remove volume.
-                VolRemove(volumeIndex);
+                VolRemove(volumeIndex, recursive);
             }
         }
     }

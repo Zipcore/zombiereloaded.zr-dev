@@ -90,16 +90,17 @@ VolAdd(shapeData,
 }
 
 /**
- * Disables and removes the specified volume. Its features are either detached
- * or removed depending on removeFeatures.
+ * Disables and removes the specified volume.
  *
- * @param volumeIndex       The volume to remove.
- * @param removeFeatures    Optional. Removes the attached features instead of
- *                          detaching them. Default is remove (true).
+ * Note: Its features are either detached or removed depending on 'recursive'.
  *
- * @return                  True if removed, false otherwise.
+ * @param volumeIndex   The volume to remove.
+ * @param recursive     Optional. Removes the attached features instead of
+ *                      detaching them. Default is true.
+ *
+ * @return              True if removed, false otherwise.
  */
-bool:VolRemove(volumeIndex, bool:removeFeatures = true)
+bool:VolRemove(volumeIndex, bool:recursive = true)
 {
     // Validate volume.
     if (!VolIsValid(volumeIndex))
