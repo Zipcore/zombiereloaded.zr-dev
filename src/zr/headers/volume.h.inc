@@ -55,7 +55,7 @@
 #define ZR_VOLUMES_MAX 32
 
 /**
- * Represent a volume.
+ * Represents a volume.
  */
 enum VolumeAttributes
 {

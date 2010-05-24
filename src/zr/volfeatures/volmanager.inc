@@ -36,7 +36,9 @@
  * @param triggerDelay      Optional. Delay before triggering 'enter' event, in seconds.
  * @param priority          Optional. Priority for conflict action.
  * @param conflictAction    Optional. What to do in case of volume conflicts.
- * @return                  Volume index if successful, -1 on error.
+ * @return                  Volume index if successful, negative on error.
+ *                          -1 if no free volumes
+ *                          -2 if invalid shape data
  */
 VolAdd(shapeData,
        VolumeShapes:shape = ZR_VOL_DEFAULT_SHAPE,
@@ -47,14 +49,6 @@ VolAdd(shapeData,
        priority = ZR_VOL_DEFAULT_PRIORITY,
        VolumeConflictActions:conflictAction = ZR_VOL_DEFAULT_CONFLICT_ACTION)
 {
-    // Get new volume index.
-    new volumeIndex = VolGetFreeVolume();
-    if (volumeIndex < 0)
-    {
-        // No free volumes.
-        return -1;
-    }
-    
     // Validate shapeData.
     new bool:valid;
     switch (shape)
@@ -70,6 +64,14 @@ VolAdd(shapeData,
     }
     if (!valid)
     {
+        return -2;
+    }
+    
+    // Get new volume index.
+    new volumeIndex = VolGetFreeVolume();
+    if (volumeIndex < 0)
+    {
+        // No free volumes.
         return -1;
     }
     
