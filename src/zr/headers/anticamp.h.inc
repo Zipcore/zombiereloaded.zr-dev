@@ -35,6 +35,7 @@
  */
 #define ZR_ANTICAMP_DEF_IN_USE          false
 #define ZR_ANTICAMP_DEF_ENABLED         false
+#define ZR_ANTICAMP_DEF_NAME            ""
 #define ZR_ANTICAMP_DEF_VOLUME_INDEX    -1
 #define ZR_ANTICAMP_DEF_INTERVAL        1.0
 #define ZR_ANTICAMP_DEF_ACTION          Anticamp_Damage
@@ -49,6 +50,11 @@
  * Maximum number of anti camp volumes.
  */
 #define ZR_ANTICAMP_MAX ZR_VOLUMES_MAX
+
+/**
+ * Number of bytes reserved for name strings.
+ */
+#define ZR_ANTICAMP_NAME_LEN 64
 
 /**
  * Actions to do with players in anti-camp volumes.
@@ -82,6 +88,7 @@ enum VolTypeAnticamp
 {
     bool:Anticamp_InUse,                        /** Specifies if the data index is used or not. */
     bool:Anticamp_Enabled,                      /** Specifies if the feature is enabled or not. */
+    String:Anticamp_Name[ZR_ANTICAMP_NAME_LEN], /** Optional. Name of the anti-camp (alphanumeric). Cannot start with a number. */
     Anticamp_VolumeIndex,                       /** Which volume this anticamp is linked to. */
     Float:Anticamp_Interval,                    /** How often to trigger an action. */
     Handle:Anticamp_Timer,                      /** Action timer handle. */

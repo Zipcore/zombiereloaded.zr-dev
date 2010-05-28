@@ -125,6 +125,7 @@ VolAnticampReset(anticampIndex, bool:inUse = ZR_ANTICAMP_DEF_IN_USE, bool:decrem
 {
     AnticampData[anticampIndex][Anticamp_InUse]         = inUse;
     AnticampData[anticampIndex][Anticamp_Enabled]       = ZR_ANTICAMP_DEF_ENABLED;
+    strcopy(AnticampData[anticampIndex][Anticamp_Name], ZR_ANTICAMP_NAME_LEN, ZR_ANTICAMP_DEF_NAME);
     AnticampData[anticampIndex][Anticamp_VolumeIndex]   = ZR_ANTICAMP_DEF_VOLUME_INDEX;
     
     AnticampData[anticampIndex][Anticamp_Interval]      = ZR_ANTICAMP_DEF_INTERVAL;

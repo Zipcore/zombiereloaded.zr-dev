@@ -62,6 +62,8 @@ VolCuboidClearIndex(cuboid, bool:decrementCounter = true)
 {
     Cuboids[cuboid][Cuboid_InUse]   = false;
     
+    strcopy(Cuboids[cuboid][Cuboid_Name], ZR_CUBOID_NAME_LEN, ZR_CUBOID_DEF_NAME);
+    
     Cuboids[cuboid][Cuboid_xMin]    = 0;
     Cuboids[cuboid][Cuboid_xMax]    = 0;
     

@@ -35,6 +35,7 @@
  */
 #define ZR_VOL_DEFAULT_ENABLED          false
 #define ZR_VOL_DEFAULT_IN_USE           false
+#define ZR_VOL_DEFAULT_NAME             ""
 #define ZR_VOL_DEFAULT_FEATURE_TYPES    INVALID_HANDLE
 #define ZR_VOL_DEFAULT_FEATURE_INDEXES  INVALID_HANDLE
 #define ZR_VOL_DEFAULT_SHAPE            VolShape_Cuboid
@@ -55,6 +56,11 @@
 #define ZR_VOLUMES_MAX 32
 
 /**
+ * Number of bytes reserved for volume names.
+ */
+#define ZR_VOL_NAME_LEN 64
+
+/**
  * Represents a volume.
  */
 enum VolumeAttributes
@@ -62,6 +68,7 @@ enum VolumeAttributes
     /* General */
     bool:Vol_Enabled,                   /** Volume state. */
     bool:Vol_InUse,                     /** Marks if the volume is used. */
+    String:Vol_Name[ZR_VOL_NAME_LEN],   /** Optional. Name of the volume (alphanumeric). Cannot start with a number. */
     VolumeShapes:Vol_Shape,             /** Shape type. */
     Vol_ShapeData,                      /** Index in remote shape array, depending on shape type. */
     

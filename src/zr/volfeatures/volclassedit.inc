@@ -140,6 +140,7 @@ VolClassEditReset(dataIndex, bool:decrementCounter = true)
 {
     VolClassEditData[dataIndex][VolClassEdit_InUse]         = VOL_CLASSEDIT_DEF_IN_USE;
     VolClassEditData[dataIndex][VolClassEdit_Enabled]       = VOL_CLASSEDIT_DEF_ENABLED;
+    strcopy(VolClassEditData[dataIndex][VolClassEdit_Name], ZR_CLASSEDIT_NAME_LEN, VOL_CLASSEDIT_DEF_NAME);
     VolClassEditData[dataIndex][VolClassEdit_VolumeIndex]   = VOL_CLASSEDIT_DEF_VOLUME_INDEX;
     VolClassEditData[dataIndex][VolClassEdit_Mode]          = VOL_CLASSEDIT_DEF_MODE;
     
