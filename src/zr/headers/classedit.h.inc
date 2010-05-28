@@ -33,6 +33,11 @@
 #define VOL_CLASSNAME_SIZE  64
 
 /**
+ * Number of bytes reserved for class editor names.
+ */
+#define ZR_CLASSEDIT_NAME_LEN 64
+
+/**
  * Maximum number of class editors.
  */
 #define ZR_CLASSEDIT_MAX ZR_VOLUMES_MAX
@@ -42,6 +47,7 @@
  */
 #define VOL_CLASSEDIT_DEF_IN_USE        false
 #define VOL_CLASSEDIT_DEF_ENABLED       false
+#define VOL_CLASSEDIT_DEF_NAME          ""
 #define VOL_CLASSEDIT_DEF_VOLUME_INDEX  -1
 #define VOL_CLASSEDIT_DEF_MODE          ClassEditMode_Attributes
 #define VOL_CLASSEDIT_DEF_CLASS_NAME    ""
@@ -97,6 +103,7 @@ enum VolTypeClassEdit
 {
     bool:VolClassEdit_InUse,
     bool:VolClassEdit_Enabled,
+    String:VolClassEdit_Name[ZR_CLASSEDIT_NAME_LEN],
     VolClassEdit_VolumeIndex,
     
     VolClassEditMode:VolClassEdit_Mode,

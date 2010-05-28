@@ -30,11 +30,12 @@
  *
  * @param min   Coordinates to first corner of cuboid.
  * @param max   Coordinates to diagonally oposite corner of cuboid.
+ * @param name  Optional. Name of this cuboid.
  * @return      Cuboid index, or negative on error.
  *              -1 if no free cuboids
  *              -2 zero area cuboid
  */
-VolCuboidAdd(Float:min[3], Float:max[3])
+VolCuboidAdd(Float:min[3], Float:max[3], const String:name[] = "")
 {
     new x1 = min[0];
     new x2 = max[0];
@@ -93,6 +94,9 @@ VolCuboidAdd(Float:min[3], Float:max[3])
     Cuboids[cuboid][Cuboid_xMax] = x2;
     Cuboids[cuboid][Cuboid_yMax] = y2;
     Cuboids[cuboid][Cuboid_xMax] = z2;
+    
+    TrimString(name);
+    strcopy(Cuboids[cuboid][Cuboid_Name], ZR_CUBOID_NAME_LEN, name);
     
     return cuboid;
 }

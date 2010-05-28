@@ -33,6 +33,7 @@
  * @param fadeType      Fade style.
  * @param minDistance   Minimum fade distance.
  * @param maxDistance   Maximum fade distance.
+ * @param name          Optional. Name of this sphere.
  * @return              Sphere index, or negative on error.
  *                      -1 if no free spheres.
  *                      -2 if invalid radius.
@@ -42,7 +43,8 @@ VolSphereAdd(Float:loc[3],
              Float:radius,
              FadeTypes:fadeType = ZR_SPHERE_DEF_FADE_TYPE,
              Float:minDistance = ZR_SPHERE_DEF_MIN_DISTANCE,
-             Float:maxDistance = ZR_SPHERE_DEF_MAX_DISTANCE)
+             Float:maxDistance = ZR_SPHERE_DEF_MAX_DISTANCE,
+             const String:name[] = ZR_SPHERE_DEF_NAME)
 {
     // Validate radius.
     if (radius <= 0)
@@ -71,6 +73,9 @@ VolSphereAdd(Float:loc[3],
     Spheres[sphere][Sphere_FadeType] = fadeType;
     Spheres[sphere][Sphere_MinDistance] = minDistance;
     Spheres[sphere][Sphere_MaxDistance] = maxDistance;
+    
+    TrimString(name);
+    strcopy(Spheres[sphere][Sphere_Name], ZR_SPHERE_NAME_LEN, name);
     
     return sphere;
 }
