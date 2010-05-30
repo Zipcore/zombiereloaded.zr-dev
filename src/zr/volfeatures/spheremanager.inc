@@ -130,7 +130,7 @@ bool:VolSphereRemove(sphere, bool:recursive = true)
 
 
 /**
- * Removes the all spheres.
+ * Removes all spheres.
  *
  * Note: Volumes and features that depend on the spheres are also removed if
  *       recursive removal is enabled.
@@ -145,4 +145,28 @@ VolSphereRemoveAll(bool:recursive = true)
     {
         VolSphereRemove(sphere, recursive);
     }
+}
+
+/**
+ * Search for a sphere with the specified name.
+ *
+ * @param name              Name to search for.
+ * @param caseSensitive     Optional. Use case sensitive search. Default is
+ *                          false.
+ * @return                  Sphere index if found, -1 otherwise.
+ */
+VolSphereFind(const String:name[], bool:caseSensitive = false)
+{
+    for (new sphere = 0; sphere < ZR_SPHERES_MAX; sphere++)
+    {
+        if (VolSphereInUse(sphere))
+        {
+            if (StrEqual(Spheres[sphere][Sphere_Name], ZR_SPHERE_NAME_LEN, caseSensitive))
+            {
+                return sphere;
+            }
+        }
+    }
+    
+    return -1;
 }

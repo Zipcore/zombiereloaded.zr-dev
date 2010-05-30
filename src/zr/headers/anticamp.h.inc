@@ -57,6 +57,11 @@
 #define ZR_ANTICAMP_NAME_LEN 64
 
 /**
+ * Number of bytes reserved for message strings.
+ */
+#define ZR_ANTICAMP_MESSAGE_LEN 256
+
+/**
  * Actions to do with players in anti-camp volumes.
  */
 enum VolAnticampAction
@@ -72,7 +77,7 @@ enum VolAnticampAction
 /**
  * Warning types.
  */
-enum VolAnticampeWarningType
+enum VolAnticampWarningType
 {
     Anticamp_InvalidWarning = -1,
     Anticamp_NoWarning,     /** No warning messages. */
@@ -96,8 +101,8 @@ enum VolTypeAnticamp
     VolAnticampAction:Anticamp_Action,          /** What to do with players in anti-camp volumes */
     Float:Anticamp_Amount,                      /** Amount depending on action type. Usually time in seconds or damage amount. */
     
-    VolAnticampeWarningType:Anticamp_Warning,   /** How to warn the player. */
-    String:Anticamp_Message[256]                /** Override warning message. Max 256 characters. */    
+    VolAnticampWarningType:Anticamp_Warning,    /** How to warn the player. */
+    String:Anticamp_Message[ZR_ANTICAMP_MESSAGE_LEN]    /** Override warning message. Max 256 characters. */    
 }
 
 

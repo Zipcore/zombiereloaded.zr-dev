@@ -150,7 +150,7 @@ bool:VolCuboidRemove(cuboid, bool:recursive = true)
 }
 
 /**
- * Removes the all cuboids.
+ * Removes all cuboids.
  *
  * Note: Volumes and features that depend on the cuboids are also removed if
  *       recursive removal is enabled.
@@ -165,4 +165,28 @@ VolCuboidRemoveAll(bool:recursive = true)
     {
         VolCuboidRemove(cuboid, recursive);
     }
+}
+
+/**
+ * Search for a cuboid with the specified name.
+ *
+ * @param name              Name to search for.
+ * @param caseSensitive     Optional. Use case sensitive search. Default is
+ *                          false.
+ * @return                  Cuboid index if found, -1 otherwise.
+ */
+VolCuboidFind(const String:name[], bool:caseSensitive = false)
+{
+    for (new cuboid = 0; cuboid < ZR_CUBOIDS_MAX; cuboid++)
+    {
+        if (VolCuboidInUse(cuboid))
+        {
+            if (StrEqual(Cuboids[cuboid][Cuboid_Name], ZR_CUBOID_NAME_LEN, caseSensitive))
+            {
+                return cuboid;
+            }
+        }
+    }
+    
+    return -1;
 }

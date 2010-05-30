@@ -248,6 +248,17 @@ bool:VolDetachFeature(volumeIndex, VolumeFeatureTypes:featureType, featureIndex,
         }
     }
     
+    new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
+    new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureIndexes];
+    
+    // Remove feature from arrays.
+    new arrayIndex = FindValueInArray(featureIndexes, featureIndex);
+    if (arrayIndex >= 0)
+    {
+        RemoveFromArray(featureTypes, arrayIndex);
+        RemoveFromArray(featureIndexes, arrayIndex);
+    }
+    
     return true;
 }
 
