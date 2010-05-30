@@ -78,6 +78,7 @@ new Float:VolTriggerInterval;
 
 // Sub features.
 #include "zr/volfeatures/volanticamp"
+#include "zr/volfeatures/anticampmanager"
 #include "zr/volfeatures/volclassedit"
 
 
