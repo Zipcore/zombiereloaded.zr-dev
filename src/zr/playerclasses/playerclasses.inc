@@ -141,7 +141,8 @@ new Handle:tClassInstantChange[MAXPLAYERS + 1];
 new String:ClassOriginalPlayerModel[MAXPLAYERS + 1][PLATFORM_MAX_PATH];
 
 /**
- * Specifies whether a player has spawned.
+ * Specifies whether a player has spawned at least once, to check when a player
+ * spawn for the first time.
  */
 new bool:ClassPlayerSpawned[MAXPLAYERS + 1];
 
@@ -730,7 +731,7 @@ ClassCheckReadyState(client)
 }
 
 /**
- * Fires the ready event for any client that is ready.
+ * Fires the ready event for all clients that is ready.
  *
  * Note: This function is called in ClassOnModulesLoaded.
  */
@@ -738,15 +739,7 @@ ClassCheckReadyStates()
 {
     for (new client = 1; client < MaxClients; client++)
     {
-        if (ClassIsClientReady(client))
-        {
-            // Fire ready event.
-            if (!ClassReadyEventFired[client])
-            {
-                ClassReadyEventFired[client] = true;
-                ClassOnClientReady(client);
-            }
-        }
+        ClassCheckReadyState(client);
     }
 }
 
@@ -755,8 +748,10 @@ ClassCheckReadyStates()
  * if specified.
  *
  * @param client    Optional. The client index. If specified, cookies are used.
+ * @param loadMode  Optional. How class selections should be applied on the
+ *                  client. Default is ClassLoadMode_Normal.
  */
-ClassClientSetDefaultIndexes(client = -1)
+ClassClientSetDefaultIndexes(client = -1, ClassLoadMode:loadMode = ClassLoadMode_Normal)
 {
     new bool:clientvalid = ZRIsClientValid(client);
     new filter[ClassFilter];
@@ -793,7 +788,7 @@ ClassClientSetDefaultIndexes(client = -1)
      */
     
     // Check if a client is specified.
-    if (clientvalid)
+    if (clientvalid && !(loadMode == ClassLoadMode_Preload))
     {
         // Get cookie indexes if enabled.
         if (saveclasses)
@@ -813,7 +808,9 @@ ClassClientSetDefaultIndexes(client = -1)
         
         // Note: When class indexes are set on cookies, they're incremented by
         //       one so zero means no class set and will result in a invalid
-        //       class index when restored.
+        //       class index when restored. The indexes are shifted because
+        //       new players will have blank cookies (0), so we define 0 as a
+        //       invalid index.
         
         // Check if class indexes are set and that the client pass the filter.
         // Also check that the saved class' team id match with the loaded class.
@@ -906,16 +903,48 @@ ClassClientSetDefaultIndexes(client = -1)
     // Check if a client is specified.
     if (clientvalid)
     {
-        // Set selected class idexes.
-        ClassSelected[client][ZR_CLASS_TEAM_ZOMBIES] = zombieindex;
-        ClassSelected[client][ZR_CLASS_TEAM_HUMANS] = humanindex;
-        ClassSelected[client][ZR_CLASS_TEAM_ADMINS] = adminindex;
-        
-        // Copy human class data to player cache.
-        ClassReloadPlayerCache(client, humanindex);
+        // Set selected class idexes, or if post loading set classes to change
+        // time if client already spawned (too late to change directly then).
+        if (loadMode == ClassLoadMode_Postload && IsPlayerAlive(client))
+        {
+            // Get the class that the client is using.
+            new activeclass = ClassGetActiveIndex(client);
+            
+            // Set classes, except for the active one.
+            if (ClassTeamCompare(activeclass, ZR_CLASS_TEAM_ZOMBIES))
+            {
+                // Set all classes, except for the zombie class.
+                ClassSelectedNext[client][ZR_CLASS_TEAM_ZOMBIES] = zombieindex;
+                ClassSelected[client][ZR_CLASS_TEAM_HUMANS] = humanindex;
+                ClassSelected[client][ZR_CLASS_TEAM_ADMINS] = adminindex;
+            }
+            else if (ClassTeamCompare(activeclass, ZR_CLASS_TEAM_HUMANS))
+            {
+                // Set all classes, except for the human class.
+                ClassSelected[client][ZR_CLASS_TEAM_ZOMBIES] = zombieindex;
+                ClassSelectedNext[client][ZR_CLASS_TEAM_HUMANS] = humanindex;
+                ClassSelected[client][ZR_CLASS_TEAM_ADMINS] = adminindex;
+            }
+            else
+            {
+                // Set all classes, except for the admin class.
+                ClassSelected[client][ZR_CLASS_TEAM_ZOMBIES] = zombieindex;
+                ClassSelected[client][ZR_CLASS_TEAM_HUMANS] = humanindex;
+                ClassSelectedNext[client][ZR_CLASS_TEAM_ADMINS] = adminindex;
+            }
+        }
+        else
+        {
+            ClassSelected[client][ZR_CLASS_TEAM_ZOMBIES] = zombieindex;
+            ClassSelected[client][ZR_CLASS_TEAM_HUMANS] = humanindex;
+            ClassSelected[client][ZR_CLASS_TEAM_ADMINS] = adminindex;
+            
+            // Copy human class data to player cache.
+            ClassReloadPlayerCache(client, humanindex);
+        }
         
         // Save indexes in cookies if enabled, and not already saved.
-        if (saveclasses)
+        if (saveclasses && !(loadMode == ClassLoadMode_Preload))
         {
             if (!haszombie)
             {

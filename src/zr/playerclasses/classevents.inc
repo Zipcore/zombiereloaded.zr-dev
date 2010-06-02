@@ -62,11 +62,8 @@ ClassOnModulesLoaded()
 {
     ClassModulesLoaded = true;
     
-    // Fire ready event on all classes that are ready to be initialized.
+    // Fire ready event on all clients that are ready to be initialized.
     ClassCheckReadyStates();
-    
-    // Set default classes on all player slots.
-    //ClassClientSetDefaultIndexes();
 }
 
 /**
@@ -85,6 +82,9 @@ ClassOnMapStart()
 ClassOnClientConnected(client)
 {
     LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_Playerclasses, "Event", "Client %d connected.", client);
+    
+    // Preload class indexes.
+    ClassClientSetDefaultIndexes(client, ClassLoadMode_Preload);
     
     // Fire ready event if ready to be initialized.
     ClassCheckReadyState(client);
@@ -328,8 +328,11 @@ ClassOnClientReady(client)
     // Check if classes are loaded successfully.
     if (ClassValidated)
     {
-        // Set default class indexes on the player.
-        ClassClientSetDefaultIndexes(client);
+        // Cookies are loaded and admin check is done. Postload class indexes on the player.
+        ClassClientSetDefaultIndexes(client, ClassLoadMode_Postload);
+        
+        // Tell player.
+        TranslationPrintToChat(client, "Classes Selection Loaded");
     }
 }
 
@@ -462,6 +465,11 @@ ClassOnClientInfected(client, bool:motherzombie = false)
                 // Change class.
                 classindex = motherindex;
             }
+            else
+            {
+                // No mother zombie classes found. Log warning.
+                LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Mother Zombie Infection", "Warning: Couldn't find any mother zombie classes, falling back to the player's selected zombie class.");
+            }
         }
         else
         {
@@ -476,6 +484,11 @@ ClassOnClientInfected(client, bool:motherzombie = false)
                 
                 // Change class.
                 classindex = motherindex;
+            }
+            else
+            {
+                // Invalid class. Log warning.
+                LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Mother Zombie Infection", "Warning: Failed to get the specified zombie class, falling back to the player's selected zombie class. Check spelling in \"zr_classes_default_mother_zombie\".");
             }
         }
     }

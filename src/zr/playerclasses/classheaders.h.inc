@@ -354,3 +354,13 @@ enum ClassFilter
     ClassFilter_DenyFlags,              /** Flags the classes cannot have set. */
     ClassFilter_Client                  /** The client to check for class group permissions. Use 0 to ignore group filter and negative to exclude classes with groups set. */
 }
+
+/**
+ * Specifies how class selections should be applied on a client when connecting.
+ */
+enum ClassLoadMode
+{
+    ClassLoadMode_Normal,   /** Default loading mode */
+    ClassLoadMode_Preload,  /** Preload a client's class selections with config defaults. Used before they are fully connected. Cookies and admin-only classes will be ignored. */
+    ClassLoadMode_Postload  /** Lode a client's class selections from cookies if enabled, but mark them as next spawn class if the client already have spawned. */
+}

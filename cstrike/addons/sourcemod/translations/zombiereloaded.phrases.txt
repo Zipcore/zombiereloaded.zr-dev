@@ -345,6 +345,11 @@
 	{
 		"en"		"Changing classes is not allowed."
 	}
+	
+	"Classes Selection Loaded"
+	{
+		"en"		"Your saved class selections are now loaded and will take effect next spawn."
+	}
 
 	// ===========================
 	// Overlays (core)
