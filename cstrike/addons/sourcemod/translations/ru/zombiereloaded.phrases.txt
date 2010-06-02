@@ -327,6 +327,11 @@
 	{
 		"ru"		"Изменение класса запрещено."
 	}
+	
+	"Classes Selection Loaded"
+	{
+		"ru"		"Your saved class selections are now loaded and will take effect next spawn."
+	}
 
 	// ===========================
 	// Overlays (core)

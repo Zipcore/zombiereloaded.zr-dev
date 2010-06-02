@@ -326,6 +326,11 @@
 	{
 		"no"		"Endring av klasse er ikke tillatt."
 	}
+	
+	"Classes Selection Loaded"
+	{
+		"no"		"Dine lagrede klassevalg er nå lastet og vil bli tatt i bruk ved neste gjenopliving."
+	}
 
 	// ===========================
 	// Overlays (core)
