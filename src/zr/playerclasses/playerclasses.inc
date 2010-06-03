@@ -817,7 +817,7 @@ ClassClientSetDefaultIndexes(client = -1, ClassLoadMode:loadMode = ClassLoadMode
         // If not, fall back to default class indexes. Otherwise substract
         // index by one.
         if (zombieindex <= 0 ||
-            !(ClassGetTeamID(zombieindex - 1) == ZR_CLASS_TEAM_ZOMBIES) ||
+            !ClassTeamCompare(zombieindex - 1, ZR_CLASS_TEAM_ZOMBIES) ||
             !ClassFilterMatch(zombieindex - 1, filter))
         {
             zombieindex = ClassGetDefaultSpawnClass(ZR_CLASS_TEAM_ZOMBIES, filter);
@@ -829,7 +829,7 @@ ClassClientSetDefaultIndexes(client = -1, ClassLoadMode:loadMode = ClassLoadMode
         }
         
         if (humanindex <= 0 ||
-            !(ClassGetTeamID(humanindex - 1) == ZR_CLASS_TEAM_HUMANS) ||
+            !ClassTeamCompare(humanindex - 1, ZR_CLASS_TEAM_HUMANS) ||
             !ClassFilterMatch(humanindex - 1, filter))
         {
             humanindex = ClassGetDefaultSpawnClass(ZR_CLASS_TEAM_HUMANS, filter);
@@ -841,7 +841,7 @@ ClassClientSetDefaultIndexes(client = -1, ClassLoadMode:loadMode = ClassLoadMode
         }
         
         if (adminindex <= 0 ||
-            !(ClassGetTeamID(adminindex - 1) == ZR_CLASS_TEAM_ADMINS) ||
+            !ClassTeamCompare(adminindex - 1, ZR_CLASS_TEAM_ADMINS) ||
             !ClassFilterMatch(adminindex - 1, filter))
         {
             adminindex = ClassGetDefaultSpawnClass(ZR_CLASS_TEAM_ADMINS, filter);
