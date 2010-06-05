@@ -50,7 +50,7 @@
 #define VOL_CLASSEDIT_DEF_NAME          ""
 #define VOL_CLASSEDIT_DEF_VOLUME_INDEX  -1
 #define VOL_CLASSEDIT_DEF_MODE          ClassEditMode_Attributes
-#define VOL_CLASSEDIT_DEF_CLASS_NAME    ""
+#define VOL_CLASSEDIT_DEF_CLASS_INDEX   0
 #define VOL_CLASSEDIT_DEF_CLASS_DATA    VolEmptyAttributes
 /**
  * @endsection
@@ -107,7 +107,7 @@ enum VolTypeClassEdit
     VolClassEdit_VolumeIndex,
     
     VolClassEditMode:VolClassEdit_Mode,
-    String:VolClassEdit_ClassName[VOL_CLASSNAME_SIZE],
+    VolClassEdit_ClassIndex,
     VolClassEdit_ClassData[ClassEditableAttributes]
 }
 

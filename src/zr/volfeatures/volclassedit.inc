@@ -144,7 +144,7 @@ VolClassEditReset(dataIndex, bool:decrementCounter = true)
     VolClassEditData[dataIndex][VolClassEdit_VolumeIndex]   = VOL_CLASSEDIT_DEF_VOLUME_INDEX;
     VolClassEditData[dataIndex][VolClassEdit_Mode]          = VOL_CLASSEDIT_DEF_MODE;
     
-    strcopy(VolClassEditData[dataIndex][VolClassEdit_ClassName], 64, VOL_CLASSEDIT_DEF_CLASS_NAME);
+    VolClassEditData[dataIndex][VolClassEdit_ClassIndex]    = VOL_CLASSEDIT_DEF_CLASS_INDEX;
     VolClassEditData[dataIndex][VolClassEdit_ClassData]     = VOL_CLASSEDIT_DEF_CLASS_DATA;
     
     if (decrementCounter)
@@ -485,8 +485,7 @@ VolClassEditApply(client, dataIndex)
     {
         case ClassEditMode_Name:
         {
-            // Cache volume attributes.
-            new classindex = ClassGetIndex(VolClassEditData[dataIndex][VolClassEdit_ClassName]);
+            new classindex = VolClassEditData[dataIndex][VolClassEdit_ClassIndex];
             
             // Save player's selected class.
             VolClassEditSelectedClass[client] = ClassGetActiveIndex(client);
@@ -584,7 +583,7 @@ VolClassEditOnDisabled(dataIndex)
     {
         if (IsClientConnected(client) && IsClientInGame(client))
         {
-            // Only forward event if the player really is in the volume..
+            // Only forward event if the player is in the volume.
             if (VolPlayerInVolume[client][volumeIndex] && VolClassEditSelectedClass[client] >= 0)
             {
                 VolClassEditOnPlayerLeave(client, dataIndex);

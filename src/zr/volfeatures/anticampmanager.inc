@@ -100,17 +100,19 @@ bool:VolAnticampRemove(anticamp, bool:recursive = false)
     
     // Get the volume that use this anticamp.
     new volumeIndex = AnticampData[anticamp][Anticamp_VolumeIndex];
-    
-    // Check if recursive removal is enabled.
-    if (recursive)
+    if (volumeIndex >= 0)
     {
-        // Remove volume if valid.
-        VolRemove(volumeIndex, recursive);
-    }
-    else
-    {
-        // Detach the anticamp if attached.
-        VolDetachFeature(volumeIndex, VolFeature_Anticamp, anticamp);
+        // Check if recursive removal is enabled.
+        if (recursive)
+        {
+            // Remove volume if valid.
+            VolRemove(volumeIndex, recursive);
+        }
+        else
+        {
+            // Detach the anticamp if attached.
+            VolDetachFeature(volumeIndex, VolFeature_Anticamp, anticamp);
+        }
     }
     
     // Remove the anticamp.
