@@ -1204,9 +1204,24 @@
 		"en"		"Removes an existing volume. Usage: zr_vol_remove <index|name> [recursive]"
 	}
 	
-	"Vol Param VolName"
+	"Vol Syntax Shape Add"
+	{
+		"en"		"Creates a new shape to be used on a volume. Usage zr_vol_shape_add <shape> [params...]"
+	}
+	
+	"Vol Missing Parameters"
+	{
+		"en"		"Additional parameters must be specified."
+	}
+	
+	"Vol Param Vol Name"
 	{
 		"en"		"User defined name to use on volume (optional and not validated)."
+	}
+	
+	"Vol Param Shape Name"
+	{
+		"en"		"User defined name to use on shape (optional and not validated)."
 	}
 	
 	"Vol Param Shape"
@@ -1216,12 +1231,27 @@
 	
 	"Vol Param Shape ID"
 	{
-		"en"		"Which shape to use (use zr_shape_add to create one). Valid options: <index|name>"
+		"en"		"Which shape to use (use zr_vol_shape_add to create one). Valid options: <index|name>"
 	}
 	
 	"Vol Param Params"
 	{
+		"en"		"Parameters:"
+	}
+	
+	"Vol Param Params Optional"
+	{
 		"en"		"Parameters (optional):"
+	}
+	
+	"Vol Param Cuboid Params"
+	{
+		"en"		"Parameters for cuboid shapes:"
+	}
+	
+	"Vol Param Sphere Params"
+	{
+		"en"		"Parameters for sphere shapes:"
 	}
 	
 	"Vol Param Effect"
@@ -1252,6 +1282,47 @@
 	"Vol Param Conflict Action"
 	{
 		"en"		"(NOT IMPLEMENTED) What to do in case of conflicting overlapping volumes."
+	}
+	
+	"Vol Param Cuboid Min"
+	{
+		"en"		"Coordinates to first corner (user defined)."
+	}
+	
+	"Vol Param Cuboid Max"
+	{
+		"en"		"Coordinates to diagonally oposite corner to oposite height."
+	}
+	
+	"Vol Param Sphere Loc"
+	{
+		"en"		"Coordinates to location of the sphere."
+	}
+	
+	"Vol Param Sphere Radius"
+	{
+		"en"		"Size of sphere."
+	}
+	
+	"Vol Param Sphere Fade Type"
+	{
+		"en"		"Fade method to apply on attached features (if supported)."
+	}
+	
+	"Vol Param Sphere Min Dist"
+	{
+		"en"		"Start fade distance."
+	}
+	
+	"Vol Param Sphere Max Dist"
+	{
+		"en"		"End fade distance."
+	}
+	
+	"Vol Invalid Volume Id"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid volume index/name: {1}"
 	}
 	
 	"Vol Invalid Shape"
@@ -1295,9 +1366,40 @@
 		"en"		"Maximum number of volumes reached."
 	}
 	
+	"Vol Cuboid Full"
+	{
+		"en"		"Maximum number of cuboid shapes reached."
+	}
+	
+	"Vol Cuboid Empty"
+	{
+		"en"		"Invalid cuboud size. Zero-area cuboid."
+	}
+	
+	"Vol Sphere Full"
+	{
+		"en"		"Maximum number of sphere shapes reached."
+	}
+	
+	"Vol Sphere Invalid Radius"
+	{
+		"en"		"Invalid radius. Cannot be zero or negative."
+	}
+	
+	"Vol Sphere Invalid Fade Distance"
+	{
+		"en"		"Invalid fade distance."
+	}
+	
 	"Vol Added"
 	{
-		"#format"	"{1:d}"
-		"en"		"Volume added successfully. Index: {1}"
+		"#format"	"{1:d},{2:s}"
+		"en"		"Volume added successfully. Index: {1} (\"{2}\")"
+	}
+	
+	"Vol Shape Added"
+	{
+		"#format"	"{1:s},{2:d},{3:s}"
+		"en"		"Shape ({1}) added successfully. Index: {2} (\"{3}\")"
 	}
 }

@@ -134,7 +134,7 @@ VolGetFreeSphere()
     for (new sphere = 0; sphere < ZR_SPHERES_MAX; sphere++)
     {
         // Check if it's free.
-        if (!VolCuboidInUse(sphere))
+        if (!VolSphereInUse(sphere))
         {
             Spheres[sphere][Sphere_InUse] = true;
             SphereCount++;

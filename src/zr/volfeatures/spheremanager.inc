@@ -44,7 +44,7 @@ VolSphereAdd(Float:loc[3],
              FadeTypes:fadeType = ZR_SPHERE_DEF_FADE_TYPE,
              Float:minDistance = ZR_SPHERE_DEF_MIN_DISTANCE,
              Float:maxDistance = ZR_SPHERE_DEF_MAX_DISTANCE,
-             const String:name[] = ZR_SPHERE_DEF_NAME)
+             String:name[] = ZR_SPHERE_DEF_NAME)
 {
     // Validate radius.
     if (radius <= 0)
@@ -53,23 +53,30 @@ VolSphereAdd(Float:loc[3],
     }
     
     // Validate fade distance.
-    if (minDistance == maxDistance ||
+    if (fadeType != FadeType_None &&
+        (minDistance == maxDistance ||
         minDistance > maxDistance ||
-        maxDistance < minDistance)
+        maxDistance < minDistance))
     {
         return -3;
     }
     
+    new Float:locX = loc[0];
+    new Float:locY = loc[1];
+    new Float:locZ = loc[2];
+    
     // Get free sphere.
-    new sphere = VolSphereGetFreeSphere();
+    new sphere = VolGetFreeSphere();
     if (sphere < 0)
     {
         return -1;
     }
     
     // Apply attributes.
-    Spheres[sphere][Sphere_Loc] = loc;
-    Spheres[sphere][Sphere_Radius] = raduis;
+    Spheres[sphere][Sphere_LocX] = locX;
+    Spheres[sphere][Sphere_LocY] = locY;
+    Spheres[sphere][Sphere_LocZ] = locZ;
+    Spheres[sphere][Sphere_Radius] = radius;
     Spheres[sphere][Sphere_FadeType] = fadeType;
     Spheres[sphere][Sphere_MinDistance] = minDistance;
     Spheres[sphere][Sphere_MaxDistance] = maxDistance;
@@ -139,7 +146,7 @@ bool:VolSphereRemove(sphere, bool:recursive = true)
  *                      on the spheres. Default is true.
  * @return              True if successful, false otherwise.
  */
-VolSphereRemoveAll(bool:recursive = true)
+stock VolSphereRemoveAll(bool:recursive = true)
 {
     for (new sphere = 0; sphere < ZR_CUBOIDS_MAX; sphere++)
     {

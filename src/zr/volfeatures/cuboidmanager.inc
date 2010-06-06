@@ -35,14 +35,14 @@
  *              -1 if no free cuboids
  *              -2 zero area cuboid
  */
-VolCuboidAdd(Float:min[3], Float:max[3], const String:name[] = "")
+VolCuboidAdd(Float:min[3], Float:max[3], String:name[] = "")
 {
-    new x1 = min[0];
-    new x2 = max[0];
-    new y1 = min[1];
-    new y2 = min[1];
-    new z1 = min[2];
-    new z2 = min[2];
+    new Float:x1 = min[0];
+    new Float:x2 = max[0];
+    new Float:y1 = min[1];
+    new Float:y2 = min[1];
+    new Float:z1 = min[2];
+    new Float:z2 = min[2];
     
     // Check if both locations are equal.
     if (x1 == x2 &&
@@ -54,7 +54,7 @@ VolCuboidAdd(Float:min[3], Float:max[3], const String:name[] = "")
     }
     
     // Get free cuboid index.
-    new cuboid = VolCuboidGetFreeCuboid();
+    new cuboid = VolGetFreeCuboid();
     
     // Validate index.
     if (cuboid < 0)
@@ -159,7 +159,7 @@ bool:VolCuboidRemove(cuboid, bool:recursive = true)
  *                      on the cuboids. Default is true.
  * @return              True if successful, false otherwise.
  */
-VolCuboidRemoveAll(bool:recursive = true)
+stock VolCuboidRemoveAll(bool:recursive = true)
 {
     for (new cuboid = 0; cuboid < ZR_CUBOIDS_MAX; cuboid++)
     {
