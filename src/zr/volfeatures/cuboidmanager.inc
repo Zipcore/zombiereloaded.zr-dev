@@ -181,7 +181,7 @@ VolCuboidFind(const String:name[], bool:caseSensitive = false)
     {
         if (VolCuboidInUse(cuboid))
         {
-            if (StrEqual(Cuboids[cuboid][Cuboid_Name], ZR_CUBOID_NAME_LEN, caseSensitive))
+            if (StrEqual(Cuboids[cuboid][Cuboid_Name], name, caseSensitive))
             {
                 return cuboid;
             }

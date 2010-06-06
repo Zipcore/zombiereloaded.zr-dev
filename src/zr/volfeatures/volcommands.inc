@@ -55,12 +55,264 @@ Example:
  */
 VolOnCommandsCreate()
 {
+    //RegConsoleCmd("zr_vol_help", VolHelpCommand, "Lists available volume commands");
+    
+    RegConsoleCmd("zr_vol_add", VolAddCommand, "Creates a empty volume (no features attached) in the map. Usage: zr_vol_add <shape> <shape id> [params...]");
+    //RegConsoleCmd("zr_vol_shape_add", VolAddCommand, "Creates a new shape to be used on a volume. Usage: zr_vol_shape_add <type> <params...>");
+    
     /*
     RegConsoleCmd("zr_vol_add", VolAddVolumeCommand, "Creates a rectangular volume in the map. Usage: zr_vol_add <x1> <y1> <z1> <x2> <y2> <z2> <type> [params]");
     RegConsoleCmd("zr_vol_remove", VolRemoveVolumeCommand, "Removes an existing volume in the map. Usage: zr_vol_remove <volume index>");
     RegConsoleCmd("zr_vol_list", VolListCommand, "Lists existing volumes in the map, or dumps detail data to the specified volume. Usage: zr_vol_list [volume index]");
     RegConsoleCmd("zr_vol_dumpstates", VolDumpStatesCommand, "Dumps volume states for the specified player. Usage: zr_vol_dumpstates <index|targetname>");
     */
+}
+
+/**
+ * Command callback for creating a new volume.
+ */
+public Action:VolAddCommand(client, argc)
+{
+    decl String:buffer[1022];
+    buffer[0] = 0;
+    
+    // Check if privileged.
+    if (!ZRIsClientPrivileged(client, OperationType_Configuration))
+    {
+        TranslationReplyToCommand(client, "No access to command");
+        return Plugin_Handled;
+    }
+    
+    // Print syntax info if there are missing arguments.
+    if (argc < 2)
+    {
+        VolBuildVolumeSyntaxString(client, buffer, sizeof(buffer));
+        ReplyToCommand(client, buffer);
+        return Plugin_Handled;
+    }
+    
+    // Get shape type and validate it.
+    GetCmdArg(1, buffer, sizeof(buffer));
+    new VolumeShapes:shapeType = VolStringToShape(buffer);
+    if (shapeType == VolShape_Invalid)
+    {
+        TranslationReplyToCommand(client, "Vol Invalid Shape", buffer);
+        return Plugin_Handled;
+    }
+    
+    // Get shape id and validate it.
+    new shapeIndex;
+    decl String:shape[64];
+    shape[0] = 0;
+    GetCmdArg(2, shape, sizeof(shape));
+    if (IsCharNumeric(shape[0]))
+    {
+        // It's a index.
+        shapeIndex = StringToInt(shape);
+        switch (shapeType)
+        {
+            case VolShape_Cuboid:
+            {
+                if (!VolCuboidIsValid(shapeIndex))
+                {
+                    shapeIndex = -1;
+                }
+            }
+            case VolShape_Sphere:
+            {
+                if (!VolSphereIsValid(shapeIndex))
+                {
+                    shapeIndex = -1;
+                }
+            }
+        }
+    }
+    else
+    {
+        // It's a name.
+        switch (shapeType)
+        {
+            case VolShape_Cuboid: shapeIndex = VolCuboidFind(shape);
+            case VolShape_Sphere: shapeIndex = VolSphereFind(shape);
+        }
+    }
+    
+    // Validate shape index.
+    if (shapeIndex < 0)
+    {
+        TranslationReplyToCommand(client, "Vol Invalid Shape Id", buffer);
+        return Plugin_Handled;
+    }
+    
+    // Join last parameters, if any.
+    decl String:argbuffer[255];
+    buffer[0] = 0;
+    argbuffer[0] = 0;
+    if (argc >= 2)
+    {
+        // Join the last parameters in a string.
+        for (new arg = 2; arg <= argc; arg++)
+        {
+            GetCmdArg(arg, argbuffer, sizeof(argbuffer));
+            StrCat(buffer, sizeof(buffer), argbuffer);
+            
+            // Add space, except on the last parameter.
+            if (arg < argc)
+            {
+                StrCat(buffer, sizeof(buffer), " ");
+            }
+        }
+    }
+    
+    // Parse parameters.
+    const MAX_PARAMS = 10;
+    new parameters[MAX_PARAMS][ParamParseResult];
+    new err;
+    new errPos;
+    new paramCount = ParamParseString(parameters, MAX_PARAMS, buffer, err, errPos);
+    
+    // Check for parse errors.
+    if (err)
+    {
+        ParamPrintErrorMessage(client, buffer, err, errPos);
+        return Plugin_Handled;
+    }
+    
+    decl String:parameter[64];
+    decl String:value[255];
+    parameter[0] = 0;
+    value[0] = 0;
+    new bool:hasErrors = false;
+    
+    // Parameter cache.
+    new String:name[ZR_VOL_NAME_LEN] = ZR_VOL_DEFAULT_NAME;
+    new VolumeEffects:effect = ZR_VOL_DEFAULT_EFFECT;
+    new effectColor[3] = ZR_VOL_DEFAULT_EFFECT_COLOR;
+    new VolumeTeamFilters:teamFilter = ZR_VOL_DEFAULT_TEAM_FILTER;
+    new Float:triggerDelay = ZR_VOL_DEFAULT_TRIGGER_DELAY;
+    new priority = ZR_VOL_DEFAULT_PRIORITY;
+    new VolumeConflictActions:conflictAction = ZR_VOL_DEFAULT_CONFLICT_ACTION;
+    
+    // Get and validate parameters.
+    for (new param = 0; param < paramCount; param++)
+    {
+        if (parameters[param][Param_IsFlag])
+        {
+            // Skip flags.
+            continue;
+        }
+        
+        strcopy(parameter, sizeof(parameter), parameters[param][Param_Name]);
+        strcopy(value, sizeof(value), parameters[param][Param_Value]);
+        
+        if (StrEqual(parameter, "name", false))
+        {
+            strcopy(name, sizeof(name), value);
+        }
+        else if (StrEqual(parameter, "effect", false))
+        {
+            effect = VolStringToEffect(value);
+            if (effect == VolEffect_Invalid)
+            {
+                TranslationReplyToCommand(client, "Vol Invalid Effect", value);
+                hasErrors = true;
+            }
+        }
+        else if (StrEqual(parameter, "effect_color", false))
+        {
+            new color[3];
+            if (VolStringToEffectColor(value, color))
+            {
+                effectColor = color;
+            }
+            else
+            {
+                TranslationReplyToCommand(client, "Vol Invalid Effect Color", value);
+                hasErrors = true;
+            }
+        }
+        else if (StrEqual(parameter, "teamfilter", false))
+        {
+            teamFilter = VolStringToTeam(value);
+            if (teamFilter == VolTeam_Invalid)
+            {
+                TranslationReplyToCommand(client, "Vol Invalid Teamfilter", value);
+                hasErrors = true;
+            }
+        }
+        else if (StrEqual(parameter, "delay", false))
+        {
+            triggerDelay = StringToFloat(value);
+            if (triggerDelay < 0.0)
+            {
+                triggerDelay = 0.0;
+            }
+        }
+        else if (StrEqual(parameter, "priority", false))
+        {
+            priority = StringToInt(value);
+        }
+        else if (StrEqual(parameter, "conflict_action", false))
+        {
+            conflictAction = VolStringToConflictAction(value);
+            if (conflictAction == VolConflict_Invalid)
+            {
+                TranslationReplyToCommand(client, "Vol Invalid Conflict Action", value);
+                hasErrors = true;
+            }
+        }
+    }
+    
+    // Return if errors.
+    if (hasErrors)
+    {
+        return Plugin_Handled;
+    }
+    
+    // Add volume.
+    new volumeIndex = VolAdd(shapeIndex, shapeType, effect, effectColor, teamFilter, triggerDelay, priority, conflictAction, name);
+    
+    // Check for errors.
+    if (volumeIndex == -1)
+    {
+        TranslationReplyToCommand(client, "Vol Full");
+        return Plugin_Handled;
+    }
+    else if (volumeIndex == -2)
+    {
+        TranslationReplyToCommand(client, "Vol Invalid Shape Id", shape);
+        return Plugin_Handled;
+    }
+    
+    TranslationReplyToCommand(client, "Vol Added", volumeIndex);
+    return Plugin_Handled;
+}
+
+/**
+ * Command callback for removing a volume.
+ */
+public Action:VolRemoveCommand(client, argc)
+{
+    decl String:buffer[1022];
+    buffer[0] = 0;
+    
+    // Check if privileged.
+    if (!ZRIsClientPrivileged(client, OperationType_Configuration))
+    {
+        TranslationReplyToCommand(client, "No access to command");
+        return Plugin_Handled;
+    }
+    
+    // Print syntax info if there are missing arguments.
+    if (argc < 2)
+    {
+        
+        return Plugin_Handled;
+    }
+    
+    // TODO
+    
+    return Plugin_Handled;
 }
 
 /**
@@ -767,3 +1019,71 @@ VolOnCommandsCreate()
     // Return number of successfully attributes set.
     return successfulCount;
 }*/
+
+/**
+ * Builds a translated string with syntax and parameter info for zr_vol_add command.
+ *
+ * @param client    Client that will see this info.
+ * @param buffer    Destination string buffer.
+ * @param maxlen    Size of buffer.
+ * @return          Number of cells written.
+ */
+VolBuildVolumeSyntaxString(client, String:buffer[], maxlen)
+{
+    new numCells = 0;
+    buffer[0] = 0;
+    
+    decl String:linebuffer[255];
+    linebuffer[0] = 0;
+    
+    SetGlobalTransTarget(client);
+    
+    #define VOL_SYNTAX_FORMAT_STRING "  %t\n\n"
+    
+    // Main syntax.
+    Format(linebuffer, sizeof(linebuffer), "%t\n\n", "Vol Syntax Add");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%10s%t\n", "shape", "Vol Param Shape");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%10s%t\n", "shape id", "Vol Param Shape ID");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    numCells += StrCat(buffer, maxlen, "\n");
+    
+    
+    // Optional parameters.
+    Format(linebuffer, sizeof(linebuffer), "%t\n", "Vol Param Params");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    numCells += StrCat(buffer, maxlen, "name=<volume name>\n");
+    Format(linebuffer, sizeof(linebuffer), VOL_SYNTAX_FORMAT_STRING, "Vol Param VolName");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    numCells += StrCat(buffer, maxlen, "effect=none|wireframe|smoke\n");
+    Format(linebuffer, sizeof(linebuffer), VOL_SYNTAX_FORMAT_STRING, "Vol Param Effect");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    numCells += StrCat(buffer, maxlen, "effect_color=<red>,<green>,<blue>\n");
+    Format(linebuffer, sizeof(linebuffer), VOL_SYNTAX_FORMAT_STRING, "Vol Param Effect Color");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    numCells += StrCat(buffer, maxlen, "teamfilter=all|humans|zombies\n");
+    Format(linebuffer, sizeof(linebuffer), VOL_SYNTAX_FORMAT_STRING, "Vol Param Teamfilter");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    numCells += StrCat(buffer, maxlen, "delay=<seconds>\n");
+    Format(linebuffer, sizeof(linebuffer), VOL_SYNTAX_FORMAT_STRING, "Vol Param Delay");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    numCells += StrCat(buffer, maxlen, "priority=<priority>\n");
+    Format(linebuffer, sizeof(linebuffer), VOL_SYNTAX_FORMAT_STRING, "Vol Param Priority");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    numCells += StrCat(buffer, maxlen, "conflict_action=priority|merge\n");
+    Format(linebuffer, sizeof(linebuffer), VOL_SYNTAX_FORMAT_STRING, "Vol Param Conflict Action");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    return numCells;
+}

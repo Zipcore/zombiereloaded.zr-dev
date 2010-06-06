@@ -1193,4 +1193,111 @@
 		"#format"	"{1:s},{2:d}"
 		"en"		"Ignited player \"{1}\" for not leaving a restricted area (ID: {2})."
 	}
+	
+	"Vol Syntax Add"
+	{
+		"en"		"Creates a empty volume (no features attached) in the map. Usage: zr_vol_add <shape> <shape id> [params...]"
+	}
+	
+	"Vol Syntax Remove"
+	{
+		"en"		"Removes an existing volume. Usage: zr_vol_remove <index|name> [recursive]"
+	}
+	
+	"Vol Param VolName"
+	{
+		"en"		"User defined name to use on volume (optional and not validated)."
+	}
+	
+	"Vol Param Shape"
+	{
+		"en"		"Shape of volume. Valid options: cuboid|sphere"
+	}
+	
+	"Vol Param Shape ID"
+	{
+		"en"		"Which shape to use (use zr_shape_add to create one). Valid options: <index|name>"
+	}
+	
+	"Vol Param Params"
+	{
+		"en"		"Parameters (optional):"
+	}
+	
+	"Vol Param Effect"
+	{
+		"en"		"(NOT IMPLEMENTED) Effect to apply on volume."
+	}
+	
+	"Vol Param Effect Color"
+	{
+		"en"		"(NOT IMPLEMENTED) Effect color to use. RGB values (0-255 each)."
+	}
+	
+	"Vol Param Teamfilter"
+	{
+		"en"		"Which team(s) this volume applies to."
+	}
+	
+	"Vol Param Delay"
+	{
+		"en"		"Delay before triggering when a player enter the volume."
+	}
+	
+	"Vol Param Priority"
+	{
+		"en"		"(NOT IMPLEMENTED) Priority number (user defined). Highest number = highest priority."
+	}
+	
+	"Vol Param Conflict Action"
+	{
+		"en"		"(NOT IMPLEMENTED) What to do in case of conflicting overlapping volumes."
+	}
+	
+	"Vol Invalid Shape"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid shape: {1}"
+	}
+	
+	"Vol Invalid Shape Id"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid shape index/name: {1}"
+	}
+	
+	"Vol Invalid Effect"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid effect: {1}"
+	}
+	
+	"Vol Invalid Effect Color"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid effect color: {1}"
+	}
+	
+	"Vol Invalid Teamfilter"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid effect: {1}"
+	}
+	
+	"Vol Invalid Conflict Action"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid effect: {1}"
+	}
+	
+	"Vol Full"
+	{
+		"en"		"Maximum number of volumes reached."
+	}
+	
+	"Vol Added"
+	{
+		"#format"	"{1:d}"
+		"en"		"Volume added successfully. Index: {1}"
+	}
 }

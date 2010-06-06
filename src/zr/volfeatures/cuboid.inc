@@ -89,7 +89,7 @@ VolCuboidClearIndex(cuboid, bool:decrementCounter = true)
  */
 bool:VolCuboidInUse(cuboid)
 {
-    return Cuboid[cuboid][Cuboid_InUse];
+    return Cuboids[cuboid][Cuboid_InUse];
 }
 
 /**
