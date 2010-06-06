@@ -88,7 +88,7 @@ VolSphereClearIndex(sphere, bool:decrementCounter = true)
  * @param sphere    Sphere index.
  * @return          True if in use, false otherwise.
  */
-bool:VolSphereInUse(cuboid)
+bool:VolSphereInUse(sphere)
 {
     return Spheres[sphere][Sphere_InUse];
 }

@@ -150,7 +150,7 @@ VolAnticampFind(const String:name[], bool:caseSensitive = false)
     {
         if (VolAnticampInUse(anticamp))
         {
-            if (StrEqual(AnticampData[anticamp][Anticamp_Name], ZR_ANTICAMP_NAME_LEN, caseSensitive))
+            if (StrEqual(AnticampData[anticamp][Anticamp_Name], name, caseSensitive))
             {
                 return anticamp;
             }

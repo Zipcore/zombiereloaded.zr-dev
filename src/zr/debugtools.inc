@@ -32,7 +32,62 @@ DebugOnCommandsCreate()
     RegConsoleCmd("zr_getparametercount", Command_GetParameterCount, "Test GetParameterCount function in paramtools.inc. Usage: zr_getparametercount <paramstring>");
     RegConsoleCmd("zr_getparametervalue", Command_GetParameterValue, "Test GetParameterValue function in paramtools.inc. Usage: zr_getparametervalue <paramname> <paramstring>");
     */
+    RegConsoleCmd("zr_paramtest", Command_ParamTest, "Tests parameter parser. Usage: zr_paramtest <parameter string>");
 }
+
+public Action:Command_ParamTest(client, argc)
+{
+    decl String:argbuffer[256];
+    decl String:paramstring[256];
+    
+    paramstring[0] = 0;
+    
+    // Join the last parameters in a string.
+    for (new arg = 1; arg <= argc; arg++)
+    {
+        GetCmdArg(arg, argbuffer, sizeof(argbuffer));
+        StrCat(paramstring, sizeof(paramstring), argbuffer);
+        
+        // Add space, except on the last parameter.
+        if (arg < argc)
+        {
+            StrCat(paramstring, sizeof(paramstring), " ");
+        }
+    }
+    
+    const MAX_PARAMS = 10;
+    new parameters[MAX_PARAMS][ParamParseResult];
+    new err;
+    new errPos;
+    new paramCount = ParamParseString(parameters, MAX_PARAMS, paramstring, err, errPos);
+    
+    ReplyToCommand(client, "%d parameters parsed. Dumping result:\n", paramCount);
+
+    for (new param = 0; param < paramCount; param++)
+    {
+        new bool:isFlag = parameters[param][Param_IsFlag];
+        new String:name[PARAM_NAME_MAXLEN];
+        new String:value[PARAM_VALUE_MAXLEN];
+        
+        strcopy(name, sizeof(name), parameters[param][Param_Name]);
+        strcopy(value, sizeof(value), parameters[param][Param_Value]);
+        
+        ReplyToCommand(client, "Parameter: %d", param);
+        ReplyToCommand(client, "Is flag  : %d", isFlag);
+        ReplyToCommand(client, "Name     : \"%s\"", name);
+        ReplyToCommand(client, "Value    : \"%s\"\n", value);
+    }
+    
+    // Check for parse errors.
+    if (err)
+    {
+        ParamPrintErrorMessage(client, paramstring, err, errPos);
+        return Plugin_Handled;
+    }
+    
+    return Plugin_Handled;
+}
+
 
 /*
 public Action:Command_GetParameterCount(client, argc)

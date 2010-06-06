@@ -161,7 +161,7 @@ VolSphereFind(const String:name[], bool:caseSensitive = false)
     {
         if (VolSphereInUse(sphere))
         {
-            if (StrEqual(Spheres[sphere][Sphere_Name], ZR_SPHERE_NAME_LEN, caseSensitive))
+            if (StrEqual(Spheres[sphere][Sphere_Name], name, caseSensitive))
             {
                 return sphere;
             }

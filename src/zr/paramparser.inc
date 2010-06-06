@@ -42,14 +42,19 @@
  */
 
 /**
- * @section Parsing error codes.
+ * @section Parser error codes.
  */
 #define PARAM_ERROR_EMPTY               1   /** Source string is empty. */
-#define PARAM_ERROR_FULL                2   /** Destination array is full. */
-#define PARAM_ERROR_UNEXPECTED_KEY      3   /** Unexpected key name. Could not find a equation sign (=) after previous key name. */
+#define PARAM_ERROR_FULL                2   /** Parameter buffer is full. Too many parameters */
+#define PARAM_ERROR_UNEXPECTED_KEY      3   /** Unexpected key or flag name. Expected equation sign (=). */
 #define PARAM_ERROR_UNEXPECTED_END      4   /** Unexpected end of source string. */
-#define PARAM_ERROR_MISSING_QUOTE       5   /** Unexpected end of source string. Missing end quote character. */
-#define PARAM_ERROR_UNKNOWN             6   /** Unknown error. The parser got a invalid result from a search function it couldn't handle. */
+#define PARAM_ERROR_MISSING_EQUAL       5   /** Unexpected end of source string. Expected equation sign (=). */
+#define PARAM_ERROR_MISSING_VALUE       6   /** Unexpected end of source string. Expected value. */
+#define PARAM_ERROR_MISSING_QUOTE       7   /** Unexpected end of source string. Missing end quote character. */
+#define PARAM_ERROR_TOO_LONG_KEY        8   /** Too long key name. */
+#define PARAM_ERROR_TOO_LONG_VALUE      9   /** Too long value. */
+#define PARAM_ERROR_TOO_LONG_FLAG       10  /** Too long flag name. */
+#define PARAM_ERROR_UNKNOWN             11  /** Unknown error. The parser got a invalid result from a search function it couldn't handle. */
 /**
  * @endsection
  */
@@ -130,7 +135,7 @@ stock ParamParseString(buffer[][ParamParseResult], maxlen, String:paramString[],
      */
     
     // Get raw string length.
-    new rawlen = sizeof(paramString);
+    new rawlen = strlen(paramString);
     
     // Initialize. Expect the start to be a key or a flag.
     new ParamModes:mode = ParamMode_TypeCheck;
@@ -142,13 +147,14 @@ stock ParamParseString(buffer[][ParamParseResult], maxlen, String:paramString[],
     new startpos;
     new endpos;
     new bool:quoteon;
+    new bool:wasquoted;
     decl String:value[PARAM_VALUE_MAXLEN];
     
-    // Loop through all characters in the string. Exclude null terminator.
-    for (new strpos = 0; strpos < rawlen - 1; strpos++)
+    // Loop through all characters in the string.
+    for (new strpos = 0; strpos < rawlen; strpos++)
     {
         // Check if there's space left in the destination buffer.
-        if (paramcount > maxlen)
+        if (paramcount >= maxlen)
         {
             // Exit loop. No more parameters can be parsed.
             err = PARAM_ERROR_FULL;
@@ -169,13 +175,19 @@ stock ParamParseString(buffer[][ParamParseResult], maxlen, String:paramString[],
                 // Find start position of first non white space character.
                 startpos = ParamFindStartPos(paramString, strpos);
                 
+                // Check if end of string is reached.
+                if (startpos == -1)
+                {
+                    break;
+                }
+                
                 // Check if it's a flag type.
                 if (paramString[startpos] == '-')
                 {
                     // It's a flag, change mode.
                     mode = ParamMode_Flag;
                     
-                    // Update current position.
+                    // Update current position (skip the '-' character).
                     strpos = startpos;
                 }
                 else
@@ -184,7 +196,8 @@ stock ParamParseString(buffer[][ParamParseResult], maxlen, String:paramString[],
                     mode = ParamMode_Key;
                     
                     // Update current position. Substract by one to include
-                    // the current character in next mode.
+                    // the current character in next mode because of strpos++
+                    // in the for loop.
                     strpos = startpos - 1;
                 }
             }
@@ -193,8 +206,16 @@ stock ParamParseString(buffer[][ParamParseResult], maxlen, String:paramString[],
                 // Find stop position (last non white space character).
                 endpos = ParamFindEndPos(paramString, strpos);
                 
-                // Extract key name.
+                // Extract flag name.
                 StrExtract(value, sizeof(value), paramString, strpos, endpos);
+                
+                // Check if too long.
+                if (strlen(value) >= PARAM_NAME_MAXLEN)
+                {
+                    err = PARAM_ERROR_TOO_LONG_FLAG;
+                    errPos = strpos;
+                    break;
+                }
                 
                 // Copy flag to destination buffer.
                 strcopy(buffer[paramcount][Param_Name], PARAM_NAME_MAXLEN, value);
@@ -205,22 +226,47 @@ stock ParamParseString(buffer[][ParamParseResult], maxlen, String:paramString[],
                 // Increment parameter counter.
                 paramcount++;
                 
+                // Update position (will also be incremented by one in next
+                // loop iteration.
+                strpos = endpos;
+                
                 // Set next parse mode.
                 mode = ParamMode_TypeCheck;
             }
             case ParamMode_Key:
             {
                 // Find stop position.
-                endpos = ParamFindEndPos(paramString, strpos);
+                endpos = ParamFindEndPos(paramString, strpos, '=');
+                
+                // Check if reached the end (missing value).
+                if (endpos == rawlen - 1)
+                {
+                    // Parse error.
+                    err = PARAM_ERROR_MISSING_EQUAL;
+                    errPos = endpos;
+                    break;
+                }
                 
                 // Extract key name.
                 StrExtract(value, sizeof(value), paramString, strpos, endpos);
+                
+                // Check if too long.
+                if (strlen(value) >= PARAM_NAME_MAXLEN)
+                {
+                    err = PARAM_ERROR_TOO_LONG_KEY;
+                    errPos = strpos;
+                    break;
+                }
                 
                 // Copy key name to destination buffer.
                 strcopy(buffer[paramcount][Param_Name], PARAM_NAME_MAXLEN, value);
                 
                 // Make sure flag type is not set.
                 buffer[paramcount][Param_IsFlag] = false;
+                
+                // Update position (will also be incremented by one in next
+                // loop iteration.
+                strpos = endpos;
                 
                 // Note: Do not increment parameter counter until the
                 //       entire key/value pair is parsed.
@@ -256,7 +302,7 @@ stock ParamParseString(buffer[][ParamParseResult], maxlen, String:paramString[],
                 else
                 {
                     // Parse error.
-                    err = PARAM_ERROR_UNEXPECTED_END;
+                    err = PARAM_ERROR_MISSING_EQUAL;
                     errPos = strpos;
                     break;
                 }
@@ -271,16 +317,17 @@ stock ParamParseString(buffer[][ParamParseResult], maxlen, String:paramString[],
                 {
                     // Reset quote and escape settings.
                     quoteon = false;
+                    wasquoted = false;
                     
                     // Loop through all characters starting from the current
                     // position. Exclude null terminator.
-                    for (strpos = startpos; strpos < rawlen - 1; strpos++)
+                    for (strpos = startpos; strpos < rawlen; strpos++)
                     {
-                        // Check if the current character is a special character.
-                        if (paramString[startpos] == '"')
+                        // Check if value is quoted.
+                        if (paramString[strpos] == '"')
                         {
                             // Toggle quote if the current quote is not escaped.
-                            if (paramString[startpos - 1] != '\\')
+                            if (paramString[strpos - 1] != '\\')
                             {
                                 quoteon = !quoteon;
                             }
@@ -289,20 +336,30 @@ stock ParamParseString(buffer[][ParamParseResult], maxlen, String:paramString[],
                             if (quoteon)
                             {
                                 // Quote started, update start position.
+                                wasquoted = true;
                                 startpos = strpos + 1;
                             }
                             else
                             {
                                 // Quote end, set end position.
                                 endpos = strpos - 1;
+                                break;
                             }
                         }
                         
-                        // Check if it's a white space character or end of the string.
-                        else if (!quoteon && (IsCharSpace(paramString[strpos]) || strpos == rawlen - 1))
+                        // The value is not quoted. Check if it's a white space
+                        // character or end of the string.
+                        else if (!quoteon && (IsCharSpace(paramString[strpos])) || strpos == rawlen - 1)
                         {
                             // End of value reached. Save positions.
-                            endpos = strpos - 1;
+                            if (strpos + 1 == rawlen)
+                            {
+                                endpos = strpos;
+                            }
+                            else
+                            {
+                                endpos = strpos - 1;
+                            }
                             
                             // Exit loop.
                             break;
@@ -324,6 +381,14 @@ stock ParamParseString(buffer[][ParamParseResult], maxlen, String:paramString[],
                     // Unescape string (converting "\n" to newline, etc.).
                     StrUnescape(value);
                     
+                    // Check if too long.
+                    if (strlen(value) >= PARAM_VALUE_MAXLEN)
+                    {
+                        err = PARAM_ERROR_TOO_LONG_VALUE;
+                        errPos = strpos;
+                        break;
+                    }
+                    
                     // Copy value string to destination buffer.
                     strcopy(buffer[paramcount][Param_Value], PARAM_VALUE_MAXLEN, value);
                     
@@ -333,13 +398,24 @@ stock ParamParseString(buffer[][ParamParseResult], maxlen, String:paramString[],
                     // Increment parameter counter.
                     paramcount++;
                     
+                    // Update position (will also be incremented by one in next
+                    // loop iteration.
+                    if (wasquoted)
+                    {
+                        strpos = endpos + 2;    // Skip the two quotes.
+                    }
+                    else
+                    {
+                        strpos = endpos;
+                    }
+                    
                     // Set next parse mode. Expect a key or a flag.
                     mode = ParamMode_TypeCheck;
                 }
                 else
                 {
                     // Parse error.
-                    err = PARAM_ERROR_UNEXPECTED_END;
+                    err = PARAM_ERROR_MISSING_VALUE;
                     errPos = strpos;
                     break;
                 }
@@ -417,6 +493,75 @@ stock bool:ParamHasFlag(const params[][ParamParseResult], maxlen, const String:f
     return false;
 }
 
+/**
+ * Prints a user friendly error message to the specified client.
+ *
+ * @param client        The client to display error on.
+ * @param paramString   Raw parameter string.
+ * @param err           Error code.
+ * @param errPos        Where the error occoured.
+ */
+stock ParamPrintErrorMessage(client, const String:paramString[], err, errPos)
+{
+    SetGlobalTransTarget(client);
+    
+    decl String:message[128];
+    decl String:position[1022];
+    message[0] = 0;
+    position[0] = 0;
+    
+    switch (err)
+    {
+        case PARAM_ERROR_EMPTY:
+        {
+            StrCat(message, sizeof(message), "Source string is empty.");
+        }
+        case PARAM_ERROR_FULL:
+        {
+            StrCat(message, sizeof(message), "Parameter buffer is full. Too many parameters.");
+        }
+        case PARAM_ERROR_UNEXPECTED_KEY:
+        {
+            StrCat(message, sizeof(message), "Unexpected key or flag. Expected equation sign (=).");
+        }
+        case PARAM_ERROR_MISSING_EQUAL:
+        {
+            StrCat(message, sizeof(message), "Unexpected end of source string. Expected equation sign (=)");
+        }
+        case PARAM_ERROR_MISSING_VALUE:
+        {
+            StrCat(message, sizeof(message), "Unexpected end of source string. Expected value.");
+        }
+        case PARAM_ERROR_MISSING_QUOTE:
+        {
+            StrCat(message, sizeof(message), "Unexpected end of source string. Missing end quote character.");
+        }
+        case PARAM_ERROR_TOO_LONG_KEY:
+        {
+            StrCat(message, sizeof(message), "Too long key name.");
+        }
+        case PARAM_ERROR_TOO_LONG_VALUE:
+        {
+            StrCat(message, sizeof(message), "Too long value.");
+        }
+        case PARAM_ERROR_TOO_LONG_FLAG:
+        {
+            StrCat(message, sizeof(message), "Too long flag name.");
+        }
+    }
+    
+    // Write spaces and mark error position.
+    new pos = 0;
+    for (pos = 0; pos < errPos; pos++)
+    {
+        position[pos] = ' ';
+    }
+    position[pos] = '^';
+    position[pos + 1] = 0;  // Terminate end of string.
+    
+    ReplyToCommand(client, "Param parse error (%d): %s\n\n%s\n%s", err, message, paramString, position);
+}
+
 
 
 /**************************************
@@ -430,12 +575,14 @@ stock bool:ParamHasFlag(const params[][ParamParseResult], maxlen, const String:f
  *
  * @param paramString   Raw string search in.
  * @param startPos      Optional. Position to start searching from.
+ * @param stopChar      Optional. Additional character that define stop
+ *                      position (not included).
  * @return              Position of the last non white space character, or -1
  *                      if failed.
  */
-stock ParamFindEndPos(const String:paramString[], startPos = 0)
+stock ParamFindEndPos(const String:paramString[], startPos = 0, stopChar = 0)
 {
-    new rawlen = sizeof(paramString);
+    new rawlen = strlen(paramString);
     
     // Validate string length.
     if (rawlen == 0)
@@ -444,11 +591,13 @@ stock ParamFindEndPos(const String:paramString[], startPos = 0)
     }
     
     // Loop through all characters from the specified start position.
-    for (new strpos = startPos; strpos < rawlen; strpos++)
+    for (new strpos = startPos; strpos <= rawlen; strpos++)
     {
         // Check if white space or if current position is the last
         // character before the null terminator.
-        if (IsCharSpace(paramString[strpos]) || strpos == rawlen - 1)
+        if (IsCharSpace(paramString[strpos]) ||
+            strpos == rawlen ||
+            paramString[strpos] == stopChar)
         {
             return strpos - 1;
         }
@@ -468,7 +617,7 @@ stock ParamFindEndPos(const String:paramString[], startPos = 0)
  */
 stock ParamFindStartPos(const String:paramString[], startPos = 0)
 {
-    new rawlen = sizeof(paramString);
+    new rawlen = strlen(paramString);
     
     // Validate string length.
     if (rawlen == 0)
@@ -497,7 +646,7 @@ stock ParamFindStartPos(const String:paramString[], startPos = 0)
  * @param maxlen    Size of destination buffer.
  * @param source    Source string to extract from.
  * @param startpos  Start position of string to extract.
- * @param endpos    End position of string to extract.
+ * @param endpos    End position of string to extract (inclusive).
  * @return          Number of cells written.
  */
 stock StrExtract(String:buffer[], maxlen, const String:source[], startpos, endpos)
@@ -505,10 +654,10 @@ stock StrExtract(String:buffer[], maxlen, const String:source[], startpos, endpo
     new len;
     
     // Calculate string length. Also add space for null terminator.
-    len = endpos - startpos + 1;
+    len = endpos - startpos + 2;
     
     // Validate length.
-    if (len < 0)
+    if (maxlen >= len && len < 0)
     {
         return 0;
     }
@@ -524,7 +673,7 @@ stock StrExtract(String:buffer[], maxlen, const String:source[], startpos, endpo
  */
 stock StrUnescape(String:str[])
 {
-    new len = sizeof(str);
+    new len = strlen(str);
     
     ReplaceString(str, len, "\\n", "\n");
     ReplaceString(str, len, "\\r", "\r");

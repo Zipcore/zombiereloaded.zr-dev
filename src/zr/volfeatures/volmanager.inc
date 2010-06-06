@@ -29,7 +29,7 @@
  * Adds a new volume with the specified attributes.
  *
  * @param shapeData         Shape data index to use.
- * @param shape             Optional. Shape type that defines volume boundaries.
+ * @param shape             Optional. Shape type that defines volume boundaries and location.
  * @param effect            Optional. Effect to apply on the volume.
  * @param effectColor       Optional. Color of the effect, if any.
  * @param teamFilter        Optional. Which team(s) the volume applies to.
@@ -47,7 +47,8 @@ VolAdd(shapeData,
        VolumeTeamFilters:teamFilter = VolTeam_Humans,
        Float:triggerDelay = ZR_VOL_DEFAULT_TRIGGER_DELAY,
        priority = ZR_VOL_DEFAULT_PRIORITY,
-       VolumeConflictActions:conflictAction = ZR_VOL_DEFAULT_CONFLICT_ACTION)
+       VolumeConflictActions:conflictAction = ZR_VOL_DEFAULT_CONFLICT_ACTION,
+       const String:name[] = ZR_VOL_DEFAULT_NAME)
 {
     // Validate shapeData.
     new bool:valid;
@@ -85,6 +86,8 @@ VolAdd(shapeData,
     Volumes[volumeIndex][Vol_TriggerDelay] = triggerDelay;
     Volumes[volumeIndex][Vol_Priority] = priority;
     Volumes[volumeIndex][Vol_ConflictAction] = conflictAction;
+    
+    strcopy(Volumes[volumeIndex][Vol_Name], ZR_VOL_NAME_LEN, name);
     
     return volumeIndex;
 }
@@ -178,6 +181,13 @@ bool:VolAttachFeature(volumeIndex, VolumeFeatureTypes:featureType, featureIndex)
     // Add feature to arrays.
     PushArrayCell(featureTypes, _:featureType);
     PushArrayCell(featureIndexes, featureIndex);
+    
+    // Enable volume if disabled.
+    if (!Volumes[volumeIndex][Vol_Enabled])
+    {
+        Volumes[volumeIndex][Vol_Enabled] = true;
+        VolOnEnabled(volumeIndex);
+    }
 }
 
 /**

@@ -103,6 +103,37 @@ VolumeEffects:VolStringToEffect(const String:effect[])
 }
 
 /**
+ * Gets the effect color from a string (format: r,g,b).
+ *
+ * @param effect    String value.
+ * @param colors    Output. Color array with 3 elements.
+ * @return          True on success, false otherwise.
+ */
+bool:VolStringToEffectColor(const String:color[], colors[3])
+{
+    new String:buffer[3][3];
+    ExplodeString(color, ",", buffer, 3, 3);
+    
+    new r = StringToInt(buffer[0]);
+    new g = StringToInt(buffer[1]);
+    new b = StringToInt(buffer[2]);
+    
+    // Validate
+    if (r < 0 || r > 255 ||
+        g < 0 || g > 255 ||
+        b < 0 || g > 255)
+    {
+        return false;
+    }
+    
+    colors[0] = r;
+    colors[1] = g;
+    colors[2] = b;
+    
+    return true;
+}
+
+/**
  * Gets the team type from a string.
  *
  * @param team  String value.

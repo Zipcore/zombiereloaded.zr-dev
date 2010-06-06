@@ -38,8 +38,9 @@ VolAnticampOnEnabled(anticampIndex)
         return;
     }
     
-    // Check if in use.
-    if (AnticampData[anticampIndex][Anticamp_InUse])
+    // Check if in use and disabled.
+    if (AnticampData[anticampIndex][Anticamp_InUse] &&
+        !AnticampData[anticampIndex][Anticamp_Enabled])
     {
         // Kill timer if it exists.
         ZREndTimer(AnticampData[anticampIndex][Anticamp_Timer]);
