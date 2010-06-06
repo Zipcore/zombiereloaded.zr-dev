@@ -135,7 +135,7 @@ VolGetFreeCuboid()
         // Check if it's free.
         if (!VolCuboidInUse(cuboid))
         {
-            Cuboid[cuboid][Cuboid_InUse] = true;
+            Cuboids[cuboid][Cuboid_InUse] = true;
             CuboidCount++;
             return cuboid;
         }

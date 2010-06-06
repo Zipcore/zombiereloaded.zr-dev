@@ -64,6 +64,12 @@ new Handle:hVolTriggerTimer = INVALID_HANDLE;
  */
 new Float:VolTriggerInterval;
 
+// Sub features.
+#include "zr/volfeatures/volanticamp"
+#include "zr/volfeatures/anticampmanager"
+#include "zr/volfeatures/volclassedit"
+#include "zr/volfeatures/classeditmanager"
+
 #include "zr/volfeatures/volume"
 #include "zr/volfeatures/cuboid"
 #include "zr/volfeatures/sphere"
@@ -75,12 +81,7 @@ new Float:VolTriggerInterval;
 #include "zr/volfeatures/spheremanager"
 #include "zr/volfeatures/volconversion"
 #include "zr/volfeatures/volcommands"
-
-// Sub features.
-#include "zr/volfeatures/volanticamp"
-#include "zr/volfeatures/anticampmanager"
-#include "zr/volfeatures/volclassedit"
-
+#include "zr/volfeatures/shapecommands"
 
 /**
  * Initialize volumetric features.

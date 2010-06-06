@@ -116,7 +116,7 @@ bool:VolRemove(volumeIndex, bool:recursive = true)
     VolOnDisabled(volumeIndex);
     
     // Detach all features.
-    VolDetachFeatures(volumeIndex, removeFeatures);
+    VolDetachFeatures(volumeIndex, recursive);
     
     // Remove volume.
     VolClearIndex(volumeIndex);
@@ -131,12 +131,36 @@ bool:VolRemove(volumeIndex, bool:recursive = true)
  * @param removeFeatures    Optional. Removes the attached features instead of
  *                          detaching them. Default is remove (true).
  */
-VolRemoveAll(bool:removeFeatures = true)
+stock VolRemoveAll(bool:removeFeatures = true)
 {
     for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
     {
         VolRemove(volumeIndex, removeFeatures);
     }
+}
+
+/**
+ * Search for a volume with the specified name.
+ *
+ * @param name              Name to search for.
+ * @param caseSensitive     Optional. Use case sensitive search. Default is
+ *                          false.
+ * @return                  Volume index if found, -1 otherwise.
+ */
+VolFind(const String:name[], bool:caseSensitive = false)
+{
+    for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
+    {
+        if (VolInUse(volumeIndex))
+        {
+            if (StrEqual(Volumes[volumeIndex][Vol_Name], name, caseSensitive))
+            {
+                return volumeIndex;
+            }
+        }
+    }
+    
+    return -1;
 }
 
 

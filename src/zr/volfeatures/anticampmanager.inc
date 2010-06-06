@@ -44,7 +44,7 @@ VolAnticampAdd(Float:interval = ZR_ANTICAMP_DEF_INTERVAL,
                Float:amount = ZR_ANTICAMP_DEF_AMOUNT,
                VolAnticampWarningType:warningType = Anticamp_Chat,
                const String:message[] = ZR_ANTICAMP_DEF_MESSAGE,
-               const String:name[] = ZR_ANTICAMP_DEF_NAME)
+               String:name[] = ZR_ANTICAMP_DEF_NAME)
 {
     // Validate values.
     if (interval <= 0)

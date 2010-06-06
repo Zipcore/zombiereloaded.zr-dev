@@ -58,14 +58,15 @@ VolOnCommandsCreate()
     //RegConsoleCmd("zr_vol_help", VolHelpCommand, "Lists available volume commands");
     
     RegConsoleCmd("zr_vol_add", VolAddCommand, "Creates a empty volume (no features attached) in the map. Usage: zr_vol_add <shape> <shape id> [params...]");
+    RegConsoleCmd("zr_vol_remove", VolRemoveCommand, "Removes an existing volume. Usage: zr_vol_remove <index|name> [recursive]");
     //RegConsoleCmd("zr_vol_shape_add", VolAddCommand, "Creates a new shape to be used on a volume. Usage: zr_vol_shape_add <type> <params...>");
     
     /*
-    RegConsoleCmd("zr_vol_add", VolAddVolumeCommand, "Creates a rectangular volume in the map. Usage: zr_vol_add <x1> <y1> <z1> <x2> <y2> <z2> <type> [params]");
-    RegConsoleCmd("zr_vol_remove", VolRemoveVolumeCommand, "Removes an existing volume in the map. Usage: zr_vol_remove <volume index>");
     RegConsoleCmd("zr_vol_list", VolListCommand, "Lists existing volumes in the map, or dumps detail data to the specified volume. Usage: zr_vol_list [volume index]");
     RegConsoleCmd("zr_vol_dumpstates", VolDumpStatesCommand, "Dumps volume states for the specified player. Usage: zr_vol_dumpstates <index|targetname>");
     */
+    
+    VolShapeOnCommandsCreate();
 }
 
 /**
@@ -140,7 +141,7 @@ public Action:VolAddCommand(client, argc)
     // Validate shape index.
     if (shapeIndex < 0)
     {
-        TranslationReplyToCommand(client, "Vol Invalid Shape Id", buffer);
+        TranslationReplyToCommand(client, "Vol Invalid Shape Id", shape);
         return Plugin_Handled;
     }
     
@@ -148,10 +149,10 @@ public Action:VolAddCommand(client, argc)
     decl String:argbuffer[255];
     buffer[0] = 0;
     argbuffer[0] = 0;
-    if (argc >= 2)
+    if (argc >= 3)
     {
         // Join the last parameters in a string.
-        for (new arg = 2; arg <= argc; arg++)
+        for (new arg = 3; arg <= argc; arg++)
         {
             GetCmdArg(arg, argbuffer, sizeof(argbuffer));
             StrCat(buffer, sizeof(buffer), argbuffer);
@@ -172,7 +173,12 @@ public Action:VolAddCommand(client, argc)
     new paramCount = ParamParseString(parameters, MAX_PARAMS, buffer, err, errPos);
     
     // Check for parse errors.
-    if (err)
+    if (err == PARAM_ERROR_EMPTY)
+    {
+        TranslationReplyToCommand(client, "Vol Missing Parameters");
+        return Plugin_Handled;
+    }
+    else if (err)
     {
         ParamPrintErrorMessage(client, buffer, err, errPos);
         return Plugin_Handled;
@@ -284,7 +290,7 @@ public Action:VolAddCommand(client, argc)
         return Plugin_Handled;
     }
     
-    TranslationReplyToCommand(client, "Vol Added", volumeIndex);
+    TranslationReplyToCommand(client, "Vol Added", volumeIndex, name);
     return Plugin_Handled;
 }
 
@@ -304,13 +310,54 @@ public Action:VolRemoveCommand(client, argc)
     }
     
     // Print syntax info if there are missing arguments.
-    if (argc < 2)
+    if (argc < 1)
     {
-        
+        TranslationReplyToCommand(client, "Vol Syntax Remove");
         return Plugin_Handled;
     }
     
-    // TODO
+    decl String:id[64];
+    decl String:strRecursive[2];
+    
+    id[0] = 0;
+    strRecursive[0] = 0;
+    
+    new volumeIndex = -1;
+    new bool:recursive = false;
+    
+    // Get id.
+    GetCmdArg(1, id, sizeof(id));
+    if (IsCharNumeric(id[0]))
+    {
+        // It's a index.
+        volumeIndex = StringToInt(id);
+    }
+    else
+    {
+        // It's a volume name.
+        volumeIndex = VolFind(id);
+    }
+    
+    // Validate index.
+    if (!VolIsValid(volumeIndex))
+    {
+        TranslationReplyToCommand(client, "Vol Invalid Volume Id", id);
+        return Plugin_Handled;
+    }
+    
+    // Get recursive parameter.
+    if (argc == 2)
+    {
+        GetCmdArg(2, strRecursive, sizeof(strRecursive));
+        
+        if (StringToInt(strRecursive) == 1)
+        {
+            recursive = true;
+        }
+    }
+    
+    // Remove volume.
+    VolRemove(volumeIndex, recursive);
     
     return Plugin_Handled;
 }
@@ -1054,11 +1101,11 @@ VolBuildVolumeSyntaxString(client, String:buffer[], maxlen)
     
     
     // Optional parameters.
-    Format(linebuffer, sizeof(linebuffer), "%t\n", "Vol Param Params");
+    Format(linebuffer, sizeof(linebuffer), "%t\n", "Vol Param Params Optional");
     numCells += StrCat(buffer, maxlen, linebuffer);
     
     numCells += StrCat(buffer, maxlen, "name=<volume name>\n");
-    Format(linebuffer, sizeof(linebuffer), VOL_SYNTAX_FORMAT_STRING, "Vol Param VolName");
+    Format(linebuffer, sizeof(linebuffer), VOL_SYNTAX_FORMAT_STRING, "Vol Param Vol Name");
     numCells += StrCat(buffer, maxlen, linebuffer);
     
     numCells += StrCat(buffer, maxlen, "effect=none|wireframe|smoke\n");
