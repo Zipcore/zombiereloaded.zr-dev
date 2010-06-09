@@ -65,9 +65,9 @@ new Handle:hVolTriggerTimer = INVALID_HANDLE;
 new Float:VolTriggerInterval;
 
 // Sub features.
-#include "zr/volfeatures/volanticamp"
+#include "zr/volfeatures/anticamp"
 #include "zr/volfeatures/anticampmanager"
-#include "zr/volfeatures/volclassedit"
+#include "zr/volfeatures/classedit"
 #include "zr/volfeatures/classeditmanager"
 
 #include "zr/volfeatures/volume"
