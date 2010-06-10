@@ -351,13 +351,13 @@ VolClassEditSetAttribute(dataIndex, const String:attribName[], const String:attr
  * @param maxlen        Size of destination buffer.
  * @return              Number of cells written.
  */
-VolClassEditDumpData(dataIndex, String:buffer[], maxlen)
+VolClassEditBuildList(dataIndex, String:buffer[], maxlen)
 {
-    #define CLASSEDIT_DUMP_FORMAT "%-19s %s\n"
+    //#define CLASSEDIT_DUMP_FORMAT "%-19s %s\n"
     
-    decl String:linebuffer[128];
-    decl String:valuebuffer[256];
-    new cache[VolTypeClassEdit];
+    //decl String:linebuffer[128];
+    //decl String:valuebuffer[256];
+    //new cache[VolTypeClassEdit];
     new cellswritten;
     
     // Validate index.
@@ -369,7 +369,7 @@ VolClassEditDumpData(dataIndex, String:buffer[], maxlen)
     // Initialize and clear buffer.
     buffer[0] = 0;
     
-    // Cache data.
+    /*// Cache data.
     cache = VolClassEditData[dataIndex];
     
     VolClassEditModeToString(cache[VolClassEdit_Mode], valuebuffer, sizeof(valuebuffer));
@@ -461,7 +461,7 @@ VolClassEditDumpData(dataIndex, String:buffer[], maxlen)
             Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Jump distance:", valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
         }
-    }
+    }*/
     
     return cellswritten;
 }

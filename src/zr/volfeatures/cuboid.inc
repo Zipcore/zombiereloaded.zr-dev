@@ -203,3 +203,41 @@ bool:VolIsPointInCuboid(Float:point[3], cuboid)
     
     return VolIsPointInCuboidEx(point, min, max);
 }
+
+/**
+ * Builds a user friendly (translated) list of the cuboid's attributes.
+ *
+ * @param cuboid    Cuboid to dump.
+ * @param buffer    Destination string buffer.
+ * @param maxlen    Size of destination buffer.
+ * @return          Number of cells written.
+ */
+VolCuboidBuildList(cuboid, String:buffer[], maxlen)
+{
+    decl String:linebuffer[128];
+    new cuboidCache[CuboidAttributes];
+    new cellswritten;
+    
+    // Validate index.
+    if (!VolCuboidIsValid(cuboid))
+    {
+        return 0;
+    }
+    
+    // Initialize and clear buffer.
+    buffer[0] = 0;
+    
+    // Cache data.
+    cuboidCache = Cuboids[cuboid];
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t \"%s\" (%d)\n", "Vol Attrib Name", cuboidCache[Cuboid_Name], cuboid);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t %-8.2d %-8.2d %-8.2d\n", "Vol Attrib Min Loc", cuboidCache[Cuboid_xMin], cuboidCache[Cuboid_yMin], cuboidCache[Cuboid_zMin]);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t %-8.2d %-8.2d %-8.2d\n", "Vol Attrib Max Loc", cuboidCache[Cuboid_xMax], cuboidCache[Cuboid_yMax], cuboidCache[Cuboid_zMax]);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    return cellswritten;
+}

@@ -190,3 +190,52 @@ bool:VolIsPointInSphere(Float:point[3], sphere)
     
     return VolIsPointInSphereEx(point, loc, radius);
 }
+
+/**
+ * Builds a user friendly (translated) list of the sphere's attributes.
+ *
+ * @param sphere    Sphere to dump.
+ * @param buffer    Destination string buffer.
+ * @param maxlen    Size of destination buffer.
+ * @return          Number of cells written.
+ */
+VolSphereBuildList(sphere, String:buffer[], maxlen)
+{
+    decl String:linebuffer[128];
+    decl String:valuebuffer[256];
+    new sphereCache[SphereAttributes];
+    new cellswritten;
+    
+    // Validate index.
+    if (!VolSphereIsValid(sphere))
+    {
+        return 0;
+    }
+    
+    // Initialize and clear buffer.
+    buffer[0] = 0;
+    
+    // Cache data.
+    sphereCache = Spheres[sphere];
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t \"%s\" (%d)\n", "Vol Attrib Name", sphereCache[Sphere_Name], sphere);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t %-8.2d %-8.2d %-8.2d\n", "Vol Attrib Loc", sphereCache[Sphere_LocX], sphereCache[Sphere_LocY], sphereCache[Sphere_LocZ]);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t %.2f\n", "Vol Attrib Radius", sphereCache[Sphere_Radius]);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    VolFadeToString(sphereCache[Sphere_FadeType], valuebuffer, sizeof(valuebuffer));
+    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Fade Type", valuebuffer);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t %.2f\n", "Vol Attrib Min Fade", sphereCache[Sphere_MinDistance]);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t %.2f\n", "Vol Attrib Max Fade", sphereCache[Sphere_MaxDistance]);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    return cellswritten;
+}
