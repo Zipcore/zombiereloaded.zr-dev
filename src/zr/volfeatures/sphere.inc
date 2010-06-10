@@ -202,6 +202,7 @@ bool:VolIsPointInSphere(Float:point[3], sphere)
 VolSphereBuildList(sphere, String:buffer[], maxlen)
 {
     decl String:linebuffer[128];
+    decl String:langbuffer[128];
     decl String:valuebuffer[256];
     new sphereCache[SphereAttributes];
     new cellswritten;
@@ -218,23 +219,29 @@ VolSphereBuildList(sphere, String:buffer[], maxlen)
     // Cache data.
     sphereCache = Spheres[sphere];
     
-    Format(linebuffer, sizeof(linebuffer), "%25t \"%s\" (%d)\n", "Vol Attrib Name", sphereCache[Sphere_Name], sphere);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Name");
+    Format(linebuffer, sizeof(linebuffer), "%25s \"%s\" (%d)\n", langbuffer, sphereCache[Sphere_Name], sphere);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %-8.2d %-8.2d %-8.2d\n", "Vol Attrib Loc", sphereCache[Sphere_LocX], sphereCache[Sphere_LocY], sphereCache[Sphere_LocZ]);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Loc");
+    Format(linebuffer, sizeof(linebuffer), "%25s %-8.2f %-8.2f %-8.2f\n", langbuffer, sphereCache[Sphere_LocX], sphereCache[Sphere_LocY], sphereCache[Sphere_LocZ]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %.2f\n", "Vol Attrib Radius", sphereCache[Sphere_Radius]);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Radius");
+    Format(linebuffer, sizeof(linebuffer), "%25s %.2f\n", langbuffer, sphereCache[Sphere_Radius]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Fade Type");
     VolFadeToString(sphereCache[Sphere_FadeType], valuebuffer, sizeof(valuebuffer));
-    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Fade Type", valuebuffer);
+    Format(linebuffer, sizeof(linebuffer), "%25s %s\n", langbuffer, valuebuffer);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %.2f\n", "Vol Attrib Min Fade", sphereCache[Sphere_MinDistance]);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Min Fade");
+    Format(linebuffer, sizeof(linebuffer), "%25s %.2f\n", langbuffer, sphereCache[Sphere_MinDistance]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %.2f\n", "Vol Attrib Max Fade", sphereCache[Sphere_MaxDistance]);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Max Fade");
+    Format(linebuffer, sizeof(linebuffer), "%25s %.2f\n", langbuffer, sphereCache[Sphere_MaxDistance]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
     return cellswritten;

@@ -353,11 +353,12 @@ VolClassEditSetAttribute(dataIndex, const String:attribName[], const String:attr
  */
 VolClassEditBuildList(dataIndex, String:buffer[], maxlen)
 {
-    //#define CLASSEDIT_DUMP_FORMAT "%-19s %s\n"
+    #define CLASSEDIT_DUMP_FORMAT "%-30s %s\n"
     
-    //decl String:linebuffer[128];
-    //decl String:valuebuffer[256];
-    //new cache[VolTypeClassEdit];
+    decl String:linebuffer[128];
+    decl String:langbuffer[128];
+    decl String:valuebuffer[256];
+    new cache[VolTypeClassEdit];
     new cellswritten;
     
     // Validate index.
@@ -369,7 +370,7 @@ VolClassEditBuildList(dataIndex, String:buffer[], maxlen)
     // Initialize and clear buffer.
     buffer[0] = 0;
     
-    /*// Cache data.
+    // Cache data.
     cache = VolClassEditData[dataIndex];
     
     VolClassEditModeToString(cache[VolClassEdit_Mode], valuebuffer, sizeof(valuebuffer));
@@ -380,88 +381,108 @@ VolClassEditBuildList(dataIndex, String:buffer[], maxlen)
     {
         case ClassEditMode_Name:
         {
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Class Name:", cache[VolClassEdit_ClassName]);
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Name");
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, cache[VolClassEdit_Name]);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
         }
         case ClassEditMode_Attributes:
         {
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Alpha Initial");
             VolClassEditIntToString(dataIndex, ClassEdit_AlphaInitial, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Alpha initial:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Alpha Damaged");
             VolClassEditIntToString(dataIndex, ClassEdit_AlphaDamaged, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Alpha damaged:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Alpha Damage");
             VolClassEditIntToString(dataIndex, ClassEdit_AlphaDamage, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Alpha damage:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Overlay");
             VolClassEditStringToHumanStr(dataIndex, ClassEdit_OverlayPath, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Overlay path:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib NVGs");
             VolClassEditIntToString(dataIndex, ClassEdit_Nvgs, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "NVGs:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib FOV");
             VolClassEditIntToString(dataIndex, ClassEdit_Fov, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "FOV:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Has Napalm");
             VolClassEditIntToString(dataIndex, ClassEdit_HasNapalm, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Has napalm:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Napalm Time");
             VolClassEditFloatToString(dataIndex, ClassEdit_NapalmTime, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Napalm time:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Immunity Mode");
             VolClassEditIntToString(dataIndex, ClassEdit_ImmunityMode, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Immunity mode:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Immunity Amount");
             VolClassEditFloatToString(dataIndex, ClassEdit_ImmunityAmount, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Immunity amount:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib No Fall Damage");
             VolClassEditIntToString(dataIndex, ClassEdit_NoFallDamage, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "No fall damage:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Regen Interval");
             VolClassEditFloatToString(dataIndex, ClassEdit_RegenInterval, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Regen interval:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Regen Amount");
             VolClassEditIntToString(dataIndex, ClassEdit_RegenAmount, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Regen amount:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
-            VolClassEditIntToString(dataIndex, ClassEdit_InfectGain, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Infect gain:", valuebuffer);
-            cellswritten += StrCat(buffer, maxlen, linebuffer);
-            
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Kill Bonus");
             VolClassEditIntToString(dataIndex, ClassEdit_KillBonus, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Kill bonus:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Infect Gain");
+            VolClassEditIntToString(dataIndex, ClassEdit_InfectGain, valuebuffer, sizeof(valuebuffer));
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
+            cellswritten += StrCat(buffer, maxlen, linebuffer);
+            
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Speed");
             VolClassEditFloatToString(dataIndex, ClassEdit_Speed, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Speed:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Knockback");
             VolClassEditFloatToString(dataIndex, ClassEdit_KnockBack, valuebuffer, sizeof(valuebuffer), ZR_CLASS_KNOCKBACK_IGNORE);
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Knock back:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Jump Height");
             VolClassEditFloatToString(dataIndex, ClassEdit_JumpHeight, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Jump height:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
             
+            Format(langbuffer, sizeof(langbuffer), "%t:", "Classes Attrib Jump Distance");
             VolClassEditFloatToString(dataIndex, ClassEdit_JumpDistance, valuebuffer, sizeof(valuebuffer));
-            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Jump distance:", valuebuffer);
+            Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, langbuffer, valuebuffer);
             cellswritten += StrCat(buffer, maxlen, linebuffer);
         }
-    }*/
+    }
     
     return cellswritten;
 }
@@ -613,11 +634,11 @@ VolClassEditModeToString(VolClassEditMode:mode, String:buffer[], maxlen)
     {
         case ClassEditMode_Name:
         {
-            return strcopy(buffer, maxlen, "Name");
+            return Format(buffer, maxlen, "%t", "Vol Classedit Mode Name");
         }
         case ClassEditMode_Attributes:
         {
-            return strcopy(buffer, maxlen, "Attributes");
+            return Format(buffer, maxlen, "%t", "Vol Classedit Mode Attrib");
         }
     }
     
@@ -644,7 +665,7 @@ VolClassEditIntToString(dataIndex, ClassEditableAttributes:attribute, String:buf
     // Check if the attribute is marked as ignored.
     if (intVal == -1)
     {
-        return strcopy(buffer, maxlen, "(no change)");
+        return Format(buffer, maxlen, "%t", "Vol Classedit No Change");
     }
     else
     {
@@ -673,7 +694,7 @@ VolClassEditFloatToString(dataIndex, ClassEditableAttributes:attribute, String:b
     // Check if the attribute is marked as ignored.
     if (floatVal == minval)
     {
-        return strcopy(buffer, maxlen, "(no change)");
+        return Format(buffer, maxlen, "%t", "Vol Classedit No Change");
     }
     else
     {
@@ -700,7 +721,7 @@ VolClassEditStringToHumanStr(dataIndex, ClassEditableAttributes:attribute, Strin
     // Check if the attribute is marked as ignored.
     if (StrEqual(strVal, "nochange", false))
     {
-        return strcopy(buffer, maxlen, "(no change)");
+        return Format(buffer, maxlen, "%t", "Vol Classedit No Change");
     }
     else
     {

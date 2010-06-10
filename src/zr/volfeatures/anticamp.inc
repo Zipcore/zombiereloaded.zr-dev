@@ -475,6 +475,7 @@ bool:VolAnticampIsEnabled(anticampIndex)
 VolAnticampBuildList(anticampIndex, String:buffer[], maxlen)
 {
     decl String:linebuffer[128];
+    decl String:langbuffer[128];
     decl String:valuebuffer[256];
     new anticampcache[VolTypeAnticamp];
     new cellswritten;
@@ -491,24 +492,30 @@ VolAnticampBuildList(anticampIndex, String:buffer[], maxlen)
     // Cache data.
     anticampcache = AnticampData[anticampIndex];
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %sf\n", "Vol Attrib Name", anticampcache[Anticamp_Name]);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Name");
+    Format(linebuffer, sizeof(linebuffer), "%25s %s\n", langbuffer, anticampcache[Anticamp_Name]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %t\n", "Vol Attrib Enabled", anticampcache[Anticamp_Enabled] ? "Yes" : "No");
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Enabled");
+    Format(linebuffer, sizeof(linebuffer), "%25s %t\n", langbuffer, anticampcache[Anticamp_Enabled] ? "Yes" : "No");
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %.2f\n", "Vol Attrib Interval", anticampcache[Anticamp_Interval]);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Interval");
+    Format(linebuffer, sizeof(linebuffer), "%25s %.2f\n", langbuffer, anticampcache[Anticamp_Interval]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Action");
     VolAnticampActionToString(anticampcache[Anticamp_Action], valuebuffer, sizeof(valuebuffer));
-    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Action", valuebuffer);
+    Format(linebuffer, sizeof(linebuffer), "%25s %s\n", langbuffer, valuebuffer);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %.2f\n", "Vol Attrib Action Amount", anticampcache[Anticamp_Amount]);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Action Amount");
+    Format(linebuffer, sizeof(linebuffer), "%25s %.2f\n", langbuffer, anticampcache[Anticamp_Amount]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Warning");
     VolAnticampWarningToString(anticampcache[Anticamp_Warning], valuebuffer, sizeof(valuebuffer));
-    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Warning", valuebuffer);
+    Format(linebuffer, sizeof(linebuffer), "%25s %s\n", langbuffer, valuebuffer);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
     if (strlen(anticampcache[Anticamp_Message]) == 0)
@@ -520,7 +527,8 @@ VolAnticampBuildList(anticampIndex, String:buffer[], maxlen)
     {
         strcopy(valuebuffer, sizeof(valuebuffer), anticampcache[Anticamp_Message]);
     }
-    Format(linebuffer, sizeof(linebuffer), "%25t \"%s\"\n", "Vol Attrib Warning Message", valuebuffer);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Warning Message");
+    Format(linebuffer, sizeof(linebuffer), "%25s \"%s\"\n", langbuffer, valuebuffer);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
     return cellswritten;
