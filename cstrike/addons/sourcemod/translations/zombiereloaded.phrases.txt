@@ -95,6 +95,11 @@
 		"en"		"Current value:"
 	}
 
+	"All"
+	{
+		"en"		"All"
+	}
+
 	"Zombie"
 	{
 		"en"		"Zombie"
@@ -115,6 +120,11 @@
 	"Menu none"
 	{
 		"en"		"(None)"
+	}
+
+	"Menu default"
+	{
+		"en"		"(Default)"
 	}
 
 	// ===========================
@@ -1171,24 +1181,104 @@
 	// Volumetric features (module)
 	// ===========================
 
-	"Vol Anticamp Message"
+	"Vol Anticamp Def Message"
 	{
 		"en"		"This area is restricted, please move."
 	}
 
+	"Vol Anticamp"
+	{
+		"en"		"Anti-camp"
+	}
+
+	"Vol Classedit"
+	{
+		"en"		"Class editor"
+	}
+
+	"Vol No Action"
+	{
+		"en"		"No action"
+	}
+
+	"Vol Damage"
+	{
+		"en"		"Hurt player"
+	}
+
 	"Vol Slay"
+	{
+		"en"		"Kill player"
+	}
+
+	"Vol Drug"
+	{
+		"en"		"Drug player"
+	}
+
+	"Vol Ignite"
+	{
+		"en"		"Ignite player"
+	}
+
+	"Vol No Warning"
+	{
+		"en"		"No warning"
+	}
+
+	"Vol Chat"
+	{
+		"en"		"Chat area"
+	}
+
+	"Vol Center"
+	{
+		"en"		"Centered message"
+	}
+
+	"Vol Panel"
+	{
+		"en"		"Message in menu panel"
+	}
+
+	"Vol Conflict Priority"
+	{
+		"en"		"Use priority"
+	}
+
+	"Vol Conflict Merge"
+	{
+		"en"		"Merge (if possible)"
+	}
+
+	"Vol Fade None"
+	{
+		"en"		"No fading"
+	}
+
+	"Vol Fade LinCenter"
+	{
+		"en"		"Linear fading from center"
+	}
+
+	"Vol Fade LinDist"
+	{
+		"en"		"Linear fading between max/min boundaries"
+	}
+
+	"Vol Slayed"
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"Slayed player \"{1}\" for not leaving a restricted area (ID: {2})."
 	}
 
-	"Vol Drug"
+	"Vol Drugged"
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"Drugged player \"{1}\" for not leaving a restricted area (ID: {2})."
 	}
 
-	"Vol Ignite"
+	"Vol Igniteed"
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"Ignited player \"{1}\" for not leaving a restricted area (ID: {2})."
@@ -1207,6 +1297,16 @@
 	"Vol Syntax Shape Add"
 	{
 		"en"		"Creates a new shape to be used on a volume. Usage zr_vol_shape_add <shape> [params...]"
+	}
+	
+	"Vol Syntax Dump States"
+	{
+		"en"		"Dumps volume states for the specified player. Usage: zr_vol_dumpstates <index|targetname>"
+	}
+	
+	"Vol Syntax List"
+	{
+		"en"		"Lists existing volumes in the map, or dumps details about the specified volume. Usage: zr_vol_list [index|name]"
 	}
 	
 	"Vol Missing Parameters"
@@ -1319,6 +1419,131 @@
 		"en"		"End fade distance."
 	}
 	
+	"Vol Attrib Index"
+	{
+		"en"		"Index:"
+	}
+	
+	"Vol Attrib In Volume"
+	{
+		"en"		"Player in volume:"
+	}
+	
+	"Vol Attrib Name"
+	{
+		"en"		"Name:"
+	}
+	
+	"Vol Attrib Enabled"
+	{
+		"en"		"Enabled:"
+	}
+	
+	"Vol Attrib Features"
+	{
+		"en"		"Features:"
+	}
+	
+	"Vol Attrib Total Volumes"
+	{
+		"en"		"Total volumes:"
+	}
+	
+	"Vol Attrib Interval"
+	{
+		"en"		"Interval:"
+	}
+	
+	"Vol Attrib Action"
+	{
+		"en"		"Action:"
+	}
+	
+	"Vol Attrib Action Amount"
+	{
+		"en"		"Action amount:"
+	}
+	
+	"Vol Attrib Warning Type"
+	{
+		"en"		"Warning type:"
+	}
+	
+	"Vol Attrib Warning Message"
+	{
+		"en"		"Warning message:"
+	}
+	
+	"Vol Attrib Shape"
+	{
+		"en"		"Shape:"
+	}
+	
+	"Vol Attrib Effect"
+	{
+		"en"		"Effect:"
+	}
+	
+	"Vol Attrib Effect Color"
+	{
+		"en"		"Effect color:"
+	}
+	
+	"Vol Attrib Teamfilter"
+	{
+		"en"		"Team filter:"
+	}
+	
+	"Vol Attrib Trigger Delay"
+	{
+		"en"		"Trigger delay:"
+	}
+	
+	"Vol Attrib Priority"
+	{
+		"en"		"Priority:"
+	}
+	
+	"Vol Attrib Conflict Action"
+	{
+		"en"		"Conflict action:"
+	}
+	
+	"Vol Attrib Min Loc"
+	{
+		"en"		"Minimum location:"
+	}
+	
+	"Vol Attrib Max Loc"
+	{
+		"en"		"Maximum location:"
+	}
+	
+	"Vol Attrib Loc"
+	{
+		"en"		"Location:"
+	}
+	
+	"Vol Attrib Radius"
+	{
+		"en"		"Radius:"
+	}
+	
+	"Vol Attrib Fade Type"
+	{
+		"en"		"Fade type:"
+	}
+	
+	"Vol Attrib Min Fade"
+	{
+		"en"		"Minimum fade distance:"
+	}
+	
+	"Vol Attrib Max Fade"
+	{
+		"en"		"Maximum fade distance:"
+	}
+	
 	"Vol Invalid Volume Id"
 	{
 		"#format"	"{1:s}"
@@ -1366,6 +1591,11 @@
 		"en"		"Maximum number of volumes reached."
 	}
 	
+	"Vol Cuboid"
+	{
+		"en"		"Cuboid"
+	}
+	
 	"Vol Cuboid Full"
 	{
 		"en"		"Maximum number of cuboid shapes reached."
@@ -1374,6 +1604,11 @@
 	"Vol Cuboid Empty"
 	{
 		"en"		"Invalid cuboud size. Zero-area cuboid."
+	}
+	
+	"Vol Sphere"
+	{
+		"en"		"Sphere"
 	}
 	
 	"Vol Sphere Full"
@@ -1391,10 +1626,31 @@
 		"en"		"Invalid fade distance."
 	}
 	
+	"Vol Effect None"
+	{
+		"en"		"No effect"
+	}
+	
+	"Vol Effect Wireframe"
+	{
+		"en"		"Wireframe"
+	}
+	
+	"Vol Effect Smoke"
+	{
+		"en"		"Smoke"
+	}
+	
 	"Vol Added"
 	{
 		"#format"	"{1:d},{2:s}"
 		"en"		"Volume added successfully. Index: {1} (\"{2}\")"
+	}
+	
+	"Vol Removed"
+	{
+		"#format"	"{1:d},{2:s}"
+		"en"		"Volume {1} removed successfully. Recursive removal: {2}"
 	}
 	
 	"Vol Shape Added"

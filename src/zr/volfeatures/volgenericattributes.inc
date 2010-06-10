@@ -74,36 +74,6 @@ stock VolSetTeam(volumeIndex, VolumeTeamFilters:team[])
     Volumes[volumeIndex][Vol_TeamFilter] = team;
 }
 
-/**
- * Converts a team name type to a string.
- *
- * @param team          Team type to convert.
- * @param buffer        Destination string buffer.
- * @param maxlen        Size of destination buffer.
- * @param shortName     Optional. Write short name or human readable name.
- *                      Default is human readable (false).
- * @return              Number of cells written.
- */
-stock VolTeamToString(VolumeTeamFilters:team, String:buffer[], maxlen, bool:shortName = false)
-{
-    switch (team)
-    {
-        case VolTeam_All:
-        {
-            return shortName ? strcopy(buffer, maxlen, "all") : strcopy(buffer, maxlen, "All");
-        }
-        case VolTeam_Humans:
-        {
-            return shortName ? strcopy(buffer, maxlen, "humans") : strcopy(buffer, maxlen, "Humans");
-        }
-        case VolTeam_Zombies:
-        {
-            return shortName ? strcopy(buffer, maxlen, "zombies") : strcopy(buffer, maxlen, "Zombies");
-        }
-    }
-    
-    return 0;
-}
 
 /**
  * Parses a delay string value and applies it to the specified volume.
@@ -188,37 +158,6 @@ stock bool:VolSetEffectString(volumeIndex, const String:effect[])
 stock VolSetEffect(volumeIndex, VolumeEffects:effect)
 {
     Volumes[volumeIndex][Vol_Effect] = effect;
-}
-
-/**
- * Converts a volume effect type to a string.
- *
- * @param effect        Effect type to convert.
- * @param buffer        Destination string buffer.
- * @param maxlen        Size of destination buffer.
- * @param shortName     Optional. Write short name or human readable name.
- *                      Default is human readable (false).
- * @return              Number of cells written.
- */
-stock VolEffectToString(VolumeEffects:effect, String:buffer[], maxlen, bool:shortName = false)
-{
-    switch (effect)
-    {
-        case VolEffect_None:
-        {
-            return shortName ? strcopy(buffer, maxlen, "none") : strcopy(buffer, maxlen, "No effect");
-        }
-        case VolEffect_Wireframe:
-        {
-            return shortName ? strcopy(buffer, maxlen, "wireframe") : strcopy(buffer, maxlen, "Wire frame");
-        }
-        case VolEffect_Smoke:
-        {
-            return shortName ? strcopy(buffer, maxlen, "smoke") : strcopy(buffer, maxlen, "Smoke");
-        }
-    }
-    
-    return 0;
 }
 
 /**

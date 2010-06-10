@@ -47,6 +47,25 @@ VolumeFeatureTypes:VolStringToFeature(const String:feature[])
     }
 }
 
+/**
+ * Converts a feature type to a string.
+ *
+ * @param feature   Feature type to convert.
+ * @param buffer    Destination string buffer.
+ * @param maxlen    Size of destination buffer.
+ * @return          Number of cells written.
+ */
+VolFeatureToString(VolumeFeatureTypes:feature, String:buffer[], maxlen)
+{
+    switch (shape)
+    {
+        case VolFeature_Anticamp: return Format(buffer, maxlen, "%t", "Vol Anticamp");
+        case VolFeature_ClassEdit: return Format(buffer, maxlen, "%t", "Vol Classedit");
+    }
+    
+    return 0;
+}
+
 
 /**************
  *            *
@@ -77,6 +96,25 @@ VolumeShapes:VolStringToShape(const String:shape[])
 }
 
 /**
+ * Converts a shape type to a string.
+ *
+ * @param shape         Shape type to convert.
+ * @param buffer        Destination string buffer.
+ * @param maxlen        Size of destination buffer.
+ * @return              Number of cells written.
+ */
+VolShapeToString(VolumeShapes:shape, String:buffer[], maxlen)
+{
+    switch (shape)
+    {
+        case VolShape_Cuboid: return Format(buffer, maxlen, "%t", "Vol Cuboid");
+        case VolShape_Sphere: return Format(buffer, maxlen, "%t", "Vol Sphere");
+    }
+    
+    return 0;
+}
+
+/**
  * Gets the effect type from a string.
  *
  * @param effect    String value.
@@ -100,6 +138,26 @@ VolumeEffects:VolStringToEffect(const String:effect[])
     {
         return VolEffect_Invalid;
     }
+}
+
+/**
+ * Converts a effect type to a string.
+ *
+ * @param effect        Effect type to convert.
+ * @param buffer        Destination string buffer.
+ * @param maxlen        Size of destination buffer.
+ * @return              Number of cells written.
+ */
+VolEffectToString(VolumeEffects:effect, String:buffer[], maxlen)
+{
+    switch (effect)
+    {
+        case VolEffect_None: return Format(buffer, maxlen, "%t", "Vol Effect None");
+        case VolEffect_Wireframe: return Format(buffer, maxlen, "%t", "Vol Effect Wireframe");
+        case VolEffect_Smoke: return Format(buffer, maxlen, "%t", "Vol Effect Smoke");
+    }
+    
+    return 0;
 }
 
 /**
@@ -160,6 +218,26 @@ VolumeTeamFilters:VolStringToTeam(const String:team[])
 }
 
 /**
+ * Converts a team type to a string.
+ *
+ * @param team      Team type to convert.
+ * @param buffer    Destination string buffer.
+ * @param maxlen    Size of destination buffer.
+ * @return          Number of cells written.
+ */
+VolTeamToString(VolumeTeamFilters:team, String:buffer[], maxlen)
+{
+    switch (team)
+    {
+        case VolTeam_All: return Format(buffer, maxlen, "%t", "All");
+        case VolTeam_Zombies: return Format(buffer, maxlen, "%t", "Classes Menu Zombies");
+        case VolTeam_Humans: return Format(buffer, maxlen, "%t", "Classes Menu Humans");
+    }
+    
+    return 0;
+}
+
+/**
  * Gets the conflict action type from a string.
  *
  * @param conflictAction    String value.
@@ -179,6 +257,25 @@ VolumeConflictActions:VolStringToConflictAction(const String:conflictAction[])
     {
         return VolConflict_Invalid;
     }
+}
+
+/**
+ * Converts a conflict action type to a string.
+ *
+ * @param conflictAction    Conflict action type to convert.
+ * @param buffer            Destination string buffer.
+ * @param maxlen            Size of destination buffer.
+ * @return                  Number of cells written.
+ */
+VolConflictToString(VolumeConflictActions:conflictAction, String:buffer[], maxlen)
+{
+    switch (conflictAction)
+    {
+        case VolConflict_Priority: return Format(buffer, maxlen, "%t", "Vol Conflict Priority");
+        case VolConflict_Merge: return Format(buffer, maxlen, "%t", "Vol Conflict Merge");
+    }
+    
+    return 0;
 }
 
 
@@ -212,6 +309,26 @@ FadeTypes:VolStringToFadeType(const String:fadeType[])
     {
         return FadeType_Invalid;
     }
+}
+
+/**
+ * Converts a fade type to a string.
+ *
+ * @param fade      Fade type to convert.
+ * @param buffer    Destination string buffer.
+ * @param maxlen    Size of destination buffer.
+ * @return          Number of cells written.
+ */
+VolFadeToString(FadeTypes:fade, String:buffer[], maxlen)
+{
+    switch (fade)
+    {
+        case FadeType_None: return Format(buffer, maxlen, "%t", "Vol Fade None");
+        case FadeType_LinearCenter: return Format(buffer, maxlen, "%t", "Vol Fade LinCenter");
+        case FadeType_LinearDistance: return Format(buffer, maxlen, "%t", "Vol Fade LinDist");
+    }
+    
+    return 0;
 }
 
 

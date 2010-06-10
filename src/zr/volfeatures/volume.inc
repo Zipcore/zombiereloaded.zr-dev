@@ -233,9 +233,11 @@ VolRefreshLinks(volumeIndex)
  *                          feature. INVALID_HANDLE if no features are linked.
  * @param featureIndexes    Output: Handle to an array with indexes for each feature.
  *                          INVALID_HANDLE if no features are linked.
+ * @param ignoreEnabled     Optional. Ignore whether a feature is disabled or
+ *                          not. Default is true.
  * @return                  Number of linked features.
  */
-VolGetFeatures(volumeIndex, &Handle:featureTypes, &Handle:featureIndexes)
+VolGetFeatures(volumeIndex, &Handle:featureTypes, &Handle:featureIndexes, bool:ignoreEnabled = true)
 {
     featureTypes = CreateArray();
     featureIndexes = CreateArray();
@@ -279,7 +281,7 @@ VolGetFeatures(volumeIndex, &Handle:featureTypes, &Handle:featureIndexes)
             }
             
             // Add to arrays if linked to volume, in use, and enabled.
-            if (volume == volumeIndex && inUse && enabled)
+            if (volume == volumeIndex && inUse && (ignoreEnabled || enabled))
             {
                 PushArrayCell(featureTypes, _:feature);
                 PushArrayCell(featureIndexes, i);
@@ -323,3 +325,143 @@ bool:VolIsPointInVolume(Float:point[3], volumeIndex)
     return false;
 }
 
+/**
+ * Builds a user friendly (translated) list of the volume's attributes.
+ *
+ * @param volumeIndex   Volume to dump.
+ * @param buffer        Destination string buffer.
+ * @param maxlen        Size of destination buffer.
+ * @return              Number of cells written.
+ */
+VolBuildList(volumeIndex, String:buffer[], maxlen)
+{
+    decl String:linebuffer[128];
+    decl String:valuebuffer[256];
+    new volCache[VolumeAttributes];
+    new color[3];
+    new cellswritten;
+    
+    // Validate index.
+    if (!VolIsValid(volumeIndex))
+    {
+        return 0;
+    }
+    
+    // Initialize and clear buffer.
+    buffer[0] = 0;
+    
+    // Cache data.
+    volCache = Volumes[volumeIndex];
+    color[0] = volCache[Vol_EffectColor][0];
+    color[1] = volCache[Vol_EffectColor][1];
+    color[2] = volCache[Vol_EffectColor][2];
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t \"%s\" (%d)\n", "Vol Attrib Name", volCache[Vol_Name], volumeIndex);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t %t\n", "Vol Attrib Enabled", volCache[Vol_Enabled] ? "Yes" : "No");
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    VolShapeToString(volCache[Vol_Shape], valuebuffer, sizeof(valuebuffer));
+    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Shape", valuebuffer);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    VolEffectToString(volCache[Vol_Effect], valuebuffer, sizeof(valuebuffer));
+    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Effect", valuebuffer);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t %d %d %d\n", "Vol Attrib Effect Color", color[0], color[1], color[2]);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    VolTeamToString(volCache[Vol_TeamFilter], valuebuffer, sizeof(valuebuffer));
+    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Teamfilter", valuebuffer);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t %.2f\n", "Vol Attrib Trigger Delay", volCache[Vol_TriggerDelay]);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t %d\n", "Vol Attrib Priority", volCache[Vol_Priority]);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    VolConflictToString(volCache[Vol_ConflictAction], valuebuffer, sizeof(valuebuffer));
+    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Conflict Action", valuebuffer);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    return cellswritten;
+}
+
+/**
+ * Returns a list with linked feature names of the volume.
+ *
+ * @param volumeIndex   Volume read.
+ * @param buffer        Destination string buffer.
+ * @param maxlen        Size of destination buffer.
+ * @return              Number of cells written.
+ */
+VolGetFeatureListString(volumeIndex, String:buffer[], maxlen)
+{
+    decl String:linebuffer[256];
+    decl String:valuebuffer[256];
+    decl String:strFeature[64];
+    new cellswritten;
+    
+    // Validate index.
+    if (!VolIsValid(volumeIndex))
+    {
+        return 0;
+    }
+    
+    // Initialize and clear buffers.
+    linebuffer[0] = 0;
+    buffer[0] = 0;
+    
+    // Get feature indexes.
+    new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
+    new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureIndexes];
+    
+    if (featureTypes != INVALID_HANDLE)
+    {
+        new numFeatures = GetArraySize(featureTypes);
+        
+        // Loop through each feature and add its name to the list. If the
+        // feature doesn't have a name, write "type:index".
+        
+        for (new feature = 0; feature < numFeatures; feature++)
+        {
+            new VolumeFeatureTypes:featureType = VolumeFeatureTypes:GetArrayCell(featureTypes, feature);
+            new featureIndex = GetArrayCell(featureIndexes, feature);
+            
+            switch (featureType)
+            {
+                case VolFeature_Anticamp:
+                {
+                    strcopy(valuebuffer, sizeof(valuebuffer), AnticampData[featureIndex][Anticamp_Name]);
+                    Format(strFeature, sizeof(strFeature), "%t", "Vol Anticamp");
+                }
+                case VolFeature_ClassEdit:
+                {
+                    strcopy(valuebuffer, sizeof(valuebuffer), VolClassEditData[featureIndex][VolClassEdit_Name]);
+                    Format(strFeature, sizeof(strFeature), "%t", "Vol Classedit");
+                }
+            }
+            
+            if (strlen(valuebuffer) == 0)
+            {
+                Format(valuebuffer, sizeof(valuebuffer), "%d", featureIndex);
+            }
+            
+            Format(linebuffer, sizeof(linebuffer), "%s:%s", strFeature, valuebuffer);
+            cellswritten += StrCat(buffer, maxlen, linebuffer);
+            
+            // Add commas after each feature except for the last one.
+            if (feature < numFeatures - 1)
+            {
+                cellswritten += StrCat(buffer, maxlen, ", ");
+            }
+        }
+        
+        return cellswritten;
+    }
+    
+    return 0;
+}

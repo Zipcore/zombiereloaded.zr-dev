@@ -258,7 +258,7 @@ VolAnticampApplyAction(client, anticampIndex, volumeIndex)
                 ForcePlayerSuicide(client);
                 
                 // Log event.
-                LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Slay", name, volumeIndex);
+                LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Slayed", name, volumeIndex);
             }
         }
         case Anticamp_Slay:
@@ -267,7 +267,7 @@ VolAnticampApplyAction(client, anticampIndex, volumeIndex)
             ForcePlayerSuicide(client);
             
             // Log event.
-            LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Slay", name, volumeIndex);
+            LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Slayed", name, volumeIndex);
         }
         case Anticamp_Drug:
         {
@@ -275,7 +275,7 @@ VolAnticampApplyAction(client, anticampIndex, volumeIndex)
             ServerCommand("sm_drug #%d 1", userid);
             
             // Log event.
-            LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Drug", name, volumeIndex);
+            LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Drugged", name, volumeIndex);
         }
         case Anticamp_Ignite:
         {
@@ -289,7 +289,7 @@ VolAnticampApplyAction(client, anticampIndex, volumeIndex)
                 IgniteEntity(client, amount);
                 
                 // Log event.
-                LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Ignite", name, volumeIndex);
+                LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_Volfeatures, "Anti-camp", "%t", "Vol Igniteed", name, volumeIndex);
             }
         }
     }
@@ -318,7 +318,7 @@ VolAnticampWarnPlayer(client, anticampIndex)
     else
     {
         // Use default anticamp message in translations file.
-        Format(buffer, sizeof(buffer), "%t", "Vol Anticamp Message");
+        Format(buffer, sizeof(buffer), "%t", "Vol Anticamp Def Message");
     }
     
     switch (AnticampData[anticampIndex][Anticamp_Warning])
@@ -465,14 +465,14 @@ bool:VolAnticampIsEnabled(anticampIndex)
 }
 
 /**
- * Dumps data to be used by zr_vol_list command.
+ * Builds a user friendly (translated) list of the anti-camp's attributes.
  *
  * @param anticampIndex     Index in anticamp data array.
  * @param buffer            Destination string buffer.
  * @param maxlen            Size of destination buffer.
  * @return                  Number of cells written.
  */
-VolAnticampDumpData(anticampIndex, String:buffer[], maxlen)
+VolAnticampBuildList(anticampIndex, String:buffer[], maxlen)
 {
     decl String:linebuffer[128];
     decl String:valuebuffer[256];
@@ -480,7 +480,7 @@ VolAnticampDumpData(anticampIndex, String:buffer[], maxlen)
     new cellswritten;
     
     // Validate index.
-    if (!VolAnticampValidateIndex(anticampIndex))
+    if (!VolAnticampIsValid(anticampIndex))
     {
         return 0;
     }
@@ -491,22 +491,36 @@ VolAnticampDumpData(anticampIndex, String:buffer[], maxlen)
     // Cache data.
     anticampcache = AnticampData[anticampIndex];
     
-    Format(linebuffer, sizeof(linebuffer), "Interval:           %.2f\n", anticampcache[Anticamp_Interval]);
+    Format(linebuffer, sizeof(linebuffer), "%25t %sf\n", "Vol Attrib Name", anticampcache[Anticamp_Name]);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t %t\n", "Vol Attrib Enabled", anticampcache[Anticamp_Enabled] ? "Yes" : "No");
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%25t %.2f\n", "Vol Attrib Interval", anticampcache[Anticamp_Interval]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
     VolAnticampActionToString(anticampcache[Anticamp_Action], valuebuffer, sizeof(valuebuffer));
-    Format(linebuffer, sizeof(linebuffer), "Action:             %s\n", valuebuffer);
+    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Action", valuebuffer);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "Action amount:      %.2f\n", anticampcache[Anticamp_Amount]);
+    Format(linebuffer, sizeof(linebuffer), "%25t %.2f\n", "Vol Attrib Action Amount", anticampcache[Anticamp_Amount]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
     VolAnticampWarningToString(anticampcache[Anticamp_Warning], valuebuffer, sizeof(valuebuffer));
-    Format(linebuffer, sizeof(linebuffer), "Warning type:       %s\n", valuebuffer);
+    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Warning", valuebuffer);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    strcopy(valuebuffer, sizeof(valuebuffer), anticampcache[Anticamp_Message]);
-    Format(linebuffer, sizeof(linebuffer), "Warning message:    \"%s\"\n", valuebuffer);
+    if (strlen(anticampcache[Anticamp_Message]) == 0)
+    {
+        // No warning message.
+        Format(valuebuffer, sizeof(valuebuffer), "%t", "Menu default");
+    }
+    else
+    {
+        strcopy(valuebuffer, sizeof(valuebuffer), anticampcache[Anticamp_Message]);
+    }
+    Format(linebuffer, sizeof(linebuffer), "%25t \"%s\"\n", "Vol Attrib Warning Message", valuebuffer);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
     return cellswritten;
@@ -535,23 +549,23 @@ VolAnticampActionToString(VolAnticampAction:actionType, String:buffer[], maxlen,
     {
         case Anticamp_NoAction:
         {
-            return shortName ? strcopy(buffer, maxlen, "none") : strcopy(buffer, maxlen, "No action");
+            return shortName ? strcopy(buffer, maxlen, "none") : Format(buffer, maxlen, "%t", "Vol No action");
         }
         case Anticamp_Damage:
         {
-            return shortName ? strcopy(buffer, maxlen, "damage") : strcopy(buffer, maxlen, "Damage player");
+            return shortName ? strcopy(buffer, maxlen, "damage") : Format(buffer, maxlen, "%t", "Vol Damage");
         }
         case Anticamp_Slay:
         {
-            return shortName ? strcopy(buffer, maxlen, "slay") : strcopy(buffer, maxlen, "Kill player");
+            return shortName ? strcopy(buffer, maxlen, "slay") : Format(buffer, maxlen, "%t", "Vol Slay");
         }
         case Anticamp_Drug:
         {
-            return shortName ? strcopy(buffer, maxlen, "drug") : strcopy(buffer, maxlen, "Drug player ");
+            return shortName ? strcopy(buffer, maxlen, "drug") : Format(buffer, maxlen, "%t", "Vol Drug");
         }
         case Anticamp_Ignite:
         {
-            return shortName ? strcopy(buffer, maxlen, "ignite") : strcopy(buffer, maxlen, "Ignite player");
+            return shortName ? strcopy(buffer, maxlen, "ignite") : Format(buffer, maxlen, "%t", "Vol Ignite");
         }
     }
     
@@ -607,25 +621,25 @@ stock VolAnticampAction:VolAnticampStringToAction(const String:action[])
  *                      Default is human readable (false).
  * @return              Number of cells written.
  */
-VolAnticampWarningToString(VolAnticampeWarningType:warningType, String:buffer[], maxlen, bool:shortName = false)
+VolAnticampWarningToString(VolAnticampWarningType:warningType, String:buffer[], maxlen, bool:shortName = false)
 {
     switch (warningType)
     {
         case Anticamp_NoWarning:
         {
-            return shortName ? strcopy(buffer, maxlen, "none") : strcopy(buffer, maxlen, "No warning");
+            return shortName ? strcopy(buffer, maxlen, "none") : Format(buffer, maxlen, "%t", "Vol No warning");
         }
         case Anticamp_Chat:
         {
-            return shortName ? strcopy(buffer, maxlen, "chat") : strcopy(buffer, maxlen, "Chat area");
+            return shortName ? strcopy(buffer, maxlen, "chat") : Format(buffer, maxlen, "%t", "Vol Chat");
         }
         case Anticamp_Center:
         {
-            return shortName ? strcopy(buffer, maxlen, "center") : strcopy(buffer, maxlen, "Centered message");
+            return shortName ? strcopy(buffer, maxlen, "center") : Format(buffer, maxlen, "%t", "Vol Center");
         }
         case Anticamp_Menu:
         {
-            return shortName ? strcopy(buffer, maxlen, "menu") : strcopy(buffer, maxlen, "Message in menu panel");
+            return shortName ? strcopy(buffer, maxlen, "menu") : Format(buffer, maxlen, "%t", "Vol Panel");
         }
     }
     
