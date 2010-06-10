@@ -336,6 +336,7 @@ bool:VolIsPointInVolume(Float:point[3], volumeIndex)
 VolBuildList(volumeIndex, String:buffer[], maxlen)
 {
     decl String:linebuffer[128];
+    decl String:langbuffer[128];
     decl String:valuebuffer[256];
     new volCache[VolumeAttributes];
     new color[3];
@@ -356,35 +357,44 @@ VolBuildList(volumeIndex, String:buffer[], maxlen)
     color[1] = volCache[Vol_EffectColor][1];
     color[2] = volCache[Vol_EffectColor][2];
     
-    Format(linebuffer, sizeof(linebuffer), "%25t \"%s\" (%d)\n", "Vol Attrib Name", volCache[Vol_Name], volumeIndex);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Name");
+    Format(linebuffer, sizeof(linebuffer), "%25s \"%s\" (%d)\n", langbuffer, volCache[Vol_Name], volumeIndex);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %t\n", "Vol Attrib Enabled", volCache[Vol_Enabled] ? "Yes" : "No");
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Enabled");
+    Format(linebuffer, sizeof(linebuffer), "%25s %t\n", langbuffer, volCache[Vol_Enabled] ? "Yes" : "No");
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Shape");
     VolShapeToString(volCache[Vol_Shape], valuebuffer, sizeof(valuebuffer));
-    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Shape", valuebuffer);
+    Format(linebuffer, sizeof(linebuffer), "%25s %s\n", langbuffer, valuebuffer);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Effect");
     VolEffectToString(volCache[Vol_Effect], valuebuffer, sizeof(valuebuffer));
-    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Effect", valuebuffer);
+    Format(linebuffer, sizeof(linebuffer), "%25s %s\n", langbuffer, valuebuffer);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %d %d %d\n", "Vol Attrib Effect Color", color[0], color[1], color[2]);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Effect Color");
+    Format(linebuffer, sizeof(linebuffer), "%25s %d %d %d\n", langbuffer, color[0], color[1], color[2]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Teamfilter");
     VolTeamToString(volCache[Vol_TeamFilter], valuebuffer, sizeof(valuebuffer));
-    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Teamfilter", valuebuffer);
+    Format(linebuffer, sizeof(linebuffer), "%25s %s\n", langbuffer, valuebuffer);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %.2f\n", "Vol Attrib Trigger Delay", volCache[Vol_TriggerDelay]);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Trigger Delay");
+    Format(linebuffer, sizeof(linebuffer), "%25s %.2f\n", langbuffer, volCache[Vol_TriggerDelay]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %d\n", "Vol Attrib Priority", volCache[Vol_Priority]);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Priority");
+    Format(linebuffer, sizeof(linebuffer), "%25s %d\n", langbuffer, volCache[Vol_Priority]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Conflict Action");
     VolConflictToString(volCache[Vol_ConflictAction], valuebuffer, sizeof(valuebuffer));
-    Format(linebuffer, sizeof(linebuffer), "%25t %s\n", "Vol Attrib Conflict Action", valuebuffer);
+    Format(linebuffer, sizeof(linebuffer), "%25s %s\n", langbuffer, valuebuffer);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
     return cellswritten;

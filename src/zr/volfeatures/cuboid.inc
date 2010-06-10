@@ -215,6 +215,7 @@ bool:VolIsPointInCuboid(Float:point[3], cuboid)
 VolCuboidBuildList(cuboid, String:buffer[], maxlen)
 {
     decl String:linebuffer[128];
+    decl String:langbuffer[128];
     new cuboidCache[CuboidAttributes];
     new cellswritten;
     
@@ -230,13 +231,16 @@ VolCuboidBuildList(cuboid, String:buffer[], maxlen)
     // Cache data.
     cuboidCache = Cuboids[cuboid];
     
-    Format(linebuffer, sizeof(linebuffer), "%25t \"%s\" (%d)\n", "Vol Attrib Name", cuboidCache[Cuboid_Name], cuboid);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Name");
+    Format(linebuffer, sizeof(linebuffer), "%25s \"%s\" (%d)\n", langbuffer, cuboidCache[Cuboid_Name], cuboid);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %-8.2d %-8.2d %-8.2d\n", "Vol Attrib Min Loc", cuboidCache[Cuboid_xMin], cuboidCache[Cuboid_yMin], cuboidCache[Cuboid_zMin]);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Min Loc");
+    Format(linebuffer, sizeof(linebuffer), "%25s %-8.2f %-8.2f %-8.2f\n", langbuffer, cuboidCache[Cuboid_xMin], cuboidCache[Cuboid_yMin], cuboidCache[Cuboid_zMin]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(linebuffer, sizeof(linebuffer), "%25t %-8.2d %-8.2d %-8.2d\n", "Vol Attrib Max Loc", cuboidCache[Cuboid_xMax], cuboidCache[Cuboid_yMax], cuboidCache[Cuboid_zMax]);
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Max Loc");
+    Format(linebuffer, sizeof(linebuffer), "%25s %-8.2f %-8.2f %-8.2f\n", langbuffer, cuboidCache[Cuboid_xMax], cuboidCache[Cuboid_yMax], cuboidCache[Cuboid_zMax]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
     return cellswritten;

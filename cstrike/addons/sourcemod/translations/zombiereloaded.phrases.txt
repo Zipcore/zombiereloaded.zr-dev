@@ -306,9 +306,64 @@
 
 	// Attributes
 
+	"Classes Attrib Name"
+	{
+		"en"		"Class Name"
+	}
+	
+	"Classes Attrib Alpha Initial"
+	{
+		"en"		"Alpha Initial"
+	}
+	
+	"Classes Attrib Alpha Damaged"
+	{
+		"en"		"Alpha Damaged"
+	}
+	
+	"Classes Attrib Alpha Damage"
+	{
+		"en"		"Alpha Damage"
+	}
+	
+	"Classes Attrib Overlay"
+	{
+		"en"		"Overlay Path"
+	}
+	
+	"Classes Attrib NVGs"
+	{
+		"en"		"Night Vision"
+	}
+	
+	"Classes Attrib FOV"
+	{
+		"en"		"Field Of View"
+	}
+	
+	"Classes Attrib Has Napalm"
+	{
+		"en"		"Has napalm"
+	}
+	
 	"Classes Attrib Napalm Time"
 	{
 		"en"		"Napalm Time"
+	}
+	
+	"Classes Attrib Immunity Mode"
+	{
+		"en"		"Immunity Mode"
+	}
+
+	"Classes Attrib Immunity Amount"
+	{
+		"en"		"Immunity Amount"
+	}
+
+	"Classes Attrib No Fall Damage"
+	{
+		"en"		"No Fall Damage"
 	}
 
 	"Classes Attrib Health"
@@ -324,6 +379,11 @@
 	"Classes Attrib Regen Amount"
 	{
 		"en"		"Health Regeneration Amount"
+	}
+
+	"Classes Attrib Kill Bonus"
+	{
+		"en"		"Kill Bonus"
 	}
 
 	"Classes Attrib Infect Gain"
@@ -1544,6 +1604,11 @@
 		"en"		"Maximum fade distance:"
 	}
 	
+	"Vol Attrib Classedit Mode"
+	{
+		"en"		"Class editor mode:"
+	}
+	
 	"Vol Invalid Volume Id"
 	{
 		"#format"	"{1:s}"
@@ -1639,6 +1704,21 @@
 	"Vol Effect Smoke"
 	{
 		"en"		"Smoke"
+	}
+
+	"Vol Classedit No Change"
+	{
+		"en"		"(No change)"
+	}
+
+	"Vol Classedit Mode Name"
+	{
+		"en"		"Replace class"
+	}
+
+	"Vol Classedit Mode Attrib"
+	{
+		"en"		"Replace attributes"
 	}
 	
 	"Vol Added"

@@ -146,8 +146,7 @@ public Action:VolAddCommand(client, argc)
     // Check for parse errors.
     if (err == PARAM_ERROR_EMPTY)
     {
-        TranslationReplyToCommand(client, "Vol Missing Parameters");
-        return Plugin_Handled;
+        // Do nothing. Parameters are optional.
     }
     else if (err)
     {
@@ -351,6 +350,9 @@ public Action:VolListCommand(client, argc)
 {
     decl String:buffer[1022];       // Two chars reserved for newline and null terminator.
     decl String:linebuffer[256];
+    decl String:langbuffer1[256];
+    decl String:langbuffer2[256];
+    decl String:langbuffer3[256];
     decl String:id[ZR_VOL_NAME_LEN];
     
     buffer[0] = 0;
@@ -365,8 +367,11 @@ public Action:VolListCommand(client, argc)
     {
         // No volume specified. Display syntax and list volumes.
         TranslationReplyToCommand(client, "Vol Syntax List");
-        ReplyToCommand(client, "%10t %20t %t\n--------------------------------------------------\n",
-                       "Vol Attrib Index", "Vol Attrib Name", "Vol Attrib Features");
+        Format(langbuffer1, sizeof(langbuffer1), "%t", "Vol Attrib Index");
+        Format(langbuffer2, sizeof(langbuffer2), "%t", "Vol Attrib Name");
+        Format(langbuffer3, sizeof(langbuffer3), "%t", "Vol Attrib Features");
+        ReplyToCommand(client, "%10s %20s %s\n--------------------------------------------------",
+                       langbuffer1, langbuffer2, langbuffer3);
         
         // Loop through all indexes.
         for (volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
@@ -378,7 +383,7 @@ public Action:VolListCommand(client, argc)
                 VolGetFeatureListString(volumeIndex, linebuffer, sizeof(linebuffer));
                 
                 // Add to list.
-                ReplyToCommand(client, "%-9d %s %s", volumeIndex, Volumes[volumeIndex][Vol_Name], linebuffer);
+                ReplyToCommand(client, "%-10d %s %s", volumeIndex, Volumes[volumeIndex][Vol_Name], linebuffer);
                 volCount++;
             }
         }
@@ -411,7 +416,7 @@ public Action:VolListCommand(client, argc)
         
         // Dump volume info.
         VolBuildList(volumeIndex, buffer, sizeof(buffer));
-        ReplyToCommand(client, "%s\n", buffer);
+        ReplyToCommand(client, "%s", buffer);
         
         // Get shape.
         new VolumeShapes:shape = Volumes[volumeIndex][Vol_Shape];
@@ -478,6 +483,9 @@ public Action:VolListCommand(client, argc)
 public Action:VolDumpStatesCommand(client, argc)
 {
     decl String:target[64];
+    decl String:langbuffer1[128];
+    decl String:langbuffer2[128];
+    decl String:langbuffer3[128];
     new targetclient;
     
     // Check if privileged.
@@ -507,8 +515,11 @@ public Action:VolDumpStatesCommand(client, argc)
     SetGlobalTransTarget(client);
     
     // Print header.
-    ReplyToCommand(client, "%10t%20t%t\n--------------------------------------------------",
-                   "Vol Attrib Index", "Vol Attrib Name", "Vol Attrib In Volume");
+    Format(langbuffer1, sizeof(langbuffer1), "%t", "Vol Attrib Index");
+    Format(langbuffer2, sizeof(langbuffer2), "%t", "Vol Attrib Name");
+    Format(langbuffer3, sizeof(langbuffer3), "%t", "Vol Attrib In Volume");
+    ReplyToCommand(client, "%10s%20s%s\n--------------------------------------------------",
+                   langbuffer1, langbuffer2, langbuffer3);
     
     //Index:    Name:               Player in volume:
     //--------------------------------------------------
@@ -541,7 +552,7 @@ public Action:VolDumpStatesCommand(client, argc)
             }
             
             // Dump state.
-            ReplyToCommand(client, "%-9d %20s %t", volumeIndex, name, strState);
+            ReplyToCommand(client, "%-9d %20s %s", volumeIndex, name, strState);
         }
     }
     
