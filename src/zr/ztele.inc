@@ -80,6 +80,13 @@ ZTeleClientInit(client)
  */
 ZTeleOnClientSpawn(client)
 {
+    // Check if the player is on a team. Spawning into the game is also a event in
+    // the connection process where players get their observer camera.
+    if (!ZRIsClientOnTeam(client))
+    {
+        return;
+    }
+    
     // Reset tele count.
     g_iZTeleCount[client] = 0;
     

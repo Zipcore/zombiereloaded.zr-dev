@@ -188,7 +188,7 @@ ClassOnClientSpawn(client)
     new filter[ClassFilter];
     
     // Check if the player is on a team. Spawning into the game is also a event in
-    // the connection process.
+    // the connection process where players get their observer camera.
     if (!ZRIsClientOnTeam(client))
     {
         return;
