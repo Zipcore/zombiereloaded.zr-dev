@@ -266,8 +266,8 @@ public ZTeleForceHandle(Handle:menu_ztele_force, MenuAction:action, client, slot
         decl String:targetname[MAX_NAME_LENGTH];
         GetClientName(target, targetname, sizeof(targetname));
         
-        // Force ZSpawn on the target.
-        new bool:success = ZTeleClient(target, true);
+        // Force ZSpawn on the target if client is allowed.
+        new bool:success = CanUserTarget(client, target) ? ZTeleClient(target, true) : false;
         
         // Tell admin the outcome of the action.
         if (success)
