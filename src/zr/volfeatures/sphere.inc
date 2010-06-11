@@ -64,9 +64,9 @@ VolSphereClearIndex(sphere, bool:decrementCounter = true)
     
     strcopy(Spheres[sphere][Sphere_Name], ZR_SPHERE_NAME_LEN, ZR_SPHERE_DEF_NAME);
     
-    Spheres[sphere][Sphere_LocX]        = 0;
-    Spheres[sphere][Sphere_LocY]        = 0;
-    Spheres[sphere][Sphere_LocZ]        = 0;
+    Spheres[sphere][Sphere_LocX]        = 0.0;
+    Spheres[sphere][Sphere_LocY]        = 0.0;
+    Spheres[sphere][Sphere_LocZ]        = 0.0;
     
     Spheres[sphere][Sphere_Radius]      = ZR_SPHERE_DEF_RADIUS;
     

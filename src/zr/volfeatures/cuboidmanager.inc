@@ -105,7 +105,7 @@ VolCuboidAdd(Float:min[3], Float:max[3], String:name[] = "")
  * Removes the specified cuboid.
  *
  * Note: Volumes and features that depend on the cuboid is also removed if
- *       recursive removal is enabled.
+ *       recursive removal is enabled. Otherwise they are disabled.
  *
  * @param cuboid        Cuboid to remove.
  * @param recursive     Optional. Also remove volumes and features that depend
@@ -120,25 +120,31 @@ bool:VolCuboidRemove(cuboid, bool:recursive = true)
         return false;
     }
     
-    // Check if recursive removal is enabled.
-    if (recursive)
+    
+    // Find volumes that use the cuboid and disable/remove them.
+    for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
     {
-        // Find volumes that use the cuboid and remove them.
-        for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
+        // Validate volume.
+        if (!VolIsValid(volumeIndex))
         {
-            // Validate volume.
-            if (!VolIsValid(volumeIndex))
-            {
-                // Skip volume.
-                continue;
-            }
-            
-            // Check if the cuboid is used on the current volume.
-            if (Volumes[volumeIndex][Vol_Shape] == VolShapes_Cuboid &&
-                Volumes[volumeIndex][Vol_ShapeData] == cuboid)
+            // Skip volume.
+            continue;
+        }
+        
+        // Check if the cuboid is used on the current volume.
+        if (Volumes[volumeIndex][Vol_Shape] == VolShape_Cuboid &&
+            Volumes[volumeIndex][Vol_ShapeData] == cuboid)
+        {
+            // Check if recursive removal is enabled.
+            if (recursive)
             {
                 // Remove volume.
                 VolRemove(volumeIndex, recursive);
+            }
+            else
+            {
+                // Disable volume.
+                VolDisableVolume(volumeIndex);
             }
         }
     }
@@ -153,7 +159,7 @@ bool:VolCuboidRemove(cuboid, bool:recursive = true)
  * Removes all cuboids.
  *
  * Note: Volumes and features that depend on the cuboids are also removed if
- *       recursive removal is enabled.
+ *       recursive removal is enabled. Otherwise they are disabled.
  *
  * @param recursive     Optional. Also remove volumes and features that depend
  *                      on the cuboids. Default is true.

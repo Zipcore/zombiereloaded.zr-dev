@@ -1351,12 +1351,17 @@
 	
 	"Vol Syntax Remove"
 	{
-		"en"		"Removes an existing volume. Usage: zr_vol_remove <index|name> [recursive]"
+		"en"		"Removes an existing volume. Usage: zr_vol_remove <index|name> [recursive: 0|1]"
 	}
 	
 	"Vol Syntax Shape Add"
 	{
 		"en"		"Creates a new shape to be used on a volume. Usage zr_vol_shape_add <shape> [params...]"
+	}
+	
+	"Vol Syntax Shape Remove"
+	{
+		"en"		"Removes the specified shape. Usage zr_vol_shape_remove <shape> <shape id> [recursive: 0|1]"
 	}
 	
 	"Vol Syntax Dump States"
@@ -1392,6 +1397,11 @@
 	"Vol Param Shape ID"
 	{
 		"en"		"Which shape to use (use zr_vol_shape_add to create one). Valid options: <index|name>"
+	}
+	
+	"Vol Param Shape ID Remove"
+	{
+		"en"		"Which shape to remove. Valid options: <index|name>"
 	}
 	
 	"Vol Param Params"
@@ -1737,5 +1747,11 @@
 	{
 		"#format"	"{1:s},{2:d},{3:s}"
 		"en"		"Shape ({1}) added successfully. Index: {2} (\"{3}\")"
+	}
+	
+	"Vol Shape Removed"
+	{
+		"#format"	"{1:d},{2:s},{3:s}"
+		"en"		"Shape {1} ({2}) removed successfully. Recursive removal: {3}"
 	}
 }

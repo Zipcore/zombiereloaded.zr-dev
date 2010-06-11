@@ -91,6 +91,10 @@ VolInit()
     // Clear all volumes.
     VolClear();
     
+    // Reset shapes.
+    VolCuboidClear();
+    VolSphereClear();
+    
     // Initialize sub features.
     VolAnticampInit();
     VolClassEditInit();
@@ -110,9 +114,9 @@ VolLoad()
  */
 VolDisable()
 {
-    VolEnabled = false;
     VolStopUpdateTimer();
     VolDisableVolumes();
+    VolEnabled = false;
     
     LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Disabled", "Volfeatures disabled.");
 }
@@ -139,14 +143,11 @@ VolDisableVolumes()
     {
         if (Volumes[volumeIndex][Vol_InUse] && Volumes[volumeIndex][Vol_Enabled])
         {
-            // Mark as disabled.
-            Volumes[volumeIndex][Vol_Enabled] = false;
-            
             // Trigger player left volume event if inside a volume.
             for (new client = 1; client <= MaxClients; client++)
             {
                 // Validate client's connection state.
-                if (!IsClientConnected(client) || !IsClientInGame(client))
+                if (!IsClientConnected(client) || !IsClientInGame(client) || !IsPlayerAlive(client))
                 {
                     continue;
                 }
@@ -160,8 +161,8 @@ VolDisableVolumes()
                 }
             }
             
-            // Trigger disabled event.
-            VolOnDisabled(volumeIndex);
+            // Disable volume.
+            VolDisableVolume(volumeIndex);
         }
     }
 }
@@ -171,13 +172,32 @@ VolDisableVolumes()
  */
 VolEnableVolumes()
 {
+    // Update player locations.
+    VolUpdatePlayerLocation();
+    
     // Trigger enable event on all volumes in use.
     for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
     {
         if (Volumes[volumeIndex][Vol_InUse] && !Volumes[volumeIndex][Vol_Enabled])
         {
-            Volumes[volumeIndex][Vol_Enabled] = true;
-            VolOnEnabled(volumeIndex);
+            // Trigger player enter volume event if inside a volume.
+            for (new client = 1; client <= MaxClients; client++)
+            {
+                // Validate client's connection state.
+                if (!IsClientConnected(client) || !IsClientInGame(client) || !IsPlayerAlive(client))
+                {
+                    continue;
+                }
+                
+                // Check if player is inside the volume.
+                if (VolPlayerInVolume[client][volumeIndex])
+                {
+                    VolOnPlayerEnter(client, volumeIndex);
+                }
+            }
+            
+            // Enable volume.
+            VolEnableVolume(volumeIndex);
         }
     }
 }

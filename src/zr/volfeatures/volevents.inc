@@ -230,13 +230,6 @@ VolOnMapEnd()
  */
 VolOnDisabled(volumeIndex)
 {
-    // Check if volumetric features is enabled.
-    if (!VolEnabled)
-    {
-        // Volumetric features disabled.
-        return;
-    }
-    
     // Get the list of features linked to the current volume.
     new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
     new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureTypes];
@@ -275,17 +268,10 @@ VolOnDisabled(volumeIndex)
 /**
  * Called when a volume is enabled.
  *
- * @param volumeIndex       The volume index..
+ * @param volumeIndex       The volume index.
  */
 VolOnEnabled(volumeIndex)
 {
-    // Check if volumetric features is enabled.
-    if (!VolEnabled)
-    {
-        // Volumetric features disabled.
-        return;
-    }
-    
     // Get the list of features linked to the current volume.
     new Handle:featureTypes = Volumes[volumeIndex][Vol_FeatureTypes];
     new Handle:featureIndexes = Volumes[volumeIndex][Vol_FeatureTypes];
