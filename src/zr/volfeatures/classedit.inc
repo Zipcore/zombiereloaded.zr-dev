@@ -353,7 +353,7 @@ VolClassEditSetAttribute(dataIndex, const String:attribName[], const String:attr
  */
 VolClassEditBuildList(dataIndex, String:buffer[], maxlen)
 {
-    #define CLASSEDIT_DUMP_FORMAT "%-30s %s\n"
+    #define CLASSEDIT_DUMP_FORMAT "%30s %s\n"
     
     decl String:linebuffer[128];
     decl String:langbuffer[128];
@@ -375,6 +375,10 @@ VolClassEditBuildList(dataIndex, String:buffer[], maxlen)
     
     VolClassEditModeToString(cache[VolClassEdit_Mode], valuebuffer, sizeof(valuebuffer));
     Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Mode:", valuebuffer);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Enabled");
+    Format(linebuffer, sizeof(linebuffer), "%30s %t\n", langbuffer, cache[VolClassEdit_Enabled] ? "Yes" : "No");
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
     switch (cache[VolClassEdit_Mode])

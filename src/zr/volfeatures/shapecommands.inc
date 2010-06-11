@@ -28,6 +28,8 @@
 VolShapeOnCommandsCreate()
 {
     RegConsoleCmd("zr_vol_shape_add", VolShapeAddCommand, "Creates a new shape to be used on a volume. Usage zr_vol_shape_add <shape> [params...]");
+    RegConsoleCmd("zr_vol_shape_remove", VolShapeRemoveCommand, "Removes the specified shape. Usage zr_vol_shape_remove <shape> <shape id> [recursive]");
+    //RegConsoleCmd("zr_vol_shape_list", VolShapeListCommand, "Lists all shapes or prints details about a shape. Usage: zr_vol_shape_list [<shape> <shape id>]");
 }
 
 /**
@@ -253,6 +255,89 @@ public Action:VolShapeAddCommand(client, argc)
 }
 
 /**
+ * Command callback for removing a shape.
+ */
+public Action:VolShapeRemoveCommand(client, argc)
+{
+    decl String:buffer[1022];
+    buffer[0] = 0;
+    
+    // Check if privileged.
+    if (!ZRIsClientPrivileged(client, OperationType_Configuration))
+    {
+        TranslationReplyToCommand(client, "No access to command");
+        return Plugin_Handled;
+    }
+    
+    // Print syntax info if there are missing arguments.
+    if (argc < 2)
+    {
+        VolBuildShapeRemoveSyntax(client, buffer, sizeof(buffer));
+        ReplyToCommand(client, buffer);
+        return Plugin_Handled;
+    }
+    
+    // Get shape type.
+    new VolumeShapes:shape;
+    new bool:recursive = false;
+    decl String:strShape[32];
+    decl String:strShapeID[64];
+    decl String:strRecursive[32];
+    strShape[0] = 0;
+    strRecursive[0] = 0;
+    strShapeID[0] = 0;
+    GetCmdArg(1, strShape, sizeof(strShape));
+    shape = VolStringToShape(strShape);
+    
+    // Validate shape.
+    if (shape == VolShape_Invalid)
+    {
+        TranslationReplyToCommand(client, "Vol Invalid Shape", strShape);
+        return Plugin_Handled;
+    }
+    
+    // Get shape id and validate it.
+    GetCmdArg(2, strShapeID, sizeof(strShapeID));
+    new shapeIndex = VolGetShapeIndex(shape, strShapeID);
+    if (shapeIndex < 0)
+    {
+        TranslationReplyToCommand(client, "Vol Invalid Shape ID", strShapeID);
+        return Plugin_Handled;
+    }
+    
+    // Get recursive parameter.
+    if (argc == 3)
+    {
+        GetCmdArg(3, strRecursive, sizeof(strRecursive));
+        
+        if (StringToInt(strRecursive) != 0)
+        {
+            recursive = true;
+        }
+    }
+    
+    // Remove shape.
+    switch (shape)
+    {
+        case VolShape_Cuboid: VolCuboidRemove(shapeIndex, recursive);
+        case VolShape_Sphere: VolSphereRemove(shapeIndex, recursive);
+    }
+    
+    // Print message.
+    if (recursive)
+    {
+        Format(strRecursive, sizeof(strRecursive), "%t", "Yes");
+    }
+    else
+    {
+        Format(strRecursive, sizeof(strRecursive), "%t", "No");
+    }
+    TranslationReplyToCommand(client, "Vol Shape Removed", shapeIndex, strShape, strRecursive);
+    
+    return Plugin_Handled;
+}
+
+/**
  * Builds a translated string with syntax and parameter info for zr_vol_shape_add command.
  *
  * @param client    Client that will see this info.
@@ -326,6 +411,37 @@ VolBuildShapeSyntaxString(client, String:buffer[], maxlen)
     
     numCells += StrCat(buffer, maxlen, "maxdist=<max fade distance>\n");
     Format(linebuffer, sizeof(linebuffer), VOL_SYNTAX_FORMAT_STRING, "Vol Param Sphere Max Dist");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    return numCells;
+}
+
+/**
+ * Builds a translated string with syntax and parameter info for zr_vol_shape_remove command.
+ *
+ * @param client    Client that will see this info.
+ * @param buffer    Destination string buffer.
+ * @param maxlen    Size of buffer.
+ * @return          Number of cells written.
+ */
+VolBuildShapeRemoveSyntax(client, String:buffer[], maxlen)
+{
+    new numCells = 0;
+    buffer[0] = 0;
+    
+    decl String:linebuffer[255];
+    linebuffer[0] = 0;
+    
+    SetGlobalTransTarget(client);
+    
+    // Main syntax.
+    Format(linebuffer, sizeof(linebuffer), "%t\n\n", "Vol Syntax Shape Remove");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%10s%t\n", "shape", "Vol Param Shape");
+    numCells += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(linebuffer, sizeof(linebuffer), "%10s%t\n", "shape id", "Vol Param Shape ID Remove");
     numCells += StrCat(buffer, maxlen, linebuffer);
     
     return numCells;

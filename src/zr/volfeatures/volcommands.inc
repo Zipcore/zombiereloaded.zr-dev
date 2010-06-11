@@ -320,7 +320,7 @@ public Action:VolRemoveCommand(client, argc)
     {
         GetCmdArg(2, strRecursive, sizeof(strRecursive));
         
-        if (StringToInt(strRecursive) == 1)
+        if (StringToInt(strRecursive) != 0)
         {
             recursive = true;
         }
@@ -353,6 +353,7 @@ public Action:VolListCommand(client, argc)
     decl String:langbuffer1[256];
     decl String:langbuffer2[256];
     decl String:langbuffer3[256];
+    decl String:langbuffer4[256];
     decl String:id[ZR_VOL_NAME_LEN];
     
     buffer[0] = 0;
@@ -369,9 +370,10 @@ public Action:VolListCommand(client, argc)
         TranslationReplyToCommand(client, "Vol Syntax List");
         Format(langbuffer1, sizeof(langbuffer1), "%t", "Vol Attrib Index");
         Format(langbuffer2, sizeof(langbuffer2), "%t", "Vol Attrib Name");
-        Format(langbuffer3, sizeof(langbuffer3), "%t", "Vol Attrib Features");
-        ReplyToCommand(client, "%10s %20s %s\n--------------------------------------------------",
-                       langbuffer1, langbuffer2, langbuffer3);
+        Format(langbuffer3, sizeof(langbuffer3), "%t", "Vol Attrib Enabled");
+        Format(langbuffer4, sizeof(langbuffer4), "%t", "Vol Attrib Features");
+        ReplyToCommand(client, "%10s %10s %10s %s\n--------------------------------------------------",
+                       langbuffer1, langbuffer2, langbuffer3, langbuffer4);
         
         // Loop through all indexes.
         for (volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
@@ -382,8 +384,17 @@ public Action:VolListCommand(client, argc)
                 // Get type list.
                 VolGetFeatureListString(volumeIndex, linebuffer, sizeof(linebuffer));
                 
+                if (Volumes[volumeIndex][Vol_Enabled])
+                {
+                    Format(langbuffer1, sizeof(langbuffer1), "%t", "Yes");
+                }
+                else
+                {
+                    Format(langbuffer1, sizeof(langbuffer1), "%t", "No");
+                }
+                
                 // Add to list.
-                ReplyToCommand(client, "%-10d %s %s", volumeIndex, Volumes[volumeIndex][Vol_Name], linebuffer);
+                ReplyToCommand(client, "%-10d %10s %10s %s", volumeIndex, Volumes[volumeIndex][Vol_Name], langbuffer1, linebuffer);
                 volCount++;
             }
         }

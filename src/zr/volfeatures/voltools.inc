@@ -124,3 +124,56 @@ VolTypeToString(VolumeFeatureTypes:volType, String:buffer[], maxlen, bool:shortN
     
     return 0;
 }
+
+/**
+ * Gets the shape index from a shape id string.
+ *
+ * @param shapeType     Shape type.
+ * @param shapeId       Shape id string (name or index).
+ * @return              Shape index, or -1 if not found/valid.
+ */
+VolGetShapeIndex(VolumeShapes:shapeType, const String:shapeId[])
+{
+    new shapeIndex;
+    if (IsCharNumeric(shapeId[0]))
+    {
+        // It's a index.
+        shapeIndex = StringToInt(shapeId);
+        switch (shapeType)
+        {
+            case VolShape_Cuboid:
+            {
+                if (VolCuboidIsValid(shapeIndex))
+                {
+                    return shapeIndex;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+            case VolShape_Sphere:
+            {
+                if (VolSphereIsValid(shapeIndex))
+                {
+                    return shapeIndex;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+        }
+    }
+    else
+    {
+        // It's a name.
+        switch (shapeType)
+        {
+            case VolShape_Cuboid: return VolCuboidFind(shapeId);
+            case VolShape_Sphere: return VolSphereFind(shapeId);
+        }
+    }
+    
+    return -1;
+}

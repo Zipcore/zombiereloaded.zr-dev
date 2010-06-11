@@ -62,20 +62,21 @@ VolCuboidClearIndex(cuboid, bool:decrementCounter = true)
 {
     Cuboids[cuboid][Cuboid_InUse]   = false;
     
-    strcopy(Cuboids[cuboid][Cuboid_Name], ZR_CUBOID_NAME_LEN, ZR_CUBOID_DEF_NAME);
+    // Clear name.
+    Cuboids[cuboid][Cuboid_Name][0] = 0;
     
-    Cuboids[cuboid][Cuboid_xMin]    = 0;
-    Cuboids[cuboid][Cuboid_xMax]    = 0;
+    Cuboids[cuboid][Cuboid_xMin]    = 0.0;
+    Cuboids[cuboid][Cuboid_xMax]    = 0.0;
     
-    Cuboids[cuboid][Cuboid_yMin]    = 0;
-    Cuboids[cuboid][Cuboid_yMax]    = 0;
+    Cuboids[cuboid][Cuboid_yMin]    = 0.0;
+    Cuboids[cuboid][Cuboid_yMax]    = 0.0;
     
-    Cuboids[cuboid][Cuboid_zMin]    = 0;
-    Cuboids[cuboid][Cuboid_zMax]    = 0;
+    Cuboids[cuboid][Cuboid_zMin]    = 0.0;
+    Cuboids[cuboid][Cuboid_zMax]    = 0.0;
     
     if (decrementCounter)
     {
-        CoboidCount--;
+        CuboidCount--;
     }
 }
 

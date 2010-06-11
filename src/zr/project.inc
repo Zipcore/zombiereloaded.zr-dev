@@ -154,7 +154,7 @@ enum ModuleToggleQuery
 #define PROJECT_SHORTNAME   "zr"
 
 // Author of the plugin.
-#define PROJECT_AUTHOR      "Andrew "Greyscale" Borba, Richard "rhelgeby" Helgeby"
+#define PROJECT_AUTHOR      "Andrew \"Greyscale\" Borba, Richard \"rhelgeby\" Helgeby"
 
 // Description of the plugin.
 #define PROJECT_DESCRIPTION "Infection/survival style gameplay"

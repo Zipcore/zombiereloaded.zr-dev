@@ -112,8 +112,8 @@ bool:VolRemove(volumeIndex, bool:recursive = true)
         return false;
     }
     
-    // Trigger disable event.
-    VolOnDisabled(volumeIndex);
+    // Disable volume.
+    VolDisableVolume(volumeIndex);
     
     // Detach all features.
     VolDetachFeatures(volumeIndex, recursive);
@@ -206,12 +206,8 @@ bool:VolAttachFeature(volumeIndex, VolumeFeatureTypes:featureType, featureIndex)
     PushArrayCell(featureTypes, _:featureType);
     PushArrayCell(featureIndexes, featureIndex);
     
-    // Enable volume if disabled.
-    if (!Volumes[volumeIndex][Vol_Enabled])
-    {
-        Volumes[volumeIndex][Vol_Enabled] = true;
-        VolOnEnabled(volumeIndex);
-    }
+    // Attempt to enable volume.
+    VolEnableVolume(volumeIndex);
 }
 
 /**
@@ -293,6 +289,12 @@ bool:VolDetachFeature(volumeIndex, VolumeFeatureTypes:featureType, featureIndex,
         RemoveFromArray(featureIndexes, arrayIndex);
     }
     
+    // Disable volume if no features are attached anymore.
+    if (GetArraySize(featureTypes) == 0)
+    {
+        VolDisableVolume(volumeIndex);
+    }
+    
     return true;
 }
 
@@ -355,4 +357,74 @@ VolDetatchAll()
     {
         VolDetachFeatures(volumeIndex);
     }
+}
+
+/**
+ * Enables the specified volume and forward disable event to features.
+ *
+ * @param volumeIndex   Volume to enable.
+ */
+VolEnableVolume(volumeIndex)
+{
+    // Check if volumetric features is enabled.
+    if (!VolEnabled)
+    {
+        // Volumetric features disabled.
+        return;
+    }
+    
+    // Validate volume.
+    if (!VolIsValid(volumeIndex))
+    {
+        // Invalid volume.
+        return;
+    }
+    
+    // Check if alreay enabled.
+    if (Volumes[volumeIndex][Vol_Enabled])
+    {
+        return;
+    }
+    
+    // Check if volume can be enabled.
+    if (Volumes[volumeIndex][Vol_ShapeData] < 0)
+    {
+        // No shape attached. Don't enable.
+        Volumes[volumeIndex][Vol_Enabled] = false;
+        return;
+    }
+    
+    Volumes[volumeIndex][Vol_Enabled] = true;
+    VolOnEnabled(volumeIndex);
+}
+
+/**
+ * Disables the specified volume and forward disable event to features.
+ *
+ * @param volumeIndex   Volume to disable.
+ */
+VolDisableVolume(volumeIndex)
+{
+    // Check if volumetric features is enabled.
+    if (!VolEnabled)
+    {
+        // Volumetric features disabled.
+        return;
+    }
+    
+    // Validate volume.
+    if (!VolIsValid(volumeIndex))
+    {
+        // Invalid volume.
+        return;
+    }
+    
+    // Check if alreay disabled.
+    if (!Volumes[volumeIndex][Vol_Enabled])
+    {
+        return;
+    }
+    
+    VolOnDisabled(volumeIndex);
+    Volumes[volumeIndex][Vol_Enabled] = false;
 }

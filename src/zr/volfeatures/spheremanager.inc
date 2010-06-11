@@ -91,7 +91,7 @@ VolSphereAdd(Float:loc[3],
  * Removes the specified sphere.
  *
  * Note: Volumes and features that depend on the sphere is also removed if
- *       recursive removal is enabled.
+ *       recursive removal is enabled. Otherwise they are disabled.
  *
  * @param sphere        Sphere to remove.
  * @param recursive     Optional. Also remove volumes and features that depend
@@ -101,30 +101,36 @@ VolSphereAdd(Float:loc[3],
 bool:VolSphereRemove(sphere, bool:recursive = true)
 {
     // Validate sphere.
-    if (!VolSphereIsValid(sphere)
+    if (!VolSphereIsValid(sphere))
     {
         return false;
     }
     
-    // Check if recursive removal is enabled.
-    if (recursive)
+    
+    // Find volumes that use the sphere and remove them.
+    for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
     {
-        // Find volumes that use the sphere and remove them.
-        for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
+        // Validate volume.
+        if (!VolIsValid(volumeIndex))
         {
-            // Validate volume.
-            if (!VolIsValid(volumeIndex))
-            {
-                // Skip volume.
-                continue;
-            }
-            
-            // Check if the sphere is used on the current volume.
-            if (Volumes[volumeIndex][Vol_Shape] == VolShapes_Sphere &&
-                Volumes[volumeIndex][Vol_ShapeData] == sphere)
+            // Skip volume.
+            continue;
+        }
+        
+        // Check if the sphere is used on the current volume.
+        if (Volumes[volumeIndex][Vol_Shape] == VolShape_Sphere &&
+            Volumes[volumeIndex][Vol_ShapeData] == sphere)
+        {
+            // Check if recursive removal is enabled.
+            if (recursive)
             {
                 // Remove volume.
                 VolRemove(volumeIndex, recursive);
+            }
+            else
+            {
+                // Disable volume.
+                VolDisableVolume(volumeIndex);
             }
         }
     }
@@ -140,7 +146,7 @@ bool:VolSphereRemove(sphere, bool:recursive = true)
  * Removes all spheres.
  *
  * Note: Volumes and features that depend on the spheres are also removed if
- *       recursive removal is enabled.
+ *       recursive removal is enabled. Otherwise they are disabled.
  *
  * @param recursive     Optional. Also remove volumes and features that depend
  *                      on the spheres. Default is true.
