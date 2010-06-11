@@ -360,7 +360,7 @@ VolDetatchAll()
 }
 
 /**
- * Enables the specified volume and forward disable event to features.
+ * Enables the specified volume and forward enable event to features.
  *
  * @param volumeIndex   Volume to enable.
  */
@@ -387,9 +387,16 @@ VolEnableVolume(volumeIndex)
     }
     
     // Check if volume can be enabled.
-    if (Volumes[volumeIndex][Vol_ShapeData] < 0)
+    new shapeIndex = Volumes[volumeIndex][Vol_ShapeData];
+    new bool:shapeValid = false;
+    switch (Volumes[volumeIndex][Vol_Shape])
     {
-        // No shape attached. Don't enable.
+        case VolShape_Cuboid: shapeValid = VolCuboidIsValid(shapeIndex);
+        case VolShape_Sphere: shapeValid = VolSphereIsValid(shapeIndex);
+    }
+    if (!shapeValid)
+    {
+        // No shape or invalid shape attached. Don't enable.
         Volumes[volumeIndex][Vol_Enabled] = false;
         return;
     }
