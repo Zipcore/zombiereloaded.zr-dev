@@ -96,7 +96,7 @@ VolCuboidAdd(Float:min[3], Float:max[3], String:name[] = "")
     Cuboids[cuboid][Cuboid_xMax] = z2;
     
     TrimString(name);
-    strcopy(Cuboids[cuboid][Cuboid_Name], ZR_CUBOID_NAME_LEN, name);
+    strcopy(Cuboids[cuboid][Cuboid_Name], VOL_NAME_LEN, name);
     
     return cuboid;
 }

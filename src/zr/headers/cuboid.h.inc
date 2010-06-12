@@ -36,17 +36,12 @@
 #define ZR_CUBOIDS_MAX ZR_VOLUMES_MAX
 
 /**
- * Number of bytes reserved for cuboid names.
- */
-#define ZR_CUBOID_NAME_LEN 64
-
-/**
  * Represents a rectangular volume.
  */
 enum CuboidAttributes
 {
-    bool:Cuboid_InUse,                      /** Marks if the volume is used. */
-    String:Cuboid_Name[ZR_CUBOID_NAME_LEN], /** Optional. Name of the cuboid (alphanumeric). Cannot start with a number. */
+    bool:Cuboid_InUse,                  /** Marks if the volume is used. */
+    String:Cuboid_Name[VOL_NAME_LEN],   /** Optional. Name of the cuboid (alphanumeric). Cannot start with a number. */
 
     Float:Cuboid_xMin,  /** Minimum x position. */
     Float:Cuboid_xMax,  /** Maximum x position. */

@@ -126,7 +126,7 @@ VolAnticampReset(anticampIndex, bool:inUse = ZR_ANTICAMP_DEF_IN_USE, bool:decrem
 {
     AnticampData[anticampIndex][Anticamp_InUse]         = inUse;
     AnticampData[anticampIndex][Anticamp_Enabled]       = ZR_ANTICAMP_DEF_ENABLED;
-    strcopy(AnticampData[anticampIndex][Anticamp_Name], ZR_ANTICAMP_NAME_LEN, ZR_ANTICAMP_DEF_NAME);
+    strcopy(AnticampData[anticampIndex][Anticamp_Name], VOL_NAME_LEN, ZR_ANTICAMP_DEF_NAME);
     AnticampData[anticampIndex][Anticamp_VolumeIndex]   = ZR_ANTICAMP_DEF_VOLUME_INDEX;
     
     AnticampData[anticampIndex][Anticamp_Interval]      = ZR_ANTICAMP_DEF_INTERVAL;
@@ -421,6 +421,17 @@ bool:VolAnticampIsValidIndex(anticampIndex)
 bool:VolAnticampIsValid(anticampIndex)
 {
     return VolAnticampIsValidIndex(anticampIndex) && VolAnticampInUse(anticampIndex);
+}
+
+/**
+ * Returns whether a anti camp is attached to a volume.
+ *
+ * @param volumeIndex   Anti camp to check.
+ * @return              True if attached, false otherwise. 
+ */
+bool:VolAnticampIsAttached(anticampIndex)
+{
+    return (AnticampData[anticampIndex][Anticamp_VolumeIndex] >= 0);
 }
 
 /**

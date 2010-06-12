@@ -52,11 +52,6 @@
 #define ZR_ANTICAMP_MAX ZR_VOLUMES_MAX
 
 /**
- * Number of bytes reserved for name strings.
- */
-#define ZR_ANTICAMP_NAME_LEN 64
-
-/**
  * Number of bytes reserved for message strings.
  */
 #define ZR_ANTICAMP_MESSAGE_LEN 256
@@ -93,7 +88,7 @@ enum VolTypeAnticamp
 {
     bool:Anticamp_InUse,                        /** Specifies if the data index is used or not. */
     bool:Anticamp_Enabled,                      /** Specifies if the feature is enabled or not. */
-    String:Anticamp_Name[ZR_ANTICAMP_NAME_LEN], /** Optional. Name of the anti-camp (alphanumeric). Cannot start with a number. */
+    String:Anticamp_Name[VOL_NAME_LEN],         /** Optional. Name of the anti-camp (alphanumeric). Cannot start with a number. */
     Anticamp_VolumeIndex,                       /** Which volume this anticamp is linked to. */
     Float:Anticamp_Interval,                    /** How often to trigger an action. */
     Handle:Anticamp_Timer,                      /** Action timer handle. */

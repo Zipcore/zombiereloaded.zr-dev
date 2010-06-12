@@ -1351,7 +1351,7 @@
 	
 	"Vol Syntax Remove"
 	{
-		"en"		"Removes an existing volume. Usage: zr_vol_remove <index|name> [recursive: 0|1]"
+		"en"		"Removes an existing volume. Usage: zr_vol_remove <index|name> [recursive removal: 0|1]"
 	}
 	
 	"Vol Syntax Shape Add"
@@ -1361,7 +1361,7 @@
 	
 	"Vol Syntax Shape Remove"
 	{
-		"en"		"Removes the specified shape. Usage zr_vol_shape_remove <shape> <shape id> [recursive: 0|1]"
+		"en"		"Removes the specified shape. Usage zr_vol_shape_remove <shape> <shape id> [recursive removal: 0|1]"
 	}
 	
 	"Vol Syntax Dump States"
@@ -1371,7 +1371,17 @@
 	
 	"Vol Syntax List"
 	{
-		"en"		"Lists existing volumes in the map, or dumps details about the specified volume. Usage: zr_vol_list [index|name]"
+		"en"		"Lists existing volumes in the map, or dumps details about the specified volume. Usage: zr_vol_list [volume id]"
+	}
+	
+	"Vol Syntax Attach"
+	{
+		"en"		"Attaches a feature to a volume. Usage: zr_vol_attach <volume id> <feature type> <feature id>"
+	}
+	
+	"Vol Syntax Detach"
+	{
+		"en"		"Detaches a feature from a volume. Usage: zr_vol_detach <feature type> <feature id> [remove feautre: 0|1]"
 	}
 	
 	"Vol Missing Parameters"
@@ -1637,6 +1647,18 @@
 		"en"		"Invalid shape index/name: {1}"
 	}
 	
+	"Vol Invalid Feature"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid feature: {1}"
+	}
+	
+	"Vol Invalid Feature Id"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid feature index/name: {1}"
+	}
+	
 	"Vol Invalid Effect"
 	{
 		"#format"	"{1:s}"
@@ -1734,24 +1756,46 @@
 	"Vol Added"
 	{
 		"#format"	"{1:d},{2:s}"
-		"en"		"Volume added successfully. Index: {1} (\"{2}\")"
+		"en"		"Volume successfully added. Index: {1} (\"{2}\")"
 	}
 	
 	"Vol Removed"
 	{
 		"#format"	"{1:d},{2:s}"
-		"en"		"Volume {1} removed successfully. Recursive removal: {2}"
+		"en"		"Volume {1} successfully removed. Recursive removal: {2}"
 	}
 	
 	"Vol Shape Added"
 	{
 		"#format"	"{1:s},{2:d},{3:s}"
-		"en"		"Shape ({1}) added successfully. Index: {2} (\"{3}\")"
+		"en"		"Shape ({1}) successfully added. Index: {2} (\"{3}\")"
 	}
 	
 	"Vol Shape Removed"
 	{
 		"#format"	"{1:d},{2:s},{3:s}"
-		"en"		"Shape {1} ({2}) removed successfully. Recursive removal: {3}"
+		"en"		"Shape {1} ({2}) successfully removed. Recursive removal: {3}"
+	}
+	
+	"Vol Attached"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"Feature ({1}) successfully attached to volume {2}."
+	}
+	
+	"Vol Detached"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"Feature ({1}) successfully detached from volume {2}."
+	}
+	
+	"Vol Already Attached"
+	{
+		"en"		"This feature is already attached to a volume."
+	}
+	
+	"Vol Already Detached"
+	{
+		"en"		"This feature is already detached."
 	}
 }

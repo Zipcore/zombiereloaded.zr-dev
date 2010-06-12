@@ -177,3 +177,56 @@ VolGetShapeIndex(VolumeShapes:shapeType, const String:shapeId[])
     
     return -1;
 }
+
+/**
+ * Gets the feature index from a feature id string.
+ *
+ * @param featureType   Feature type.
+ * @param featureId     Feature id string (name or index).
+ * @return              Feature index, or -1 if not found/valid.
+ */
+VolGetFeatureIndex(VolumeFeatureTypes:featureType, const String:featureId[])
+{
+    new featureIndex;
+    if (IsCharNumeric(featureId[0]))
+    {
+        // It's a index.
+        featureIndex = StringToInt(featureId);
+        switch (featureType)
+        {
+            case VolFeature_Anticamp:
+            {
+                if (VolAnticampIsValid(featureIndex))
+                {
+                    return featureIndex;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+            case VolFeature_ClassEdit:
+            {
+                if (VolClassEditIsValid(featureIndex))
+                {
+                    return featureIndex;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+        }
+    }
+    else
+    {
+        // It's a name.
+        switch (featureType)
+        {
+            case VolFeature_Anticamp: return VolAnticampFind(featureId);
+            case VolFeature_ClassEdit: return VolClassEditFind(featureId);
+        }
+    }
+    
+    return -1;
+}

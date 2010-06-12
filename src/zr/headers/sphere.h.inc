@@ -36,11 +36,6 @@
 #define ZR_SPHERES_MAX ZR_VOLUMES_MAX
 
 /**
- * Number of bytes reserved for sphere names.
- */
-#define ZR_SPHERE_NAME_LEN 64
-
-/**
  * @section Default sphere attribute values.
  */
 #define ZR_SPHERE_DEF_NAME          ""
@@ -57,8 +52,8 @@
  */
 enum SphereAttributes
 {
-    bool:Sphere_InUse,                          /** Marks if the sphere is in use. */
-    String:Sphere_Name[ZR_SPHERE_NAME_LEN],     /** Optional. Name of the volume (alphanumeric). Cannot start with a number. */
+    bool:Sphere_InUse,                  /** Marks if the sphere is in use. */
+    String:Sphere_Name[VOL_NAME_LEN],   /** Optional. Name of the volume (alphanumeric). Cannot start with a number. */
 
     /* Location (center point) */
     Float:Sphere_LocX,          /** X position. */

@@ -76,7 +76,7 @@ VolClassEditAdd(VolClassEditMode:mode = VOL_CLASSEDIT_DEF_MODE,
     VolClassEditData[classedit][VolClassEdit_ClassData] = classData;
     
     TrimString(name);
-    strcopy(VolClassEditData[classedit][VolClassEdit_Name], ZR_CLASSEDIT_NAME_LEN, name);
+    strcopy(VolClassEditData[classedit][VolClassEdit_Name], VOL_NAME_LEN, name);
     
     return classedit;
 }
@@ -145,7 +145,7 @@ stock VolClassEditRemoveAll(bool:recursive = false)
  */
 VolClassEditFind(const String:name[], bool:caseSensitive = false)
 {
-    for (new classedit = 0; classedit < ZR_CLASEDIT_MAX; classedit++)
+    for (new classedit = 0; classedit < ZR_CLASSEDIT_MAX; classedit++)
     {
         if (VolClassEditInUse(classedit))
         {

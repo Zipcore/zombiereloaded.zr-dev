@@ -33,9 +33,12 @@ VolOnCommandsCreate()
     //RegConsoleCmd("zr_vol_help", VolHelpCommand, "Lists available volume commands");
     
     RegConsoleCmd("zr_vol_add", VolAddCommand, "Creates a empty volume (no features attached) in the map. Usage: zr_vol_add <shape> <shape id> [params...]");
-    RegConsoleCmd("zr_vol_remove", VolRemoveCommand, "Removes an existing volume. Usage: zr_vol_remove <index|name> [recursive]");
-    RegConsoleCmd("zr_vol_list", VolListCommand, "Lists existing volumes in the map, or dumps detail data to the specified volume. Usage: zr_vol_list [volume index]");
+    RegConsoleCmd("zr_vol_remove", VolRemoveCommand, "Removes an existing volume. Usage: zr_vol_remove <index|name> [recursive removal: 0|1]");
+    RegConsoleCmd("zr_vol_list", VolListCommand, "Lists existing volumes in the map, or dumps detail data to the specified volume. Usage: zr_vol_list [volume id]");
     RegConsoleCmd("zr_vol_dumpstates", VolDumpStatesCommand, "Dumps volume states for the specified player. Usage: zr_vol_dumpstates <index|targetname>");
+    
+    RegConsoleCmd("zr_vol_attach", VolAttachCommand, "Attaches a feature to a volume. Usage: zr_vol_attach <volume id> <feature type> <feature id>");
+    RegConsoleCmd("zr_vol_detach", VolDetachCommand, "Detaches a feature from a volume. Usage: zr_vol_detach <feature type> <feature id> [delete feautre: 0|1]");
     
     VolShapeOnCommandsCreate();
 }
@@ -72,44 +75,14 @@ public Action:VolAddCommand(client, argc)
         return Plugin_Handled;
     }
     
-    // Get shape id and validate it.
+    // Get shape index.
     new shapeIndex;
-    decl String:shape[64];
+    decl String:shape[VOL_NAME_LEN];
     shape[0] = 0;
     GetCmdArg(2, shape, sizeof(shape));
-    if (IsCharNumeric(shape[0]))
-    {
-        // It's a index.
-        shapeIndex = StringToInt(shape);
-        switch (shapeType)
-        {
-            case VolShape_Cuboid:
-            {
-                if (!VolCuboidIsValid(shapeIndex))
-                {
-                    shapeIndex = -1;
-                }
-            }
-            case VolShape_Sphere:
-            {
-                if (!VolSphereIsValid(shapeIndex))
-                {
-                    shapeIndex = -1;
-                }
-            }
-        }
-    }
-    else
-    {
-        // It's a name.
-        switch (shapeType)
-        {
-            case VolShape_Cuboid: shapeIndex = VolCuboidFind(shape);
-            case VolShape_Sphere: shapeIndex = VolSphereFind(shape);
-        }
-    }
+    shapeIndex = VolGetShapeIndex(shapeType, shape);
     
-    // Validate shape index.
+    // Validate index.
     if (shapeIndex < 0)
     {
         TranslationReplyToCommand(client, "Vol Invalid Shape Id", shape);
@@ -161,7 +134,7 @@ public Action:VolAddCommand(client, argc)
     new bool:hasErrors = false;
     
     // Parameter cache.
-    new String:name[ZR_VOL_NAME_LEN] = ZR_VOL_DEFAULT_NAME;
+    new String:name[VOL_NAME_LEN] = ZR_VOL_DEFAULT_NAME;
     new VolumeEffects:effect = ZR_VOL_DEFAULT_EFFECT;
     new effectColor[3] = ZR_VOL_DEFAULT_EFFECT_COLOR;
     new VolumeTeamFilters:teamFilter = ZR_VOL_DEFAULT_TEAM_FILTER;
@@ -286,7 +259,7 @@ public Action:VolRemoveCommand(client, argc)
         return Plugin_Handled;
     }
     
-    decl String:id[64];
+    decl String:id[VOL_NAME_LEN];
     decl String:strRecursive[16];
     
     id[0] = 0;
@@ -354,7 +327,7 @@ public Action:VolListCommand(client, argc)
     decl String:langbuffer2[256];
     decl String:langbuffer3[256];
     decl String:langbuffer4[256];
-    decl String:id[ZR_VOL_NAME_LEN];
+    decl String:id[VOL_NAME_LEN];
     
     buffer[0] = 0;
     linebuffer[0] = 0;
@@ -538,7 +511,7 @@ public Action:VolDumpStatesCommand(client, argc)
     
     // Get player states.
     new bool:statebuffer[ZR_VOLUMES_MAX];
-    decl String:name[ZR_VOL_NAME_LEN];
+    decl String:name[VOL_NAME_LEN];
     decl String:strState[32];
     VolGetPlayerStates(targetclient, statebuffer, sizeof(statebuffer));
     
@@ -567,6 +540,185 @@ public Action:VolDumpStatesCommand(client, argc)
         }
     }
     
+    return Plugin_Handled;
+}
+
+
+/**
+ * Command callback for attaching features to a volume.
+ */
+public Action:VolAttachCommand(client, argc)
+{
+    // Check if privileged.
+    if (!ZRIsClientPrivileged(client, OperationType_Configuration))
+    {
+        TranslationReplyToCommand(client, "No access to command");
+        return Plugin_Handled;
+    }
+    
+    // Print syntax info if there are missing arguments.
+    if (argc < 3)
+    {
+        TranslationReplyToCommand(client, "Vol Syntax Attach");
+        return Plugin_Handled;
+    }
+    
+    // Get volume.
+    new volumeIndex = -1;
+    decl String:id[VOL_NAME_LEN];
+    id[0] = 0;
+    GetCmdArg(1, id, sizeof(id));
+    if (IsCharNumeric(id[0]))
+    {
+        // It's a index.
+        volumeIndex = StringToInt(id);
+    }
+    else
+    {
+        // It's a volume name.
+        volumeIndex = VolFind(id);
+    }
+    
+    // Validate index.
+    if (!VolIsValid(volumeIndex))
+    {
+        TranslationReplyToCommand(client, "Vol Invalid Volume Id", id);
+        return Plugin_Handled;
+    }
+    
+    // Get feature type and validate it.
+    decl String:featureId[64];
+    featureId[0] = 0;
+    GetCmdArg(2, featureId, sizeof(featureId));
+    new VolumeFeatureTypes:featureType = VolStringToFeature(featureId);
+    if (featureType == VolFeature_Invalid)
+    {
+        TranslationReplyToCommand(client, "Vol Invalid Feature", featureId);
+        return Plugin_Handled;
+    }
+    
+    // Get shape id and validate it.
+    new featureIndex;
+    decl String:feature[VOL_NAME_LEN];
+    feature[0] = 0;
+    GetCmdArg(3, feature, sizeof(feature));
+    featureIndex = VolGetFeatureIndex(featureType, feature);
+    
+    // Validate index.
+    if (featureIndex < 0)
+    {
+        TranslationReplyToCommand(client, "Vol Invalid Feature Id", feature);
+        return Plugin_Handled;
+    }
+    
+    // Check if feature is not already attached to a volume.
+    new bool:isAttached = false;
+    switch (featureType)
+    {
+        case VolFeature_Anticamp: isAttached = VolAnticampIsAttached(featureIndex);
+        case VolFeature_ClassEdit: isAttached = VolClassEditIsAttached(featureIndex);
+    }
+    if (isAttached)
+    {
+        TranslationReplyToCommand(client, "Vol Already Attached");
+        return Plugin_Handled;
+    }
+    
+    // Attach feature to volume.
+    VolAttachFeature(volumeIndex, featureType, featureIndex);
+    
+    // Print message.
+    TranslationReplyToCommand(client, "Vol Attached", featureId, volumeIndex);
+    return Plugin_Handled;
+}
+
+/**
+ * Command callback for detaching features from a volume.
+ */
+public Action:VolDetachCommand(client, argc)
+{
+    decl String:buffer[16];
+    buffer[0] = 0;
+    
+    // Check if privileged.
+    if (!ZRIsClientPrivileged(client, OperationType_Configuration))
+    {
+        TranslationReplyToCommand(client, "No access to command");
+        return Plugin_Handled;
+    }
+    
+    // Print syntax info if there are missing arguments.
+    if (argc < 2)
+    {
+        TranslationReplyToCommand(client, "Vol Syntax Detach");
+        return Plugin_Handled;
+    }
+    
+    // Get feature type and validate it.
+    decl String:featureId[VOL_NAME_LEN];
+    featureId[0] = 0;
+    GetCmdArg(1, featureId, sizeof(featureId));
+    new VolumeFeatureTypes:featureType = VolStringToFeature(featureId);
+    if (featureType == VolFeature_Invalid)
+    {
+        TranslationReplyToCommand(client, "Vol Invalid Feature", featureId);
+        return Plugin_Handled;
+    }
+    
+    // Get shape id and validate it.
+    new featureIndex;
+    decl String:feature[VOL_NAME_LEN];
+    feature[0] = 0;
+    GetCmdArg(2, feature, sizeof(feature));
+    featureIndex = VolGetFeatureIndex(featureType, feature);
+    
+    // Validate index.
+    if (featureIndex < 0)
+    {
+        TranslationReplyToCommand(client, "Vol Invalid Feature Id", feature);
+        return Plugin_Handled;
+    }
+    
+    new volumeIndex = -1;
+    new bool:isAttached = false;
+    switch (featureType)
+    {
+        case VolFeature_Anticamp:
+        {
+            isAttached = VolAnticampIsAttached(featureIndex);
+            volumeIndex = VolAnticampGetVolumeIndex(featureIndex);
+        }
+        case VolFeature_ClassEdit:
+        {
+            isAttached = VolClassEditIsAttached(featureIndex);
+            volumeIndex = VolClassEditGetVolumeIndex(featureIndex);
+        }
+    }
+    
+    // Check if feature is not already detached from a volume.
+    if (!isAttached)
+    {
+        TranslationReplyToCommand(client, "Vol Already Detached");
+        return Plugin_Handled;
+    }
+    
+    // Check if feature should be removed.
+    new bool:removeFeature = false;
+    if (argc == 3)
+    {
+        buffer[0] = 0;
+        GetCmdArg(3, buffer, sizeof(buffer));
+        if (StringToInt(buffer) != 0)
+        {
+            removeFeature = true;
+        }
+    }
+    
+    // Detach feature from volume.
+    VolDetachFeature(volumeIndex, featureType, featureIndex, removeFeature);
+    
+    // Print message.
+    TranslationReplyToCommand(client, "Vol Detached", featureId, volumeIndex);
     return Plugin_Handled;
 }
 

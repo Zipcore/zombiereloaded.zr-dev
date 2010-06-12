@@ -87,7 +87,7 @@ VolAdd(shapeData,
     Volumes[volumeIndex][Vol_Priority] = priority;
     Volumes[volumeIndex][Vol_ConflictAction] = conflictAction;
     
-    strcopy(Volumes[volumeIndex][Vol_Name], ZR_VOL_NAME_LEN, name);
+    strcopy(Volumes[volumeIndex][Vol_Name], VOL_NAME_LEN, name);
     
     return volumeIndex;
 }
@@ -208,6 +208,8 @@ bool:VolAttachFeature(volumeIndex, VolumeFeatureTypes:featureType, featureIndex)
     
     // Attempt to enable volume.
     VolEnableVolume(volumeIndex);
+    
+    return true;
 }
 
 /**
@@ -351,7 +353,7 @@ bool:VolDetachFeatures(volumeIndex, bool:removeFeatures = false)
 /**
  * Destroys all link arrays on all volumes.
  */
-VolDetatchAll()
+stock VolDetatchAll()
 {
     for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
     {
@@ -396,8 +398,9 @@ VolEnableVolume(volumeIndex)
     }
     if (!shapeValid)
     {
-        // No shape or invalid shape attached. Don't enable.
+        // No shape or invalid shape attached. Reset index and don't enable.
         Volumes[volumeIndex][Vol_Enabled] = false;
+        Volumes[volumeIndex][Vol_ShapeData] = -1;
         return;
     }
     

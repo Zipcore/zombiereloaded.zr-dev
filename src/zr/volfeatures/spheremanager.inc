@@ -82,7 +82,7 @@ VolSphereAdd(Float:loc[3],
     Spheres[sphere][Sphere_MaxDistance] = maxDistance;
     
     TrimString(name);
-    strcopy(Spheres[sphere][Sphere_Name], ZR_SPHERE_NAME_LEN, name);
+    strcopy(Spheres[sphere][Sphere_Name], VOL_NAME_LEN, name);
     
     return sphere;
 }
