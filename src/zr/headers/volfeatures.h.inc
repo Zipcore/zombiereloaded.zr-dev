@@ -30,11 +30,10 @@
 #endif
 #define _volfeatures_included
 
-#include "zr/headers/cuboid.h"
-#include "zr/headers/sphere.h"
-#include "zr/headers/volume.h"
-#include "zr/headers/anticamp.h"
-#include "zr/headers/classedit.h"
+/**
+ * Number of bytes reserved for name strings.
+ */
+#define VOL_NAME_LEN 64
 
 /**
  * Number of available volumetric features.
@@ -50,3 +49,9 @@ enum VolumeFeatureTypes
     VolFeature_Anticamp,
     VolFeature_ClassEdit
 }
+
+#include "zr/headers/cuboid.h"
+#include "zr/headers/sphere.h"
+#include "zr/headers/volume.h"
+#include "zr/headers/anticamp.h"
+#include "zr/headers/classedit.h"

@@ -75,7 +75,6 @@ new Float:VolTriggerInterval;
 #include "zr/volfeatures/sphere"
 #include "zr/volfeatures/voltools"
 #include "zr/volfeatures/volevents"
-#include "zr/volfeatures/volgenericattributes"
 #include "zr/volfeatures/volmanager"
 #include "zr/volfeatures/cuboidmanager"
 #include "zr/volfeatures/spheremanager"

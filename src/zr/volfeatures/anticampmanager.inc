@@ -72,7 +72,7 @@ VolAnticampAdd(Float:interval = ZR_ANTICAMP_DEF_INTERVAL,
     AnticampData[anticamp][Anticamp_Warning] = warningType;
     
     TrimString(name);
-    strcopy(AnticampData[anticamp][Anticamp_Name], ZR_ANTICAMP_NAME_LEN, name);
+    strcopy(AnticampData[anticamp][Anticamp_Name], VOL_NAME_LEN, name);
     
     if (strlen(message) > 0)
     {

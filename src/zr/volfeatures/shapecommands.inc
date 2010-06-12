@@ -28,7 +28,7 @@
 VolShapeOnCommandsCreate()
 {
     RegConsoleCmd("zr_vol_shape_add", VolShapeAddCommand, "Creates a new shape to be used on a volume. Usage zr_vol_shape_add <shape> [params...]");
-    RegConsoleCmd("zr_vol_shape_remove", VolShapeRemoveCommand, "Removes the specified shape. Usage zr_vol_shape_remove <shape> <shape id> [recursive]");
+    RegConsoleCmd("zr_vol_shape_remove", VolShapeRemoveCommand, "Removes the specified shape. Usage zr_vol_shape_remove <shape> <shape id> [recursive removal: 0|1]");
     //RegConsoleCmd("zr_vol_shape_list", VolShapeListCommand, "Lists all shapes or prints details about a shape. Usage: zr_vol_shape_list [<shape> <shape id>]");
 }
 
@@ -115,7 +115,7 @@ public Action:VolShapeAddCommand(client, argc)
     new bool:hasErrors = false;
     
     // Parameter cache.
-    decl String:name[ZR_VOL_NAME_LEN];
+    decl String:name[VOL_NAME_LEN];
     name[0] = 0;
     new Float:min[3];
     new Float:max[3];
