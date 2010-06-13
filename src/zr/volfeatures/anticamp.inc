@@ -52,6 +52,7 @@ VolAnticampOnEnabled(anticampIndex)
         if (interval > 0.0)
         {
             AnticampData[anticampIndex][Anticamp_Timer] = CreateTimer(interval, Event_VolAnticampTrigger, anticampIndex, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+            AnticampData[anticampIndex][Anticamp_Enabled] = true;
             LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Vol state", "Enabled anticamp feature %d.", anticampIndex);
         }
         else
@@ -98,6 +99,7 @@ VolAnticampOnDisabled(anticampIndex)
     {
         // Stop timer.
         ZREndTimer(AnticampData[anticampIndex][Anticamp_Timer]);
+        AnticampData[anticampIndex][Anticamp_Enabled] = false;
         
         LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "Vol state", "Disabled anticamp feature %d.", anticampIndex);
     }
@@ -125,7 +127,7 @@ stock VolAnticampDisableAll()
 VolAnticampReset(anticampIndex, bool:inUse = ZR_ANTICAMP_DEF_IN_USE, bool:decrementCounter = true)
 {
     AnticampData[anticampIndex][Anticamp_InUse]         = inUse;
-    AnticampData[anticampIndex][Anticamp_Enabled]       = ZR_ANTICAMP_DEF_ENABLED;
+    AnticampData[anticampIndex][Anticamp_Enabled]       = false;
     strcopy(AnticampData[anticampIndex][Anticamp_Name], VOL_NAME_LEN, ZR_ANTICAMP_DEF_NAME);
     AnticampData[anticampIndex][Anticamp_VolumeIndex]   = ZR_ANTICAMP_DEF_VOLUME_INDEX;
     
@@ -524,9 +526,13 @@ VolAnticampBuildList(anticampIndex, String:buffer[], maxlen)
     Format(linebuffer, sizeof(linebuffer), "%25s %.2f\n", langbuffer, anticampcache[Anticamp_Amount]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
-    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Warning");
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Warning Type");
     VolAnticampWarningToString(anticampcache[Anticamp_Warning], valuebuffer, sizeof(valuebuffer));
     Format(linebuffer, sizeof(linebuffer), "%25s %s\n", langbuffer, valuebuffer);
+    cellswritten += StrCat(buffer, maxlen, linebuffer);
+    
+    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Warning Message");
+    Format(linebuffer, sizeof(linebuffer), "%25s %s\n", langbuffer, anticampcache[Anticamp_Message]);
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
     if (strlen(anticampcache[Anticamp_Message]) == 0)
@@ -592,45 +598,6 @@ VolAnticampActionToString(VolAnticampAction:actionType, String:buffer[], maxlen,
 }
 
 /**
- * Converts a action string type to a action type.
- *
- * @param action    Action string type to convert.
- * @return          Action type or Anticamp_NoAction if failed.
- */
-stock VolAnticampAction:VolAnticampStringToAction(const String:action[])
-{
-    // Check if empty.
-    if (strlen(action) == 0)
-    {
-        return Anticamp_NoAction;
-    }
-    
-    if (StrEqual(action, "none", false))
-    {
-        return Anticamp_NoWarning;
-    }
-    else if (StrEqual(action, "damage", false))
-    {
-        return Anticamp_Damage;
-    }
-    else if (StrEqual(action, "slay", false))
-    {
-        return Anticamp_Slay;
-    }
-    else if (StrEqual(action, "drug", false))
-    {
-        return Anticamp_Drug;
-    }
-    else if (StrEqual(action, "ignite", false))
-    {
-        return Anticamp_Ignite;
-    }
-    
-    // No match.
-    return Anticamp_NoAction;
-}
-
-/**
  * Converts a warning type to a string.
  *
  * @param warningType   Warning type to convert.
@@ -663,240 +630,4 @@ VolAnticampWarningToString(VolAnticampWarningType:warningType, String:buffer[], 
     }
     
     return 0;
-}
-
-/**
- * Converts a warning string type to a warning type.
- *
- * @param warning   Warning string type to convert.
- * @return          Warning type, or Anticamp_NoWarning if failed.
- */
-stock VolAnticampeWarningType:VolAnticampStringToWarning(const String:warning[])
-{
-    // Check if empty.
-    if (strlen(warning) == 0)
-    {
-        return Anticamp_NoWarning;
-    }
-    
-    if (StrEqual(warning, "none", false))
-    {
-        return Anticamp_NoWarning;
-    }
-    else if (StrEqual(warning, "chat", false))
-    {
-        return Anticamp_Chat;
-    }
-    else if (StrEqual(warning, "center", false))
-    {
-        return Anticamp_Center;
-    }
-    else if (StrEqual(warning, "menu", false))
-    {
-        return Anticamp_Menu;
-    }
-    
-    // No match.
-    return Anticamp_NoWarning;
-}
-
-
-/**************************************
- *                                    *
- *  ATTRIBUTE FUNCTIONS               *
- *                                    *
- **************************************/
-
-/**
- * Sets anticamp spesific attributes on a anticamp volume.
- *
- * @param anticampIndex     Anti camp data index.
- * @param attribName        Attribute to modify.
- * @param attribVlue        Attribute value to set.
- * @return                  True if successfully set, false otherwise.
- */
-bool:VolAnticampSetAttribute(anticampIndex, const String:attribName[], const String:attribValue[])
-{
-    // Validate data index.
-    if (!VolAnticampValidateIndex(anticampIndex))
-    {
-        return false;
-    }
-    
-    // Check attribute names.
-    if (StrEqual(attribName, "interval", false))
-    {
-        if (VolAnticampSetIntervalString(anticampIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "action", false))
-    {
-        if (VolAnticampSetActionString(anticampIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "amount", false))
-    {
-        if (VolAnticampSetAmountString(anticampIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "warning", false))
-    {
-        if (VolAnticampSetWarningString(anticampIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "message", false))
-    {
-        // Unsupported because of technical limits in command parser. Spaces
-        // and quoted strings aren't supported yet.
-    }
-    
-    return false;
-}
-
-/**
- * Parses a interval string value and applies it to the specified volume.
- *
- * @param anticampIndex     Anti camp data index.
- * @param interval          Interval to set. A floating point number formatted
- *                          as a string. 
- * @return                  True if successfully set, false otherwise.
- */
-bool:VolAnticampSetIntervalString(anticampIndex, const String:interval[])
-{
-    new Float:anticampinterval;
-    
-    // Check if string value is empty.
-    if (strlen(interval) == 0)
-    {
-        return false;
-    }
-    
-    // Convert value.
-    anticampinterval = StringToFloat(interval);
-    
-    // Apply value.
-    AnticampData[anticampIndex][Anticamp_Interval] = anticampinterval;
-    return true;
-}
-
-/**
- * Parses a action type string value and applies it to the specified volume.
- *
- * @param anticampIndex     Anti camp data index.
- * @param action            Action type to set.
- * @return                  True if successfully set, false otherwise.
- */
-bool:VolAnticampSetActionString(anticampIndex, const String:action[])
-{
-    // Check if string value is empty.
-    if (strlen(action) == 0)
-    {
-        return false;
-    }
-    
-    // Check effect string values and apply them to the volume.
-    if (StrEqual(action, "none", false))
-    {
-        AnticampData[anticampIndex][Anticamp_Action] = Anticamp_NoAction;
-        return true;
-    }
-    else if (StrEqual(action, "damage", false))
-    {
-        AnticampData[anticampIndex][Anticamp_Action] = Anticamp_Damage;
-        return true;
-    }
-    else if (StrEqual(action, "slay", false))
-    {
-        AnticampData[anticampIndex][Anticamp_Action] = Anticamp_Slay;
-        return true;
-    }
-    else if (StrEqual(action, "drug", false))
-    {
-        AnticampData[anticampIndex][Anticamp_Action] = Anticamp_Drug;
-        return true;
-    }
-    else if (StrEqual(action, "ignite", false))
-    {
-        AnticampData[anticampIndex][Anticamp_Action] = Anticamp_Ignite;
-        return true;
-    }
-    
-    // The string value didn't match any valid action types.
-    return false;
-}
-
-/**
- * Parses a action amount string value and applies it to the specified volume.
- *
- * @param anticampIndex     Anti camp data index.
- * @param amount            Amount to set. A floating point number formatted as
- *                          a string. 
- * @return                  True if successfully set, false otherwise.
- */
-bool:VolAnticampSetAmountString(anticampIndex, const String:amount[])
-{
-    new Float:actionamount;
-    
-    // Check if string value is empty.
-    if (strlen(amount) == 0)
-    {
-        return false;
-    }
-    
-    // Convert value.
-    actionamount = StringToFloat(amount);
-    
-    // Apply value.
-    AnticampData[anticampIndex][Anticamp_Amount] = actionamount;
-    return true;
-}
-
-/**
- * Parses a warning type string value and applies it to the specified volume.
- *
- * @param anticampIndex     Anti camp data index.
- * @param warning           warning type to set.
- * @return                  True if successfully set, false otherwise.
- */
-bool:VolAnticampSetWarningString(anticampIndex, const String:warning[])
-{
-    
-    // Check if string value is empty.
-    if (strlen(warning) == 0)
-    {
-        return false;
-    }
-    
-    // Check effect string values and apply them to the volume.
-    if (StrEqual(warning, "none", false))
-    {
-        AnticampData[anticampIndex][Anticamp_Warning] = Anticamp_NoWarning;
-        return true;
-    }
-    else if (StrEqual(warning, "chat", false))
-    {
-        AnticampData[anticampIndex][Anticamp_Warning] = Anticamp_Chat;
-        return true;
-    }
-    else if (StrEqual(warning, "center", false))
-    {
-        AnticampData[anticampIndex][Anticamp_Warning] = Anticamp_Center;
-        return true;
-    }
-    else if (StrEqual(warning, "menu", false))
-    {
-        AnticampData[anticampIndex][Anticamp_Warning] = Anticamp_Menu;
-        return true;
-    }
-    
-    // The string value didn't match any valid action types.
-    return false;
 }

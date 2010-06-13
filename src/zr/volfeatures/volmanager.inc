@@ -209,6 +209,9 @@ bool:VolAttachFeature(volumeIndex, VolumeFeatureTypes:featureType, featureIndex)
     // Attempt to enable volume.
     VolEnableVolume(volumeIndex);
     
+    // Attempt to enable features if volume already was enabled.
+    VolEnableVolumeFeatures(volumeIndex);
+    
     return true;
 }
 
@@ -365,6 +368,7 @@ stock VolDetatchAll()
  * Enables the specified volume and forward enable event to features.
  *
  * @param volumeIndex   Volume to enable.
+ * @return              True if enable event was fired, false otherwise.
  */
 VolEnableVolume(volumeIndex)
 {
@@ -437,4 +441,36 @@ VolDisableVolume(volumeIndex)
     
     VolOnDisabled(volumeIndex);
     Volumes[volumeIndex][Vol_Enabled] = false;
+}
+
+/**
+ * Enables all disabled features attached to a volume.
+ *
+ * @param volumeIndex   Volume to enable features on.
+ */
+VolEnableVolumeFeatures(volumeIndex)
+{
+    // Check if volumetric features is enabled.
+    if (!VolEnabled)
+    {
+        // Volumetric features disabled.
+        return;
+    }
+    
+    // Validate volume.
+    if (!VolIsValid(volumeIndex))
+    {
+        // Invalid volume.
+        return;
+    }
+    
+    // Check if disabled.
+    if (!Volumes[volumeIndex][Vol_Enabled])
+    {
+        // Don't enable features if volume is disabled.
+        return;
+    }
+    
+    // Send volume enabled event again.
+    VolOnEnabled(volumeIndex);
 }

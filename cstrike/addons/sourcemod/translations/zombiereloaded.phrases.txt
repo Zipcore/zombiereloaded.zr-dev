@@ -1384,6 +1384,21 @@
 		"en"		"Detaches a feature from a volume. Usage: zr_vol_detach <feature type> <feature id> [remove feautre: 0|1]"
 	}
 	
+	"Vol Syntax Anticamp Add"
+	{
+		"en"		"Creates a new anti-camp feature. Usage zr_vol_anticamp_add [params...]"
+	}
+	
+	"Vol Syntax Anticamp Remove"
+	{
+		"en"		"Removes the specified anti-camp feature. Usage zr_vol_anticamp_remove <anti-camp id> [recursive removal: 0|1]"
+	}
+	
+	"Vol Syntax Anticamp Default"
+	{
+		"en"		"Use \"zr_vol_anticamp_add -default\" to create a anti-camp feature with default settings."
+	}
+	
 	"Vol Missing Parameters"
 	{
 		"en"		"Additional parameters must be specified."
@@ -1497,6 +1512,36 @@
 	"Vol Param Sphere Max Dist"
 	{
 		"en"		"End fade distance."
+	}
+	
+	"Vol Param Anticamp Name"
+	{
+		"en"		"User defined name to use on the anti-camp feature (optional and not validated)."
+	}
+	
+	"Vol Param Anticamp Interval"
+	{
+		"en"		"How often to trigger the anti-camp action."
+	}
+	
+	"Vol Param Anticamp Action"
+	{
+		"en"		"What to do with players in anti-camp volumes."
+	}
+	
+	"Vol Param Anticamp Amount"
+	{
+		"en"		"Amount for action, depending on action type. Usually time in seconds or damage amount."
+	}
+	
+	"Vol Param Anticamp Warning"
+	{
+		"en"		"Where to warn the player."
+	}
+	
+	"Vol Param Anticamp Message"
+	{
+		"en"		"Override default warning message. Max 255 bytes."
 	}
 	
 	"Vol Attrib Index"
@@ -1683,6 +1728,24 @@
 		"en"		"Invalid effect: {1}"
 	}
 	
+	"Vol Invalid Anticamp Action"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid anti-camp action type: {1}"
+	}
+	
+	"Vol Invalid Anticamp Warning"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid anti-camp warning type: {1}"
+	}
+	
+	"Vol Invalid Anticamp Id"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid anti-camp index/name: {1}"
+	}
+	
 	"Vol Full"
 	{
 		"en"		"Maximum number of volumes reached."
@@ -1752,6 +1815,16 @@
 	{
 		"en"		"Replace attributes"
 	}
+
+	"Vol Anticamp Full"
+	{
+		"en"		"Maximum number of anti-camp features reached."
+	}
+
+	"Vol Anticamp Invalid Interval"
+	{
+		"en"		"Invalid interval. Cannot be zero or negative."
+	}
 	
 	"Vol Added"
 	{
@@ -1797,5 +1870,17 @@
 	"Vol Already Detached"
 	{
 		"en"		"This feature is already detached."
+	}
+	
+	"Vol Anticamp Added"
+	{
+		"#format"	"{1:d},{2:s}"
+		"en"		"Anti-camp feature successfully added. Index: {1} (\"{2}\")"
+	}
+	
+	"Vol Anticamp Removed"
+	{
+		"#format"	"{1:d},{2:s},{3:s}"
+		"en"		"Anti-camp feature {1} ({2}) successfully removed. Recursive removal: {3}"
 	}
 }

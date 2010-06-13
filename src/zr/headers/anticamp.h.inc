@@ -93,10 +93,10 @@ enum VolTypeAnticamp
     Float:Anticamp_Interval,                    /** How often to trigger an action. */
     Handle:Anticamp_Timer,                      /** Action timer handle. */
     
-    VolAnticampAction:Anticamp_Action,          /** What to do with players in anti-camp volumes */
+    VolAnticampAction:Anticamp_Action,          /** What to do with players in anti-camp volumes. */
     Float:Anticamp_Amount,                      /** Amount depending on action type. Usually time in seconds or damage amount. */
     
-    VolAnticampWarningType:Anticamp_Warning,    /** How to warn the player. */
+    VolAnticampWarningType:Anticamp_Warning,    /** Where to warn the player. */
     String:Anticamp_Message[ZR_ANTICAMP_MESSAGE_LEN]    /** Override warning message. Max 256 characters. */    
 }
 

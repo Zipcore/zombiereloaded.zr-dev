@@ -380,19 +380,19 @@ VolAnticampAction:VolStringToAnticampAction(const String:action[])
  */
 VolAnticampWarningType:VolStringToAnticampWarning(const String:warning[])
 {
-if (StrEqual(action, "none", false))
+    if (StrEqual(warning, "none", false))
     {
         return Anticamp_NoWarning;
     }
-    else if (StrEqual(action, "chat", false))
+    else if (StrEqual(warning, "chat", false))
     {
         return Anticamp_Chat;
     }
-    else if (StrEqual(action, "center", false))
+    else if (StrEqual(warning, "center", false))
     {
         return Anticamp_Center;
     }
-    else if (StrEqual(action, "menu", false))
+    else if (StrEqual(warning, "menu", false))
     {
         return Anticamp_Menu;
     }
