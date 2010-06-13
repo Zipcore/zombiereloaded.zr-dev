@@ -196,11 +196,11 @@ bool:VolIsPointInCuboid(Float:point[3], cuboid)
     // Get max and min values.
     min[0] = Cuboids[cuboid][Cuboid_xMin];
     min[1] = Cuboids[cuboid][Cuboid_yMin];
-    min[2] = Cuboids[cuboid][Cuboid_xMin];
+    min[2] = Cuboids[cuboid][Cuboid_zMin];
     
     max[0] = Cuboids[cuboid][Cuboid_xMax];
     max[1] = Cuboids[cuboid][Cuboid_yMax];
-    max[2] = Cuboids[cuboid][Cuboid_xMax];
+    max[2] = Cuboids[cuboid][Cuboid_zMax];
     
     return VolIsPointInCuboidEx(point, min, max);
 }
