@@ -26,6 +26,155 @@
  */
 
 /**
+ * Initialization event for anticamp feature.
+ */
+VolAnticampInit()
+{
+    // Set default attributes.
+    for (new anticampIndex = 0; anticampIndex < ZR_ANTICAMP_MAX; anticampIndex++)
+    {
+        VolAnticampReset(anticampIndex, false, false);
+    }
+}
+
+/**
+ * Validates anti camp data index.
+ *
+ * @param anticampIndex     Index to validate.
+ * @return                  True if valid, false otherwise.
+ */
+bool:VolAnticampIsValidIndex(anticampIndex)
+{
+    if (anticampIndex >= 0 && anticampIndex < ZR_VOLUMES_MAX)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/**
+ * Returns whether a anti camp is valid and in use.
+ *
+ * @param volumeIndex   Anti camp to validate.
+ * @return              True if valid and in use, false otherwise. 
+ */
+bool:VolAnticampIsValid(anticampIndex)
+{
+    return VolAnticampIsValidIndex(anticampIndex) && VolAnticampInUse(anticampIndex);
+}
+
+/**
+ * Returns whether a anti camp is attached to a volume.
+ *
+ * @param volumeIndex   Anti camp to check.
+ * @return              True if attached, false otherwise. 
+ */
+bool:VolAnticampIsAttached(anticampIndex)
+{
+    return (AnticampData[anticampIndex][Anticamp_VolumeIndex] >= 0);
+}
+
+/**
+ * Returns the volume index that the specified feature is linked to.
+ *
+ * @param anticampIndex     Anti camp data index.
+ */
+VolAnticampGetVolumeIndex(anticampIndex)
+{
+    return AnticampData[anticampIndex][Anticamp_VolumeIndex];
+}
+
+/**
+ * Sets the volume index to a anticamp feature.
+ *
+ * @param anticampIndex     Anti camp data index.
+ * @param volumeIndex       New volume index.
+ */
+VolAnticampSetVolumeIndex(anticampIndex, volumeIndex)
+{
+    AnticampData[anticampIndex][Anticamp_VolumeIndex] = volumeIndex;
+}
+
+/**
+ * Returns the whether the specified anti camp feature is in use.
+ *
+ * @param anticampIndex     Anti camp data index.
+ */
+bool:VolAnticampInUse(anticampIndex)
+{
+    return AnticampData[anticampIndex][Anticamp_InUse];
+}
+
+/**
+ * Returns the whether the specified anti camp feature is enabled.
+ *
+ * @param anticampIndex     Anti camp data index.
+ */
+bool:VolAnticampIsEnabled(anticampIndex)
+{
+    return AnticampData[anticampIndex][Anticamp_Enabled];
+}
+
+/**
+ * Gets the first free anticamp data index.
+ *
+ * @return      The first free anticamp data index if successful, or -1 if
+ *              there are no free volumes.
+ */
+VolAnticampGetFreeIndex()
+{
+    // Loop through all indexes.
+    for (new anticampIndex = 0; anticampIndex < ZR_VOLUMES_MAX; anticampIndex++)
+    {
+        // Check if it's free.
+        if (!AnticampData[anticampIndex][Anticamp_InUse])
+        {
+            // Mark as in use.
+            AnticampData[anticampIndex][Anticamp_InUse] = true;
+            AnticampCount++;
+            
+            // Return the new index.
+            return anticampIndex;
+        }
+    }
+    
+    // No free index found.
+    return -1;
+}
+
+/**
+ * Disables feature and resets data to defaults at the specified index.
+ *
+ * @param anticampIndex     Anti camp data index.
+ * @param inUse             Optional. Sets the InUse setting. Default is false.
+ * @param decrementCounter  Optional. Decrement counter by one. Default is true.
+ */
+VolAnticampReset(anticampIndex, bool:inUse = ZR_ANTICAMP_DEF_IN_USE, bool:decrementCounter = true)
+{
+    AnticampData[anticampIndex][Anticamp_InUse]         = inUse;
+    AnticampData[anticampIndex][Anticamp_Enabled]       = false;
+    strcopy(AnticampData[anticampIndex][Anticamp_Name], VOL_NAME_LEN, ZR_ANTICAMP_DEF_NAME);
+    AnticampData[anticampIndex][Anticamp_VolumeIndex]   = ZR_ANTICAMP_DEF_VOLUME_INDEX;
+    
+    AnticampData[anticampIndex][Anticamp_Interval]      = ZR_ANTICAMP_DEF_INTERVAL;
+    ZREndTimer(AnticampData[anticampIndex][Anticamp_Timer]);    // Make sure timer is stopped.
+    
+    AnticampData[anticampIndex][Anticamp_Action]        = ZR_ANTICAMP_DEF_ACTION;
+    AnticampData[anticampIndex][Anticamp_Amount]        = ZR_ANTICAMP_DEF_AMOUNT;
+    
+    AnticampData[anticampIndex][Anticamp_Warning]       = ZR_ANTICAMP_DEF_WARNING;
+    Format(String:AnticampData[anticampIndex][Anticamp_Message], 256, ZR_ANTICAMP_DEF_MESSAGE);
+    
+    if (decrementCounter)
+    {
+        AnticampCount--;
+    }
+}
+
+/**
  * Event callback. Enables a anticamp volume.
  *
  * @param anticampIndex     Anti camp data index.    
@@ -63,25 +212,6 @@ VolAnticampOnEnabled(anticampIndex)
 }
 
 /**
- * Starts all existing anticamp timers.
- */
-stock VolAnticampEnableAll()
-{
-    // Loop through all anti camp features.
-    for (new anticampIndex = 0; anticampIndex < ZR_ANTICAMP_MAX; anticampIndex++)
-    {
-        // Check if unused.
-        if (!VolAnticampInUse(anticampIndex))
-        {
-            // Volume not in use, skip it.
-            continue;
-        }
-        
-        VolAnticampOnEnabled(anticampIndex);
-    }
-}
-
-/**
  * Event callback. Stops existing anticamp timer on a volume.
  *
  * @param anticampIndex     Anti camp data index. 
@@ -106,6 +236,25 @@ VolAnticampOnDisabled(anticampIndex)
 }
 
 /**
+ * Starts all existing anticamp timers.
+ */
+stock VolAnticampEnableAll()
+{
+    // Loop through all anti camp features.
+    for (new anticampIndex = 0; anticampIndex < ZR_ANTICAMP_MAX; anticampIndex++)
+    {
+        // Check if unused.
+        if (!VolAnticampInUse(anticampIndex))
+        {
+            // Volume not in use, skip it.
+            continue;
+        }
+        
+        VolAnticampOnEnabled(anticampIndex);
+    }
+}
+
+/**
  * Stops all existing anticamp timers.
  */
 stock VolAnticampDisableAll()
@@ -114,47 +263,6 @@ stock VolAnticampDisableAll()
     for (new anticampIndex = 0; anticampIndex < ZR_ANTICAMP_MAX; anticampIndex++)
     {
         VolAnticampOnDisabled(anticampIndex);
-    }
-}
-
-/**
- * Disables feature and resets data to defaults at the specified index.
- *
- * @param anticampIndex     Anti camp data index.
- * @param inUse             Optional. Sets the InUse setting. Default is false.
- * @param decrementCounter  Optional. Decrement counter by one. Default is true.
- */
-VolAnticampReset(anticampIndex, bool:inUse = ZR_ANTICAMP_DEF_IN_USE, bool:decrementCounter = true)
-{
-    AnticampData[anticampIndex][Anticamp_InUse]         = inUse;
-    AnticampData[anticampIndex][Anticamp_Enabled]       = false;
-    strcopy(AnticampData[anticampIndex][Anticamp_Name], VOL_NAME_LEN, ZR_ANTICAMP_DEF_NAME);
-    AnticampData[anticampIndex][Anticamp_VolumeIndex]   = ZR_ANTICAMP_DEF_VOLUME_INDEX;
-    
-    AnticampData[anticampIndex][Anticamp_Interval]      = ZR_ANTICAMP_DEF_INTERVAL;
-    ZREndTimer(AnticampData[anticampIndex][Anticamp_Timer]);    // Make sure timer is stopped.
-    
-    AnticampData[anticampIndex][Anticamp_Action]        = ZR_ANTICAMP_DEF_ACTION;
-    AnticampData[anticampIndex][Anticamp_Amount]        = ZR_ANTICAMP_DEF_AMOUNT;
-    
-    AnticampData[anticampIndex][Anticamp_Warning]       = ZR_ANTICAMP_DEF_WARNING;
-    Format(String:AnticampData[anticampIndex][Anticamp_Message], 256, ZR_ANTICAMP_DEF_MESSAGE);
-    
-    if (decrementCounter)
-    {
-        AnticampCount--;
-    }
-}
-
-/**
- * Initialization event for anticamp feature.
- */
-VolAnticampInit()
-{
-    // Set default attributes.
-    for (new anticampIndex = 0; anticampIndex < ZR_ANTICAMP_MAX; anticampIndex++)
-    {
-        VolAnticampReset(anticampIndex, false, false);
     }
 }
 
@@ -370,114 +478,6 @@ public Handler_AnitcampDummy(Handle:menu, MenuAction:action, param1, param2)
 }
 
 /**
- * Gets the first free anticamp data index.
- *
- * @return      The first free anticamp data index if successful, or -1 if
- *              there are no free volumes.
- */
-VolAnticampGetFreeIndex()
-{
-    // Loop through all indexes.
-    for (new anticampIndex = 0; anticampIndex < ZR_VOLUMES_MAX; anticampIndex++)
-    {
-        // Check if it's free.
-        if (!AnticampData[anticampIndex][Anticamp_InUse])
-        {
-            // Mark as in use.
-            AnticampData[anticampIndex][Anticamp_InUse] = true;
-            AnticampCount++;
-            
-            // Return the new index.
-            return anticampIndex;
-        }
-    }
-    
-    // No free index found.
-    return -1;
-}
-
-/**
- * Validates anti camp data index.
- *
- * @param anticampIndex     Index to validate.
- * @return                  True if valid, false otherwise.
- */
-bool:VolAnticampIsValidIndex(anticampIndex)
-{
-    if (anticampIndex >= 0 && anticampIndex < ZR_VOLUMES_MAX)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-/**
- * Returns whether a anti camp is valid and in use.
- *
- * @param volumeIndex   Anti camp to validate.
- * @return              True if valid and in use, false otherwise. 
- */
-bool:VolAnticampIsValid(anticampIndex)
-{
-    return VolAnticampIsValidIndex(anticampIndex) && VolAnticampInUse(anticampIndex);
-}
-
-/**
- * Returns whether a anti camp is attached to a volume.
- *
- * @param volumeIndex   Anti camp to check.
- * @return              True if attached, false otherwise. 
- */
-bool:VolAnticampIsAttached(anticampIndex)
-{
-    return (AnticampData[anticampIndex][Anticamp_VolumeIndex] >= 0);
-}
-
-/**
- * Returns the volume index that the specified feature is linked to.
- *
- * @param anticampIndex     Anti camp data index.
- */
-VolAnticampGetVolumeIndex(anticampIndex)
-{
-    return AnticampData[anticampIndex][Anticamp_VolumeIndex];
-}
-
-/**
- * Sets the volume index to a anticamp feature.
- *
- * @param anticampIndex     Anti camp data index.
- * @param volumeIndex       New volume index.
- */
-VolAnticampSetVolumeIndex(anticampIndex, volumeIndex)
-{
-    AnticampData[anticampIndex][Anticamp_VolumeIndex] = volumeIndex;
-}
-
-/**
- * Returns the whether the specified anti camp feature is in use.
- *
- * @param anticampIndex     Anti camp data index.
- */
-bool:VolAnticampInUse(anticampIndex)
-{
-    return AnticampData[anticampIndex][Anticamp_InUse];
-}
-
-/**
- * Returns the whether the specified anti camp feature is enabled.
- *
- * @param anticampIndex     Anti camp data index.
- */
-bool:VolAnticampIsEnabled(anticampIndex)
-{
-    return AnticampData[anticampIndex][Anticamp_Enabled];
-}
-
-/**
  * Builds a user friendly (translated) list of the anti-camp's attributes.
  *
  * @param anticampIndex     Index in anticamp data array.
@@ -549,85 +549,4 @@ VolAnticampBuildList(anticampIndex, String:buffer[], maxlen)
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
     return cellswritten;
-}
-
-
-/**************************************
- *                                    *
- *  CONVERTING FUNCTIONS              *
- *                                    *
- **************************************/
-
-/**
- * Converts a action type to a string.
- *
- * @param actionType    Action type to convert.
- * @param buffer        Destination string buffer.
- * @param maxlen        Size of destination buffer.
- * @param shortName     Optional. Write short name or human readable name.
- *                      Default is human readable (false).
- * @return              Number of cells written.
- */
-VolAnticampActionToString(VolAnticampAction:actionType, String:buffer[], maxlen, bool:shortName = false)
-{
-    switch (actionType)
-    {
-        case Anticamp_NoAction:
-        {
-            return shortName ? strcopy(buffer, maxlen, "none") : Format(buffer, maxlen, "%t", "Vol No action");
-        }
-        case Anticamp_Damage:
-        {
-            return shortName ? strcopy(buffer, maxlen, "damage") : Format(buffer, maxlen, "%t", "Vol Damage");
-        }
-        case Anticamp_Slay:
-        {
-            return shortName ? strcopy(buffer, maxlen, "slay") : Format(buffer, maxlen, "%t", "Vol Slay");
-        }
-        case Anticamp_Drug:
-        {
-            return shortName ? strcopy(buffer, maxlen, "drug") : Format(buffer, maxlen, "%t", "Vol Drug");
-        }
-        case Anticamp_Ignite:
-        {
-            return shortName ? strcopy(buffer, maxlen, "ignite") : Format(buffer, maxlen, "%t", "Vol Ignite");
-        }
-    }
-    
-    return 0;
-}
-
-/**
- * Converts a warning type to a string.
- *
- * @param warningType   Warning type to convert.
- * @param buffer        Destination string buffer.
- * @param maxlen        Size of destination buffer.
- * @param shortName     Optional. Write short name or human readable name.
- *                      Default is human readable (false).
- * @return              Number of cells written.
- */
-VolAnticampWarningToString(VolAnticampWarningType:warningType, String:buffer[], maxlen, bool:shortName = false)
-{
-    switch (warningType)
-    {
-        case Anticamp_NoWarning:
-        {
-            return shortName ? strcopy(buffer, maxlen, "none") : Format(buffer, maxlen, "%t", "Vol No warning");
-        }
-        case Anticamp_Chat:
-        {
-            return shortName ? strcopy(buffer, maxlen, "chat") : Format(buffer, maxlen, "%t", "Vol Chat");
-        }
-        case Anticamp_Center:
-        {
-            return shortName ? strcopy(buffer, maxlen, "center") : Format(buffer, maxlen, "%t", "Vol Center");
-        }
-        case Anticamp_Menu:
-        {
-            return shortName ? strcopy(buffer, maxlen, "menu") : Format(buffer, maxlen, "%t", "Vol Panel");
-        }
-    }
-    
-    return 0;
 }
