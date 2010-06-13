@@ -40,9 +40,9 @@ VolCuboidAdd(Float:min[3], Float:max[3], String:name[] = "")
     new Float:x1 = min[0];
     new Float:x2 = max[0];
     new Float:y1 = min[1];
-    new Float:y2 = min[1];
+    new Float:y2 = max[1];
     new Float:z1 = min[2];
-    new Float:z2 = min[2];
+    new Float:z2 = max[2];
     
     // Check if both locations are equal.
     if (x1 == x2 &&
