@@ -223,7 +223,7 @@ public Action:VolShapeAddCommand(client, argc)
             }
             else if (shapeIndex == -2)
             {
-                TranslationReplyToCommand(client, "Vol Cuboid Full");
+                TranslationReplyToCommand(client, "Vol Cuboid Empty");
                 return Plugin_Handled;
             }
         }
@@ -371,7 +371,7 @@ VolBuildShapeSyntaxString(client, String:buffer[], maxlen)
     Format(linebuffer, sizeof(linebuffer), "%t\n", "Vol Param Params Optional");
     numCells += StrCat(buffer, maxlen, linebuffer);
     
-    numCells += StrCat(buffer, maxlen, "name=<volume name>\n");
+    numCells += StrCat(buffer, maxlen, "name=<shape name>\n");
     Format(linebuffer, sizeof(linebuffer), VOL_SYNTAX_FORMAT_STRING, "Vol Param Shape Name");
     numCells += StrCat(buffer, maxlen, linebuffer);
     

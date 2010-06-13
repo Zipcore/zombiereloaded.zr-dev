@@ -288,12 +288,15 @@ VolOnEnabled(volumeIndex)
             new featureIndex = GetArrayCell(featureIndexes, i);
             new VolumeFeatureTypes:featureType = GetArrayCell(featureTypes, i);
             
-            // Forward event to feature.
+            // Forward event to feature, but only if they are disabled.
             switch (featureType)
             {
                 case VolFeature_Anticamp:
                 {
-                    VolAnticampOnEnabled(featureIndex);
+                    if (!VolAnticampIsEnabled(featureIndex))
+                    {
+                        VolAnticampOnEnabled(featureIndex);
+                    }
                 }
             }
         }

@@ -128,7 +128,7 @@ bool:VolAnticampRemove(anticamp, bool:recursive = false)
  *                      Default is false.
  * @return              True if successful, false otherwise.
  */
-VolAnticampRemoveAll(bool:recursive = false)
+stock VolAnticampRemoveAll(bool:recursive = false)
 {
     for (new anticamp = 0; anticamp < ZR_ANTICAMP_MAX; anticamp++)
     {

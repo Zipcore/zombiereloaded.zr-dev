@@ -81,6 +81,7 @@ new Float:VolTriggerInterval;
 #include "zr/volfeatures/volconversion"
 #include "zr/volfeatures/volcommands"
 #include "zr/volfeatures/shapecommands"
+#include "zr/volfeatures/anticampcommands"
 
 /**
  * Initialize volumetric features.

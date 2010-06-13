@@ -41,6 +41,7 @@ VolOnCommandsCreate()
     RegConsoleCmd("zr_vol_detach", VolDetachCommand, "Detaches a feature from a volume. Usage: zr_vol_detach <feature type> <feature id> [delete feautre: 0|1]");
     
     VolShapeOnCommandsCreate();
+    VolAnticampOnCommandsCreate();
 }
 
 /**
@@ -345,7 +346,7 @@ public Action:VolListCommand(client, argc)
         Format(langbuffer2, sizeof(langbuffer2), "%t", "Vol Attrib Name");
         Format(langbuffer3, sizeof(langbuffer3), "%t", "Vol Attrib Enabled");
         Format(langbuffer4, sizeof(langbuffer4), "%t", "Vol Attrib Features");
-        ReplyToCommand(client, "%10s %10s %10s %s\n--------------------------------------------------",
+        ReplyToCommand(client, "%10s %15s %10s %s\n--------------------------------------------------",
                        langbuffer1, langbuffer2, langbuffer3, langbuffer4);
         
         // Loop through all indexes.
@@ -367,7 +368,7 @@ public Action:VolListCommand(client, argc)
                 }
                 
                 // Add to list.
-                ReplyToCommand(client, "%-10d %10s %10s %s", volumeIndex, Volumes[volumeIndex][Vol_Name], langbuffer1, linebuffer);
+                ReplyToCommand(client, "%-10d %15s %10s %s", volumeIndex, Volumes[volumeIndex][Vol_Name], langbuffer1, linebuffer);
                 volCount++;
             }
         }
@@ -442,12 +443,12 @@ public Action:VolListCommand(client, argc)
                 {
                     case VolFeature_Anticamp:
                     {
-                        TranslationReplyToCommand(client, "Vol Anticamp");
+                        ReplyToCommand(client, "%t", "Vol Anticamp");
                         VolAnticampBuildList(featureIndex, buffer, sizeof(buffer));
                     }
                     case VolFeature_ClassEdit:
                     {
-                        TranslationReplyToCommand(client, "Vol Classedit");
+                        ReplyToCommand(client, "%t", "Vol Classedit");
                         VolClassEditBuildList(featureIndex, buffer, sizeof(buffer));
                     }
                 }
