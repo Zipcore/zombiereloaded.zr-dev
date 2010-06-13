@@ -98,10 +98,10 @@ VolumeShapes:VolStringToShape(const String:shape[])
 /**
  * Converts a shape type to a string.
  *
- * @param shape         Shape type to convert.
- * @param buffer        Destination string buffer.
- * @param maxlen        Size of destination buffer.
- * @return              Number of cells written.
+ * @param shape     Shape type to convert.
+ * @param buffer    Destination string buffer.
+ * @param maxlen    Size of destination buffer.
+ * @return          Number of cells written.
  */
 VolShapeToString(VolumeShapes:shape, String:buffer[], maxlen)
 {
@@ -143,10 +143,10 @@ VolumeEffects:VolStringToEffect(const String:effect[])
 /**
  * Converts a effect type to a string.
  *
- * @param effect        Effect type to convert.
- * @param buffer        Destination string buffer.
- * @param maxlen        Size of destination buffer.
- * @return              Number of cells written.
+ * @param effect    Effect type to convert.
+ * @param buffer    Destination string buffer.
+ * @param maxlen    Size of destination buffer.
+ * @return          Number of cells written.
  */
 VolEffectToString(VolumeEffects:effect, String:buffer[], maxlen)
 {
@@ -339,6 +339,43 @@ VolFadeToString(FadeTypes:fade, String:buffer[], maxlen)
  *****************/
 
 /**
+ * Converts a action type to a string.
+ *
+ * @param actionType    Action type to convert.
+ * @param buffer        Destination string buffer.
+ * @param maxlen        Size of destination buffer.
+ * @return              Number of cells written.
+ */
+VolAnticampActionToString(VolAnticampAction:actionType, String:buffer[], maxlen)
+{
+    switch (actionType)
+    {
+        case Anticamp_NoAction:
+        {
+            return Format(buffer, maxlen, "%t", "Vol No action");
+        }
+        case Anticamp_Damage:
+        {
+            return Format(buffer, maxlen, "%t", "Vol Damage");
+        }
+        case Anticamp_Slay:
+        {
+            return Format(buffer, maxlen, "%t", "Vol Slay");
+        }
+        case Anticamp_Drug:
+        {
+            return Format(buffer, maxlen, "%t", "Vol Drug");
+        }
+        case Anticamp_Ignite:
+        {
+            return Format(buffer, maxlen, "%t", "Vol Ignite");
+        }
+    }
+    
+    return 0;
+}
+
+/**
  * Gets the anti camp action type from a string.
  *
  * @param action    String value.
@@ -370,6 +407,39 @@ VolAnticampAction:VolStringToAnticampAction(const String:action[])
     {
         return Anticamp_InvalidAction;
     }
+}
+
+/**
+ * Converts a warning type to a string.
+ *
+ * @param warningType   Warning type to convert.
+ * @param buffer        Destination string buffer.
+ * @param maxlen        Size of destination buffer.
+ * @return              Number of cells written.
+ */
+VolAnticampWarningToString(VolAnticampWarningType:warningType, String:buffer[], maxlen)
+{
+    switch (warningType)
+    {
+        case Anticamp_NoWarning:
+        {
+            return Format(buffer, maxlen, "%t", "Vol No Warning");
+        }
+        case Anticamp_Chat:
+        {
+            return Format(buffer, maxlen, "%t", "Vol Chat");
+        }
+        case Anticamp_Center:
+        {
+            return Format(buffer, maxlen, "%t", "Vol Center");
+        }
+        case Anticamp_Menu:
+        {
+            return Format(buffer, maxlen, "%t", "Vol Panel");
+        }
+    }
+    
+    return 0;
 }
 
 /**
