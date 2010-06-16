@@ -170,6 +170,59 @@ VolOnPlayerDeath(client)
 }
 
 /**
+ * Called when a player is infected.
+ *
+ * @param client    The client index.
+ */
+VolOnClientInfected(client)
+{
+    // Save old states.
+    new bool:wasInVolume[ZR_VOLUMES_MAX];
+    for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
+    {
+        wasInVolume[volumeIndex] = VolPlayerInVolume[client][volumeIndex];
+    }
+    
+    // Clean up.
+    VolOnPlayerDeath(client);
+    
+    // Retrigger event if in a volume.
+    for (new volumeIndex = 0; volumeIndex < ZR_VOLUMES_MAX; volumeIndex++)
+    {
+        // Check if volume is unused.
+        if (!Volumes[volumeIndex][Vol_InUse])
+        {
+            continue;
+        }
+        
+        // Check if volume is disabled.
+        if (!Volumes[volumeIndex][Vol_Enabled])
+        {
+            continue;
+        }
+        
+        // Trigger event if the player is inside the volume. It will also
+        // recheck team filtering, so if there's a filter mismach the event
+        // won't be triggered.
+        if (VolPlayerInVolume[client][volumeIndex])
+        {
+            VolTriggerEvent(client, volumeIndex, false, wasInVolume[volumeIndex]);
+        }
+    }
+}
+
+/**
+ * Called when a player is turned back to a human.
+ *
+ * @param client    The client index.
+ */
+VolOnClientHuman(client)
+{
+    // Forward event.
+    VolOnClientInfected(client);
+}
+
+/**
  * Called when a player disconnects.
  *
  * @param client    The client index.

@@ -810,6 +810,7 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     ZTeleOnClientInfected(client);
     ZHPOnClientInfected(client);
     AmmoOnClientInfected(client);
+    VolOnClientInfected(client);
     APIOnClientInfected(client, attacker, motherinfect, respawnoverride, respawn);
 }
 
@@ -876,6 +877,7 @@ InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
     SEffectsOnClientHuman(client);
     ZTeleOnClientHuman(client);
     AmmoOnClientHuman(client);
+    VolOnClientHuman(client);
     APIOnClientHuman(client, respawn, protect);
 }
 
