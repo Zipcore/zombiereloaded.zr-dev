@@ -400,71 +400,85 @@ VolUpdatePlayerChanges()
         // Loop through players.
         for (new client = 1; client <= MaxClients; client++)
         {
-            // Validate client's connection state.
-            if (!IsClientConnected(client) || !IsClientInGame(client) || !IsPlayerAlive(client))
-            {
-                // Skip client.
-                continue;
-            }
-            
-            // Check team filtering on the volume.
-            if (!VolTeamFilterMatch(client, volumeIndex))
-            {
-                // Team filter mismatch.
-                continue;
-            }
-            
             // Get the current client's states for the current volume.
-            new bool:newState = volumeNewStates[client][volumeIndex];
             new bool:oldState = volumeStates[client][volumeIndex];
+            new bool:newState = volumeNewStates[client][volumeIndex];
             
-            // Check for no change.
-            if (newState == oldState)
-            {
-                // No change. Skip to next volume.
-                continue;
-            }
+            // Attempt to trigger event.
+            VolTriggerEvent(client, volumeIndex, oldState, newState);
+        }
+    }
+}
+
+/**
+ * Triggers a enter or leave event on the client if there's a change in the state.
+ * Team filter is also validated before triggering event.
+ *
+ * @param client        Client to trigger event on.
+ * @param volumeIndex   Volume to check.
+ * @param oldState      Client's old state for the volume.
+ * @param newState      Client's new state for the volume.
+ */
+VolTriggerEvent(client, volumeIndex, bool:oldState, bool:newState)
+{
+    // Validate client's connection state.
+    if (!IsClientConnected(client) || !IsClientInGame(client) || !IsPlayerAlive(client))
+    {
+        return;
+    }
+    
+    // Check team filtering on the volume.
+    if (!VolTeamFilterMatch(client, volumeIndex))
+    {
+        // Team filter mismatch.
+        return;
+    }
+    
+    // Check if there's a change.
+    if (newState == oldState)
+    {
+        // No change.
+        return;
+    }
+    
+    // Check if client entered the volume.
+    if (newState && !oldState)
+    {
+        // Get trigger delay value.
+        new Float:triggerDelay = Volumes[volumeIndex][Vol_TriggerDelay];
+        
+        // Check if the volume has a trigger delay.
+        if (triggerDelay > 0.0)
+        {
+            // Set count down value.
+            VolPlayerCountDown[client][volumeIndex] = triggerDelay;
+        }
+        else
+        {
+            // Update cache.
+            VolPlayerInVolume[client][volumeIndex] = true;
             
-            // Check if client entered the volume.
-            if (newState && !oldState)
-            {
-                // Get trigger delay value.
-                new Float:triggerDelay = Volumes[volumeIndex][Vol_TriggerDelay];
-                
-                // Check if the volume has a trigger delay.
-                if (triggerDelay > 0.0)
-                {
-                    // Set count down value.
-                    VolPlayerCountDown[client][volumeIndex] = triggerDelay;
-                }
-                else
-                {
-                    // Update cache.
-                    VolPlayerInVolume[client][volumeIndex] = true;
-                    
-                    // No trigger delay, trigger event instantly.
-                    VolOnPlayerEnter(client, volumeIndex);
-                }
-            }
+            // No trigger delay, trigger event instantly.
+            VolOnPlayerEnter(client, volumeIndex);
+        }
+    }
+    
+    // Check if client left the volume.
+    else if (!newState && oldState)
+    {
+        // Make sure count down value for trigger delay is reset.
+        VolPlayerCountDown[client][volumeIndex] = -1.0;
+        
+        // Only trigger left volume event if player already is in the
+        // volume, so volumes with trigger delay won't get a left event
+        // before the enter event.
+        if (VolPlayerInVolume[client][volumeIndex])
+        {
+            // Update cache.
+            VolPlayerInVolume[client][volumeIndex] = false;
             
-            // Check if client left the volume.
-            else if (!newState && oldState)
-            {
-                // Make sure count down value for trigger delay is reset.
-                VolPlayerCountDown[client][volumeIndex] = -1.0;
-                
-                // Only trigger left volume event if player already is in the
-                // volume, so volumes with trigger delay won't get a left event
-                // before the enter event.
-                if (VolPlayerInVolume[client][volumeIndex])
-                {
-                    // Update cache.
-                    VolPlayerInVolume[client][volumeIndex] = false;
-                    
-                    // Trigger event.
-                    VolOnPlayerLeave(client, volumeIndex);
-                }
-            }
+            // Trigger event.
+            VolOnPlayerLeave(client, volumeIndex);
         }
     }
 }
