@@ -201,10 +201,10 @@ VolOnClientInfected(client)
             continue;
         }
         
-        // Trigger event if the player is inside the volume. It will also
+        // Trigger event if the player was inside the volume. It will also
         // recheck team filtering, so if there's a filter mismach the event
         // won't be triggered.
-        if (VolPlayerInVolume[client][volumeIndex])
+        if (wasInVolume[volumeIndex])
         {
             VolTriggerEvent(client, volumeIndex, false, wasInVolume[volumeIndex]);
         }
