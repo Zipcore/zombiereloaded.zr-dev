@@ -81,7 +81,7 @@ stock ToolsGetClientVelocity(client, Float:vecVelocity[3])
  * Set a client's lagged movement value.
  *  
  * @param client    The client index.
- * @param value     LMV value. (1.0 = default, 2.0 = double)
+ * @param value     LMV value. (300 = default, 600 = double)
  */
 stock ToolsSetClientLMV(client, Float:fLMV)
 {

@@ -149,8 +149,10 @@
 #define ZR_CLASS_HEALTH_INFECT_GAIN_MAX     20000
 #define ZR_CLASS_KILL_BONUS_MIN             0
 #define ZR_CLASS_KILL_BONUS_MAX             16
-#define ZR_CLASS_SPEED_MIN                  -150.0
-#define ZR_CLASS_SPEED_MAX                  300.0   /** Also limited by sv_maxspeed, cl_forwardspeed, cl_backspeed and cl_sidespeed. */
+#define ZR_CLASS_SPEED_LMV_MIN              10.0
+#define ZR_CLASS_SPEED_LMV_MAX              2000.0
+#define ZR_CLASS_SPEED_PROP_MIN             -150.0
+#define ZR_CLASS_SPEED_PROP_MAX             300.0   /** Also limited by sv_maxspeed, cl_forwardspeed, cl_backspeed and cl_sidespeed. */
 #define ZR_CLASS_KNOCKBACK_MIN              -30.0
 #define ZR_CLASS_KNOCKBACK_MAX              30.0
 #define ZR_CLASS_KNOCKBACK_IGNORE           -31.0   /** Used by class editor volumetric feature. */
@@ -363,4 +365,15 @@ enum ClassLoadMode
     ClassLoadMode_Normal,   /** Default loading mode */
     ClassLoadMode_Preload,  /** Preload a client's class selections with config defaults. Used before they are fully connected. Cookies and admin-only classes will be ignored. */
     ClassLoadMode_Postload  /** Lode a client's class selections from cookies if enabled, but mark them as next spawn class if the client already have spawned. */
+}
+
+/**
+ * Speed methods for applying player speed.
+ */
+enum ClassSpeedMethods
+{
+    ClassSpeed_Invalid = -1,
+    ClassSpeed_LMV,             /** Modifies lagged movement value. */
+    ClassSpeed_Prop,            /** Modifies players' max speed property(m_flMaxspeed). */
+    ClassSpeed_CommandHook      /** Modifies speed value sent in commands by the client. */
 }

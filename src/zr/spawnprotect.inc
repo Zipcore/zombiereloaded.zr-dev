@@ -141,7 +141,22 @@ SpawnProtectStart(client)
     new alpha = GetConVarInt(g_hCvarsList[CVAR_SPAWNPROTECT_ALPHA]);
     
     // Validate attributes
-    if (speed < ZR_CLASS_SPEED_MIN && speed > ZR_CLASS_SPEED_MAX)
+    new Float:min;
+    new Float:max;
+    switch (ClassSpeedMethod)
+    {
+        case ClassSpeed_LMV:
+        {
+            min = ZR_CLASS_SPEED_LMV_MIN;
+            max = ZR_CLASS_SPEED_LMV_MAX;
+        }
+        case ClassSpeed_Prop:
+        {
+            min = ZR_CLASS_SPEED_PROP_MIN;
+            max = ZR_CLASS_SPEED_PROP_MAX;
+        }
+    }
+    if (speed < min && speed > max)
     {
         // Reset to default and log a warning.
         speed = SPAWNPROTECT_DEFAULT_SPEED;
@@ -155,7 +170,7 @@ SpawnProtectStart(client)
     }
     
     // Set spawn protect attributes.
-    g_flClassApplySpeed[client] = speed;    // This one is used and applied in playerclasses/apply.inc
+    ClassApplySpeedEx(client, speed);
     ToolsSetClientAlpha(client, alpha);
     
     // Set time left to zr_protect_time's value.

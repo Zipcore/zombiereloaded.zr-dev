@@ -166,6 +166,10 @@ new bool:ClassModulesLoaded;
  */
 new bool:ClassReadyEventFired[MAXPLAYERS + 1];
 
+/**
+ * What method used to apply speed on players.
+ */
+new ClassSpeedMethods:ClassSpeedMethod = ClassSpeed_Prop;
 
 #include "zr/playerclasses/filtertools"
 #include "zr/playerclasses/attributes"
@@ -370,6 +374,35 @@ public ClassOnConfigReload(ConfigFile:config)
 {
     // Reload class config.
     ClassLoad();
+}
+
+/** 
+ * Gets the speed method.
+ *
+ * @return  Speed method, or ClassSpeed_Invalid on error.
+ */
+ClassSpeedMethods:ClassGetSpeedMethod()
+{
+    decl String:speedMethod[16];
+    speedMethod[0] = 0;
+    
+    GetConVarString(g_hCvarsList[CVAR_CLASSES_SPEED_METHOD], speedMethod, sizeof(speedMethod));
+    
+    if (StrEqual(speedMethod, "lmv", false))
+    {
+        return ClassSpeed_LMV;
+    }
+    else if (StrEqual(speedMethod, "prop", false))
+    {
+        return ClassSpeed_Prop;
+    }
+    /* Not implemented yet.
+    else if (StrEqual(speedMethod, "command", false))
+    {
+        return ClassSpeed_LMV;
+    }*/
+    
+    return ClassSpeed_Invalid;
 }
 
 /**
