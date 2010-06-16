@@ -411,18 +411,43 @@ bool:ClassApplyHealthRegen(client, classindex, cachetype = ZR_CLASS_CACHE_PLAYER
  */
 bool:ClassApplySpeed(client, classindex, cachetype = ZR_CLASS_CACHE_PLAYER)
 {
-    // Get the health points from the specified cache.
+    // Get the speed from the specified cache.
+    new Float:speed;
     if (cachetype == ZR_CLASS_CACHE_PLAYER)
     {
-        g_flClassApplySpeed[client] = ClassGetSpeed(client, cachetype);
+        speed = ClassGetSpeed(client, cachetype);
     }
     else
     {
-        g_flClassApplySpeed[client] = ClassGetSpeed(classindex, cachetype);
+        speed = ClassGetSpeed(classindex, cachetype);
     }
     
-    //ToolsSetClientLMV(client, speed);    // Goodbye old shitty method!
+    // Apply speed to player.
+    ClassApplySpeedEx(client, speed);
+    
     return true;
+}
+
+/**
+ * Applies the specified speed to the player.
+ *
+ * @param client    Client to apply to.
+ * @param speed     Speed value.
+ */
+ClassApplySpeedEx(client, Float:speed)
+{
+    // Check what speed method that's used and apply it.
+    switch (ClassSpeedMethod)
+    {
+        case ClassSpeed_LMV:
+        {
+            ToolsSetClientLMV(client, speed);
+        }
+        case ClassSpeed_Prop:
+        {
+            g_flClassApplySpeed[client] = speed;
+        }
+    }
 }
 
 /**
@@ -433,12 +458,16 @@ bool:ClassApplySpeed(client, classindex, cachetype = ZR_CLASS_CACHE_PLAYER)
  */
 public ClassPreThinkPost(client)
 {
-    if (!IsPlayerAlive(client))
+    // Only apply speed if the prop method is used.
+    if (ClassSpeedMethod == ClassSpeed_Prop)
     {
-        return;
+        if (!IsPlayerAlive(client))
+        {
+            return;
+        }
+        
+        // Note: Default is around 200.0 - 250.0
+        new Float:newspeed = GetEntPropFloat(client, Prop_Data, "m_flMaxspeed") + g_flClassApplySpeed[client];
+        SetEntPropFloat(client, Prop_Data, "m_flMaxspeed", newspeed);
     }
-    
-    // Note: Default is around 200.0 - 250.0
-    new Float:newspeed = GetEntPropFloat(client, Prop_Data, "m_flMaxspeed") + g_flClassApplySpeed[client];
-    SetEntPropFloat(client, Prop_Data, "m_flMaxspeed", newspeed);
 }
