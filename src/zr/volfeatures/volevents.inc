@@ -206,7 +206,7 @@ VolOnClientInfected(client)
         // won't be triggered.
         if (wasInVolume[volumeIndex])
         {
-            VolTriggerEvent(client, volumeIndex, false, wasInVolume[volumeIndex]);
+            VolTriggerEvent(client, volumeIndex, false, true);
         }
     }
 }
