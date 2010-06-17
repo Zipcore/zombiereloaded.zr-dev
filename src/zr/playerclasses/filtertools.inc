@@ -94,235 +94,326 @@ stock bool:ClassValidateTeamDefaults(cachetype = ZR_CLASS_CACHE_ORIGINAL)
 }
 
 /**
- * Validates all the class attributes in the original class data array, to
- * check if they have invalid values. Boolean settings are not validated.
+ * Validates the specified attributes.
  *
- * @param classindex    The index of the class to validate.
- * @return              A value with attribute error flags.
+ * @param onlyEditable          Only validate editable attributes, skip others.
+ * @param logErrors             Log warnings to error log if there are invalid attributes.
+ * @param classIndex
+ * @return                      Flags with attributes that failed validation. 0 if successful.
  */
-stock ClassValidateAttributes(classindex)
+ClassValidateAttributes(bool:onlyEditable = false, bool:logErrors = false,
+                        classIndex,
+                        team,
+                        classFlags,
+                        const String:group[],
+                        const String:name[],
+                        const String:description[],
+                        const String:model[],
+                        alphaInitial,
+                        alphaDamaged,
+                        alphaDamage,
+                        const String:overlay[],
+                        fov,
+                        Float:napalmTime,
+                        weaponProfile,
+                        health,
+                        Float:regenInterval,
+                        regenAmount,
+                        infectGain,
+                        killBonus,
+                        Float:speed,
+                        Float:knockback,
+                        Float:jumpHeight,
+                        Float:jumpDistance)
 {
-    // TODO: Validate immunity mode and amount.
-    
     new flags;
     
     // Team.
-    if (ClassData[classindex][Class_Team] < ZR_CLASS_TEAM_MIN || ClassData[classindex][Class_Team] > ZR_CLASS_TEAM_MAX)
+    if (!onlyEditable && !ClassIsValidTeamID(team))
     {
         flags += ZR_CLASS_TEAM;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid team at index %d: %d", classIndex, team);
+        }
     }
     
     // Class flags.
-    if (ClassData[classindex][Class_Flags] < ZR_CLASS_FLAGS_MIN || ClassData[classindex][Class_Flags] > ZR_CLASS_FLAGS_MAX)
+    if (!onlyEditable && !ClassIsValidFlags(classFlags))
     {
         flags += ZR_CLASS_FLAGS;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid flags at index %d: %d", classIndex, classFlags);
+        }
     }
     
     // Group.
-    if (strlen(ClassData[classindex][Class_Group]))
+    if (!onlyEditable && strlen(group) > 0)
     {
-        // Check if the group exist.
-        if (FindAdmGroup(ClassData[classindex][Class_Group]) == INVALID_GROUP_ID)
+        if (!ClassIsValidGroup(group))
         {
             flags += ZR_CLASS_GROUP;
-        }
-    }
-    
-    // Name.
-    if (strlen(ClassData[classindex][Class_Name]) < ZR_CLASS_NAME_MIN)
-    {
-        flags += ZR_CLASS_NAME;
-    }
-    else
-    {
-        decl String:name[64];
-        strcopy(name, sizeof(name), ClassData[classindex][Class_Name]);
-        
-        // Check for reserved name keyworks. These aren't allowed as names.
-        if (StrEqual(name, "all", false) ||
-            StrEqual(name, "humans", false) ||
-            StrEqual(name, "zombies", false) ||
-            StrEqual(name, "admins", false))
-        {
-            flags += ZR_CLASS_NAME;
-        }
-    }
-    
-    // Description.
-    if (strlen(ClassData[classindex][Class_Description]) < ZR_CLASS_DESCRIPTION_MIN)
-    {
-        flags += ZR_CLASS_DESCRIPTION;
-    }
-    
-    // Model path.
-    decl String:model_path[PLATFORM_MAX_PATH];
-    if (strcopy(model_path, sizeof(model_path), ClassData[classindex][Class_ModelPath]) == 0)
-    {
-        flags += ZR_CLASS_MODEL_PATH;
-    }
-    else
-    {
-        // Validate only if not a pre-defined setting.
-        if (!StrEqual(model_path, "random", false) &&
-            !StrEqual(model_path, "random_public", false) &&
-            !StrEqual(model_path, "random_hidden", false) &&
-            !StrEqual(model_path, "random_admin", false) &&
-            !StrEqual(model_path, "random_mother_zombie", false) &&
-            !StrEqual(model_path, "default", false) &&
-            !StrEqual(model_path, "no_change", false))
-        {
-            // Check if the file exists.
-            if (!FileExists(model_path))
+            if (logErrors)
             {
-                flags += ZR_CLASS_MODEL_PATH;
+                LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid group at index %d: \"%s\"", classIndex, group);
             }
         }
     }
     
+    // Name.
+    if (!onlyEditable && !ClassIsValidName(name))
+    {
+        flags += ZR_CLASS_NAME;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid name at index %d: \"%s\"", classIndex, name);
+        }
+    }
+    
+    // Description.
+    if (!onlyEditable && !ClassIsValidDescription(description))
+    {
+        flags += ZR_CLASS_DESCRIPTION;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid description at index %d: \"%s\"", classIndex, description);
+        }
+    }
+    
+    // Model path.
+    if (!onlyEditable && !ClassIsValidModel(model))
+    {
+        flags += ZR_CLASS_MODEL_PATH;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid model_path at index %d: \"%s\"", classIndex, model);
+        }
+    }
+    
     // Alpha, initial.
-    new alpha_initial = ClassData[classindex][Class_AlphaInitial];
-    if (!(alpha_initial >= ZR_CLASS_ALPHA_INITIAL_MIN && alpha_initial <= ZR_CLASS_ALPHA_INITIAL_MAX))
+    if (!ClassIsValidAlphaInitial(alphaInitial))
     {
         flags += ZR_CLASS_ALPHA_INITIAL;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid alpha_inital at index %d: %d", classIndex, alphaInitial);
+        }
     }
     
     // Alpha, damaged.
-    new alpha_damaged = ClassData[classindex][Class_AlphaDamaged];
-    if (!(alpha_damaged >= ZR_CLASS_ALPHA_DAMAGED_MIN && alpha_damaged <= ZR_CLASS_ALPHA_DAMAGED_MAX))
+    if (!ClassIsValidAlphaDamaged(alphaDamaged))
     {
         flags += ZR_CLASS_ALPHA_DAMAGED;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid alpha_damaged at index %d: %d", classIndex, alphaDamaged);
+        }
     }
     
     // Alpha, damage.
-    new alpha_damage = ClassData[classindex][Class_AlphaDamage];
-    if (!(alpha_damage >= ZR_CLASS_ALPHA_DAMAGE_MIN && alpha_damage <= ZR_CLASS_ALPHA_DAMAGE_MAX))
+    if (!ClassIsValidAlphaDamage(alphaDamage))
     {
         flags += ZR_CLASS_ALPHA_DAMAGE;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid alpha_damage at index %d: %d", classIndex, alphaDamage);
+        }
     }
     
     // Overlay path.
-    decl String:overlay_path[PLATFORM_MAX_PATH];
-    decl String:overlay[PLATFORM_MAX_PATH];
-    if (strcopy(overlay_path, sizeof(overlay_path), ClassData[classindex][Class_OverlayPath]) > 0)
+    decl String:overlayPath[PLATFORM_MAX_PATH];
+    overlayPath[0] = 0;
+    Format(overlayPath, sizeof(overlayPath), "materials/%s.vmt", overlay);
+    if (!ClassIsValidOverlay(overlay))
     {
-        // Check if the file exists.
-        Format(overlay, sizeof(overlay), "materials/%s.vmt", overlay_path);
-        if (FileExists(overlay, true))
+        flags += ZR_CLASS_OVERLAY_PATH;
+        if (logErrors)
         {
-            // Automatically download the file.
-            AddFileToDownloadsTable(overlay);
-        }
-        else
-        {
-            flags += ZR_CLASS_OVERLAY_PATH;
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid overlay_path at index %d: \"%s\"", classIndex, overlayPath);
         }
     }
     
     // Field of view.
-    new fov = ClassData[classindex][Class_Fov];
-    if (!(fov >= ZR_CLASS_FOV_MIN && fov <= ZR_CLASS_FOV_MAX))
+    if (!ClassIsValidFOV(fov))
     {
         flags += ZR_CLASS_FOV;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid fov at index %d: %d", classIndex, fov);
+        }
     }
     
     // Napalm time.
-    new Float:napalm_time = ClassData[classindex][Class_NapalmTime];
-    if (!(napalm_time >= ZR_CLASS_NAPALM_TIME_MIN && napalm_time <= ZR_CLASS_NAPALM_TIME_MAX))
+    if (!ClassIsValidNapalmTime(napalmTime))
     {
         flags += ZR_CLASS_NAPALM_TIME;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid napalm_time at index %d: %0.2f", classIndex, napalmTime);
+        }
     }
     
     // Immunity mode (not implemented).
     
+    // Immunity amount (not implemented).
+    
     // Weapon profile. Only validate if weapons module is enabled and the class
     // is a human class.
     new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);
-    new bool:weaponsloaded = ConfigIsConfigLoaded(File_Weapons);
-    if (weapons && weaponsloaded && ClassData[classindex][Class_Team] == ZR_CLASS_TEAM_HUMANS)
+    new bool:weaponsLoaded = ConfigIsConfigLoaded(File_Weapons);
+    if (weapons && weaponsLoaded && team == ZR_CLASS_TEAM_HUMANS)
     {
-        new weapon_profile = ClassData[classindex][Class_WeaponProfile];
-        if (!WeaponProfilesIsValidIndex(weapon_profile))
+        if (!ClassIsValidWeaponProfile(weaponProfile))
         {
             flags += ZR_CLASS_WEAPON_PROFILE;
+            if (logErrors)
+            {
+                LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid weapon_profile at index %d.", classIndex);
+            }
         }
     }
     
     // Health.
-    new health = ClassData[classindex][Class_Health];
-    if (!(health >= ZR_CLASS_HEALTH_MIN && health <= ZR_CLASS_HEALTH_MAX))
+    if (!onlyEditable && !ClassIsValidHealth(health))
     {
         flags += ZR_CLASS_HEALTH;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid health at index %d: %d", classIndex, health);
+        }
     }
     
     // Health regen interval.
-    new Float:regen_interval = ClassData[classindex][Class_HealthRegenInterval];
-    if (!(regen_interval >= ZR_CLASS_REGEN_INTERVAL_MIN && regen_interval <= ZR_CLASS_REGEN_INTERVAL_MAX))
+    if (!ClassIsValidRegenInterval(regenInterval))
     {
         flags += ZR_CLASS_HEALTH_REGEN_INTERVAL;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid health_regen_interval at index %d: %0.2f", classIndex, regenInterval);
+        }
     }
     
     // Health regen amount.
-    new regen_amount = ClassData[classindex][Class_HealthRegenAmount];
-    if (!(regen_amount >= ZR_CLASS_REGEN_AMOUNT_MIN && regen_amount <= ZR_CLASS_REGEN_AMOUNT_MAX))
+    if (!ClassIsValidRegenAmount(regenAmount))
     {
         flags += ZR_CLASS_HEALTH_REGEN_AMOUNT;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid health_regen_amount at index %d: %d", classIndex, regenAmount);
+        }
     }
     
     // Health infect gain.
-    new infect_gain = ClassData[classindex][Class_HealthInfectGain];
-    if (!(infect_gain >= ZR_CLASS_HEALTH_INFECT_GAIN_MIN && infect_gain <= ZR_CLASS_HEALTH_INFECT_GAIN_MAX))
+    if (!ClassIsValidInfectGain(infectGain))
     {
         flags += ZR_CLASS_HEALTH_INFECT_GAIN;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid health_infect_gain at index %d: %d", classIndex, infectGain);
+        }
     }
     
     // Kill bonus.
-    new kill_bonus = ClassData[classindex][Class_KillBonus];
-    if (!(kill_bonus >= ZR_CLASS_KILL_BONUS_MIN && kill_bonus <= ZR_CLASS_KILL_BONUS_MAX))
+    if (!ClassIsValidKillBonus(killBonus))
     {
         flags += ZR_CLASS_KILL_BONUS;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid kill_bonus at index %d: %d", classIndex, killBonus);
+        }
     }
     
     // Speed.
-    new Float:speed = ClassData[classindex][Class_Speed];
-    new Float:min;
-    new Float:max;
-    switch (ClassSpeedMethod)
-    {
-        case ClassSpeed_LMV:
-        {
-            min = ZR_CLASS_SPEED_LMV_MIN;
-            max = ZR_CLASS_SPEED_LMV_MAX;
-        }
-        case ClassSpeed_Prop:
-        {
-            min = ZR_CLASS_SPEED_PROP_MIN;
-            max = ZR_CLASS_SPEED_PROP_MAX;
-        }
-    }
-    if (!(speed >= min && speed <= max))
+    if (!ClassIsValidSpeed(speed))
     {
         flags += ZR_CLASS_SPEED;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid speed at index %d: %0.2f", classIndex, speed);
+        }
     }
     
     // Knockback.
-    new Float:knockback = ClassData[classindex][Class_KnockBack];
-    if (!(knockback >= ZR_CLASS_KNOCKBACK_MIN && knockback <= ZR_CLASS_KNOCKBACK_MAX))
+    if (!ClassIsValidKnockback(knockback))
     {
         flags += ZR_CLASS_KNOCKBACK;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid knockback at index %d: %0.2f", classIndex, knockback);
+        }
     }
     
     // Jump height.
-    new Float:jump_height = ClassData[classindex][Class_JumpHeight];
-    if (!(jump_height >= ZR_CLASS_JUMP_HEIGHT_MIN && jump_height <= ZR_CLASS_JUMP_HEIGHT_MAX))
+    if (!ClassIsValidJumpHeight(jumpHeight))
     {
         flags += ZR_CLASS_JUMP_HEIGHT;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid jump_height at index %d: %0.2f", classIndex, jumpHeight);
+        }
     }
     
     // Jump distance.
-    new Float:jump_distance = ClassData[classindex][Class_JumpDistance];
-    if (!(jump_distance >= ZR_CLASS_JUMP_DISTANCE_MIN && jump_distance <= ZR_CLASS_JUMP_DISTANCE_MAX))
+    if (!ClassIsValidJumpHeight(jumpDistance))
     {
         flags += ZR_CLASS_JUMP_DISTANCE;
+        if (logErrors)
+        {
+            LogEvent(false, LogTypeOld_Error, LOG_CORE_EVENTS, LogModule_Playerclasses, "Config Validation", "Warning: Invalid jump_distance at index %d: %0.2f", classIndex, jumpDistance);
+        }
+    }
+    
+    return flags;
+}
+                        
+
+/**
+ * Validates all the class attributes in the original class data array, to
+ * check if they have invalid values. Boolean settings are not validated.
+ *
+ * @param classIndex    The index of the class to validate.
+ * @param logErrors     Optional. Log invalid attributes. Default is false.
+ * @return              A value with attribute error flags.
+ */
+ClassValidateClassAttributes(classIndex, bool:logErrors = false)
+{
+    // TODO: Validate immunity mode and amount.
+    
+    new attributes[ClassAttributes];
+    attributes = ClassData[classIndex];
+    
+    new flags = ClassValidateAttributes(false, logErrors,
+                    classIndex,
+                    attributes[Class_Team],
+                    attributes[Class_Flags],
+                    attributes[Class_Group],
+                    attributes[Class_Name],
+                    attributes[Class_Description],
+                    attributes[Class_ModelPath],
+                    attributes[Class_AlphaInitial],
+                    attributes[Class_AlphaDamaged],
+                    attributes[Class_AlphaDamage],
+                    attributes[Class_OverlayPath],
+                    attributes[Class_Fov],
+                    attributes[Class_NapalmTime],
+                    attributes[Class_WeaponProfile],
+                    attributes[Class_Health],
+                    attributes[Class_HealthRegenInterval],
+                    attributes[Class_HealthRegenAmount],
+                    attributes[Class_HealthInfectGain],
+                    attributes[Class_KillBonus],
+                    attributes[Class_Speed],
+                    attributes[Class_KnockBack],
+                    attributes[Class_JumpHeight],
+                    attributes[Class_JumpDistance]);
+    
+    // If overlay is valid.
+    if (!(flags && ZR_CLASS_OVERLAY_PATH))
+    {
+        decl String:overlayPath[PLATFORM_MAX_PATH];
+        Format(overlayPath, sizeof(overlayPath), "materials/%s.vmt", attributes[Class_OverlayPath]);
+        AddFileToDownloadsTable(overlayPath);
     }
     
     return flags;
@@ -337,183 +428,30 @@ stock ClassValidateAttributes(classindex)
  */
 stock ClassValidateEditableAttributes(attributes[ClassEditableAttributes])
 {
-    new flags;
-    
-    // Alpha initial.
-    new alphaInitial = attributes[ClassEdit_AlphaInitial];
-    if (alphaInitial >= 0)
-    {
-        if (!(alphaInitial >= ZR_CLASS_ALPHA_INITIAL_MIN && alphaInitial <= ZR_CLASS_ALPHA_INITIAL_MAX))
-        {
-            flags += ZR_CLASS_ALPHA_INITIAL;
-        }
-    }
-    
-    // Alpha damaged.
-    new alphaDamaged = attributes[ClassEdit_AlphaDamaged];
-    if (alphaDamaged >= 0)
-    {
-        if (!(alphaDamaged >= ZR_CLASS_ALPHA_DAMAGED_MIN && alphaDamaged <= ZR_CLASS_ALPHA_DAMAGED_MAX))
-        {
-            flags += ZR_CLASS_ALPHA_DAMAGED;
-        }
-    }
-    
-    // Alpha damage.
-    new alphaDamage = attributes[ClassEdit_AlphaDamage];
-    if (alphaDamage >= 0)
-    {
-        if (!(alphaDamage >= ZR_CLASS_ALPHA_DAMAGE_MIN && alphaDamage <= ZR_CLASS_ALPHA_DAMAGE_MAX))
-        {
-            flags += ZR_CLASS_ALPHA_DAMAGE;
-        }
-    }
-    
-    // Overlay.
-    if (!StrEqual(attributes[ClassEdit_OverlayPath], "nochange", false))
-    {
-        decl String:overlay_path[PLATFORM_MAX_PATH];
-        decl String:overlay[PLATFORM_MAX_PATH];
-        if (strcopy(overlay_path, sizeof(overlay_path), attributes[ClassEdit_OverlayPath]) > 0)
-        {
-            // Check if the file exists.
-            Format(overlay, sizeof(overlay), "materials/%s.vmt", overlay_path);
-            if (!FileExists(overlay))
-            {
-                flags += ZR_CLASS_OVERLAY_PATH;
-            }
-        }
-    }
-    
-    // Fov.
-    new fov = attributes[ClassEdit_Fov];
-    if (fov >= 0)
-    {
-        if (!(fov >= ZR_CLASS_FOV_MIN && fov <= ZR_CLASS_FOV_MAX))
-        {
-            flags += ZR_CLASS_FOV;
-        }
-    }
-    
-    // Napalm time.
-    new Float:napalmTime = attributes[ClassEdit_NapalmTime];
-    if (napalmTime >= 0.0)
-    {
-        if (!(napalmTime >= ZR_CLASS_NAPALM_TIME_MIN && napalmTime <= ZR_CLASS_NAPALM_TIME_MAX))
-        {
-            flags += ZR_CLASS_NAPALM_TIME;
-        }
-    }
-    
-    // Immunity mode not implemented yet.
-    
-    // Weapon profile. Only validate if weapon module is enabled and the class
-    // is a human class.
-    new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);
-    new bool:weaponsloaded = ConfigIsConfigLoaded(File_Weapons);
-    if (weapons && weaponsloaded && attributes[Class_Team] == ZR_CLASS_TEAM_HUMANS)
-    {
-        new weapon_profile = attributes[Class_WeaponProfile];
-        if (!WeaponProfilesIsValidIndex(weapon_profile))
-        {
-            flags += ZR_CLASS_WEAPON_PROFILE;
-        }
-    }
-    
-    // Health regen interval.
-    new Float:healthRegenInterval = attributes[ClassEdit_RegenInterval];
-    if (healthRegenInterval >= 0.0)
-    {
-        if (!(healthRegenInterval >= ZR_CLASS_REGEN_INTERVAL_MIN && healthRegenInterval <= ZR_CLASS_REGEN_INTERVAL_MAX))
-        {
-            flags += ZR_CLASS_REGEN_INTERVAL;
-        }
-    }
-    
-    // Health regen amount.
-    new healthRegenAmount = attributes[ClassEdit_RegenAmount];
-    if (healthRegenAmount >= 0)
-    {
-        if (!(healthRegenAmount >= ZR_CLASS_REGEN_AMOUNT_MIN && healthRegenAmount <= ZR_CLASS_REGEN_AMOUNT_MAX))
-        {
-            flags += ZR_CLASS_REGEN_AMOUNT;
-        }
-    }
-    
-    // Infect gain.
-    new infectGain = attributes[ClassEdit_InfectGain];
-    if (infectGain >= 0)
-    {
-        if (!(infectGain >= ZR_CLASS_HEALTH_INFECT_GAIN_MIN && infectGain <= ZR_CLASS_HEALTH_INFECT_GAIN_MAX))
-        {
-            flags += ZR_CLASS_HEALTH_INFECT_GAIN;
-        }
-    }
-    
-    // Kill bonus.
-    new killBonus = attributes[ClassEdit_KillBonus];
-    if (killBonus >= 0)
-    {
-        if (!(killBonus >= ZR_CLASS_KILL_BONUS_MIN && killBonus <= ZR_CLASS_KILL_BONUS_MAX))
-        {
-            flags += ZR_CLASS_KILL_BONUS;
-        }
-    }
-    
-    // Speed.
-    new Float:speed = attributes[ClassEdit_Speed];
-    if (speed >= 0)
-    {
-        new Float:min;
-        new Float:max;
-        switch (ClassSpeedMethod)
-        {
-            case ClassSpeed_LMV:
-            {
-                min = ZR_CLASS_SPEED_LMV_MIN;
-                max = ZR_CLASS_SPEED_LMV_MAX;
-            }
-            case ClassSpeed_Prop:
-            {
-                min = ZR_CLASS_SPEED_PROP_MIN;
-                max = ZR_CLASS_SPEED_PROP_MAX;
-            }
-        }
-        if (!(speed >= min && speed <= max))
-        {
-            flags += ZR_CLASS_SPEED;
-        }
-    }
-    
-    // Knock back.
-    new Float:knockBack = attributes[ClassEdit_KnockBack];
-    if (knockBack > ZR_CLASS_KNOCKBACK_IGNORE)
-    {
-        if (!(knockBack >= ZR_CLASS_KNOCKBACK_MIN && knockBack <= ZR_CLASS_KNOCKBACK_MAX))
-        {
-            flags += ZR_CLASS_KNOCKBACK;
-        }
-    }
-    
-    // Jump heigt.
-    new Float:jumpHeight = attributes[ClassEdit_JumpHeight];
-    if (jumpHeight >= 0.0)
-    {
-        if (!(jumpHeight >= ZR_CLASS_JUMP_HEIGHT_MIN && jumpHeight <= ZR_CLASS_JUMP_HEIGHT_MAX))
-        {
-            flags += ZR_CLASS_JUMP_HEIGHT;
-        }
-    }
-    
-    // Jump distance.
-    new Float:jumpDistance = attributes[ClassEdit_JumpDistance];
-    if (jumpDistance >= 0.0)
-    {
-        if (!(jumpDistance >= ZR_CLASS_JUMP_DISTANCE_MIN && jumpDistance <= ZR_CLASS_JUMP_DISTANCE_MAX))
-        {
-            flags += ZR_CLASS_JUMP_DISTANCE;
-        }
-    }
+    new flags = ClassValidateAttributes(true, false,
+                    0,
+                    0,
+                    0,
+                    "",
+                    "",
+                    "",
+                    "",
+                    attributes[Class_AlphaInitial],
+                    attributes[Class_AlphaDamaged],
+                    attributes[Class_AlphaDamage]
+                    attributes[Class_OverlayPath],
+                    attributes[Class_Fov]
+                    attributes[Class_NapalmTime],
+                    attributes[Class_WeaponProfile],
+                    0,
+                    attributes[Class_HealthRegenInterval],
+                    attributes[Class_HealthRegenAmount],
+                    attributes[Class_HealthInfectGain],
+                    attributes[Class_KillBonus],
+                    attributes[Class_Speed],
+                    attributes[Class_KnockBack],
+                    attributes[Class_JumpHeight],
+                    attributes[Class_JumpDistance]);
     
     return flags;
 }

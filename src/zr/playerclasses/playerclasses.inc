@@ -316,7 +316,7 @@ ClassLoad()
         ClassData[ClassCount][Class_JumpDistance] = KvGetFloat(kvClassData, "jump_distance", ZR_CLASS_DEFAULT_JUMP_DISTANCE);
         
         // Validate the class attributes.
-        ClassErrorFlags = ClassValidateAttributes(ClassCount);
+        ClassErrorFlags = ClassValidateClassAttributes(ClassCount, true);
         if (ClassErrorFlags > 0)
         {
             // There's one or more invalid class attributes. Disable the class
@@ -1088,13 +1088,13 @@ ClassDumpData(index, cachetype, String:buffer[], maxlen)
     Format(attribute, sizeof(attribute), "has_napalm:            \"%d\"\n", ClassGetHasNapalm(index, cachetype));
     cellcount += StrCat(buffer, maxlen, attribute);
     
-    Format(attribute, sizeof(attribute), "napalm_time:           \"%f\"\n", ClassGetNapalmTime(index, cachetype));
+    Format(attribute, sizeof(attribute), "napalm_time:           \"%0.2f\"\n", ClassGetNapalmTime(index, cachetype));
     cellcount += StrCat(buffer, maxlen, attribute);
     
     Format(attribute, sizeof(attribute), "immunity_mode:         \"%d\"\n", ClassGetImmunityMode(index, cachetype));
     cellcount += StrCat(buffer, maxlen, attribute);
     
-    Format(attribute, sizeof(attribute), "immunity_amount:       \"%f\"\n", ClassGetImmunityAmount(index, cachetype));
+    Format(attribute, sizeof(attribute), "immunity_amount:       \"%0.2f\"\n", ClassGetImmunityAmount(index, cachetype));
     cellcount += StrCat(buffer, maxlen, attribute);
     
     Format(attribute, sizeof(attribute), "no_fall_damage:        \"%d\"\n", ClassGetNoFallDamage(index, cachetype));
@@ -1107,7 +1107,7 @@ ClassDumpData(index, cachetype, String:buffer[], maxlen)
     Format(attribute, sizeof(attribute), "health:                \"%d\"\n", ClassGetHealth(index, cachetype));
     cellcount += StrCat(buffer, maxlen, attribute);
     
-    Format(attribute, sizeof(attribute), "health_regen_interval: \"%f\"\n", ClassGetHealthRegenInterval(index, cachetype));
+    Format(attribute, sizeof(attribute), "health_regen_interval: \"%0.2f\"\n", ClassGetHealthRegenInterval(index, cachetype));
     cellcount += StrCat(buffer, maxlen, attribute);
     
     Format(attribute, sizeof(attribute), "health_regen_amount:   \"%d\"\n", ClassGetHealthRegenAmount(index, cachetype));
@@ -1119,16 +1119,16 @@ ClassDumpData(index, cachetype, String:buffer[], maxlen)
     Format(attribute, sizeof(attribute), "kill_bonus:            \"%d\"\n", ClassGetKillBonus(index, cachetype));
     cellcount += StrCat(buffer, maxlen, attribute);
     
-    Format(attribute, sizeof(attribute), "speed:                 \"%f\"\n", ClassGetSpeed(index, cachetype));
+    Format(attribute, sizeof(attribute), "speed:                 \"%0.2f\"\n", ClassGetSpeed(index, cachetype));
     cellcount += StrCat(buffer, maxlen, attribute);
     
-    Format(attribute, sizeof(attribute), "knockback:             \"%f\"\n", ClassGetKnockback(index, cachetype));
+    Format(attribute, sizeof(attribute), "knockback:             \"%0.2f\"\n", ClassGetKnockback(index, cachetype));
     cellcount += StrCat(buffer, maxlen, attribute);
     
-    Format(attribute, sizeof(attribute), "jump_height:           \"%f\"\n", ClassGetJumpHeight(index, cachetype));
+    Format(attribute, sizeof(attribute), "jump_height:           \"%0.2f\"\n", ClassGetJumpHeight(index, cachetype));
     cellcount += StrCat(buffer, maxlen, attribute);
     
-    Format(attribute, sizeof(attribute), "jump_distance:         \"%f\"\n", ClassGetJumpDistance(index, cachetype));
+    Format(attribute, sizeof(attribute), "jump_distance:         \"%0.2f\"\n", ClassGetJumpDistance(index, cachetype));
     cellcount += StrCat(buffer, maxlen, attribute);
     
     return cellcount;
