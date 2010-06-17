@@ -99,6 +99,21 @@ stock ClassGetTeamID(index, cachetype = ZR_CLASS_CACHE_PLAYER)
 }
 
 /**
+ * Validates the specified team ID.
+ *
+ * @param teamID    Team ID to validate.
+ * @return          True if valid, false otherwise.
+ */
+stock bool:ClassIsValidTeamID(teamID)
+{
+    if (teamID >= ZR_CLASS_TEAM_MIN || teamID <= ZR_CLASS_TEAM_MAX)
+    {
+        return true;
+    }
+    return false;
+}
+
+/**
  * Checks if the specified class is marked as the default class for its current
  * team.
  *
@@ -200,6 +215,21 @@ stock bool:ClassHasFlags(index, flags, cachetype = ZR_CLASS_CACHE_MODIFIED)
 }
 
 /**
+ * Validates the specified flags.
+ *
+ * @param flags     Flags to validate.
+ * @return          True if valid, false otherwise.
+ */
+stock bool:ClassIsValidFlags(flags)
+{
+    if (flags >= ZR_CLASS_FLAGS_MIN || flags <= ZR_CLASS_FLAGS_MAX)
+    {
+        return true;
+    }
+    return false;
+}
+
+/**
  * Gets the class group required to be a member of to use the class.
  *
  * @param index     Index of the class in a class cache or a client index,
@@ -232,6 +262,28 @@ stock ClassGetGroup(index, String:buffer[], maxlen, cachetype = ZR_CLASS_CACHE_P
     }
     
     return -1;
+}
+
+/**
+ * Validates the specified group.
+ *
+ * @param group     Group to validate.
+ * @return          True if valid, false otherwise.
+ */
+stock bool:ClassIsValidGroup(const String:group[])
+{
+    if (strlen(group))
+    {
+        // Check if the group exist.
+        if (FindAdmGroup(group) == INVALID_GROUP_ID)
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    // No group specified. Consider it valid.
+    return true;
 }
 
 /**
@@ -270,6 +322,29 @@ stock ClassGetName(index, String:buffer[], maxlen, cachetype = ZR_CLASS_CACHE_PL
 }
 
 /**
+ * Validates the specified name.
+ *
+ * @pram name       Name to validate.
+ * @return          True if valid, false otherwise.
+ */
+stock bool:ClassIsValidName(const String:name[])
+{
+    if (strlen(name) >= ZR_CLASS_NAME_MIN)
+    {
+        // Check for reserved name keyworks. These aren't allowed as names.
+        if (StrEqual(name, "all", false) ||
+            StrEqual(name, "humans", false) ||
+            StrEqual(name, "zombies", false) ||
+            StrEqual(name, "admins", false))
+        {
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+/**
  * Gets the menu description string for the specified class.
  *
  * @param index     Index of the class in a class cache or a client index,
@@ -301,6 +376,21 @@ stock ClassGetDescription(index, String:buffer[], maxlen, cachetype = ZR_CLASS_C
         }
     }
     return -1;
+}
+
+/**
+ * Validates the specified description.
+ *
+ * @pram description    Description to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidDescription(const String:description[])
+{
+    if (strlen(description) >= ZR_CLASS_DESCRIPTION_MIN)
+    {
+        return true;
+    }
+    return false;
 }
 
 
@@ -348,6 +438,32 @@ stock ClassGetModelPath(index, String:buffer[], maxlen, cachetype = ZR_CLASS_CAC
 }
 
 /**
+ * Validates the specified model.
+ *
+ * @pram model      Model to validate.
+ * @return          True if valid, false otherwise.
+ */
+stock bool:ClassIsValidModel(const String:model[])
+{
+    if (strlen(model) > 0)
+    {
+        // Validate pre-defined settings first, then check if the file exists.
+        if (StrEqual(model, "random", false) ||
+            StrEqual(model, "random_public", false) ||
+            StrEqual(model, "random_hidden", false) ||
+            StrEqual(model, "random_admin", false) ||
+            StrEqual(model, "random_mother_zombie", false) ||
+            StrEqual(model, "default", false) ||
+            StrEqual(model, "no_change", false) ||
+            FileExists(model))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * Gets the initial alpha value from the specified class.
  *
  * @param index     Index of the class in a class cache or a client index,
@@ -377,6 +493,21 @@ stock ClassGetAlphaInitial(index, cachetype = ZR_CLASS_CACHE_PLAYER)
         }
     }
     return -1;
+}
+
+/**
+ * Validates the specified alpha initial value.
+ *
+ * @pram alphaInitial   Alpha initial value to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidAlphaInitial(alphaInitial)
+{
+    if (alphaInitial >= ZR_CLASS_ALPHA_INITIAL_MIN && alphaInitial <= ZR_CLASS_ALPHA_INITIAL_MAX)
+    {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -413,6 +544,21 @@ stock ClassGetAlphaDamaged(index, cachetype = ZR_CLASS_CACHE_PLAYER)
 }
 
 /**
+ * Validates the specified alpha damaged value.
+ *
+ * @pram alphaDamaged   Alpha damaged value to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidAlphaDamaged(alphaDamaged)
+{
+    if (alphaDamaged >= ZR_CLASS_ALPHA_DAMAGED_MIN && alphaDamaged <= ZR_CLASS_ALPHA_DAMAGED_MAX)
+    {
+        return true;
+    }
+    return false;
+}
+
+/**
  * Gets the damage amount needed to change alpha, from the specified class.
  *
  * @param index     Index of the class in a class cache or a client index,
@@ -443,6 +589,21 @@ stock ClassGetAlphaDamage(index, cachetype = ZR_CLASS_CACHE_PLAYER)
         }
     }
     return -1;
+}
+
+/**
+ * Validates the specified alpha damage value.
+ *
+ * @pram alphaDamage    Alpha damage value to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidAlphaDamage(alphaDamage)
+{
+    if (alphaDamage >= ZR_CLASS_ALPHA_DAMAGE_MIN && alphaDamage <= ZR_CLASS_ALPHA_DAMAGE_MAX)
+    {
+        return true;
+    }
+    return false;
 }
 
 
@@ -487,6 +648,32 @@ stock ClassGetOverlayPath(index, String:buffer[], maxlen, cachetype = ZR_CLASS_C
         }
     }
     return -1;    
+}
+
+/**
+ * Validates the specified overlay.
+ *
+ * Note: File is NOT added to downloads table.
+ *
+ * @pram overlay    Overlay to validate.
+ * @return          True if valid, false otherwise.
+ */
+stock bool:ClassIsValidOverlay(const String:overlay[])
+{
+    if (strlen(overlay) > 0)
+    {
+        // Check if the file exists.
+        decl String:overlay_path[PLATFORM_MAX_PATH];
+        Format(overlay_path, sizeof(overlay_path), "materials/%s.vmt", overlay);
+        if (FileExists(overlay_path, true))
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    // No overlay is also valid.
+    return true;
 }
 
 /**
@@ -551,6 +738,21 @@ stock ClassGetFOV(index, cachetype = ZR_CLASS_CACHE_PLAYER)
         }
     }
     return -1;
+}
+
+/**
+ * Validates the specified FOV.
+ *
+ * @pram fov        FOV value to validate.
+ * @return          True if valid, false otherwise.
+ */
+stock bool:ClassIsValidFOV(fov)
+{
+    if (fov >= ZR_CLASS_FOV_MIN && fov <= ZR_CLASS_FOV_MAX)
+    {
+        return true;
+    }
+    return false;
 }
 
 
@@ -629,6 +831,21 @@ stock Float:ClassGetNapalmTime(index, cachetype = ZR_CLASS_CACHE_PLAYER)
     return -1.0;
 }
 
+/**
+ * Validates the specified napalm time.
+ *
+ * @pram napalmTime     Napalm time to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidNapalmTime(Float:napalmTime)
+{
+    if (napalmTime >= ZR_CLASS_NAPALM_TIME_MIN && napalmTime <= ZR_CLASS_NAPALM_TIME_MAX)
+    {
+        return true;
+    }
+    return false;
+}
+
 
 
 /*
@@ -672,6 +889,18 @@ stock ClassGetImmunityMode(index, cachetype = ZR_CLASS_CACHE_PLAYER)
 }
 
 /**
+ * Validates the specified immunity mode.
+ *
+ * @pram immunityMode   Immunity mode to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidImmunityMode(immunityMode)
+{
+    // Not implemented yet.
+    return false;
+}
+
+/**
  * Gets the immunity amount to the specified class.
  *
  * @param index     Index of the class in a class cache or a client index,
@@ -701,6 +930,18 @@ stock Float:ClassGetImmunityAmount(index, cachetype = ZR_CLASS_CACHE_PLAYER)
         }
     }
     return -1.0;
+}
+
+/**
+ * Validates the specified immunity amount.
+ *
+ * @pram immunityAmount     Immunity amount to validate.
+ * @return                  True if valid, false otherwise.
+ */
+stock bool:ClassIsValidImmunityAmount(immunityAmount)
+{
+    // Not implemented yet.
+    return false;
 }
 
 /**
@@ -776,6 +1017,21 @@ stock ClassGetWeaponProfile(index, cachetype = ZR_CLASS_CACHE_PLAYER)
 }
 
 /**
+ * Validates the specified weapon profile index.
+ *
+ * @pram weaponProfile  Weapon profile index to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidWeaponProfile(weaponProfile)
+{
+    if (WeaponProfilesIsValidIndex(weaponProfile))
+    {
+        return true;
+    }
+    return false;
+}
+
+/**
  * Gets the health points from the specified class.
  *
  * Note: Multiplier is used if cache type is player cache.
@@ -807,6 +1063,21 @@ stock ClassGetHealth(index, cachetype = ZR_CLASS_CACHE_PLAYER)
         }
     }
     return -1;
+}
+
+/**
+ * Validates the specified health value.
+ *
+ * @pram health     Health value to validate.
+ * @return          True if valid, false otherwise.
+ */
+stock bool:ClassIsValidHealth(health)
+{
+    if (health >= ZR_CLASS_HEALTH_MIN && health <= ZR_CLASS_HEALTH_MAX)
+    {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -845,6 +1116,21 @@ stock Float:ClassGetHealthRegenInterval(index, cachetype = ZR_CLASS_CACHE_PLAYER
 }
 
 /**
+ * Validates the specified health regeneration interval.
+ *
+ * @pram regenInterval  Regen interval to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidRegenInterval(Float:regenInterval)
+{
+    if (regenInterval >= ZR_CLASS_REGEN_INTERVAL_MIN && regenInterval <= ZR_CLASS_REGEN_INTERVAL_MAX)
+    {
+        return true;
+    }
+    return false;
+}
+
+/**
  * Gets the health regen amount value from the specified class.
  *
  * Note: Multiplier is used if cache type is player cache.
@@ -877,6 +1163,21 @@ stock ClassGetHealthRegenAmount(index, cachetype = ZR_CLASS_CACHE_PLAYER)
         }
     }
     return -1;
+}
+
+/**
+ * Validates the specified health regeneration amount.
+ *
+ * @pram regenAmount    Regen amount to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidRegenAmount(regenAmount)
+{
+    if (regenAmount >= ZR_CLASS_REGEN_AMOUNT_MIN && regenAmount <= ZR_CLASS_REGEN_AMOUNT_MAX)
+    {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -915,6 +1216,21 @@ stock ClassGetHealthInfectGain(index, cachetype = ZR_CLASS_CACHE_PLAYER)
 }
 
 /**
+ * Validates the specified health infection gain value.
+ *
+ * @pram infectGain     Regen interval to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidInfectGain(infectGain)
+{
+    if (infectGain >= ZR_CLASS_HEALTH_INFECT_GAIN_MIN && infectGain <= ZR_CLASS_HEALTH_INFECT_GAIN_MAX)
+    {
+        return true;
+    }
+    return false;
+}
+
+/**
  * Gets the kill bonus points from the specified class.
  *
  * @param index     Index of the class in a class cache or a client index,
@@ -944,6 +1260,21 @@ stock ClassGetKillBonus(index, cachetype = ZR_CLASS_CACHE_PLAYER)
         }
     }
     return -1;
+}
+
+/**
+ * Validates the specified kill bonus.
+ *
+ * @pram killBonus      Kill bonus to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidKillBonus(killBonus)
+{
+    if (killBonus >= ZR_CLASS_KILL_BONUS_MIN && killBonus <= ZR_CLASS_KILL_BONUS_MAX)
+    {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -981,6 +1312,46 @@ stock Float:ClassGetSpeed(index, cachetype = ZR_CLASS_CACHE_PLAYER)
 }
 
 /**
+ * Validates the specified speed.
+ *
+ * @pram speed      Speed to validate.
+ * @return          True if valid, false otherwise.
+ */
+stock bool:ClassIsValidSpeed(Float:speed)
+{
+    new Float:min;
+    new Float:max;
+    switch (ClassSpeedMethod)
+    {
+        case ClassSpeed_LMV:
+        {
+            min = ZR_CLASS_SPEED_LMV_MIN;
+            max = ZR_CLASS_SPEED_LMV_MAX;
+        }
+        case ClassSpeed_Prop:
+        {
+            min = ZR_CLASS_SPEED_PROP_MIN;
+            max = ZR_CLASS_SPEED_PROP_MAX;
+        }
+        case ClassSpeed_CommandHook:
+        {
+            // Not implemented yet.
+            return false;
+        }
+        default:
+        {
+            // This should never happen.
+            return false;
+        }
+    }
+    if (speed >= min && speed <= max)
+    {
+        return true;
+    }
+    return false;
+}
+
+/**
  * Gets the knock back boost from the specified class.
  *
  * Note: Multiplier is used if cache type is player cache.
@@ -1012,6 +1383,21 @@ stock Float:ClassGetKnockback(index, cachetype = ZR_CLASS_CACHE_PLAYER)
         }
     }
     return 0.0;
+}
+
+/**
+ * Validates the specified knock back value.
+ *
+ * @pram knockback      Knock back value to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidKnockback(Float:knockback)
+{
+    if (knockback >= ZR_CLASS_KNOCKBACK_MIN && knockback <= ZR_CLASS_KNOCKBACK_MAX)
+    {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -1049,6 +1435,21 @@ stock Float:ClassGetJumpHeight(index, cachetype = ZR_CLASS_CACHE_PLAYER)
 }
 
 /**
+ * Validates the specified jump height value.
+ *
+ * @pram jumpHeight     Jump height value to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidJumpHeight(Float:jumpHeight)
+{
+    if (jumpHeight >= ZR_CLASS_JUMP_HEIGHT_MIN && jumpHeight <= ZR_CLASS_JUMP_HEIGHT_MAX)
+    {
+        return true;
+    }
+    return false;
+}
+
+/**
  * Gets the jump distance boost from the specified class.
  *
  * Note: Multiplier is used if cache type is player cache.
@@ -1080,6 +1481,21 @@ stock Float:ClassGetJumpDistance(index, cachetype = ZR_CLASS_CACHE_PLAYER)
         }
     }
     return -1.0;
+}
+
+/**
+ * Validates the specified jump distance value.
+ *
+ * @pram jumpDistanc    Jump distance value to validate.
+ * @return              True if valid, false otherwise.
+ */
+stock bool:ClassIsValidJumpDistance(Float:jumpDistance)
+{
+    if (jumpDistance >= ZR_CLASS_JUMP_DISTANCE_MIN && jumpDistance <= ZR_CLASS_JUMP_DISTANCE_MAX)
+    {
+        return true;
+    }
+    return false;
 }
 
 /**
