@@ -41,12 +41,10 @@
  * @section Default attribute values.
  */
 #define VOL_CLASSEDIT_DEF_IN_USE        false
-#define VOL_CLASSEDIT_DEF_ENABLED       false
 #define VOL_CLASSEDIT_DEF_NAME          ""
 #define VOL_CLASSEDIT_DEF_VOLUME_INDEX  -1
 #define VOL_CLASSEDIT_DEF_MODE          ClassEditMode_Attributes
-#define VOL_CLASSEDIT_DEF_CLASS_INDEX   0
-#define VOL_CLASSEDIT_DEF_CLASS_DATA    VolEmptyAttributes
+#define VOL_CLASSEDIT_DEF_CLASS_INDEX   -1
 /**
  * @endsection
  */
@@ -97,19 +95,22 @@ enum VolClassEditMode
 enum VolTypeClassEdit
 {
     bool:VolClassEdit_InUse,
-    bool:VolClassEdit_Enabled,
     String:VolClassEdit_Name[VOL_NAME_LEN],
     VolClassEdit_VolumeIndex,
     
     VolClassEditMode:VolClassEdit_Mode,
-    VolClassEdit_ClassIndex,
-    VolClassEdit_ClassData[ClassEditableAttributes]
+    VolClassEdit_ClassIndex
 }
 
 /**
  * Class editor data.
  */
 new VolClassEditData[ZR_CLASSEDIT_MAX][VolTypeClassEdit];
+
+/**
+ * Data storage for editable class attributes.
+ */
+new VolClassEditClassAttributes[ZR_CLASSEDIT_MAX][ClassEditableAttributes];
 
 /**
  * Number of class editors in use.

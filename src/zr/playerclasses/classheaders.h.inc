@@ -276,7 +276,7 @@ enum ClassAttributes
 enum ClassEditableAttributes
 {
     /* Model */
-    ClassEdit_AlphaInitial = 0,
+    ClassEdit_AlphaInitial,
     ClassEdit_AlphaDamaged,
     ClassEdit_AlphaDamage,
     

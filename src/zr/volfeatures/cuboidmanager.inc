@@ -38,10 +38,10 @@
 VolCuboidAdd(Float:min[3], Float:max[3], String:name[] = "")
 {
     new Float:x1 = min[0];
-    new Float:x2 = max[0];
     new Float:y1 = min[1];
-    new Float:y2 = max[1];
     new Float:z1 = min[2];
+    new Float:x2 = max[0];
+    new Float:y2 = max[1];
     new Float:z2 = max[2];
     
     // Check if both locations are equal.
@@ -93,7 +93,7 @@ VolCuboidAdd(Float:min[3], Float:max[3], String:name[] = "")
     
     Cuboids[cuboid][Cuboid_xMax] = x2;
     Cuboids[cuboid][Cuboid_yMax] = y2;
-    Cuboids[cuboid][Cuboid_xMax] = z2;
+    Cuboids[cuboid][Cuboid_zMax] = z2;
     
     TrimString(name);
     strcopy(Cuboids[cuboid][Cuboid_Name], VOL_NAME_LEN, name);

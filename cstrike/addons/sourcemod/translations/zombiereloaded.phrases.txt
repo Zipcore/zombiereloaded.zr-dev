@@ -306,6 +306,11 @@
 
 	// Attributes
 
+	"Classes Editable Attributes"
+	{
+		"en"		"Editable class attributes:"
+	}
+
 	"Classes Attrib Name"
 	{
 		"en"		"Class Name"
@@ -1399,6 +1404,16 @@
 		"en"		"Use \"zr_vol_anticamp_add -default\" to create a anti-camp feature with default settings."
 	}
 	
+	"Vol Syntax Classedit Add"
+	{
+		"en"		"Creates a new class editor feature. Usage zr_vol_classedit_add [params...]"
+	}
+	
+	"Vol Syntax Classedit Remove"
+	{
+		"en"		"Removes the specified class editor feature. Usage zr_vol_classedit_remove <class editor id> [recursive removal: 0|1]"
+	}
+	
 	"Vol Missing Parameters"
 	{
 		"en"		"Additional parameters must be specified."
@@ -1542,6 +1557,21 @@
 	"Vol Param Anticamp Message"
 	{
 		"en"		"Override default warning message. Max 255 bytes."
+	}
+	
+	"Vol Param ClassEdit Name"
+	{
+		"en"		"User defined name to use on the class editor feature (optional and not validated)."
+	}
+	
+	"Vol Param ClassEdit Mode"
+	{
+		"en"		"Mode of class editor. Whether to change entire class or just attributes."
+	}
+	
+	"Vol Param ClassEdit Class"
+	{
+		"en"		"Class index or name to use if mode is class."
 	}
 	
 	"Vol Attrib Index"
@@ -1746,6 +1776,24 @@
 		"en"		"Invalid anti-camp index/name: {1}"
 	}
 	
+	"Vol Invalid ClassEdit Class"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid class name or index: {1}"
+	}
+	
+	"Vol Invalid ClassEdit Mode"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid class editor mode: {1}"
+	}
+	
+	"Vol Invalid ClassEdit Attribute"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"Invalid class attribute value ({1}): {2}"
+	}
+	
 	"Vol Full"
 	{
 		"en"		"Maximum number of volumes reached."
@@ -1882,5 +1930,17 @@
 	{
 		"#format"	"{1:d},{2:s},{3:s}"
 		"en"		"Anti-camp feature {1} ({2}) successfully removed. Recursive removal: {3}"
+	}
+	
+	"Vol ClassEdit Added"
+	{
+		"#format"	"{1:d},{2:s}"
+		"en"		"Class editor feature successfully added. Index: {1} (\"{2}\")"
+	}
+	
+	"Vol ClassEdit Removed"
+	{
+		"#format"	"{1:d},{2:s},{3:s}"
+		"en"		"Class editor feature {1} ({2}) successfully removed. Recursive removal: {3}"
 	}
 }

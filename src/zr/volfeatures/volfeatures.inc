@@ -82,6 +82,7 @@ new Float:VolTriggerInterval;
 #include "zr/volfeatures/volcommands"
 #include "zr/volfeatures/shapecommands"
 #include "zr/volfeatures/anticampcommands"
+#include "zr/volfeatures/classeditcommands"
 
 /**
  * Initialize volumetric features.
@@ -144,7 +145,7 @@ VolDisableVolumes()
         if (Volumes[volumeIndex][Vol_InUse] && Volumes[volumeIndex][Vol_Enabled])
         {
             // Trigger player left volume event if inside a volume.
-            for (new client = 1; client <= MaxClients; client++)
+            for (new client = 1; client <= MAXPLAYERS; client++)
             {
                 // Validate client's connection state.
                 if (!IsClientConnected(client) || !IsClientInGame(client) || !IsPlayerAlive(client))

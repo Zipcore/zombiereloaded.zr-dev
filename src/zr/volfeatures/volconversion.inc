@@ -55,7 +55,7 @@ VolumeFeatureTypes:VolStringToFeature(const String:feature[])
  * @param maxlen    Size of destination buffer.
  * @return          Number of cells written.
  */
-VolFeatureToString(VolumeFeatureTypes:feature, String:buffer[], maxlen)
+stock VolFeatureToString(VolumeFeatureTypes:feature, String:buffer[], maxlen)
 {
     switch (shape)
     {

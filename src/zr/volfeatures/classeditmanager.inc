@@ -73,7 +73,7 @@ VolClassEditAdd(VolClassEditMode:mode = VOL_CLASSEDIT_DEF_MODE,
     // Apply class editor attributes.
     VolClassEditData[classedit][VolClassEdit_Mode] = mode;
     VolClassEditData[classedit][VolClassEdit_ClassIndex] = classIndex;
-    VolClassEditData[classedit][VolClassEdit_ClassData] = classData;
+    VolClassEditClassAttributes[classedit] = classData;
     
     TrimString(name);
     strcopy(VolClassEditData[classedit][VolClassEdit_Name], VOL_NAME_LEN, name);

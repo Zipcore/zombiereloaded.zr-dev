@@ -42,17 +42,6 @@ bool:VolClassEditInUse(dataIndex)
 }
 
 /**
- * Returns whether the specified class editor is enabled.
- *
- * @param dataIndex     Class editor to check.
- * @return              True if enabled, false otherwise.
- */
-bool:VolClassEditIsEnabled(dataIndex)
-{
-    return VolClassEditData[dataIndex][VolClassEdit_Enabled];
-}
-
-/**
  * Validates the specified class edit index.
  *
  * @param dataIndex     Index to validate.
@@ -150,13 +139,11 @@ VolClassEditGetFreeIndex()
 VolClassEditReset(dataIndex, bool:decrementCounter = true)
 {
     VolClassEditData[dataIndex][VolClassEdit_InUse]         = VOL_CLASSEDIT_DEF_IN_USE;
-    VolClassEditData[dataIndex][VolClassEdit_Enabled]       = VOL_CLASSEDIT_DEF_ENABLED;
     strcopy(VolClassEditData[dataIndex][VolClassEdit_Name], VOL_NAME_LEN, VOL_CLASSEDIT_DEF_NAME);
     VolClassEditData[dataIndex][VolClassEdit_VolumeIndex]   = VOL_CLASSEDIT_DEF_VOLUME_INDEX;
     VolClassEditData[dataIndex][VolClassEdit_Mode]          = VOL_CLASSEDIT_DEF_MODE;
-    
     VolClassEditData[dataIndex][VolClassEdit_ClassIndex]    = VOL_CLASSEDIT_DEF_CLASS_INDEX;
-    VolClassEditData[dataIndex][VolClassEdit_ClassData]     = VOL_CLASSEDIT_DEF_CLASS_DATA;
+    VolClassEditClassAttributes[dataIndex] = VolEmptyAttributes;
     
     if (decrementCounter)
     {
@@ -175,183 +162,6 @@ VolClassEditInit()
     }
     
     ClassEditCount = 0;
-}
-
-/**
- * Sets class editor spesific attributes on a anticamp volume.
- *
- * @param dataIndex     Local data index.
- * @param attribName    Attribute to modify.
- * @param attribVlue    Attribute value to set.
- * @return              True if successfully set, false otherwise.
- */
-VolClassEditSetAttribute(dataIndex, const String:attribName[], const String:attribValue[])
-{
-    // Validate index.
-    if (!VolIsValidIndex(dataIndex))
-    {
-        return false;
-    }
-    
-    /* Class Editor Attributes */
-    if (StrEqual(attribName, "mode", false))
-    {
-        if (VolClassEditSetMode(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "name", false))
-    {
-        if (VolClassEditSetName(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    
-    /* Model */
-    else if (StrEqual(attribName, "alpha_initial", false))
-    {
-        if (VolClassEditSetAlphaInitial(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "alpha_damaged", false))
-    {
-        if (VolClassEditSetAlphaDamaged(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "alpha_damage", false))
-    {
-        if (VolClassEditSetAlphaDamage(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    
-    /* Hud */
-    else if (StrEqual(attribName, "overlay_path", false))
-    {
-        if (VolClassEditSetOverlayPath(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "nvgs", false))
-    {
-        if (VolClassEditSetNvgs(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "fov", false))
-    {
-        if (VolClassEditSetFov(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    
-    /* Effects */
-    else if (StrEqual(attribName, "has_napalm", false))
-    {
-        if (VolClassEditSetHasNapalm(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "napalm_time", false))
-    {
-        if (VolClassEditSetNapalmTime(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    
-    /* Player behaviour */
-    else if (StrEqual(attribName, "immunity_mode", false))
-    {
-        if (VolClassEditSetImmunityMode(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "immunity_amount", false))
-    {
-        if (VolClassEditSetImmunityAmount(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "no_fall_damage", false))
-    {
-        if (VolClassEditSetNoFallDamage(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "health_regen_interval", false))
-    {
-        if (VolClassEditSetRegenInterval(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "health_regen_amount", false))
-    {
-        if (VolClassEditSetRegenAmount(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "infect_gain", false))
-    {
-        if (VolClassEditSetInfectGain(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "kill_bonus", false))
-    {
-        if (VolClassEditSetKillBonus(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "speed", false))
-    {
-        if (VolClassEditSetSpeed(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "knockback", false))
-    {
-        if (VolClassEditSetKnockBack(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "jump_height", false))
-    {
-        if (VolClassEditSetJumpHeight(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    else if (StrEqual(attribName, "jump_distance", false))
-    {
-        if (VolClassEditSetJumpDistance(dataIndex, attribValue))
-        {
-            return true;
-        }
-    }
-    
-    // Invalid attribute name or empty value.
-    return false;
 }
 
 /**
@@ -386,10 +196,6 @@ VolClassEditBuildList(dataIndex, String:buffer[], maxlen)
     
     VolClassEditModeToString(cache[VolClassEdit_Mode], valuebuffer, sizeof(valuebuffer));
     Format(linebuffer, sizeof(linebuffer), CLASSEDIT_DUMP_FORMAT, "Mode:", valuebuffer);
-    cellswritten += StrCat(buffer, maxlen, linebuffer);
-    
-    Format(langbuffer, sizeof(langbuffer), "%t", "Vol Attrib Enabled");
-    Format(linebuffer, sizeof(linebuffer), "%30s %t\n", langbuffer, cache[VolClassEdit_Enabled] ? "Yes" : "No");
     cellswritten += StrCat(buffer, maxlen, linebuffer);
     
     switch (cache[VolClassEdit_Mode])
@@ -517,7 +323,7 @@ VolClassEditBuildList(dataIndex, String:buffer[], maxlen)
  */
 VolClassEditApply(client, dataIndex)
 {
-    switch (VolClassEditData[client][VolClassEdit_Mode])
+    switch (VolClassEditData[dataIndex][VolClassEdit_Mode])
     {
         case ClassEditMode_Name:
         {
@@ -533,7 +339,7 @@ VolClassEditApply(client, dataIndex)
         {
             // Update player's entire cache with attributes from the specified
             // class attributes.
-            VolClassEditUpdateAttributes(client, VolClassEditData[dataIndex][VolClassEdit_ClassData]);
+            VolClassEditUpdateAttributes(client, dataIndex);
         }
     }
     
@@ -552,7 +358,7 @@ VolClassEditRestore(client, dataIndex)
 {
     new classindex = ClassGetActiveIndex(client);
     
-    switch (VolClassEditData[client][VolClassEdit_Mode])
+    switch (VolClassEditData[dataIndex][VolClassEdit_Mode])
     {
         case ClassEditMode_Name:
         {
@@ -563,7 +369,7 @@ VolClassEditRestore(client, dataIndex)
         case ClassEditMode_Attributes:
         {
             // Restore individual attributes, if specified.
-            VolClassEditRestoreAttributes(client, classindex, VolClassEditData[dataIndex][VolClassEdit_ClassData]);
+            VolClassEditRestoreAttributes(client, classindex, dataIndex);
         }
     }
     
@@ -597,17 +403,7 @@ VolClassEditOnPlayerLeave(client, dataIndex)
 }
 
 /**
- * Event callback. A class edit volume was enabled.
- *
- * @param volumeIndex   The volume index.
- */
-/*VolClassEditOnEnabled(volumeIndex)
-{
-
-}*/
-
-/**
- * Event callback. A class edit volume was enabled.
+ * Event callback. A class edit volume was disabled.
  *
  * @param dataIndex     Class editor index.
  */
@@ -615,12 +411,13 @@ VolClassEditOnDisabled(dataIndex)
 {
     new volumeIndex = VolClassEditGetVolumeIndex(dataIndex);
     
-    for (new client = 1; client < MaxClients; client++)
+    // Trigger leave event on all players in the class editor's volume.
+    for (new client = 1; client <= MaxClients; client++)
     {
         if (IsClientConnected(client) && IsClientInGame(client))
         {
-            // Only forward event if the player is in the volume.
-            if (VolPlayerInVolume[client][volumeIndex] && VolClassEditSelectedClass[client] >= 0)
+            // Forward event if the player is in the volume.
+            if (VolPlayerInVolume[client][volumeIndex])
             {
                 VolClassEditOnPlayerLeave(client, dataIndex);
             }
@@ -675,7 +472,7 @@ VolClassEditIntToString(dataIndex, ClassEditableAttributes:attribute, String:buf
     new intVal;
     new String:strVal[8];
     
-    intVal = VolClassEditData[dataIndex][VolClassEdit_ClassData][attribute];
+    intVal = VolClassEditClassAttributes[dataIndex][attribute];
     
     // Check if the attribute is marked as ignored.
     if (intVal == -1)
@@ -704,7 +501,7 @@ VolClassEditFloatToString(dataIndex, ClassEditableAttributes:attribute, String:b
     new Float:floatVal;
     new String:strVal[8];
     
-    floatVal = Float:VolClassEditData[dataIndex][VolClassEdit_ClassData][attribute];
+    floatVal = Float:VolClassEditClassAttributes[dataIndex][attribute];
     
     // Check if the attribute is marked as ignored.
     if (floatVal == minval)
@@ -731,7 +528,7 @@ VolClassEditFloatToString(dataIndex, ClassEditableAttributes:attribute, String:b
 VolClassEditStringToHumanStr(dataIndex, ClassEditableAttributes:attribute, String:buffer[], maxlen)
 {
     decl String:strVal[PLATFORM_MAX_PATH];
-    strcopy(strVal, sizeof(strVal), String:VolClassEditData[dataIndex][VolClassEdit_ClassData][attribute]);
+    strcopy(strVal, sizeof(strVal), String:VolClassEditClassAttributes[dataIndex][attribute]);
     
     // Check if the attribute is marked as ignored.
     if (StrEqual(strVal, "nochange", false))
@@ -745,469 +542,20 @@ VolClassEditStringToHumanStr(dataIndex, ClassEditableAttributes:attribute, Strin
 }
 
 /**
- * Sets the mode attribute.
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetMode(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    if (StrEqual(value, "name", false))
-    {
-        VolClassEditData[dataIndex][VolClassEdit_Mode] = ClassEditMode_Name;
-        return true;
-    }
-    else if (StrEqual(value, "attributes", false))
-    {
-        VolClassEditData[dataIndex][VolClassEdit_Mode] = ClassEditMode_Attributes;
-        return true;
-    }
-    
-    // No match.
-    return false;
-}
-
-/**
- * Sets the class name attribute (name of the class to switch to).
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetName(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    strcopy(VolClassEditData[dataIndex][VolClassEdit_ClassName], VOL_CLASSNAME_SIZE, value);
-    
-    // TODO: Validate name.
-    
-    return true;
-}
-
-/**
- * Sets the alpha initial attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetAlphaInitial(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_AlphaInitial] = StringToInt(value);
-    return true;
-}
-
-/**
- * Sets the alpha damaged attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetAlphaDamaged(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_AlphaDamaged] = StringToInt(value);
-    return true;
-}
-
-/**
- * Sets the alpha damage attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetAlphaDamage(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_AlphaDamage] = StringToInt(value);
-    return true;
-}
-
-/**
- * Sets the overlay path attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetOverlayPath(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    strcopy(VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_OverlayPath], PLATFORM_MAX_PATH, value);
-    return true;
-}
-
-/**
- * Sets the nvgs attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetNvgs(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_Nvgs] = StringToInt(value);
-    return true;
-}
-
-/**
- * Sets the fov attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetFov(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_Fov] = StringToInt(value);
-    return true;
-}
-
-/**
- * Sets the has napalm attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetHasNapalm(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_HasNapalm] = StringToInt(value);
-    return true;
-}
-
-/**
- * Sets the napalm time attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetNapalmTime(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_NapalmTime] = StringToFloat(value);
-    return true;
-}
-
-/**
- * Sets the immunity mode attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetImmunityMode(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_ImmunityMode] = StringToInt(value);
-    return true;
-}
-
-/**
- * Sets the immunity amount attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetImmunityAmount(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_ImmunityAmount] = StringToFloat(value);
-    return true;
-}
-
-/**
- * Sets the no fall damage attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetNoFallDamage(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_NoFallDamage] = StringToInt(value);
-    return true;
-}
-
-/**
- * Sets the health regen interval attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetRegenInterval(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_RegenInterval] = StringToFloat(value);
-    return true;
-}
-
-/**
- * Sets the health regen amount attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetRegenAmount(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_RegenAmount] = StringToInt(value);
-    return true;
-}
-
-/**
- * Sets the infect gain attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetInfectGain(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_InfectGain] = StringToInt(value);
-    return true;
-}
-
-/**
- * Sets the kill bonus attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetKillBonus(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_KillBonus] = StringToInt(value);
-    return true;
-}
-
-/**
- * Sets the speed attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetSpeed(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_Speed] = StringToFloat(value);
-    return true;
-}
-
-/**
- * Sets the knock back attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetKnockBack(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_KnockBack] = StringToFloat(value);
-    return true;
-}
-
-/**
- * Sets the jump heigt attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetJumpHeight(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_JumpHeight] = StringToFloat(value);
-    return true;
-}
-
-/**
- * Sets the jump distance attribute.
- *
- * Note: The value is not validated!
- *
- * @param dataIndex     Local data index.
- * @param value         String value to set (converted to proper type by this
- *                      function).
- * @return              True if set, false if empty.
- */
-bool:VolClassEditSetJumpDistance(dataIndex, const String:value[])
-{
-    if (strlen(value) == 0)
-    {
-        return false;
-    }
-    
-    VolClassEditData[dataIndex][VolClassEdit_ClassData][ClassEdit_JumpDistance] = StringToFloat(value);
-    return true;
-}
-
-/**
  * Updates a player's cache with the specified attribute set. Only active
  * attributes are applied.
  *
  * Note: These attributes are not validated!
  *
  * @param client        The client index.
- * @param attributes    Attribute set to apply (ClassEditableAttributes)
+ * @param dataIndex     Class editor index.
  * @return              Number of attributes changed.
  */
-VolClassEditUpdateAttributes(client, const attributes[])
+VolClassEditUpdateAttributes(client, dataIndex)
 {
     new numChanges;
+    new attributes[ClassEditableAttributes];
+    attributes = VolClassEditClassAttributes[dataIndex];
     
     // Alpha initial.
     if (attributes[ClassEdit_AlphaInitial] > -1)
@@ -1241,6 +589,13 @@ VolClassEditUpdateAttributes(client, const attributes[])
     if (attributes[ClassEdit_Nvgs] > -1)
     {
         ClassPlayerCache[client][Class_Nvgs] = bool:attributes[ClassEdit_Nvgs];
+        numChanges++;
+    }
+    
+    // FOV.
+    if (attributes[ClassEdit_Fov] > -1)
+    {
+        ClassPlayerCache[client][Class_Fov] = attributes[ClassEdit_Fov];
         numChanges++;
     }
     
@@ -1338,12 +693,14 @@ VolClassEditUpdateAttributes(client, const attributes[])
  *
  * @param client        The client index.
  * @param classindex    Index of class to restore.
- * @param attributes    Attribute mask (ClassEditableAttributes).
+ * @param dataIndex     Class editor index.
  * @return              Number of attributes changed.
  */
-VolClassEditRestoreAttributes(client, classindex, const attributes[])
+VolClassEditRestoreAttributes(client, classindex, dataIndex)
 {
     new numChanges;
+    new attributes[ClassEditableAttributes];
+    attributes = VolClassEditClassAttributes[dataIndex];
     
     // Alpha initial.
     if (attributes[ClassEdit_AlphaInitial] > -1)
@@ -1379,6 +736,13 @@ VolClassEditRestoreAttributes(client, classindex, const attributes[])
     if (attributes[ClassEdit_Nvgs] > -1)
     {
         ClassPlayerCache[client][Class_Nvgs] = ClassGetNvgs(classindex, ZR_CLASS_CACHE_MODIFIED);
+        numChanges++;
+    }
+    
+    // FOV.
+    if (attributes[ClassEdit_Fov] > -1)
+    {
+        ClassPlayerCache[client][Class_Fov] = ClassGetFOV(classindex, ZR_CLASS_CACHE_MODIFIED);
         numChanges++;
     }
     
@@ -1439,7 +803,7 @@ VolClassEditRestoreAttributes(client, classindex, const attributes[])
     }
     
     // Speed.
-    if (attributes[ClassEdit_Speed] > -1.0)
+    if (Float:attributes[ClassEdit_Speed] > -1.0)
     {
         ClassPlayerCache[client][Class_Speed] = ClassGetSpeed(classindex, ZR_CLASS_CACHE_MODIFIED);
         numChanges++;
@@ -1466,6 +830,6 @@ VolClassEditRestoreAttributes(client, classindex, const attributes[])
         numChanges++;
     }
     
-    LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "ClassEdit", "Applied %d attribute(s).", numChanges);
+    LogEvent(_, LogTypeOld_Normal, LOG_DEBUG, LogModule_Volfeatures, "ClassEdit", "Restored %d attribute(s).", numChanges);
     return numChanges;
 }

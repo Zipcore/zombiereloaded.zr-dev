@@ -366,7 +366,147 @@ ClassValidateAttributes(bool:onlyEditable = false, bool:logErrors = false,
     
     return flags;
 }
-                        
+
+/**
+ * Validates a set of editable attributes.
+ *
+ * @param attributes    Attribute set to validate.
+ * @return              0 if successful, or a bit field (positivie number) of
+ *                      failed attributes.
+ */
+stock ClassValidateEditableAttributes(attributes[ClassEditableAttributes])
+{
+    new flags;
+    
+    new alphaInitial = attributes[ClassEdit_AlphaInitial];
+    new alphaDamaged = attributes[ClassEdit_AlphaDamaged];
+    new alphaDamage = attributes[ClassEdit_AlphaDamage];
+    decl String:overlay[PLATFORM_MAX_PATH];
+    overlay[0] = 0;
+    strcopy(overlay, sizeof(overlay), attributes[ClassEdit_OverlayPath]);
+    new fov = attributes[ClassEdit_Fov];
+    new Float:napalmTime = attributes[ClassEdit_NapalmTime];
+    new weaponProfile = attributes[ClassEdit_WeaponProfile];
+    new Float:regenInterval = attributes[ClassEdit_RegenInterval];
+    new regenAmount = attributes[ClassEdit_RegenAmount];
+    new infectGain = attributes[ClassEdit_InfectGain];
+    new killBonus = attributes[ClassEdit_KillBonus];
+    new Float:speed = attributes[ClassEdit_Speed];
+    new Float:knockback = attributes[ClassEdit_KnockBack];
+    new Float:jumpHeight = attributes[ClassEdit_JumpHeight];
+    new Float:jumpDistance = attributes[ClassEdit_JumpDistance];
+    
+    // Alpha, initial.
+    if (alphaInitial > -1 && !ClassIsValidAlphaInitial(alphaInitial))
+    {
+        flags += ZR_CLASS_ALPHA_INITIAL;
+    }
+    
+    // Alpha, damaged.
+    if (alphaDamaged > -1 && !ClassIsValidAlphaDamaged(alphaDamaged))
+    {
+        flags += ZR_CLASS_ALPHA_DAMAGED;
+    }
+    
+    // Alpha, damage.
+    if (alphaDamage > -1 && !ClassIsValidAlphaDamage(alphaDamage))
+    {
+        flags += ZR_CLASS_ALPHA_DAMAGE;
+    }
+    
+    // Overlay path.
+    if (!StrEqual(overlay, "nochange", false))
+    {
+        decl String:overlayPath[PLATFORM_MAX_PATH];
+        overlayPath[0] = 0;
+        Format(overlayPath, sizeof(overlayPath), "materials/%s.vmt", overlay);
+        if (!ClassIsValidOverlay(overlay))
+        {
+            flags += ZR_CLASS_OVERLAY_PATH;
+        }
+    }
+    
+    // Field of view.
+    if (fov > -1 && !ClassIsValidFOV(fov))
+    {
+        flags += ZR_CLASS_FOV;
+    }
+    
+    // Napalm time.
+    if (napalmTime > -1.0 && !ClassIsValidNapalmTime(napalmTime))
+    {
+        flags += ZR_CLASS_NAPALM_TIME;
+    }
+    
+    // Immunity mode (not implemented).
+    
+    // Immunity amount (not implemented).
+    
+    // Weapon profile. Only validate if weapons module is enabled and the class
+    // is a human class.
+    if (weaponProfile > -1)
+    {
+        new bool:weapons = GetConVarBool(g_hCvarsList[CVAR_WEAPONS]);
+        new bool:weaponsLoaded = ConfigIsConfigLoaded(File_Weapons);
+        if (weapons && weaponsLoaded)
+        {
+            if (!ClassIsValidWeaponProfile(weaponProfile))
+            {
+                flags += ZR_CLASS_WEAPON_PROFILE;
+            }
+        }
+    }
+    
+    // Health regen interval.
+    if (regenInterval > -1.0 && !ClassIsValidRegenInterval(regenInterval))
+    {
+        flags += ZR_CLASS_HEALTH_REGEN_INTERVAL;
+    }
+    
+    // Health regen amount.
+    if (regenAmount > -1 && !ClassIsValidRegenAmount(regenAmount))
+    {
+        flags += ZR_CLASS_HEALTH_REGEN_AMOUNT;
+    }
+    
+    // Health infect gain.
+    if (infectGain > -1 && !ClassIsValidInfectGain(infectGain))
+    {
+        flags += ZR_CLASS_HEALTH_INFECT_GAIN;
+    }
+    
+    // Kill bonus.
+    if (killBonus > -1 && !ClassIsValidKillBonus(killBonus))
+    {
+        flags += ZR_CLASS_KILL_BONUS;
+    }
+    
+    // Speed.
+    if (speed > -1.0 && !ClassIsValidSpeed(speed))
+    {
+        flags += ZR_CLASS_SPEED;
+    }
+    
+    // Knockback.
+    if (knockback > -1.0 && !ClassIsValidKnockback(knockback))
+    {
+        flags += ZR_CLASS_KNOCKBACK;
+    }
+    
+    // Jump height.
+    if (jumpHeight > -1.0 && !ClassIsValidJumpHeight(jumpHeight))
+    {
+        flags += ZR_CLASS_JUMP_HEIGHT;
+    }
+    
+    // Jump distance.
+    if (jumpDistance > -1.0 && !ClassIsValidJumpHeight(jumpDistance))
+    {
+        flags += ZR_CLASS_JUMP_DISTANCE;
+    }
+    
+    return flags;
+}
 
 /**
  * Validates all the class attributes in the original class data array, to
@@ -415,43 +555,6 @@ ClassValidateClassAttributes(classIndex, bool:logErrors = false)
         Format(overlayPath, sizeof(overlayPath), "materials/%s.vmt", attributes[Class_OverlayPath]);
         AddFileToDownloadsTable(overlayPath);
     }
-    
-    return flags;
-}
-
-/**
- * Validates a set of editable attributes.
- *
- * @param attributes    Attribute set to validate.
- * @return              0 if successful, or a bit field (positivie number) of
- *                      failed attributes.
- */
-stock ClassValidateEditableAttributes(attributes[ClassEditableAttributes])
-{
-    new flags = ClassValidateAttributes(true, false,
-                    0,
-                    0,
-                    0,
-                    "",
-                    "",
-                    "",
-                    "",
-                    attributes[Class_AlphaInitial],
-                    attributes[Class_AlphaDamaged],
-                    attributes[Class_AlphaDamage]
-                    attributes[Class_OverlayPath],
-                    attributes[Class_Fov]
-                    attributes[Class_NapalmTime],
-                    attributes[Class_WeaponProfile],
-                    0,
-                    attributes[Class_HealthRegenInterval],
-                    attributes[Class_HealthRegenAmount],
-                    attributes[Class_HealthInfectGain],
-                    attributes[Class_KillBonus],
-                    attributes[Class_Speed],
-                    attributes[Class_KnockBack],
-                    attributes[Class_JumpHeight],
-                    attributes[Class_JumpDistance]);
     
     return flags;
 }
@@ -519,9 +622,9 @@ stock bool:ClassTeamCompare(index, teamid, cachetype = ZR_CLASS_CACHE_MODIFIED)
 
 /**
  * Gets the first class index of a class with the specified name (not a case
- * sensitive search).
+ * sensitive search), or index (converted from string).
  *
- * @param name      The name to search for.
+ * @param name      The name or index to search for.
  * @param cachetype Optional. Specifies what class cache to read from. Options:
  *                  ZR_CLASS_CACHE_ORIGINAL - Unchanced class data.
  *                  ZR_CLASS_CACHE_MODIFIED (default) - Changed/newest class
@@ -531,6 +634,7 @@ stock bool:ClassTeamCompare(index, teamid, cachetype = ZR_CLASS_CACHE_MODIFIED)
 stock ClassGetIndex(const String:name[], cachetype = ZR_CLASS_CACHE_MODIFIED)
 {
     decl String:current_name[64];
+    new classindex;
 
     // Check if there are no classes.
     if (ClassCount == 0)
@@ -538,8 +642,22 @@ stock ClassGetIndex(const String:name[], cachetype = ZR_CLASS_CACHE_MODIFIED)
         return false;
     }
     
+    // Check if it's a class index.
+    if (IsCharNumeric(name[0]))
+    {
+        classindex = StringToInt(name);
+        if (ClassValidateIndex(classindex))
+        {
+            return classindex;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    
     // Loop through all classes.
-    for (new classindex = 0; classindex < ClassCount; classindex++)
+    for (classindex = 0; classindex < ClassCount; classindex++)
     {
         // Get its name and compare it with the specified class name.
         ClassGetName(classindex, current_name, sizeof(current_name), cachetype);
