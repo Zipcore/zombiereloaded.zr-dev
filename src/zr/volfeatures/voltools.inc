@@ -67,65 +67,6 @@ VolGetPlayerStates(client, bool:buffer[], maxlen)
 }
 
 /**
- * Converts a string into a volumetric feature type.
- *
- * @param volType   String to convert. Name of type.
- * @return          Volumetric feature type or VolFeature_Invalid on error.
- */
-VolumeFeatureTypes:VolGetTypeFromString(const String:volType[])
-{
-    // Check if empty.
-    if (strlen(volType) == 0)
-    {
-        return VolFeature_Invalid;
-    }
-    
-    // Match types.
-    if (StrEqual(volType, "anticamp", false))
-    {
-        return VolFeature_Anticamp;
-    }
-    else if (StrEqual(volType, "classedit", false))
-    {
-        return VolFeature_ClassEdit;
-    }
-    
-    // No match.
-    return VolFeature_Invalid;
-}
-
-/**
- * Converts a volume type to a string.
- *
- * @param volType       Volume type to convert.
- * @param buffer        Destination string buffer.
- * @param maxlen        Size of destination buffer.
- * @param shortName     Optional. Write short name or human readable name.
- *                      Default is human readable (false).
- * @return              Number of cells written.
- */
-VolTypeToString(VolumeFeatureTypes:volType, String:buffer[], maxlen, bool:shortName = false)
-{
-    switch (volType)
-    {
-        case VolFeature_Invalid:
-        {
-            return shortName ? strcopy(buffer, maxlen, "") : strcopy(buffer, maxlen, "(none)");
-        }
-        case VolFeature_Anticamp:
-        {
-            return shortName ? strcopy(buffer, maxlen, "anticamp") : strcopy(buffer, maxlen, "Anti-Camp");
-        }
-        case VolFeature_ClassEdit:
-        {
-            return shortName ? strcopy(buffer, maxlen, "classedit") : strcopy(buffer, maxlen, "Class Editor");
-        }
-    }
-    
-    return 0;
-}
-
-/**
  * Gets the shape index from a shape id string.
  *
  * @param shapeType     Shape type.

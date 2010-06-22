@@ -207,7 +207,7 @@ bool:VolTeamFilterMatch(client, volumeIndex)
  *
  * @param volumeIndex   Volume to refresh links on.
  */
-VolRefreshLinks(volumeIndex)
+stock VolRefreshLinks(volumeIndex)
 {
     // Attempt to close existing handles.
     ZR_CloseHandle(Volumes[volumeIndex][Vol_FeatureTypes]);
@@ -237,7 +237,7 @@ VolRefreshLinks(volumeIndex)
  *                          not. Default is true.
  * @return                  Number of linked features.
  */
-VolGetFeatures(volumeIndex, &Handle:featureTypes, &Handle:featureIndexes, bool:ignoreEnabled = true)
+stock VolGetFeatures(volumeIndex, &Handle:featureTypes, &Handle:featureIndexes, bool:ignoreEnabled = true)
 {
     featureTypes = CreateArray();
     featureIndexes = CreateArray();
@@ -433,8 +433,8 @@ VolGetFeatureListString(volumeIndex, String:buffer[], maxlen)
     {
         new numFeatures = GetArraySize(featureTypes);
         
-        // Loop through each feature and add its name to the list. If the
-        // feature doesn't have a name, write "type:index".
+        // Loop through each feature and add its type and name to the list. If
+        // the feature doesn't have a name, write "<type>:index".
         
         for (new feature = 0; feature < numFeatures; feature++)
         {

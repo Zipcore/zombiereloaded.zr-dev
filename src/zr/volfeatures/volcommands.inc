@@ -42,6 +42,7 @@ VolOnCommandsCreate()
     
     VolShapeOnCommandsCreate();
     VolAnticampOnCommandsCreate();
+    VolClassEditOnCommandsCreate();
 }
 
 /**
