@@ -209,7 +209,6 @@ public BaseAdapter_OnConfigsExecuted()
     DamageLoad();
     VEffectsLoad();
     SEffectsLoad();
-    AntiStickLoad();
     ClassOnConfigsExecuted();   // MUST be called before ClassLoad.
     ClassLoad();
     VolLoad();
