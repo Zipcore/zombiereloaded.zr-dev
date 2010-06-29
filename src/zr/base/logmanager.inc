@@ -141,7 +141,7 @@ stock LogMgr_OnPrintModuleInfo(client, Module:module)
     new bool:bWhiteList = LogMgr_IsModuleOnWhitelist(module);
     
     #if defined TRANSLATIONS_MANAGER
-        TransMgr_TranslateBoolToPhrase(client, bWhiteList, BoolPhrase_YesNo, strWhiteList, sizeof(strWhiteList));
+        TransMgr_BoolToPhrase(client, bWhiteList, BoolPhrase_YesNo, strWhiteList, sizeof(strWhiteList));
     #else
         IntToString(_:bWhiteList, strWhiteList, sizeof(strWhiteList));
     #endif
