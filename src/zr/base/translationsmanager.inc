@@ -192,10 +192,25 @@ stock TransMgr_PrintText(client, MsgFormatting:msgformat, MsgTypes:msgtype, Modu
     {
         case MsgType_Server:    PrintToServer(translated);
         case MsgType_Console:   PrintToConsole(client, translated);
-        case MsgType_Chat:      PrintToChat(client, translated);
-        case MsgType_Reply:     ReplyToCommand(client, translated);
         case MsgType_Center:    PrintCenterText(client, translated);
         case MsgType_Hint:      PrintHintText(client, translated);
+        
+        #if defined _colors_included
+        case MsgType_Chat:      CPrintToChat(client, translated);
+        case MsgType_Reply:
+        {
+            if (GetCmdReplySource() == SM_REPLY_TO_CHAT)
+                CPrintToChat(client, translated);
+            else
+            {
+                CRemoveTags(translated, sizeof(translated));
+                ReplyToCommand(client, translated);
+            }
+        }
+        #else
+        case MsgType_Chat:      PrintToChat(client, translated);
+        case MsgType_Reply:     ReplyToCommand(client, translated);
+        #endif
     }
 }
 
@@ -278,7 +293,7 @@ stock TransMgr_PrintTextAll(bool:server, bool:admin, MsgFormatting:msgformat, Ms
  * @param maxlen        The max length of the output string.
  * @param lowercase     True to force the output to lower case.
  */
-stock TransMgr_TranslateBoolToPhrase(target, bool:boolean, BoolPhrases:boolphrase, String:phrase[], maxlen, bool:lowercase = false)
+stock TransMgr_BoolToPhrase(target, bool:boolean, BoolPhrases:boolphrase, String:phrase[], maxlen, bool:lowercase = false)
 {
     SetGlobalTransTarget(target);
     
@@ -312,7 +327,7 @@ stock TransMgr_TranslateBoolToPhrase(target, bool:boolean, BoolPhrases:boolphras
  * @param boolphrase    The boolean phrase pair to translate from.
  * @param phrase        The bool phrase to translate to a bool.
  */
-stock PhraseToBool:TransMgr_TranslatePhraseToBool(target, BoolPhrases:boolphrase, const String:phrase[])
+stock PhraseToBool:TransMgr_PhraseToBool(target, BoolPhrases:boolphrase, const String:phrase[])
 {
     SetGlobalTransTarget(target);
     
@@ -334,6 +349,44 @@ stock PhraseToBool:TransMgr_TranslatePhraseToBool(target, BoolPhrases:boolphrase
         {
             Format(boolphrasetrue, sizeof(boolphrasetrue), "%t", "_Enabled");
             Format(boolphrasefalse, sizeof(boolphrasefalse), "%t", "_Disabled");
+        }
+    }
+    
+    if (StrEqual(phrase, boolphrasetrue, false))
+        return PhraseToBool_True;
+    
+    if (StrEqual(phrase, boolphrasefalse, false))
+        return PhraseToBool_False;
+    
+    return PhraseToBool_Neither;
+}
+
+/**
+ * Translates a text phrase into a boolean value.  Uses english language.  Use this for config files.
+ * 
+ * @param boolphrase    The boolean phrase pair to translate from.
+ * @param phrase        The bool phrase to translate to a bool.
+ */
+stock PhraseToBool:TransMgr_PhraseToBoolEx(BoolPhrases:boolphrase, const String:phrase[])
+{
+    decl String:boolphrasetrue[16];
+    decl String:boolphrasefalse[16];
+    switch (boolphrase)
+    {
+        case BoolPhrase_YesNo:
+        {
+            strcopy(boolphrasetrue, sizeof(boolphrasetrue), "yes");
+            strcopy(boolphrasefalse, sizeof(boolphrasefalse), "no");
+        }
+        case BoolPhrase_OnOff:
+        {
+            strcopy(boolphrasetrue, sizeof(boolphrasetrue), "on");
+            strcopy(boolphrasefalse, sizeof(boolphrasefalse), "off");
+        }
+        case BoolPhrase_EnabledDisabled:
+        {
+            strcopy(boolphrasetrue, sizeof(boolphrasetrue), "enable");
+            strcopy(boolphrasefalse, sizeof(boolphrasefalse), "disable");
         }
     }
     

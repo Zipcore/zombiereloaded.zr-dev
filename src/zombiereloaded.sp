@@ -203,7 +203,7 @@ public OnPluginStart()
     
     #if defined EVENT_MANAGER
         // Forward the OnAllModulesLoaded to all modules.
-        EventMgr_Forward(Event_OnAllModulesLoaded, g_CommonEventData1, 0, 0, g_CommonDataType1);
+        EventMgr_Forward(g_EvOnAllModulesLoaded, g_CommonEventData1, 0, 0, g_CommonDataType1);
     #endif
 }
 
@@ -216,7 +216,7 @@ public OnPluginEnd()
     
     #if defined EVENT_MANAGER
         // Forward event to all modules.
-        EventMgr_Forward(Event_OnPluginEnd, g_CommonEventData1, 0, 0, g_CommonDataType1);
+        EventMgr_Forward(g_EvOnPluginEnd, g_CommonEventData1, 0, 0, g_CommonDataType1);
     #endif
     
     // Forward event to other project base components.
