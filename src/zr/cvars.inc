@@ -176,6 +176,8 @@ enum CvarsList
     Handle:CVAR_VOL,
     Handle:CVAR_VOL_UPDATE_INTERVAL,
     Handle:CVAR_VOL_TRIGGER_INTERVAL,
+    Handle:CVAR_VOL_BEAM_SPRITE,
+    Handle:CVAR_VOL_HALO_SPRITE,
     Handle:CVAR_ZSPAWN,
     Handle:CVAR_ZSPAWN_TEAM_OVERRIDE,
     Handle:CVAR_ZSPAWN_TEAM_ZOMBIE,
@@ -518,6 +520,8 @@ CvarsCreate()
     g_hCvarsList[CVAR_VOL]                              =    CreateConVar("zr_vol",                     "1",    "Enables volumetric features.");
     g_hCvarsList[CVAR_VOL_UPDATE_INTERVAL]              =    CreateConVar("zr_vol_update_interval",     "0.5",  "How often to update player positions and trigger events, in seconds.");
     g_hCvarsList[CVAR_VOL_TRIGGER_INTERVAL]             =    CreateConVar("zr_vol_trigger_interval",    "0.5",  "How often to check for delayed events, in seconds. Use lower values for more precise delays.");
+    g_hCvarsList[CVAR_VOL_BEAM_SPRITE]                  =    CreateConVar("zr_vol_beam_sprite",         "materials/sprites/laser.vmt",      "Beam sprite to use for wireframe effects.");
+    g_hCvarsList[CVAR_VOL_HALO_SPRITE]                  =    CreateConVar("zr_vol_halo_sprite",         "materials/sprites/halo01.vmt",     "Halo sprite to use for wireframe effects.");
     
     
     // ===========================
