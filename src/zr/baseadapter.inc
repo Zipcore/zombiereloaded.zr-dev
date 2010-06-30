@@ -49,35 +49,35 @@ BaseAdapter_Register()
     g_moduleBaseAdapter = ModuleMgr_Register(moduledata);
     
     // Register all the events needed for this module.
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnAllPluginsLoaded,       "BaseAdapter_OnAllPluginsLoaded");
-    //EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnPluginEnd,              "BaseAdapter_OnPluginEnd");
-    //EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnAllModulesLoaded,       "BaseAdapter_OnAllModulesLoaded");
-    //EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnModuleEnable,           "BaseAdapter_OnModuleEnable");
-    //EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnMyModuleEnable,         "BaseAdapter_OnMyModuleEnable");
-    //EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnModuleDisable,          "BaseAdapter_OnModuleDisable");
-    //EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnMyModuleDisable,        "BaseAdapter_OnMyModuleDisable");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnMapStart,               "BaseAdapter_OnMapStart");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnMapEnd,                 "BaseAdapter_OnMapEnd");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnAutoConfigsBuffered,    "BaseAdapter_OnAutoConfigsBuffd");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnConfigsExecuted,        "BaseAdapter_OnConfigsExecuted");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnClientPutInServer,      "BaseAdapter_OnClientPutInServer");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnClientConnected,        "BaseAdapter_OnClientConnected");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnClientDisconnect,       "BaseAdapter_OnClientDisconnect");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnClientCookiesCached,    "BaseAdapter_OnClientCookiesChed");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_OnClientPostAdminCheck,   "BaseAdapter_OnClientPostAdmChk");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_RoundStart,               "BaseAdapter_RoundStart");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_RoundEnd,                 "BaseAdapter_RoundEnd");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_PlayerTeam,               "BaseAdapter_PlayerTeam");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_PlayerSpawn,              "BaseAdapter_PlayerSpawn");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_PlayerJump,               "BaseAdapter_PlayerJump");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnAllPluginsLoaded",     "BaseAdapter_OnAllPluginsLoaded");
+    //EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnPluginEnd",            "BaseAdapter_OnPluginEnd");
+    //EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnAllModulesLoaded",     "BaseAdapter_OnAllModulesLoaded");
+    //EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnModuleEnable",         "BaseAdapter_OnModuleEnable");
+    //EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnMyModuleEnable",       "BaseAdapter_OnMyModuleEnable");
+    //EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnModuleDisable",        "BaseAdapter_OnModuleDisable");
+    //EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnMyModuleDisable",      "BaseAdapter_OnMyModuleDisable");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnMapStart",             "BaseAdapter_OnMapStart");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnMapEnd",               "BaseAdapter_OnMapEnd");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnAutoConfigsBuffered",  "BaseAdapter_OnAutoConfigsBuffd");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnConfigsExecuted",      "BaseAdapter_OnConfigsExecuted");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnClientPutInServer",    "BaseAdapter_OnClientPutInServer");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnClientConnected",      "BaseAdapter_OnClientConnected");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnClientDisconnect",     "BaseAdapter_OnClientDisconnect");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnClientCookiesCached",  "BaseAdapter_OnClientCookiesChed");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnClientPostAdminCheck", "BaseAdapter_OnClientPostAdmChk");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_RoundStart",             "BaseAdapter_RoundStart");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_RoundEnd",               "BaseAdapter_RoundEnd");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_PlayerTeam",             "BaseAdapter_PlayerTeam");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_PlayerSpawn",            "BaseAdapter_PlayerSpawn");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_PlayerJump",             "BaseAdapter_PlayerJump");
 
     #if defined PROJECT_GAME_CSS
     
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_RoundFreezeEnd,           "BaseAdapter_RoundFreezeEnd");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_PlayerHurt,               "BaseAdapter_PlayerHurt");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_PlayerDeath,              "BaseAdapter_PlayerDeath");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_WeaponFire,               "BaseAdapter_WeaponFire");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, Event_WeaponFireOnEmpty,        "BaseAdapter_WeaponFireOnEmpty");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_RoundFreezeEnd",         "BaseAdapter_RoundFreezeEnd");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_PlayerHurt",             "BaseAdapter_PlayerHurt");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_PlayerDeath",            "BaseAdapter_PlayerDeath");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_WeaponFire",             "BaseAdapter_WeaponFire");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_WeaponFireOnEmpty",      "BaseAdapter_WeaponFireOnEmpty");
     
     #endif
     
@@ -209,7 +209,6 @@ public BaseAdapter_OnConfigsExecuted()
     DamageLoad();
     VEffectsLoad();
     SEffectsLoad();
-    AntiStickLoad();
     ClassOnConfigsExecuted();   // MUST be called before ClassLoad.
     ClassLoad();
     VolLoad();
