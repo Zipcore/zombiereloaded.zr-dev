@@ -1,0 +1,1946 @@
+"Phrases"
+{
+	// ===========================
+	// General (base)
+	// ===========================
+
+	"General round objective"
+	{
+		"en"		"The game is @greenHumans vs. Zombies@default, the goal for zombies is to infect all humans by knifing them."
+	}
+
+	"General zmenu reminder"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"For help on Zombie:Reloaded commands, type \"{1}{2}\" in chat."
+	}
+
+	// ===========================
+	// Generic (base)
+	// ===========================
+
+	// General
+
+	"Literal text"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1}"
+	}
+	// Set string to "{1}" for all languages.
+
+	"Feature is disabled"
+	{
+		"en"		"This feature is currently disabled by the server host."
+	}
+
+	"Not enough money"
+	{
+		"en"		"You do not have enough money to buy this item."
+	}
+
+	"Must be player"
+	{
+		"en"		"This feature is reserved for players only."
+	}
+
+	"Must be admin"
+	{
+		"en"		"This feature is reserved for admins only."
+	}
+
+	"No access to command"
+	{
+		"en"		"You do not have access to this command."
+	}
+
+	"Must be alive"
+	{
+		"en"		"This feature requires that you are alive."
+	}
+
+	"Must be dead"
+	{
+		"en"		"This feature requires that you are dead."
+	}
+
+	"Must be on team"
+	{
+		"en"		"This feature requires that you are on a team."
+	}
+
+	"Must be zombie"
+	{
+		"en"		"This feature requires that you are a zombie."
+	}
+
+	"Must be human"
+	{
+		"en"		"This feature requires that you are a human."
+	}
+	
+	"Increase by"
+	{
+		"#format"	"{1:s}"
+		"en"		"Increase by {1}"
+	}
+
+	"Decrease by"
+	{
+		"#format"	"{1:s}"
+		"en"		"Decrease by {1}"
+	}
+
+	"Current Value"
+	{
+		"en"		"Current value:"
+	}
+
+	"All"
+	{
+		"en"		"All"
+	}
+
+	"Zombie"
+	{
+		"en"		"Zombie"
+	}
+
+	"Human"
+	{
+		"en"		"Human"
+	}
+
+	// Menu
+
+	"Menu empty"
+	{
+		"en"		"(Empty)"
+	}
+
+	"Menu none"
+	{
+		"en"		"(None)"
+	}
+
+	"Menu default"
+	{
+		"en"		"(Default)"
+	}
+
+	// ===========================
+	// Config (core)
+	// ===========================
+
+	// Commands
+
+	"Config command reload syntax"
+	{
+		"en"		"Syntax: zr_reloadconfig <file alias1> [file alias2] ... - Reloads a config file."
+	}
+
+	"Config command reload related commands"
+	{
+		"en"		"Related command(s): zr_config_reloadall"
+	}
+
+	"Config command reload syntax aliases"
+	{
+		"#format"	"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"		"File Aliases:\n* \"{1}\"\n* \"{2}\"\n* \"{3}\"\n* \"{4}\"\n* \"{5}\""
+	}
+
+	"Config command reload invalid"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid file alias: \"{1}\""
+	}
+
+	"Config command reload not loaded"
+	{
+		"#format"	"{1:s}"
+		"en"		"Config file \"{1}\" failed to load. (Either disabled or invalid file content.)"
+	}
+
+	"Config command reload all stats begin"
+	{
+		"en"		"Reloading all Zombie:Reloaded config files...\n------------------------------------------------"
+	}
+
+	"Config command reload all stats successful"
+	{
+		"#format"	"{1:s}"
+		"en"		"\"{1}\" - Successful."
+	}
+
+	"Config command reload all stats failed"
+	{
+		"#format"	"{1:s}"
+		"en"		"\"{1}\" - Failed. (Either disabled or invalid file content.)"
+	}
+
+	// ===========================
+	// Log (core)
+	// ===========================
+
+	"Log Generic Flag"
+	{
+		// Max length: 19 characters.
+		"en"		"Generic Flag:"
+	}
+
+	"Log Value"
+	{
+		// Max length: 7 characters:
+		"en"		"Value:"
+	}
+
+	"Log Module"
+	{
+		// Max length: 23 characters:
+		"en"		"Module:"
+	}
+
+	"Log Status"
+	{
+		"en"		"Filter Status:"
+	}
+
+	"Log Module Filtering"
+	{
+		"en"		"Module Filtering:"
+	}
+
+	"Log Module Short Name"
+	{
+		"en"		"Short Name:"
+	}
+
+	// ===========================
+	// Classes
+	// ===========================
+
+	// General
+
+	"Classes admin mode enabled"
+	{
+		"en"		"Admin mode is enabled!"
+	}
+
+	"Classes random assignment"
+	{
+		"#format"	"{1:s}"
+		"en"		"You have randomly been assigned to the @green\"{1}\" @defaultclass."
+	}
+
+	// Center Text/HUD
+
+	"Classes overlay toggle"
+	{
+		"#format"	"{1:s}"
+		"en"		"Class overlay toggle commands: {1}"
+	}
+
+	// Menu
+
+	"Classes menu title"
+	{
+		"en"		"Class Selection:"
+	}
+
+	"Classes menu active"
+	{
+		"#format"	"{1:s}"
+		"en"		"Active: {1}"
+	}
+
+	"Classes menu next"
+	{
+		"#format"	"{1:s}"
+		"en"		"Next spawn: {1}"
+	}
+
+	"Classes menu select zombie"
+	{
+		"en"		"Select Zombie Class"
+	}
+
+	"Classes menu select human"
+	{
+		"en"		"Select Human Class"
+	}
+
+	"Classes menu select admin"
+	{
+		"en"		"Select Admin Mode Class"
+	}
+
+	"Classes menu admin mode toggle"
+	{
+		"en"		"Toggle Admin Mode"
+	}
+
+	"Classes Menu Team Select Title"
+	{
+		"en"		"Select Team:"
+	}
+
+	"Classes Menu Zombies"
+	{
+		"en"		"Zombies"
+	}
+
+	"Classes Menu Humans"
+	{
+		"en"		"Humans"
+	}
+
+	"Classes Menu Multiplier Select Title"
+	{
+		"en"		"Select Multiplier:"
+	}
+
+	"Classes Menu Adjust Value"
+	{
+		"en"		"Adjust Value:"
+	}
+
+	// Attributes
+
+	"Classes Editable Attributes"
+	{
+		"en"		"Editable class attributes:"
+	}
+
+	"Classes Attrib Name"
+	{
+		"en"		"Class Name"
+	}
+	
+	"Classes Attrib Alpha Initial"
+	{
+		"en"		"Alpha Initial"
+	}
+	
+	"Classes Attrib Alpha Damaged"
+	{
+		"en"		"Alpha Damaged"
+	}
+	
+	"Classes Attrib Alpha Damage"
+	{
+		"en"		"Alpha Damage"
+	}
+	
+	"Classes Attrib Overlay"
+	{
+		"en"		"Overlay Path"
+	}
+	
+	"Classes Attrib NVGs"
+	{
+		"en"		"Night Vision"
+	}
+	
+	"Classes Attrib FOV"
+	{
+		"en"		"Field Of View"
+	}
+	
+	"Classes Attrib Has Napalm"
+	{
+		"en"		"Has napalm"
+	}
+	
+	"Classes Attrib Napalm Time"
+	{
+		"en"		"Napalm Time"
+	}
+	
+	"Classes Attrib Immunity Mode"
+	{
+		"en"		"Immunity Mode"
+	}
+
+	"Classes Attrib Immunity Amount"
+	{
+		"en"		"Immunity Amount"
+	}
+
+	"Classes Attrib No Fall Damage"
+	{
+		"en"		"No Fall Damage"
+	}
+
+	"Classes Attrib Health"
+	{
+		"en"		"Health"
+	}
+
+	"Classes Attrib Regen Interval"
+	{
+		"en"		"Health Regeneration Interval"
+	}
+
+	"Classes Attrib Regen Amount"
+	{
+		"en"		"Health Regeneration Amount"
+	}
+
+	"Classes Attrib Kill Bonus"
+	{
+		"en"		"Kill Bonus"
+	}
+
+	"Classes Attrib Infect Gain"
+	{
+		"en"		"Infection Health Gain"
+	}
+
+	"Classes Attrib Speed"
+	{
+		"en"		"Running Speed"
+	}
+
+	"Classes Attrib Knockback"
+	{
+		"en"		"Knock Back"
+	}
+
+	"Classes Attrib Jump Height"
+	{
+		"en"		"Jump Height"
+	}
+
+	"Classes Attrib Jump Distance"
+	{
+		"en"		"Jump Distance"
+	}
+
+	"Classes Selection Not Allowed"
+	{
+		"en"		"Changing classes is not allowed."
+	}
+	
+	"Classes Selection Loaded"
+	{
+		"en"		"Your saved class selections are now loaded and will take effect next spawn."
+	}
+
+	// ===========================
+	// Overlays (core)
+	// ===========================
+
+	"Overlays not supported"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"Blocking Overlay - DX{1} Detected (DX{2} Required)"
+	}
+
+	// ===========================
+	// Infect (core)
+	// ===========================
+
+	// General
+
+	"Infect infected"
+	{
+		"en"		"You have been infected!  Go pass it on to as many other players as you can."
+	}
+
+	"Infect human"
+	{
+		"en"		"The merciful gods (known as admins) have resurrected your soul, find some cover!"
+	}
+
+	"Infect disconnect"
+	{
+		"en"		"The last zombie has left the game, and has passed the infection on to you."
+	}
+
+	// Center Text
+
+	"Infect countdown"
+	{
+		"#format"	"{1:d}"
+		"en"		"Time remaining until first infection: {1} seconds."
+	}
+
+	"Infect countdown end"
+	{
+		"en"		"Time remaining until first infection: None."
+	}
+
+	// Menu
+
+	"Infect menu clients title"
+	{
+		"en"		"Zombie Management\nToggle Infection:\n[] = Infected"
+	}
+
+	// Commands
+
+	"Infect command infect syntax"
+	{
+		"en"		"Infect a client. Usage: zr_infect <filter> [respawn - 1/0]"
+	}
+
+	"Infect command human syntax"
+	{
+		"en"		"Turn a client into a human. Usage: zr_human <filter> [respawn - 1/0] [protect - 1/0]"
+	}
+
+	"Infect command infect successful"
+	{
+		"#format"	"{1:s}"
+		"en"		"Player @green{1} @defaulthas been successfully infected."
+	}
+
+	"Infect command infect mother successful"
+	{
+		"#format"	"{1:s}"
+		"en"		"Player @green{1} @defaulthas been successfully infected as the mother zombie."
+	}
+
+	"Infect command infect unsuccessful"
+	{
+		"#format"	"{1:s}"
+		"en"		"Player @green{1} @defaultis already a zombie."
+	}
+
+	"Infect command human successful"
+	{
+		"#format"	"{1:s}"
+		"en"		"Player @green{1} @defaulthas been successfully brought back as a human."
+	}
+
+	"Infect command human unsuccessful"
+	{
+		"#format"	"{1:s}"
+		"en"		"Player @green{1} @defaultis already a human."
+	}
+
+	// ===========================
+	// Damage (core)
+	// ===========================
+
+	"Damage suicide intercept"
+	{
+		"en"		"Suicide attempt intercepted."
+	}
+
+	// ===========================
+	// Menu (core)
+	// ===========================
+
+	// General
+
+	"Menu main title"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"ZR Commands:\nPrefix command with \"{1}\" or \"{2}\" (quiet) when typing in chat."
+	}
+
+	"Menu main zadmin"
+	{
+		"en"		"ZAdmin - Open admin menu"
+	}
+
+	"Menu main zclass"
+	{
+		"en"		"ZClass - Configure class settings"
+	}
+
+	"Menu main zcookies"
+	{
+		"en"		"ZCookies - Toggle personal ZR settings here"
+	}
+
+	"Menu main zspawn"
+	{
+		"en"		"ZSpawn - Join late?  Spawn with this"
+	}
+
+	"Menu main ztele"
+	{
+		"en"		"ZTele - Stuck?  Teleport back to spawn"
+	}
+
+	"Menu main zhp"
+	{
+		"en"		"ZHP - Shows real HP as zombie"
+	}
+
+	"Menu main zmarket"
+	{
+		"en"		"ZMarket - Create a weapon setup here"
+	}
+
+	// ===========================
+	// Menu Attach (core)
+	// ===========================
+
+	"Menu attach submenu zr"
+	{
+		"en"		"Zombie:Reloaded Admin"
+	}
+
+	"Menu attach submenu zr title"
+	{
+		"en"		"Zombie:Reloaded Admin:"
+	}
+
+	"Menu attach submenu zr zadmin"
+	{
+		"en"		"ZAdmin"
+	}
+
+	// ===========================
+	// Weapons (core)
+	// ===========================
+
+	// General
+
+	"Zombie cant use weapon"
+	{
+		"en"		"Zombies can't use weapons!"
+	}
+
+	// Restrict
+
+	"Restrict weapon"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green\"{1}\" @defaulthas been restricted."
+	}
+
+	"Unrestrict weapon"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green\"{1}\" @defaulthas been unrestricted."
+	}
+
+	"Restrict weapon stopped"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green\"{1}\" @defaultis already restricted."
+	}
+
+	"Unrestrict weapon stopped"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green\"{1}\" @default has no restrictions set."
+	}
+
+	"Restrict weapon type"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapons of type @green\"{1}\" @defaulthave been restricted."
+	}
+
+	"Unrestrict weapon type"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapons of type @green\"{1}\" @defaulthave been unrestricted."
+	}
+
+	"Restrict weapon type stopped"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapons of type @green\"{1}\" @defaultare all already restricted."
+	}
+
+	"Unrestrict weapon type stopped"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapons of type @green\"{1}\" @defaulthave no restrictions set."
+	}
+
+	"Restrict weapon untoggleable"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green\"{1}\" @defaultmay not have its restrictions toggled."
+	}
+
+	"Weapon invalid"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green\"{1}\" @defaultis an invalid weapon (type) name."
+	}
+
+	"Weapon is restricted"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon @green{1} @defaultis restricted."
+	}
+
+	// ZMarket
+
+	"Weapons zmarket buyzone"
+	{
+		"en"		"You must be in a buyzone to use ZMarket."
+	}
+
+	"Weapons zmarket purchase with ammo"
+	{
+		"#format"	"{1:s}"
+		"en"		"You have purchased weapon @green{1}. @defaultSelect item again to buy ammo if you are low."
+	}
+
+	"Weapons zmarket purchase no ammo"
+	{
+		"#format"	"{1:s}"
+		"en"		"You have purchased item @green{1}."
+	}
+
+	"Weapons zmarket purchase max"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"Weapon @green{1} @defaulthas a purchase limit of @green{2}@default.  Wait until you respawn to try again."
+	}
+
+	"Weapons zmarket grenade max"
+	{
+		"#format"	"{1:d}"
+		"en"		"You may only carry {1} grenade(s) of this type."
+	}
+
+	"Weapons zmarket auto-rebuy toggle on"
+	{
+		"en"		"Auto-rebuy has been enabled, your weapon setup will be automatically purchased for you each time you spawn."
+	}
+
+	"Weapons zmarket auto-rebuy toggle off"
+	{
+		"en"		"Auto-rebuy has been disabled."
+	}
+
+	"Weapons zmarket updated weapon setup"
+	{
+		"en"		"You are not able to purchase a weapon at this time, but your weapon setup has been updated with this weapon."
+	}
+
+	"Weapons zmarket save current weapon setup"
+	{
+		"en"		"Saved current weapon setup, use rebuy option to purchase these weapons again."
+	}
+
+	"Weapons zmarket weapon setup restricted"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon {1} is a restricted weapon and has been automatically removed from your weapon setup."
+	}
+
+	// Commands
+
+	"Weapons command restrict syntax"
+	{
+		"en"		"Restricts a weapon or a weapon type. Usage: zr_restrict <weapon|weapon type> [weapon2|weapontype2] ..."
+	}
+
+	"Weapons command unrestrict syntax"
+	{
+		"en"		"Unrestricts a weapon or a weapon type. Usage: zr_unrestrict <weapon|weapon type> [weapon2|weapontype2] ..."
+	}
+
+	// Menu (Restrict)
+
+	"Weapons menu restrict main title"
+	{
+		"en"		"Weapons Management"
+	}
+
+	"Weapons menu restrict main restrict"
+	{
+		"en"		"Weapon Restrictions"
+	}
+
+	"Weapons menu restrict main market"
+	{
+		"en"		"ZMarket"
+	}
+
+	"Weapons menu restrict types title"
+	{
+		"en"		"Weapon Restrictions\nSelect Weapon Type:"
+	}
+
+	"Weapons menu restrict types weapon type title"
+	{
+		"#format"	"{1:s}"
+		"en"		"Weapon Restrictions\nWeapon Type: {1}\n[] = Restricted"
+	}
+
+	"Weapons menu restrict types restrict all"
+	{
+		"#format"	"{1:s}"
+		"en"		"Restrict weapon type {1}"
+	}
+
+	"Weapons menu restrict types unrestrict all"
+	{
+		"#format"	"{1:s}"
+		"en"		"Unrestrict weapon type {1}"
+	}
+
+	"Weapons menu restrict zmarket title"
+	{
+		"en"		"ZMarket\nSelect Setting:"
+	}
+
+	"Weapons menu restrict zmarket buyzone"
+	{
+		"#format"	"{1:s}"
+		"en"		"Buyzone Only - {1}"
+	}
+
+	// Menu (ZMarket)
+
+	"Weapons menu zmarket main title"
+	{
+		"en"		"ZMarket\nSelect an Option:"
+	}
+
+	"Weapons menu zmarket main rebuy saved setup"
+	{
+		"en"		"Rebuy Saved Setup"
+	}
+
+	"Weapons menu zmarket main buy weapons"
+	{
+		"en"		"Buy Weapons"
+	}
+
+	"Weapons menu zmarket main save current setup"
+	{
+		"en"		"Save Current Setup"
+	}
+
+	"Weapons menu zmarket main view weapon setup"
+	{
+		"en"		"View Weapon Setup"
+	}
+
+	"Weapons menu zmarket main auto-rebuy"
+	{
+		"#format"	"{1:s}"
+		"en"		"Auto-Rebuy (on spawn): {1}"
+	}
+
+	"Weapons menu zmarket weapon setup title"
+	{
+		"en"		"ZMarket\nCurrent Weapon Setup:\nSelect weapon slot to clear."
+	}
+
+	"Weapons menu zmarket weapon setup clear all"
+	{
+		"en"		"Clear All"
+	}
+
+	"Weapons menu zmarket weapon setup primary"
+	{
+		"en"		"Primary:"
+	}
+
+	"Weapons menu zmarket weapon setup secondary"
+	{
+		"en"		"Secondary:"
+	}
+
+	"Weapons menu zmarket weapon setup melee"
+	{
+		"en"		"Melee:"
+	}
+
+	"Weapons menu zmarket weapon setup projectile"
+	{
+		"en"		"Projectile:"
+	}
+
+	"Weapons menu zmarket weapon setup explosive"
+	{
+		"en"		"Explosive:"
+	}
+
+	"Weapons menu zmarket weapon setup nvgs"
+	{
+		"en"		"NVGs:"
+	}
+
+	"Weapons menu zmarket types title"
+	{
+		"en"		"ZMarket\nSelect Weapon Type:"
+	}
+
+	"Weapons menu zmarket types weapon type title"
+	{
+		"#format"	"{1:s}"
+		"en"		"ZMarket\nWeapon Type: {1}\n[] = Restricted"
+	}
+
+	"Weapons menu zmarket types weapon info"
+	{
+		"#format"	"{1:s},{2:d},{3:d}"
+		"en"		"{1} (${2})\nPurchases Left: {3}"
+	}
+
+	"Weapons menu zmarket types weapon ammo"
+	{
+		"en"		"Ammo"
+	}
+
+	"Weapons menu zmarket sub weapon setup title"
+	{
+		"en"		"ZMarket\nCurrent Weapon Setup:\nSelect weapon to clear."
+	}
+
+	"Weapons menu zmarket sub weapon setup clear all"
+	{
+		"en"		"Clear All"
+	}
+
+	// ===========================
+	// Hitgroups (core)
+	// ===========================
+
+	// Menu
+
+	"Hitgroups menu hitgroups title"
+	{
+		"en"		"Hitgroup Management\nCommands: zr_hitgroup(_enable_all/_headshots_only)\nSelect a Hitgroup to Toggle:"
+	}
+
+	"Hitgroups menu hitgroups enable all"
+	{
+		"en"		"Enable All Hitgroups"
+	}
+
+	"Hitgroups menu hitgroups headshots only"
+	{
+		"en"		"Headshots Only"
+	}
+
+	// Commands
+
+	"Hitgroups command syntax"
+	{
+		"en"		"Toggles or sets if a zombie's hitgroup can be damaged. Usage: zr_hitgroup <hitgroup alias> [1/0]"
+	}
+
+	"Hitgroups command related commands"
+	{
+		"en"		"Related command(s): zr_hitgroup_enable_all, zr_hitgroup_headshots_only"
+	}
+
+	"Hitgroups command syntax names"
+	{
+		"en"		"Hitgroup Names:"
+	}
+
+	"Hitgroups command successful on"
+	{
+		"#format"	"{1:s}"
+		"en"		"Damage for hitgroup \"{1}\" has been toggled on."
+	}
+
+	"Hitgroups command successful off"
+	{
+		"#format"	"{1:s}"
+		"en"		"Damage for hitgroup \"{1}\" has been toggled off."
+	}
+
+	"Hitgroups command invalid hitgroup"
+	{
+		"#format"	"{1:s}"
+		"en"		"\"{1}\" is not a valid hitgroup alias.  Type zr_hitgroup to view all aliases."
+	}
+
+	"Hitgroups command enable all successful"
+	{
+		"en"		"All zombie hitgroups have been enabled for damage."
+	}
+
+	"Hitgroups command headshots only successful"
+	{
+		"en"		"Zombies may now only be damaged by headshots."
+	}
+
+	// ===========================
+	// ZAdmin (core)
+	// ===========================
+
+	"ZAdmin main title"
+	{
+		"en"		"ZAdmin\nSelect Category:"
+	}
+
+	"ZAdmin main class multipliers"
+	{
+		"en"		"Class Multipliers"
+	}
+
+	"ZAdmin main weapons"
+	{
+		"en"		"Weapon Management"
+	}
+
+	"ZAdmin main hitgroups"
+	{
+		"en"		"Hitgroup Management"
+	}
+
+	"ZAdmin main zombie"
+	{
+		"en"		"Zombie Management"
+	}
+
+	"ZAdmin main force zspawn"
+	{
+		"en"		"Force ZSpawn"
+	}
+
+	"ZAdmin main force ztele"
+	{
+		"en"		"Force ZTele"
+	}
+
+	// ===========================
+	// AntiStick (module)
+	// ===========================
+
+	// Commands
+
+	"AntiStick command set width syntax"
+	{
+		"en"		"Sets the width of a model's hull. (See zr_antistick_list_models) Usage: zr_antistick_set_width <model/player> <width>"
+	}
+
+	"AntiStick command list models list"
+	{
+		"en"		"Player name:                        Model:                                              Hull width:\n-------------------------------------------------------------------------------------------------------------"
+	}
+
+	"AntiStick command list models name"
+	{
+		"#format"	"{1:-35s},{2:-51s},{3:-.2f}"
+		"en"		"{1} {2} {3}"
+	}
+
+	"AntiStick command set width successful"
+	{
+		"#format"	"{1:s},{2:f}"
+		"en"		"Model hull width for model \"{1}\" has been changed to \"{2}.\""
+	}
+
+	"AntiStick command set width invalid model"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid model/player specified: \"{1}\""
+	}
+
+	"AntiStick command set width invalid width"
+	{
+		"#format"	"{1:f}"
+		"en"		"Invalid model hull width specified: \"{1}\""
+	}
+
+	// ===========================
+	// Spawn Protect (module)
+	// ===========================
+
+	// General
+
+	"Spawn protection begin"
+	{
+		"#format"	"{1:d}"
+		"en"		"Zombies are present, you have {1} seconds to find a safe place before you lose immunity."
+	}
+
+	"Spawn protection end"
+	{
+		"en"		"You are now susceptible to zombie infection."
+	}
+
+	// HUD
+
+	"Spawn Protect"
+	{
+		"#format"	"{1:d}"
+		"en"		"Zombie protection ends in: {1} seconds."
+	}
+
+	// ===========================
+	// ZCookies (module)
+	// ===========================
+
+	"ZCookies Menu main title"
+	{
+		"en"		"ZCookies\nSelect a Cookie:"
+	}
+
+	"ZCookies menu main auto-rebuy"
+	{
+		"#format"	"{1:s}"
+		"en"		"ZMarket Auto-Rebuy: {1}"
+	}
+
+	"ZCookies menu main zhp"
+	{
+		"#format"	"{1:s}"
+		"en"		"ZHP Display: {1}"
+	}
+
+	"ZCookies menu main overlay"
+	{
+		"#format"	"{1:s}"
+		"en"		"Human/Zombie Class Overlay: {1}"
+	}
+
+	"ZCookies zmarket weapon setup"
+	{
+		"en"		"ZMarket Weapon Setup"
+	}
+
+	// ===========================
+	// ZSpawn (module)
+	// ===========================
+
+	// General
+
+	"ZSpawn double spawn"
+	{
+		"en"		"ZSpawn can only be used if you joined late during a round in progress."
+	}
+
+	"ZSpawn timelimit"
+	{
+		"#format"	"{1:d}"
+		"en"		"The timelimit ({1} seconds), to use ZSpawn, has already expired."
+	}
+
+	// Menu
+
+	"ZSpawn clients title"
+	{
+		"en"		"Force ZSpawn (zr_zspawn_force)\nSelect a Player:"
+	}
+
+	// Commands
+
+	"ZSpawn command force syntax"
+	{
+		"en"		"Force ZSpawn on a client. Usage: zr_zspawn_force <client> ['0' = Spawn as human | '1' = Spawn as zombie]"
+
+	}
+
+	"ZSpawn command force successful"
+	{
+		"#format"	"{1:s}"
+		"en"		"Player {1} was successfully spawned."
+	}
+
+	"ZSpawn command force unsuccessful"
+	{
+		"#format"	"{1:s}"
+		"en"		"Player {1} couldn't be spawned."
+	}
+
+	// ===========================
+	// ZTele (module)
+	// ===========================
+
+	// General
+
+	"ZTele restricted human"
+	{
+		"en"		"ZTele is restricted for humans at this time."
+	}
+
+	"ZTele max"
+	{
+		"#format"	"{1:d}"
+		"en"		"You have reached your max of {1} teleport(s) per round."
+	}
+
+	"ZTele in progress"
+	{
+		"en"		"You are currently pending teleportation."
+	}
+
+	"ZTele autocancel text"
+	{
+		"#format"	"{1:d}"
+		"en"		"Teleport has been cancelled.  (Restrictive boundary is {1} ft.)"
+	}
+
+	// Center Text
+
+	"ZTele countdown"
+	{
+		"#format"	"{1:d}"
+		"en"		"Teleporting back to spawn in: {1} seconds."
+	}
+
+	"ZTele autocancel centertext"
+	{
+		"en"		"Teleport has been cancelled."
+	}
+
+	"ZTele countdown end"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"Teleported back to spawn. (Count: {1}/{2})"
+	}
+
+	// Menu
+
+	"ZTele clients title"
+	{
+		"en"		"Force ZTele (zr_ztele_force)\nSelect a Player:"
+	}
+
+	// Commands
+
+	"ZTele command force syntax"
+	{
+		"en"		"Force ZTele on a client. Usage: zr_ztele_force <client>"
+
+	}
+
+	"ZTele command force successful"
+	{
+		"#format"	"{1:s}"
+		"en"		"Player {1} was successfully teleported."
+	}
+
+	"ZTele command force unsuccessful"
+	{
+		"#format"	"{1:s}"
+		"en"		"Player {1} couldn't be teleported."
+	}
+
+	// ===========================
+	// ZHP (module)
+	// ===========================
+
+	// General
+
+	"ZHP enable"
+	{
+		"en"		"HP display enabled, your real HP will be displayed after infection."
+	}
+
+	"ZHP disable"
+	{
+		"en"		"HP display disabled."
+	}
+
+	// HUD
+
+	"Display HP"
+	{
+		"#format"	"{1:d}"
+		"en"		"HP: {1}"
+	}
+
+	// ===========================
+	// Volumetric features (module)
+	// ===========================
+
+	"Vol Anticamp Def Message"
+	{
+		"en"		"This area is restricted, please move."
+	}
+
+	"Vol Anticamp"
+	{
+		"en"		"Anti-camp"
+	}
+
+	"Vol Classedit"
+	{
+		"en"		"Class editor"
+	}
+
+	"Vol No Action"
+	{
+		"en"		"No action"
+	}
+
+	"Vol Damage"
+	{
+		"en"		"Hurt player"
+	}
+
+	"Vol Slay"
+	{
+		"en"		"Kill player"
+	}
+
+	"Vol Drug"
+	{
+		"en"		"Drug player"
+	}
+
+	"Vol Ignite"
+	{
+		"en"		"Ignite player"
+	}
+
+	"Vol No Warning"
+	{
+		"en"		"No warning"
+	}
+
+	"Vol Chat"
+	{
+		"en"		"Chat area"
+	}
+
+	"Vol Center"
+	{
+		"en"		"Centered message"
+	}
+
+	"Vol Panel"
+	{
+		"en"		"Message in menu panel"
+	}
+
+	"Vol Conflict Priority"
+	{
+		"en"		"Use priority"
+	}
+
+	"Vol Conflict Merge"
+	{
+		"en"		"Merge (if possible)"
+	}
+
+	"Vol Fade None"
+	{
+		"en"		"No fading"
+	}
+
+	"Vol Fade LinCenter"
+	{
+		"en"		"Linear fading from center"
+	}
+
+	"Vol Fade LinDist"
+	{
+		"en"		"Linear fading between max/min boundaries"
+	}
+
+	"Vol Slayed"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"Slayed player \"{1}\" for not leaving a restricted area (ID: {2})."
+	}
+
+	"Vol Drugged"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"Drugged player \"{1}\" for not leaving a restricted area (ID: {2})."
+	}
+
+	"Vol Igniteed"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"Ignited player \"{1}\" for not leaving a restricted area (ID: {2})."
+	}
+	
+	"Vol Syntax Add"
+	{
+		"en"		"Creates a empty volume (no features attached) in the map. Usage: zr_vol_add <shape> <shape id> [params...]"
+	}
+	
+	"Vol Syntax Remove"
+	{
+		"en"		"Removes an existing volume. Usage: zr_vol_remove <index|name> [recursive removal: 0|1]"
+	}
+	
+	"Vol Syntax Shape Add"
+	{
+		"en"		"Creates a new shape to be used on a volume. Usage zr_vol_shape_add <shape> [params...]"
+	}
+	
+	"Vol Syntax Shape Remove"
+	{
+		"en"		"Removes the specified shape. Usage zr_vol_shape_remove <shape> <shape id> [recursive removal: 0|1]"
+	}
+	
+	"Vol Syntax Dump States"
+	{
+		"en"		"Dumps volume states for the specified player. Usage: zr_vol_dumpstates <index|targetname>"
+	}
+	
+	"Vol Syntax List"
+	{
+		"en"		"Lists existing volumes in the map, or dumps details about the specified volume. Usage: zr_vol_list [volume id]"
+	}
+	
+	"Vol Syntax Attach"
+	{
+		"en"		"Attaches a feature to a volume. Usage: zr_vol_attach <volume id> <feature type> <feature id>"
+	}
+	
+	"Vol Syntax Detach"
+	{
+		"en"		"Detaches a feature from a volume. Usage: zr_vol_detach <feature type> <feature id> [remove feautre: 0|1]"
+	}
+	
+	"Vol Syntax Anticamp Add"
+	{
+		"en"		"Creates a new anti-camp feature. Usage zr_vol_anticamp_add [params...]"
+	}
+	
+	"Vol Syntax Anticamp Remove"
+	{
+		"en"		"Removes the specified anti-camp feature. Usage zr_vol_anticamp_remove <anti-camp id> [recursive removal: 0|1]"
+	}
+	
+	"Vol Syntax Anticamp Default"
+	{
+		"en"		"Use \"zr_vol_anticamp_add -default\" to create a anti-camp feature with default settings."
+	}
+	
+	"Vol Syntax Classedit Add"
+	{
+		"en"		"Creates a new class editor feature. Usage zr_vol_classedit_add [params...]"
+	}
+	
+	"Vol Syntax Classedit Remove"
+	{
+		"en"		"Removes the specified class editor feature. Usage zr_vol_classedit_remove <class editor id> [recursive removal: 0|1]"
+	}
+	
+	"Vol Missing Parameters"
+	{
+		"en"		"Additional parameters must be specified."
+	}
+	
+	"Vol Param Vol Name"
+	{
+		"en"		"User defined name to use on volume (optional and not validated)."
+	}
+	
+	"Vol Param Shape Name"
+	{
+		"en"		"User defined name to use on shape (optional and not validated)."
+	}
+	
+	"Vol Param Shape"
+	{
+		"en"		"Shape of volume. Valid options: cuboid|sphere"
+	}
+	
+	"Vol Param Shape ID"
+	{
+		"en"		"Which shape to use (use zr_vol_shape_add to create one). Valid options: <index|name>"
+	}
+	
+	"Vol Param Shape ID Remove"
+	{
+		"en"		"Which shape to remove. Valid options: <index|name>"
+	}
+	
+	"Vol Param Params"
+	{
+		"en"		"Parameters:"
+	}
+	
+	"Vol Param Params Optional"
+	{
+		"en"		"Parameters (optional):"
+	}
+	
+	"Vol Param Cuboid Params"
+	{
+		"en"		"Parameters for cuboid shapes:"
+	}
+	
+	"Vol Param Sphere Params"
+	{
+		"en"		"Parameters for sphere shapes:"
+	}
+	
+	"Vol Param Effect"
+	{
+		"en"		"(NOT IMPLEMENTED) Effect to apply on volume."
+	}
+	
+	"Vol Param Effect Color"
+	{
+		"en"		"(NOT IMPLEMENTED) Effect color to use. RGB values (0-255 each)."
+	}
+	
+	"Vol Param Teamfilter"
+	{
+		"en"		"Which team(s) this volume applies to."
+	}
+	
+	"Vol Param Delay"
+	{
+		"en"		"Delay before triggering when a player enter the volume."
+	}
+	
+	"Vol Param Priority"
+	{
+		"en"		"(NOT IMPLEMENTED) Priority number (user defined). Highest number = highest priority."
+	}
+	
+	"Vol Param Conflict Action"
+	{
+		"en"		"(NOT IMPLEMENTED) What to do in case of conflicting overlapping volumes."
+	}
+	
+	"Vol Param Cuboid Min"
+	{
+		"en"		"Coordinates to first corner (user defined)."
+	}
+	
+	"Vol Param Cuboid Max"
+	{
+		"en"		"Coordinates to diagonally oposite corner to oposite height."
+	}
+	
+	"Vol Param Sphere Loc"
+	{
+		"en"		"Coordinates to location of the sphere."
+	}
+	
+	"Vol Param Sphere Radius"
+	{
+		"en"		"Size of sphere."
+	}
+	
+	"Vol Param Sphere Fade Type"
+	{
+		"en"		"Fade method to apply on attached features (if supported)."
+	}
+	
+	"Vol Param Sphere Min Dist"
+	{
+		"en"		"Start fade distance."
+	}
+	
+	"Vol Param Sphere Max Dist"
+	{
+		"en"		"End fade distance."
+	}
+	
+	"Vol Param Anticamp Name"
+	{
+		"en"		"User defined name to use on the anti-camp feature (optional and not validated)."
+	}
+	
+	"Vol Param Anticamp Interval"
+	{
+		"en"		"How often to trigger the anti-camp action."
+	}
+	
+	"Vol Param Anticamp Action"
+	{
+		"en"		"What to do with players in anti-camp volumes."
+	}
+	
+	"Vol Param Anticamp Amount"
+	{
+		"en"		"Amount for action, depending on action type. Usually time in seconds or damage amount."
+	}
+	
+	"Vol Param Anticamp Warning"
+	{
+		"en"		"Where to warn the player."
+	}
+	
+	"Vol Param Anticamp Message"
+	{
+		"en"		"Override default warning message. Max 255 bytes."
+	}
+	
+	"Vol Param ClassEdit Name"
+	{
+		"en"		"User defined name to use on the class editor feature (optional and not validated)."
+	}
+	
+	"Vol Param ClassEdit Mode"
+	{
+		"en"		"Mode of class editor. Whether to change entire class or just attributes."
+	}
+	
+	"Vol Param ClassEdit Class"
+	{
+		"en"		"Class index or name to use if mode is class."
+	}
+	
+	"Vol Attrib Index"
+	{
+		"en"		"Index:"
+	}
+	
+	"Vol Attrib In Volume"
+	{
+		"en"		"Player in volume:"
+	}
+	
+	"Vol Attrib Name"
+	{
+		"en"		"Name:"
+	}
+	
+	"Vol Attrib Enabled"
+	{
+		"en"		"Enabled:"
+	}
+	
+	"Vol Attrib Features"
+	{
+		"en"		"Features:"
+	}
+	
+	"Vol Attrib Total Volumes"
+	{
+		"en"		"Total volumes:"
+	}
+	
+	"Vol Attrib Interval"
+	{
+		"en"		"Interval:"
+	}
+	
+	"Vol Attrib Action"
+	{
+		"en"		"Action:"
+	}
+	
+	"Vol Attrib Action Amount"
+	{
+		"en"		"Action amount:"
+	}
+	
+	"Vol Attrib Warning Type"
+	{
+		"en"		"Warning type:"
+	}
+	
+	"Vol Attrib Warning Message"
+	{
+		"en"		"Warning message:"
+	}
+	
+	"Vol Attrib Shape"
+	{
+		"en"		"Shape:"
+	}
+	
+	"Vol Attrib Effect"
+	{
+		"en"		"Effect:"
+	}
+	
+	"Vol Attrib Effect Color"
+	{
+		"en"		"Effect color:"
+	}
+	
+	"Vol Attrib Teamfilter"
+	{
+		"en"		"Team filter:"
+	}
+	
+	"Vol Attrib Trigger Delay"
+	{
+		"en"		"Trigger delay:"
+	}
+	
+	"Vol Attrib Priority"
+	{
+		"en"		"Priority:"
+	}
+	
+	"Vol Attrib Conflict Action"
+	{
+		"en"		"Conflict action:"
+	}
+	
+	"Vol Attrib Min Loc"
+	{
+		"en"		"Minimum location:"
+	}
+	
+	"Vol Attrib Max Loc"
+	{
+		"en"		"Maximum location:"
+	}
+	
+	"Vol Attrib Loc"
+	{
+		"en"		"Location:"
+	}
+	
+	"Vol Attrib Radius"
+	{
+		"en"		"Radius:"
+	}
+	
+	"Vol Attrib Fade Type"
+	{
+		"en"		"Fade type:"
+	}
+	
+	"Vol Attrib Min Fade"
+	{
+		"en"		"Minimum fade distance:"
+	}
+	
+	"Vol Attrib Max Fade"
+	{
+		"en"		"Maximum fade distance:"
+	}
+	
+	"Vol Attrib Classedit Mode"
+	{
+		"en"		"Class editor mode:"
+	}
+	
+	"Vol Invalid Volume Id"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid volume index/name: {1}"
+	}
+	
+	"Vol Invalid Shape"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid shape: {1}"
+	}
+	
+	"Vol Invalid Shape Id"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid shape index/name: {1}"
+	}
+	
+	"Vol Invalid Feature"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid feature: {1}"
+	}
+	
+	"Vol Invalid Feature Id"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid feature index/name: {1}"
+	}
+	
+	"Vol Invalid Effect"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid effect: {1}"
+	}
+	
+	"Vol Invalid Effect Color"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid effect color: {1}"
+	}
+	
+	"Vol Invalid Teamfilter"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid effect: {1}"
+	}
+	
+	"Vol Invalid Conflict Action"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid effect: {1}"
+	}
+	
+	"Vol Invalid Anticamp Action"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid anti-camp action type: {1}"
+	}
+	
+	"Vol Invalid Anticamp Warning"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid anti-camp warning type: {1}"
+	}
+	
+	"Vol Invalid Anticamp Id"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid anti-camp index/name: {1}"
+	}
+	
+	"Vol Invalid ClassEdit Class"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid class name or index: {1}"
+	}
+	
+	"Vol Invalid ClassEdit Mode"
+	{
+		"#format"	"{1:s}"
+		"en"		"Invalid class editor mode: {1}"
+	}
+	
+	"Vol Invalid ClassEdit Attribute"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"Invalid class attribute value ({1}): {2}"
+	}
+	
+	"Vol Full"
+	{
+		"en"		"Maximum number of volumes reached."
+	}
+	
+	"Vol Cuboid"
+	{
+		"en"		"Cuboid"
+	}
+	
+	"Vol Cuboid Full"
+	{
+		"en"		"Maximum number of cuboid shapes reached."
+	}
+	
+	"Vol Cuboid Empty"
+	{
+		"en"		"Invalid cuboud size. Zero-area cuboid."
+	}
+	
+	"Vol Sphere"
+	{
+		"en"		"Sphere"
+	}
+	
+	"Vol Sphere Full"
+	{
+		"en"		"Maximum number of sphere shapes reached."
+	}
+	
+	"Vol Sphere Invalid Radius"
+	{
+		"en"		"Invalid radius. Cannot be zero or negative."
+	}
+	
+	"Vol Sphere Invalid Fade Distance"
+	{
+		"en"		"Invalid fade distance."
+	}
+	
+	"Vol Effect None"
+	{
+		"en"		"No effect"
+	}
+	
+	"Vol Effect Wireframe"
+	{
+		"en"		"Wireframe"
+	}
+	
+	"Vol Effect Smoke"
+	{
+		"en"		"Smoke"
+	}
+
+	"Vol Classedit No Change"
+	{
+		"en"		"(No change)"
+	}
+
+	"Vol Classedit Mode Name"
+	{
+		"en"		"Replace class"
+	}
+
+	"Vol Classedit Mode Attrib"
+	{
+		"en"		"Replace attributes"
+	}
+
+	"Vol Anticamp Full"
+	{
+		"en"		"Maximum number of anti-camp features reached."
+	}
+
+	"Vol Anticamp Invalid Interval"
+	{
+		"en"		"Invalid interval. Cannot be zero or negative."
+	}
+	
+	"Vol Added"
+	{
+		"#format"	"{1:d},{2:s}"
+		"en"		"Volume successfully added. Index: {1} (\"{2}\")"
+	}
+	
+	"Vol Removed"
+	{
+		"#format"	"{1:d},{2:s}"
+		"en"		"Volume {1} successfully removed. Recursive removal: {2}"
+	}
+	
+	"Vol Shape Added"
+	{
+		"#format"	"{1:s},{2:d},{3:s}"
+		"en"		"Shape ({1}) successfully added. Index: {2} (\"{3}\")"
+	}
+	
+	"Vol Shape Removed"
+	{
+		"#format"	"{1:d},{2:s},{3:s}"
+		"en"		"Shape {1} ({2}) successfully removed. Recursive removal: {3}"
+	}
+	
+	"Vol Attached"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"Feature ({1}) successfully attached to volume {2}."
+	}
+	
+	"Vol Detached"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"Feature ({1}) successfully detached from volume {2}."
+	}
+	
+	"Vol Already Attached"
+	{
+		"en"		"This feature is already attached to a volume."
+	}
+	
+	"Vol Already Detached"
+	{
+		"en"		"This feature is already detached."
+	}
+	
+	"Vol Anticamp Added"
+	{
+		"#format"	"{1:d},{2:s}"
+		"en"		"Anti-camp feature successfully added. Index: {1} (\"{2}\")"
+	}
+	
+	"Vol Anticamp Removed"
+	{
+		"#format"	"{1:d},{2:s},{3:s}"
+		"en"		"Anti-camp feature {1} ({2}) successfully removed. Recursive removal: {3}"
+	}
+	
+	"Vol ClassEdit Added"
+	{
+		"#format"	"{1:d},{2:s}"
+		"en"		"Class editor feature successfully added. Index: {1} (\"{2}\")"
+	}
+	
+	"Vol ClassEdit Removed"
+	{
+		"#format"	"{1:d},{2:s},{3:s}"
+		"en"		"Class editor feature {1} ({2}) successfully removed. Recursive removal: {3}"
+	}
+}

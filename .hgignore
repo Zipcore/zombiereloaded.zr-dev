@@ -1,0 +1,12 @@
+# use glob syntax.
+syntax: glob
+
+src/zr/hgversion.h.inc
+docs/changes.diff
+docs/changes/*
+
+build/*
+release/*
+
+patch.diff
+patch.txt
