@@ -96,8 +96,8 @@ ModuleMgr_OnPluginStart()
     // Now check each of the other base project files if they need more cells, and set the max to that if true.
     
     #if defined EVENT_MANAGER
-        if (sizeof(g_DummyEventData) > g_iMMMaxBlockSize)
-            g_iMMMaxBlockSize = sizeof(g_DummyEventData);
+        if (EM_DATA_CELL_COUNT > g_iMMMaxBlockSize)
+            g_iMMMaxBlockSize = EM_DATA_CELL_COUNT;
     #endif
     
     #if defined CONFIG_MANAGER
@@ -228,13 +228,13 @@ stock ModuleToggleQuery:ModuleMgr_Disable(Module:module)
         new any:eventdata[1][1];
         eventdata[0][0] = module;
         
-        EventMgr_Forward(Event_OnModuleDisable, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+        EventMgr_Forward(g_EvOnModuleDisable, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
         
         // Send this event only to the module being disabled.
         new Module:modules[2] = {INVALID_MODULE, ...};
         modules[0] = module;
         
-        EventMgr_Forward(Event_OnMyModuleDisable, g_CommonEventData1, 0, 0, g_CommonDataType1, modules);
+        EventMgr_Forward(g_EvOnMyModuleDisable, g_CommonEventData1, 0, 0, g_CommonDataType1, modules);
     #endif
     
     // Set the ModuleData_Disabled data to 'true'.
@@ -277,13 +277,13 @@ stock ModuleToggleQuery:ModuleMgr_Enable(Module:module)
         new any:eventdata[1][1];
         eventdata[0][0] = module;
         
-        EventMgr_Forward(Event_OnModuleEnable, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+        EventMgr_Forward(g_EvOnModuleEnable, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
         
         // Send this event only to the module being enabled.
         new Module:modules[2] = {INVALID_MODULE, ...};
         modules[0] = module;
         
-        new Action:result = EventMgr_Forward(Event_OnMyModuleEnable, g_CommonEventData1, 0, 0, g_CommonDataType1, modules);
+        new Action:result = EventMgr_Forward(g_EvOnMyModuleEnable, g_CommonEventData1, 0, 0, g_CommonDataType1, modules);
         if (result == Plugin_Handled)
             ModuleMgr_WriteCell(module, ModuleData_Disabled, true);
     #endif
@@ -347,7 +347,7 @@ stock Module:ModuleMgr_Find(ModuleData:data, any:value, Module:modules[] = {INVA
 /**
  * Finds any modules matching the given information.
  * 
- * @param data          The data to match the string with.
+ * @param data          The data to match the string with. (See enum ModuleData)
  * @param value         The string value of the data that must match.
  * @param casesensitive True if the strings must also match case.
  * @param modules       Output array containing a list of module identifiers that match. (optional)
@@ -783,7 +783,7 @@ stock Handle:ModuleMgr_GetList()
 #if defined PROJECT_BASE_CMD
 
 /**
- * Defines for the first element of the array above.
+ * Defines used to refer to the server sub-commands or client sub-commands.
  */
 #define BASECMD_SERVER 0
 #define BASECMD_CLIENT 1
@@ -1229,7 +1229,7 @@ public BaseCmd_Info(client, Handle:hParams, argc)
     bModuleDisabled = bool:ModuleMgr_ReadCell(module, ModuleData_Disabled);
     
     #if defined TRANSLATIONS_MANAGER
-        TransMgr_TranslateBoolToPhrase(client, !bModuleDisabled, BoolPhrase_YesNo, strModuleEnabled, sizeof(strModuleEnabled));
+        TransMgr_BoolToPhrase(client, !bModuleDisabled, BoolPhrase_YesNo, strModuleEnabled, sizeof(strModuleEnabled));
     #else
         IntToString(_:!bModuleDisabled, strModuleEnabled, sizeof(strModuleEnabled));
     #endif
@@ -1286,7 +1286,7 @@ public BaseCmd_List(client)
         bModuleDisabled = bool:ModuleMgr_ReadCell(module, ModuleData_Disabled);
         
         #if defined TRANSLATIONS_MANAGER
-            TransMgr_TranslateBoolToPhrase(client, !bModuleDisabled, BoolPhrase_EnabledDisabled, strModuleEnabled, sizeof(strModuleEnabled), true);
+            TransMgr_BoolToPhrase(client, !bModuleDisabled, BoolPhrase_EnabledDisabled, strModuleEnabled, sizeof(strModuleEnabled), true);
         #else
             IntToString(_:!bModuleDisabled, strModuleEnabled, sizeof(strModuleEnabled));
         #endif
