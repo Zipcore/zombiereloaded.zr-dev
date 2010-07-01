@@ -49,7 +49,20 @@
 /**
  * @endsection
  */
-
+ 
+ /**
+ * @section Default effect settings.
+ */
+#define ZR_VOL_WIREFRAME_LIFE       2.0
+#define ZR_VOL_WIREFRAME_WIDTH      10.0
+#define ZR_VOL_WIREFRAME_END_WIDTH  20.0
+#define ZR_VOL_WIREFRAME_FADE_LEN   10
+#define ZR_VOL_WIREFRAME_AMP        0.0
+#define ZR_VOL_WIREFRAME_SPEED      0
+/**
+ * @endsection
+ */
+ 
 /**
  * Total volumes that can be created in a map.
  */

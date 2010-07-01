@@ -246,3 +246,136 @@ VolCuboidBuildList(cuboid, String:buffer[], maxlen)
     
     return cellswritten;
 }
+
+/**
+ * Creates a wireframe effect on the specified cuboid.
+ */
+stock VolCuboidSendWireframe(client, cuboid, color[4])
+{
+    new cuboidCache[CuboidAttributes];
+    cuboidCache = Cuboids[cuboid];
+    
+    new Float:start[3];
+    new Float:end[3];
+    
+    new Float:corner1[3];
+    corner1[0] = cuboidCache[Cuboid_xMin];
+    corner1[1] = cuboidCache[Cuboid_yMin];
+    corner1[2] = cuboidCache[Cuboid_zMin];
+    
+    new Float:corner2[3];
+    corner2[0] = cuboidCache[Cuboid_xMax];
+    corner2[1] = cuboidCache[Cuboid_yMax];
+    corner2[2] = cuboidCache[Cuboid_zMax];
+    
+    /*******************
+     *   Front frame   *
+     *******************/
+    
+    // left vertical
+    end[0] = corner1[0];
+    end[1] = corner2[1];
+    end[2] = corner1[2];
+    TE_SetupBeamPoints(corner1, end, VolBeamSprite, VolBeamHalo, 0, 10, ZR_VOL_WIREFRAME_LIFE, ZR_VOL_WIREFRAME_WIDTH, ZR_VOL_WIREFRAME_END_WIDTH, ZR_VOL_WIREFRAME_FADE_LEN, ZR_VOL_WIREFRAME_AMP, color, ZR_VOL_WIREFRAME_SPEED);
+    TE_SendToClient(client);
+    
+    // right vertical
+    start[0] = corner2[0];
+    start[1] = corner1[1];
+    start[2] = corner1[2];
+    end[0] = corner2[0];
+    end[1] = corner2[1];
+    end[2] = corner1[2];
+    TE_SetupBeamPoints(start, end, VolBeamSprite, VolBeamHalo, 0, 10, ZR_VOL_WIREFRAME_LIFE, ZR_VOL_WIREFRAME_WIDTH, ZR_VOL_WIREFRAME_END_WIDTH, ZR_VOL_WIREFRAME_FADE_LEN, ZR_VOL_WIREFRAME_AMP, color, ZR_VOL_WIREFRAME_SPEED);
+    TE_SendToClient(client);
+    
+    // top horizontal
+    start[0] = corner1[0];
+    start[1] = corner2[1];
+    start[2] = corner1[2];
+    TE_SetupBeamPoints(start, end, VolBeamSprite, VolBeamHalo, 0, 10, ZR_VOL_WIREFRAME_LIFE, ZR_VOL_WIREFRAME_WIDTH, ZR_VOL_WIREFRAME_END_WIDTH, ZR_VOL_WIREFRAME_FADE_LEN, ZR_VOL_WIREFRAME_AMP, color, ZR_VOL_WIREFRAME_SPEED);
+    TE_SendToClient(client);
+    
+    // bottom horizontal
+    end[0] = corner2[0];
+    end[1] = corner1[1];
+    end[2] = corner1[2];
+    TE_SetupBeamPoints(corner1, end, VolBeamSprite, VolBeamHalo, 0, 10, ZR_VOL_WIREFRAME_LIFE, ZR_VOL_WIREFRAME_WIDTH, ZR_VOL_WIREFRAME_END_WIDTH, ZR_VOL_WIREFRAME_FADE_LEN, ZR_VOL_WIREFRAME_AMP, color, ZR_VOL_WIREFRAME_SPEED);
+    TE_SendToClient(client);
+    
+    /******************
+     *   Back frame   *
+     ******************/
+    
+    // left vertical
+    start[0] = corner1[0];
+    start[1] = corner1[1];
+    start[2] = corner2[2];
+    end[0] = corner1[0];
+    end[1] = corner2[1];
+    end[2] = corner2[2];
+    TE_SetupBeamPoints(start, end, VolBeamSprite, VolBeamHalo, 0, 10, ZR_VOL_WIREFRAME_LIFE, ZR_VOL_WIREFRAME_WIDTH, ZR_VOL_WIREFRAME_END_WIDTH, ZR_VOL_WIREFRAME_FADE_LEN, ZR_VOL_WIREFRAME_AMP, color, ZR_VOL_WIREFRAME_SPEED);
+    TE_SendToClient(client);
+    
+    // right vertical
+    start[0] = corner2[0];
+    start[1] = corner1[1];
+    start[2] = corner2[2];
+    TE_SetupBeamPoints(start, corner2, VolBeamSprite, VolBeamHalo, 0, 10, ZR_VOL_WIREFRAME_LIFE, ZR_VOL_WIREFRAME_WIDTH, ZR_VOL_WIREFRAME_END_WIDTH, ZR_VOL_WIREFRAME_FADE_LEN, ZR_VOL_WIREFRAME_AMP, color, ZR_VOL_WIREFRAME_SPEED);
+    TE_SendToClient(client);
+    
+    // top horizontal
+    start[0] = corner1[0];
+    start[1] = corner2[1];
+    start[2] = corner2[2];
+    TE_SetupBeamPoints(start, corner2, VolBeamSprite, VolBeamHalo, 0, 10, ZR_VOL_WIREFRAME_LIFE, ZR_VOL_WIREFRAME_WIDTH, ZR_VOL_WIREFRAME_END_WIDTH, ZR_VOL_WIREFRAME_FADE_LEN, ZR_VOL_WIREFRAME_AMP, color, ZR_VOL_WIREFRAME_SPEED);
+    TE_SendToClient(client);
+    
+    // bottom horizontal
+    start[0] = corner1[0];
+    start[1] = corner1[1];
+    start[2] = corner2[2];
+    end[0] = corner2[0];
+    end[1] = corner1[1];
+    end[2] = corner2[2];
+    TE_SetupBeamPoints(start, end, VolBeamSprite, VolBeamHalo, 0, 10, ZR_VOL_WIREFRAME_LIFE, ZR_VOL_WIREFRAME_WIDTH, ZR_VOL_WIREFRAME_END_WIDTH, ZR_VOL_WIREFRAME_FADE_LEN, ZR_VOL_WIREFRAME_AMP, color, ZR_VOL_WIREFRAME_SPEED);
+    TE_SendToClient(client);
+    
+    /****************************
+     *   Lines between frames   *
+     ****************************/
+    
+    // top left
+    start[0] = corner1[0];
+    start[1] = corner2[1];
+    start[2] = corner1[2];
+    end[0] = corner1[0];
+    end[1] = corner2[1];
+    end[2] = corner2[2];
+    TE_SetupBeamPoints(start, end, VolBeamSprite, VolBeamHalo, 0, 10, ZR_VOL_WIREFRAME_LIFE, ZR_VOL_WIREFRAME_WIDTH, ZR_VOL_WIREFRAME_END_WIDTH, ZR_VOL_WIREFRAME_FADE_LEN, ZR_VOL_WIREFRAME_AMP, color, ZR_VOL_WIREFRAME_SPEED);
+    TE_SendToClient(client);
+    
+    // top right
+    start[0] = corner2[0];
+    start[1] = corner2[1];
+    start[2] = corner1[2];
+    TE_SetupBeamPoints(start, corner2, VolBeamSprite, VolBeamHalo, 0, 10, ZR_VOL_WIREFRAME_LIFE, ZR_VOL_WIREFRAME_WIDTH, ZR_VOL_WIREFRAME_END_WIDTH, ZR_VOL_WIREFRAME_FADE_LEN, ZR_VOL_WIREFRAME_AMP, color, ZR_VOL_WIREFRAME_SPEED);
+    TE_SendToClient(client);
+    
+    // bottom left
+    end[0] = corner1[0];
+    end[1] = corner1[1];
+    end[2] = corner2[2];
+    TE_SetupBeamPoints(corner1, end, VolBeamSprite, VolBeamHalo, 0, 10, ZR_VOL_WIREFRAME_LIFE, ZR_VOL_WIREFRAME_WIDTH, ZR_VOL_WIREFRAME_END_WIDTH, ZR_VOL_WIREFRAME_FADE_LEN, ZR_VOL_WIREFRAME_AMP, color, ZR_VOL_WIREFRAME_SPEED);
+    TE_SendToClient(client);
+    
+    // bottom right
+    start[0] = corner2[0];
+    start[1] = corner1[1];
+    start[2] = corner1[2];
+    end[0] = corner2[0];
+    end[1] = corner1[1];
+    end[2] = corner2[2];
+    TE_SetupBeamPoints(start, end, VolBeamSprite, VolBeamHalo, 0, 10, ZR_VOL_WIREFRAME_LIFE, ZR_VOL_WIREFRAME_WIDTH, ZR_VOL_WIREFRAME_END_WIDTH, ZR_VOL_WIREFRAME_FADE_LEN, ZR_VOL_WIREFRAME_AMP, color, ZR_VOL_WIREFRAME_SPEED);
+    TE_SendToClient(client);
+}
