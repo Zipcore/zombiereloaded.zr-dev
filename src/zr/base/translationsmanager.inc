@@ -326,6 +326,8 @@ stock TransMgr_BoolToPhrase(target, bool:boolean, BoolPhrases:boolphrase, String
  * @param target        The client index.  LANG_SERVER to use server's language.
  * @param boolphrase    The boolean phrase pair to translate from.
  * @param phrase        The bool phrase to translate to a bool.
+ * 
+ * @return              A value from enum PhraseToBool.  See top of file.
  */
 stock PhraseToBool:TransMgr_PhraseToBool(target, BoolPhrases:boolphrase, const String:phrase[])
 {
@@ -364,8 +366,10 @@ stock PhraseToBool:TransMgr_PhraseToBool(target, BoolPhrases:boolphrase, const S
 /**
  * Translates a text phrase into a boolean value.  Uses english language.  Use this for config files.
  * 
- * @param boolphrase    The boolean phrase pair to translate from.
+ * @param boolphrase    The boolean phrase pair to translate from.  See enum BoolPhrases.
  * @param phrase        The bool phrase to translate to a bool.
+ * 
+ * @return              A value from enum PhraseToBool.  See top of file.
  */
 stock PhraseToBool:TransMgr_PhraseToBoolEx(BoolPhrases:boolphrase, const String:phrase[])
 {
@@ -397,6 +401,24 @@ stock PhraseToBool:TransMgr_PhraseToBoolEx(BoolPhrases:boolphrase, const String:
         return PhraseToBool_False;
     
     return PhraseToBool_Neither;
+}
+
+/**
+ * Same as TransMgr_PhraseToBoolEx, except gets the phrase from a keyvalues structure.
+ * 
+ * @param kv            The kv handle.
+ * @param key           The keyvalue key to get value from.
+ * @param boolphrase    The boolean phrase pair to translate from.  See enum BoolPhrases.
+ * @param defvalue      The string value used if the key doesn't exist.
+ * 
+ * @return              A value from enum PhraseToBool.  See top of file.
+ */
+stock PhraseToBool:TransMgr_KvPhraseToBoolEx(Handle:kv, BoolPhrases:boolphrase, const String:key[], const String:defvalue[] = "no")
+{
+    decl String:phrase[16];
+    KvGetString(kv, key, phrase, sizeof(phrase), defvalue);
+    
+    return TransMgr_PhraseToBoolEx(boolphrase, phrase);
 }
 
 // **********************************************
