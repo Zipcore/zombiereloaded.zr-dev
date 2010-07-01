@@ -1,0 +1,48 @@
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			"game"		"cstrike"
+		}
+
+		"Offsets"
+		{
+			"FlashlightIsOn"
+			{
+				"windows"	"290"
+				"linux"		"291"
+			}
+
+			"FlashlightTurnOn"
+			{
+				"windows"	"291"
+				"linux"		"292"
+			}
+
+			"FlashlightTurnOff"
+			{
+				"windows"	"292"
+				"linux"		"293"
+			}
+		}
+
+		"Signatures"
+		{
+			"TerminateRound"
+			{
+				"library"	"server"
+				"windows"	"\x83\xEC\x2A\x53\x8B\x5C\x2A\x2A\x55\x56\x57\x33\xF6\x8B\xE9\x33\xFF\x83\xFB\x2A\x89"
+				"linux"		"@_ZN12CCSGameRules14TerminateRoundEfi"
+			}
+
+			"CSWeaponDrop"
+			{
+				"library"	"server"
+				"windows"	"\x81\xEC\x2A\x2A\x2A\x2A\x53\x55\x56\x57\x8B\xBC\x2A\x2A\x2A\x2A\x2A\x32\xDB\x85\xFF\x8B\xF1\x0F"
+				"linux"		"@_ZN9CCSPlayer12CSWeaponDropEP17CBaseCombatWeaponbb"
+			}
+		}
+	}
+}
