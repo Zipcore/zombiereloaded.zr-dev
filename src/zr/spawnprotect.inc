@@ -29,8 +29,9 @@
  * @section
  * Default attribute values to use in case of invalid values in config.
  */
-#define SPAWNPROTECT_DEFAULT_SPEED 300.0
-#define SPAWNPROTECT_DEFAULT_ALPHA 0
+#define SPAWNPROTECT_DEFAULT_SPEED_LMV      600.0
+#define SPAWNPROTECT_DEFAULT_SPEED_PROP     250.0
+#define SPAWNPROTECT_DEFAULT_ALPHA          0
 /**
  * @endsection
  */
@@ -141,28 +142,17 @@ SpawnProtectStart(client)
     new alpha = GetConVarInt(g_hCvarsList[CVAR_SPAWNPROTECT_ALPHA]);
     
     // Validate attributes
-    new Float:min;
-    new Float:max;
-    switch (ClassSpeedMethod)
-    {
-        case ClassSpeed_LMV:
-        {
-            min = ZR_CLASS_SPEED_LMV_MIN;
-            max = ZR_CLASS_SPEED_LMV_MAX;
-        }
-        case ClassSpeed_Prop:
-        {
-            min = ZR_CLASS_SPEED_PROP_MIN;
-            max = ZR_CLASS_SPEED_PROP_MAX;
-        }
-    }
-    if (speed < min && speed > max)
+    if (!ClassIsValidSpeed(speed))
     {
         // Reset to default and log a warning.
-        speed = SPAWNPROTECT_DEFAULT_SPEED;
+        switch (ClassSpeedMethod)
+        {
+            case ClassSpeed_LMV: speed = SPAWNPROTECT_DEFAULT_SPEED_LMV;
+            case ClassSpeed_Prop: speed = SPAWNPROTECT_DEFAULT_SPEED_PROP;
+        }
         LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModules:LogModule_Spawnprotect, "Config validation", "Out of range value in cvar zr_spawnprotect_speed (%f). Using default value.", speed);
     }
-    if (alpha < ZR_CLASS_ALPHA_INITIAL_MIN && alpha > ZR_CLASS_ALPHA_INITIAL_MAX)
+    if (!ClassIsValidAlphaInitial(alpha))
     {
         // Reset to default and log a warning.
         alpha = SPAWNPROTECT_DEFAULT_ALPHA;
