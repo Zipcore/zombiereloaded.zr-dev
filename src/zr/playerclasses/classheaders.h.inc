@@ -152,7 +152,7 @@
 #define ZR_CLASS_SPEED_LMV_MIN              10.0
 #define ZR_CLASS_SPEED_LMV_MAX              2000.0
 #define ZR_CLASS_SPEED_PROP_MIN             -150.0
-#define ZR_CLASS_SPEED_PROP_MAX             300.0   /** Also limited by sv_maxspeed, cl_forwardspeed, cl_backspeed and cl_sidespeed. */
+#define ZR_CLASS_SPEED_PROP_MAX             800.0
 #define ZR_CLASS_KNOCKBACK_MIN              -30.0
 #define ZR_CLASS_KNOCKBACK_MAX              30.0
 #define ZR_CLASS_KNOCKBACK_IGNORE           -31.0   /** Used by class editor volumetric feature. */
@@ -374,6 +374,5 @@ enum ClassSpeedMethods
 {
     ClassSpeed_Invalid = -1,
     ClassSpeed_LMV,             /** Modifies lagged movement value. */
-    ClassSpeed_Prop,            /** Modifies players' max speed property(m_flMaxspeed). */
-    ClassSpeed_CommandHook      /** Modifies speed value sent in commands by the client. */
+    ClassSpeed_Prop,            /** Modifies players' max speed property (m_flMaxspeed). */
 }

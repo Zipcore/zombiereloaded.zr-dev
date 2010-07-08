@@ -1333,11 +1333,6 @@ stock bool:ClassIsValidSpeed(Float:speed)
             min = ZR_CLASS_SPEED_PROP_MIN;
             max = ZR_CLASS_SPEED_PROP_MAX;
         }
-        case ClassSpeed_CommandHook:
-        {
-            // Not implemented yet.
-            return false;
-        }
         default:
         {
             // This should never happen.
