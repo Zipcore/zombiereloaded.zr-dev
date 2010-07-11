@@ -122,6 +122,9 @@
 #include "zr/volfeatures/volfeatures"
 #include "zr/debugtools"
 
+// New modules
+#include "zr/modules/mapconfig"
+
 // Include this last since nothing should be using it anyway.  Aside from external plugins.
 #include "zr/api/api"
 /**
