@@ -138,7 +138,7 @@ public Plugin:myinfo =
     author = "Greyscale | Richard Helgeby",
     description = "Infection/survival style gameplay",
     version = VERSION,
-    url = "http://www.zombiereloaded.com"
+    url = "http://code.google.com/p/zombiereloaded/"
 };
 
 /**
