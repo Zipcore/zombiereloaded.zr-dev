@@ -79,9 +79,13 @@ new ProjectEvent:g_EvWeaponFire;
 enum EventDataTypes
 {
     DataType_Cell,
+    DataType_CellRef,
     DataType_Float,
+    DataType_FloatRef,
     DataType_Array,
-    DataType_String
+    DataType_ArrayRef,
+    DataType_String,
+    DataType_StringRef,
 }
 
 /**
