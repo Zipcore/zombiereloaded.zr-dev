@@ -58,7 +58,7 @@ BaseAdapter_Register()
     //EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnMyModuleDisable",      "BaseAdapter_OnMyModuleDisable");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnMapStart",             "BaseAdapter_OnMapStart");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnMapEnd",               "BaseAdapter_OnMapEnd");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnAutoConfigsBuffered",  "BaseAdapter_OnAutoConfigsBuffd");
+    //EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnAutoConfigsBuffered",  "BaseAdapter_OnAutoConfigsBuffd");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnConfigsExecuted",      "BaseAdapter_OnConfigsExecuted");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnClientPutInServer",    "BaseAdapter_OnClientPutInServer");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnClientConnected",      "BaseAdapter_OnClientConnected");
@@ -188,11 +188,11 @@ public BaseAdapter_OnMapEnd()
  * This is called before OnConfigsExecuted but any time after OnMapStart.
  * Per-map settings should be set here.
  */
-public BaseAdapter_OnAutoConfigsBuffd()
+/*public BaseAdapter_OnAutoConfigsBuffd()
 {
 	// Load map configurations.
     ConfigLoad();
-}
+}*/
 
 /**
  * All convars are set, cvar-dependent code should use this.
@@ -214,7 +214,7 @@ public BaseAdapter_OnConfigsExecuted()
     VolLoad();
     
     // Forward event to modules. (OnModulesLoaded)
-    ConfigOnModulesLoaded();
+    //ConfigOnModulesLoaded();
     ClassOnModulesLoaded();
 }
 

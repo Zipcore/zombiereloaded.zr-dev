@@ -200,7 +200,7 @@ ConfigOnCommandsCreate()
 /**
  * Load plugin configs. Executes map configs.
  */
-ConfigLoad()
+/*ConfigLoad()
 {
     decl String:mapconfig[PLATFORM_MAX_PATH];
     
@@ -223,7 +223,7 @@ ConfigLoad()
     
     // Log action.
     LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Config, "Map Configs", "Executed map config file: %s", path);
-}
+}*/
 
 /**
  * Executed when modules are done loading. After all init calls in
@@ -231,7 +231,7 @@ ConfigLoad()
  *
  * Executes post map configs if they exist.
  */
-ConfigOnModulesLoaded()
+/*ConfigOnModulesLoaded()
 {
     decl String:mapname[256];
     decl String:mapconfig[PLATFORM_MAX_PATH];
@@ -261,7 +261,7 @@ ConfigOnModulesLoaded()
     
     // Log action.
     LogEvent(false, LogTypeOld_Normal, LOG_CORE_EVENTS, LogModule_Config, "Post Map Configs", "Executed post map config file: %s", path);
-}
+}*/
 
 /**
  * Used by modules that rely on configs to register their config file info.
