@@ -318,7 +318,7 @@ stock Action:EventMgr_Forward(ProjectEvent:eventid, any:eventdata[][], numValues
     new count = GetArraySize(g_hEventModuleCache[eventid]);
     for (new moduleindex = 0; moduleindex < count; moduleindex++)
     {
-        // Read moduleindex as a Module type.
+        // Get the module identifier from the module cache for this event.
         module = Module:GetArrayCell(g_hEventModuleCache[eventid], moduleindex);
         
         // If the module is disabled, then stop this iteration.
@@ -351,10 +351,14 @@ stock Action:EventMgr_Forward(ProjectEvent:eventid, any:eventdata[][], numValues
         {
             switch (eventdatatypes[x])
             {
-                case DataType_Cell:     Call_PushCell(_:eventdata[x][0]);
-                case DataType_Float:    Call_PushFloat(Float:eventdata[x][0]);
-                case DataType_Array:    Call_PushArray(eventdata[x], size);
-                case DataType_String:   Call_PushString(eventdata[x]);
+                case DataType_Cell:         Call_PushCell(_:eventdata[x][0]);
+                case DataType_CellRef:      Call_PushCellRef(_:eventdata[x][0]);
+                case DataType_Float:        Call_PushFloat(Float:eventdata[x][0]);
+                case DataType_FloatRef:     Call_PushFloatRef(Float:eventdata[x][0]);
+                case DataType_Array:        Call_PushArray(eventdata[x], size);
+                case DataType_ArrayRef:     Call_PushArrayEx(eventdata[x], size, SM_PARAM_COPYBACK);
+                case DataType_String:       Call_PushString(eventdata[x]);
+                case DataType_StringRef:    Call_PushStringEx(eventdata[x], size, 0, SM_PARAM_COPYBACK);
             }
         }
         
@@ -372,7 +376,7 @@ stock Action:EventMgr_Forward(ProjectEvent:eventid, any:eventdata[][], numValues
     
     #if defined PROFILE_EVENTS
         StopProfiling(profiler);
-        LogMessage("PROFILER: Event %s: Forwarded to %d modules, taking %f seconds to do.", g_ProjectEventNames[eventid], count, GetProfilerTime(profiler));
+        LogMessage("PROFILER: Event %s: Forwarded to %d modules, taking %f seconds to do.", g_EMEvents[_:eventid], count, GetProfilerTime(profiler));
         CloseHandle(profiler);
     #endif
     
