@@ -769,7 +769,7 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
         new bool:zombierespawn = GetConVarBool(g_hCvarsList[CVAR_MZOMBIE_RESPAWN]);
         if(zombierespawn)
         {
-            ZTeleTeleportClient(client);
+            ZTele_TeleportClient(client);
         }
         
         // If the infect freeze cvar is above 0, then freeze the client.
@@ -784,7 +784,7 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     {
         if (respawnoverride && respawn)
         {
-            ZTeleTeleportClient(client);
+            ZTele_TeleportClient(client);
         }
     }
     
@@ -807,7 +807,7 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     RoundEndOnClientInfected();
     DamageOnClientInfected(client, motherinfect);
     SEffectsOnClientInfected(client);
-    ZTeleOnClientInfected(client);
+    ZTele_OnClientInfected(client);
     ZHPOnClientInfected(client);
     AmmoOnClientInfected(client);
     VolOnClientInfected(client);
@@ -856,7 +856,7 @@ InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
     // Check if we should respawn the client.
     if (respawn)
     {
-        ZTeleTeleportClient(client);
+        ZTele_TeleportClient(client);
     }
     
     // Check if we should spawn protect the client.
@@ -875,7 +875,7 @@ InfectZombieToHuman(client, bool:respawn = false, bool:protect = false)
     ClassOnClientHuman(client);
     RoundEndOnClientHuman();
     SEffectsOnClientHuman(client);
-    ZTeleOnClientHuman(client);
+    ZTele_OnClientHuman(client);
     AmmoOnClientHuman(client);
     VolOnClientHuman(client);
     APIOnClientHuman(client, respawn, protect);

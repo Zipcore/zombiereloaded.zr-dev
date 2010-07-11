@@ -185,15 +185,6 @@ enum CvarsList
     Handle:CVAR_ZSPAWN_TIMELIMIT,
     Handle:CVAR_ZSPAWN_TIMELIMIT_TIME,
     Handle:CVAR_ZSPAWN_TIMELIMIT_ZOMBIE,
-    Handle:CVAR_ZTELE_ZOMBIE,
-    Handle:CVAR_ZTELE_HUMAN_BEFORE,
-    Handle:CVAR_ZTELE_HUMAN_AFTER,
-    Handle:CVAR_ZTELE_DELAY_ZOMBIE,
-    Handle:CVAR_ZTELE_DELAY_HUMAN,
-    Handle:CVAR_ZTELE_MAX_ZOMBIE,
-    Handle:CVAR_ZTELE_MAX_HUMAN,
-    Handle:CVAR_ZTELE_AUTOCANCEL,
-    Handle:CVAR_ZTELE_AUTOCANCEL_DISTANCE,
     Handle:CVAR_ZHP,
     Handle:CVAR_ZHP_DEFAULT,
 }
@@ -534,20 +525,6 @@ CvarsCreate()
     g_hCvarsList[CVAR_ZSPAWN_TIMELIMIT]                 =    CreateConVar("zr_zspawn_timelimit",            "1",        "Put a time limit on the use of ZSpawn.");
     g_hCvarsList[CVAR_ZSPAWN_TIMELIMIT_TIME]            =    CreateConVar("zr_zspawn_timelimit_time",       "120.0",    "Time from the start of the round to allow ZSpawn. [Dependency: zr_zspawn_timelimit]");
     g_hCvarsList[CVAR_ZSPAWN_TIMELIMIT_ZOMBIE]          =    CreateConVar("zr_zspawn_timelimit_zombie",     "1",        "Spawn player on the zombie team AFTER the timelimit is up. ['-1' = Block ZSpawn | '0' = Spawn as human | '1' = Spawn as zombie | Dependency: zr_zspawn_timelimit]");
-    
-    
-    // ===========================
-    // ZTele (module)
-    // ===========================
-    g_hCvarsList[CVAR_ZTELE_ZOMBIE]                     =    CreateConVar("zr_ztele_zombie",                "1",    "Allow zombies to use ZTele.");
-    g_hCvarsList[CVAR_ZTELE_HUMAN_BEFORE]               =    CreateConVar("zr_ztele_human_before",          "1",    "Allow humans to use ZTele before the mother zombie has spawned.");
-    g_hCvarsList[CVAR_ZTELE_HUMAN_AFTER]                =    CreateConVar("zr_ztele_human_after",           "1",    "Allow humans to use ZTele after the mother zombie has spawned.");
-    g_hCvarsList[CVAR_ZTELE_DELAY_ZOMBIE]               =    CreateConVar("zr_ztele_delay_zombie",          "3.0",  "Time between using ZTele command and teleportation for zombies. [Dependency: zr_ztele_zombie]");
-    g_hCvarsList[CVAR_ZTELE_DELAY_HUMAN]                =    CreateConVar("zr_ztele_delay_human",           "3.0",  "Time between using ZTele command and teleportation for humans. [Dependency: zr_ztele_human_(before)/(after)]");
-    g_hCvarsList[CVAR_ZTELE_MAX_ZOMBIE]                 =    CreateConVar("zr_ztele_max_zombie",            "3",    "Max number of times a zombie is allowed to use ZTele per round. [Dependency: zr_ztele_zombie]");
-    g_hCvarsList[CVAR_ZTELE_MAX_HUMAN]                  =    CreateConVar("zr_ztele_max_human",             "1",    "Max number of times a human is allowed to use ZTele per round. [Dependency: zr_ztele_human_(before)/(after)]");
-    g_hCvarsList[CVAR_ZTELE_AUTOCANCEL]                 =    CreateConVar("zr_ztele_autocancel",            "1",    "Automatically cancel ZTele if player moves out of a set boundary. [Dependency: zr_ztele_(zombie)/(human)[_(before)/(after)]]");
-    g_hCvarsList[CVAR_ZTELE_AUTOCANCEL_DISTANCE]        =    CreateConVar("zr_ztele_autocancel_distance",   "320",  "Maximum distance, in units, player is allowed to travel before teleport is cancelled. [Dependency: zr_ztele_autocancel]");
     
     
     // ===========================

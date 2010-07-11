@@ -3,9 +3,9 @@
  *
  *  Zombie:Reloaded
  *
- *  File:          commands.inc
- *  Type:          Core
- *  Description:   Console command creation and hooking.
+ *  File:          utilities.inc
+ *  Type:          Module
+ *  Description:   Place for various utility functions.
  *
  *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
@@ -26,32 +26,30 @@
  */
 
 /**
- * Commands are created/hooked.
+ * Check if a client index is on a team.
+ * 
+ * @param client    The client index.
+ * 
+ * @return          True if client is on a team, false otherwise.
  */
-CommandsInit()
+stock bool:Util_IsClientOnTeam(client)
 {
-    // Forward event to modules. (create commands)
-    ConfigOnCommandsCreate();
-    LogOnCommandsCreate();
-    ClassOnCommandsCreate();
-    WeaponsOnCommandsCreate();
-    HitgroupsOnCommandsCreate();
-    InfectOnCommandsCreate();
-    MenuOnCommandsCreate();
-    ZAdminOnCommandsCreate();
-    AntiStickOnCommandsCreate();
-    ZCookiesOnCommandsCreate();
-    ZSpawnOnCommandsCreate();
-    ZHPOnCommandsCreate();
-    VolOnCommandsCreate();
-    ZombieSoundsOnCommandsCreate();
-    
-    #if defined ADD_VERSION_INFO
-        VersionOnCommandsCreate();
+    #if defined PROJECT_GAME_CSS
+    new cteam = GetClientTeam(client);
+    return (cteam == CS_TEAM_T || cteam == CS_TEAM_CT);
     #endif
-    
-    DebugOnCommandsCreate();
-    
-    // Forward event to modules. (hook commands)
-    ClassOnCommandsHook();
+}
+
+/**
+ * Closes a handle and sets it to invalid handle.
+ * 
+ * @param handle    The handle to close.
+ */
+stock Util_CloseHandle(&Handle:handle)
+{
+    if (handle != INVALID_HANDLE)
+    {
+        CloseHandle(handle);
+        handle = INVALID_HANDLE;
+    }
 }

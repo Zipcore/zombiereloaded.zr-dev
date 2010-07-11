@@ -52,6 +52,7 @@ stock ForwardOnPluginStart()
     // Forward the OnPluginStart event to all modules here.
     BaseAdapter_OnPluginStart();
     MapConfig_OnPluginStart();
+    ZTele_OnPluginStart();
 }
 
 // **********************************************

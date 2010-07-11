@@ -73,6 +73,7 @@
 
 // Core includes.
 #include "zr/zombiereloaded"
+#include "zr/utilities"
 
 #include "zr/translation"
 #include "zr/cvars"
@@ -115,7 +116,7 @@
 #include "zr/napalm"
 #include "zr/jumpboost"
 #include "zr/zspawn"
-#include "zr/ztele"
+//#include "zr/ztele"
 #include "zr/zhp"
 #include "zr/zcookies"
 #include "zr/jumpboost"
@@ -124,6 +125,7 @@
 
 // New modules
 #include "zr/modules/mapconfig"
+#include "zr/modules/ztele"
 
 // Include this last since nothing should be using it anyway.  Aside from external plugins.
 #include "zr/api/api"
