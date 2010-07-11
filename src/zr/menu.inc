@@ -184,7 +184,7 @@ public ZMenuMainHandle(Handle:menu, MenuAction:action, client, slot)
             case 4:
             {
                 // Copy return to resend variable.
-                resend = !ZTeleClient(client);
+                resend = !ZTele_StartTeleport(client);
             }
             // Select ZHP.
             case 5:

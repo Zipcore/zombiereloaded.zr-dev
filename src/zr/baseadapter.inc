@@ -251,7 +251,6 @@ public BaseAdapter_OnClientPutInServer(client)
     AntiStickClientInit(client);
     SpawnProtectClientInit(client);
     RespawnClientInit(client);
-    ZTeleClientInit(client);
     ZHPClientInit(client);
 }
 
@@ -381,7 +380,6 @@ public BaseAdapter_PlayerSpawn(client)
     RoundStartOnClientSpawn(client);
     SEffectsOnClientSpawn(client);
     RespawnOnClientSpawn(client);
-    ZTeleOnClientSpawn(client);
     ZHPOnClientSpawn(client);
     VolOnPlayerSpawn(client);
     AmmoOnClientSpawn(client);		// Depends on class attributes!
@@ -462,7 +460,6 @@ public BaseAdapter_PlayerDeath(victim, attacker, const String:weapon[], bool:hea
     RespawnOnClientDeath(victim, attacker);
     NapalmOnClientDeath(victim);
     ZSpawnOnClientDeath(victim);
-    ZTeleOnClientDeath(victim);
     ZHPOnClientDeath(victim);
     VolOnPlayerDeath(victim);
     RoundEndOnClientDeath();

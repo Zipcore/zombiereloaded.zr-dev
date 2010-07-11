@@ -56,6 +56,7 @@ new ProjectEvent:g_EvOnAutoConfigsBuffered;
 new ProjectEvent:g_EvOnConfigsExecuted;
 new ProjectEvent:g_EvOnClientPutInServer;
 new ProjectEvent:g_EvOnClientDisconnect;
+new ProjectEvent:g_EvOnClientConnected;
 
 // CS:S events.
 #if defined PROJECT_GAME_CSS
@@ -179,6 +180,20 @@ public OnClientDisconnect(client)
     EventMgr_Forward(g_EvOnClientDisconnect, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
 }
 
+/**
+ * Client connected to the server.
+ * 
+ * @param client    The client index.
+ */
+public OnClientConnected(client)
+{
+    // Forward event to all modules.
+    new any:eventdata[1][1];
+    eventdata[0][0] = client;
+    
+    EventMgr_Forward(g_EvOnClientConnected, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+}
+
 
 // **********************************************
 //             Game Event Creating
@@ -206,6 +221,7 @@ stock EventMgr_CreateEvents()
     g_EvOnConfigsExecuted =         EventMgr_CreateEvent("Event_OnConfigsExecuted");        /** All convars are set, cvar-dependent code should use this. */
     g_EvOnClientPutInServer =       EventMgr_CreateEvent("Event_OnClientPutInServer");      /** Client has joined the server. */
     g_EvOnClientDisconnect =        EventMgr_CreateEvent("Event_OnClientDisconnect");       /** Client is disconnecting from the server. */
+    g_EvOnClientConnected =         EventMgr_CreateEvent("OnClientConnected");              /** Client connected to the server. */
     
     // CS:S events.
     #if defined PROJECT_GAME_CSS
