@@ -3,7 +3,7 @@
 set SOURCEDIR=src
 set SMINCLUDES=env\include
 set BUILDDIR=build
-set SPCOMP=env\win32\bin\spcomp-1.4.0-3074.exe
+set SPCOMP=env\win32\bin\spcomp-1.4.0-3078.exe
 set VERSIONDUMP=updateversion.bat
 
 :: Dump version and revision information first.
