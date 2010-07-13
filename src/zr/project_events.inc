@@ -45,6 +45,8 @@ enum ProjectEvent
 // Cross-game events
 new ProjectEvent:g_EvOnAllPluginsLoaded;
 new ProjectEvent:g_EvOnPluginEnd;
+new ProjectEvent:g_EvOnEventsRegister;
+new ProjectEvent:g_EvOnEventsReady;
 new ProjectEvent:g_EvOnAllModulesLoaded;
 new ProjectEvent:g_EvOnModuleEnable;
 new ProjectEvent:g_EvOnMyModuleEnable;
@@ -210,6 +212,8 @@ stock EventMgr_CreateEvents()
     // Cross-game events.
     g_EvOnAllPluginsLoaded =        EventMgr_CreateEvent("Event_OnAllPluginsLoaded");       /** All plugins have loaded. */
     g_EvOnPluginEnd =               EventMgr_CreateEvent("Event_OnPluginEnd");              /** Plugin is ending. */
+    g_EvOnEventsRegister =          EventMgr_CreateEvent("Event_OnEventsRegister");         /** All events are created, modules should register them here. */
+    g_EvOnEventsReady =             EventMgr_CreateEvent("Event_OnEventsReady");            /** All events are created AND registered by here.  Event priority can be changed here. */
     g_EvOnAllModulesLoaded =        EventMgr_CreateEvent("Event_OnAllModulesLoaded");       /** All modules have been registered. */
     g_EvOnModuleEnable =            EventMgr_CreateEvent("Event_OnModuleEnable");           /** A module has been enabled. */
     g_EvOnMyModuleEnable =          EventMgr_CreateEvent("Event_OnMyModuleEnable");         /** The module that hooked this event callback has been enabled. */

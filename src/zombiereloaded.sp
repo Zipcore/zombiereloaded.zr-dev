@@ -216,6 +216,12 @@ public OnPluginStart()
     // All modules should be registered by this point!
     
     #if defined EVENT_MANAGER
+        // Forward the OnEventsRegister to all modules.
+        EventMgr_Forward(g_EvOnEventsRegister, g_CommonEventData1, 0, 0, g_CommonDataType1);
+        
+        // Forward the OnEventsReady to all modules.
+        EventMgr_Forward(g_EvOnEventsReady, g_CommonEventData1, 0, 0, g_CommonDataType1);
+        
         // Forward the OnAllModulesLoaded to all modules.
         EventMgr_Forward(g_EvOnAllModulesLoaded, g_CommonEventData1, 0, 0, g_CommonDataType1);
     #endif

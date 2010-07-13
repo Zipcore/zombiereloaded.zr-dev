@@ -48,7 +48,17 @@ BaseAdapter_Register()
     // Send this array of data to the module manager.
     g_moduleBaseAdapter = ModuleMgr_Register(moduledata);
     
-    // Register all the events needed for this module.
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnEventsRegister",       "BaseAdapter_OnEventsRegister");
+    
+    // Register config file(s) that this module will use.
+    // ConfigMgr_Register(g_moduleBaseAdapter, "BaseAdapter_OnConfigReload", "configs/<projectshortname>/<config>.txt");
+}
+
+/**
+ * Register all events here.
+ */
+public BaseAdapter_OnEventsRegister()
+{
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnAllPluginsLoaded",     "BaseAdapter_OnAllPluginsLoaded");
     //EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnPluginEnd",            "BaseAdapter_OnPluginEnd");
     //EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnAllModulesLoaded",     "BaseAdapter_OnAllModulesLoaded");
@@ -80,9 +90,6 @@ BaseAdapter_Register()
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_WeaponFireOnEmpty",      "BaseAdapter_WeaponFireOnEmpty");
     
     #endif
-    
-    // Register config file(s) that this module will use.
-    // ConfigMgr_Register(g_moduleBaseAdapter, "BaseAdapter_OnConfigReload", "configs/<projectshortname>/<config>.txt");
 }
 
 /**
