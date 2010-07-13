@@ -66,31 +66,31 @@ new Module:g_module<ModuleVarName>;
     g_module<ModuleVarName> = ModuleMgr_Register(moduledata);
     
     // Register all the events needed for this module.
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_OnAllPluginsLoaded",       "<FuncPrefix>_OnAllPluginsLoaded");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_OnPluginEnd",              "<FuncPrefix>_OnPluginEnd");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_OnAllModulesLoaded",       "<FuncPrefix>_OnAllModulesLoaded");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_OnModuleEnable",           "<FuncPrefix>_OnModuleEnable");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_OnMyModuleEnable",         "<FuncPrefix>_OnMyModuleEnable");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_OnModuleDisable",          "<FuncPrefix>_OnModuleDisable");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_OnMyModuleDisable",        "<FuncPrefix>_OnMyModuleDisable");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_OnMapStart",               "<FuncPrefix>_OnMapStart");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_OnMapEnd",                 "<FuncPrefix>_OnMapEnd");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_OnAutoConfigsBuffered",    "<FuncPrefix>_OnAutoConfigsBuffered");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_OnConfigsExecuted",        "<FuncPrefix>_OnConfigsExecuted");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_OnClientPutInServer",      "<FuncPrefix>_OnClientPutInServer");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_OnClientDisconnect",       "<FuncPrefix>_OnClientDisconnect");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_OnAllPluginsLoaded,      "<FuncPrefix>_OnAllPluginsLoaded");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_OnPluginEnd,             "<FuncPrefix>_OnPluginEnd");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_OnAllModulesLoaded,      "<FuncPrefix>_OnAllModulesLoaded");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_OnModuleEnable,          "<FuncPrefix>_OnModuleEnable");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_OnMyModuleEnable,        "<FuncPrefix>_OnMyModuleEnable");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_OnModuleDisable,         "<FuncPrefix>_OnModuleDisable");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_OnMyModuleDisable,       "<FuncPrefix>_OnMyModuleDisable");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_OnMapStart,              "<FuncPrefix>_OnMapStart");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_OnMapEnd,                "<FuncPrefix>_OnMapEnd");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_OnAutoConfigsBuffered,   "<FuncPrefix>_OnAutoConfigsBuffered");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_OnConfigsExecuted,       "<FuncPrefix>_OnConfigsExecuted");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_OnClientPutInServer,     "<FuncPrefix>_OnClientPutInServer");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_OnClientDisconnect,      "<FuncPrefix>_OnClientDisconnect");
     
     #if defined PROJECT_GAME_CSS
     
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_RoundStart",               "<FuncPrefix>_RoundStart");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_RoundFreezeEnd",           "<FuncPrefix>_RoundFreezeEnd");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_RoundEnd",                 "<FuncPrefix>_RoundEnd");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_PlayerTeam",               "<FuncPrefix>_PlayerTeam");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_PlayerSpawn",              "<FuncPrefix>_PlayerSpawn");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_PlayerHurt",               "<FuncPrefix>_PlayerHurt");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_PlayerDeath",              "<FuncPrefix>_PlayerDeath");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_PlayerJump",               "<FuncPrefix>_PlayerJump");
-    //EventMgr_RegisterEvent(g_module<ModuleVarName>, "Event_WeaponFire",               "<FuncPrefix>_WeaponFire");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_RoundStart,              "<FuncPrefix>_RoundStart");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_RoundFreezeEnd,          "<FuncPrefix>_RoundFreezeEnd");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_RoundEnd,                "<FuncPrefix>_RoundEnd");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_PlayerTeam,              "<FuncPrefix>_PlayerTeam");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_PlayerSpawn,             "<FuncPrefix>_PlayerSpawn");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_PlayerHurt,              "<FuncPrefix>_PlayerHurt");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_PlayerDeath,             "<FuncPrefix>_PlayerDeath");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_PlayerJump,              "<FuncPrefix>_PlayerJump");
+    //EventMgr_RegisterEvent(g_module<ModuleVarName>, Event_WeaponFire,              "<FuncPrefix>_WeaponFire");
     
     #endif
     
@@ -122,9 +122,30 @@ public <FuncPrefix>_OnPluginEnd()
 }
 
 /**
+ * Register all events here.
+ */
+public <FuncPrefix>_OnEventsRegister()
+{
+}
+
+/**
+ * All modules and events have been registered by this point.  Event priority can be changed here.
+ */
+public <FuncPrefix>_OnEventsReady()
+{
+}
+
+/**
  * All modules have been registered.
  */
 public <FuncPrefix>_OnAllModulesLoaded()
+{
+}
+
+/**
+ * A module has been enabled.
+ */
+public <FuncPrefix>_OnModuleEnable(Module:module)
 {
 }
 
@@ -139,6 +160,13 @@ public Action:<FuncPrefix>_OnModuleEnable(Module:module)
 
 /**
  * The module that hooked this event callback has been enabled.
+ */
+public <FuncPrefix>_OnMyModuleEnable()
+{
+}
+
+/**
+ * The module that hooked this event callback has been enabled.
  * 
  * @return      Return Plugin_Handled to stop enable, and Plugin_Continue to allow it.
  */
@@ -148,10 +176,24 @@ public Action:<FuncPrefix>_OnMyModuleEnable()
 
 /**
  * A module has been disabled.
+ */
+public <FuncPrefix>_OnModuleDisable(Module:module)
+{
+}
+
+/**
+ * A module has been disabled.
  * 
  * @return      Return Plugin_Handled to stop disable, and Plugin_Continue to allow it.
  */
 public Action:<FuncPrefix>_OnModuleDisable(Module:module)
+{
+}
+
+/**
+ * The module that hooked this event callback has been disabled.
+ */
+public <FuncPrefix>_OnMyModuleDisable()
 {
 }
 
