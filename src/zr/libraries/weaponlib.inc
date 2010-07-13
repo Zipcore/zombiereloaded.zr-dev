@@ -46,6 +46,7 @@ enum WepLib_Slots
     Slot_Melee          = 2,    /** Melee (knife) weapon slot. */
     Slot_Projectile     = 3,    /** Projectile (grenades, flashbangs, etc) weapon slot. */
     Slot_Explosive      = 4,    /** Explosive (c4) weapon slot. */
+    Slot_NVGs           = 5,    /** Added for backwards compatibility until the new weapon module is added: NVGs (fake) equipment slot. */
 }
 
 /**

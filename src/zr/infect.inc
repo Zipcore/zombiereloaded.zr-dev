@@ -747,7 +747,7 @@ InfectHumanToZombie(client, attacker = -1, bool:motherinfect = false, bool:respa
     }
     
     // Get a list of all client's weapon indexes.
-    new weapons[WeaponsSlot];
+    new weapons[WepLib_Slots];
     WeaponsGetClientWeapons(client, weapons);
     
     // Check if weapons drop is enabled.

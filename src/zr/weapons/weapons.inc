@@ -75,21 +75,21 @@ new g_iToolsActiveWeapon;
 /**
  * Weapon slots.
  */
-enum WeaponsSlot
-{
-    Slot_Invalid        = -1,   /** Invalid weapon (slot). */
-    Slot_Primary        = 0,    /** Primary weapon slot. */
-    Slot_Secondary      = 1,    /** Secondary weapon slot. */
-    Slot_Melee          = 2,    /** Melee (knife) weapon slot. */
-    Slot_Projectile     = 3,    /** Projectile (grenades, flashbangs, etc) weapon slot. */
-    Slot_Explosive      = 4,    /** Explosive (c4) weapon slot. */
-    Slot_NVGs           = 5,    /** NVGs (fake) equipment slot. */
-}
+//enum WeaponsSlot
+//{
+//    Slot_Invalid        = -1,   /** Invalid weapon (slot). */
+//    Slot_Primary        = 0,    /** Primary weapon slot. */
+//    Slot_Secondary      = 1,    /** Secondary weapon slot. */
+//    Slot_Melee          = 2,    /** Melee (knife) weapon slot. */
+//    Slot_Projectile     = 3,    /** Projectile (grenades, flashbangs, etc) weapon slot. */
+//    Slot_Explosive      = 4,    /** Explosive (c4) weapon slot. */
+//    Slot_NVGs           = 5,    /** NVGs (fake) equipment slot. */
+//}
 
 /**
  * Dummy array to be used with sizeof operators for WeaponsSlot.
  */
-stock g_WeaponsSlotDummy[WeaponsSlot];
+stock g_WeaponsSlotDummy[WepLib_Slots];
 
 /**
  * Array handle to store weapon config data.
@@ -269,7 +269,7 @@ WeaponsCacheData()
         // General
         KvGetString(kvWeapons, "weaponentity", weaponentity, sizeof(weaponentity));
         KvGetString(kvWeapons, "weapontype", weapontype, sizeof(weapontype));
-        new WeaponsSlot:weaponslot = WeaponsSlot:KvGetNum(kvWeapons, "weaponslot", -1);
+        new WepLib_Slots:weaponslot = WepLib_Slots:KvGetNum(kvWeapons, "weaponslot", -1);
         
         // Restrict (core)
         new bool:restrictdefault = ConfigKvGetStringBool(kvWeapons, "restrictdefault", "no");
@@ -635,13 +635,13 @@ stock WeaponsGetType(index, String:type[], maxlen)
  * @param index     The weapon index.
  * @return          The slot index of the weapon.
  */
-stock WeaponsSlot:WeaponsGetSlot(index)
+stock WepLib_Slots:WeaponsGetSlot(index)
 {
     // Get array handle of weapon at given index.
     new Handle:arrayWeapon = GetArrayCell(arrayWeapons, index);
     
     // Return default restriction status.
-    return WeaponsSlot:GetArrayCell(arrayWeapon, _:WEAPONS_DATA_SLOT);
+    return WepLib_Slots:GetArrayCell(arrayWeapon, _:WEAPONS_DATA_SLOT);
 }
 
 /**
@@ -756,7 +756,7 @@ stock WeaponsGetZMarketPurchaseMax(index)
 stock bool:WeaponsClientHasWeapon(client, const String:weapon[])
 {
     // Get all of client's current weapons.
-    new weapons[WeaponsSlot];
+    new weapons[WepLib_Slots];
     WeaponsGetClientWeapons(client, weapons);
     
     decl String:classname[64];
@@ -789,7 +789,7 @@ stock bool:WeaponsClientHasWeapon(client, const String:weapon[])
  * @param weapons   The weapon index array.
  *                  -1 if no weapon in slot. 
  */
-stock WeaponsGetClientWeapons(client, weapons[WeaponsSlot])
+stock WeaponsGetClientWeapons(client, weapons[WepLib_Slots])
 {
     // x = Weapon slot.
     for (new x = 0; x < WEAPONS_SLOTS_MAX; x++)
@@ -817,10 +817,10 @@ stock WeaponsGetDeployedWeaponIndex(client)
  * @param client    The client index.
  * @return          The slot number of deployed weapon.
  */
-stock WeaponsSlot:WeaponsGetDeployedWeaponSlot(client)
+stock WepLib_Slots:WeaponsGetDeployedWeaponSlot(client)
 {
     // Get all client's weapon indexes.
-    new weapons[WeaponsSlot];
+    new weapons[WepLib_Slots];
     WeaponsGetClientWeapons(client, weapons);
     
     // Get client's deployed weapon.
@@ -837,7 +837,7 @@ stock WeaponsSlot:WeaponsGetDeployedWeaponSlot(client)
     {
         if (weapons[x] == deployedweapon)
         {
-            return WeaponsSlot:x;
+            return WepLib_Slots:x;
         }
     }
     
@@ -888,9 +888,9 @@ stock WeaponsRemoveClientGrenades(client, bool:weaponsdrop)
  * Refresh a weapon by taking it and giving it back.
  * 
  * @param client        The client index.
- * @param slot          The weapon slot to refresh. (see enum WeaponsSlot)
+ * @param slot          The weapon slot to refresh. (see enum WepLib_Slots)
  */
-stock WeaponsRefreshClientWeapon(client, WeaponsSlot:slot)
+stock WeaponsRefreshClientWeapon(client, WepLib_Slots:slot)
 {
     new weaponindex = GetPlayerWeaponSlot(client, _:slot);
     
@@ -918,7 +918,7 @@ stock WeaponsRefreshClientWeapon(client, WeaponsSlot:slot)
 stock WeaponsRemoveAllClientWeapons(client, bool:weaponsdrop)
 {
     // Get a list of all client's weapon indexes.
-    new weapons[WeaponsSlot];
+    new weapons[WepLib_Slots];
     WeaponsGetClientWeapons(client, weapons);
     
     // Loop through array slots and force drop.
@@ -932,7 +932,7 @@ stock WeaponsRemoveAllClientWeapons(client, bool:weaponsdrop)
         }
         
         // If this is the knife slot, then strip it and stop.
-        if (WeaponsSlot:x == Slot_Melee)
+        if (WepLib_Slots:x == Slot_Melee)
         {
             // Strip knife.
             RemovePlayerItem(client, weapons[x]);
@@ -966,7 +966,7 @@ stock WeaponsRemoveAllClientWeapons(client, bool:weaponsdrop)
 stock WeaponsRefreshAllClientWeapons(client)
 {
     // Get a list of all client's weapon indexes.
-    new weapons[WeaponsSlot];
+    new weapons[WepLib_Slots];
     WeaponsGetClientWeapons(client, weapons);
     
     // Loop through array slots and force drop.
@@ -979,7 +979,7 @@ stock WeaponsRefreshAllClientWeapons(client)
             continue;
         }
         
-        WeaponsRefreshClientWeapon(client, WeaponsSlot:x);
+        WeaponsRefreshClientWeapon(client, WepLib_Slots:x);
     }
 }
 
