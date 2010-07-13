@@ -111,6 +111,19 @@ EventMgr_OnPluginStart()
  */
 EventMgr_OnPluginEnd()
 {
+    // Loop through all the modules, and disable them.
+    new Module:module;
+    new count = MODULE_COUNT;
+    for (new moduleindex = 0; moduleindex < count; moduleindex++)
+    {
+        // Read moduleindex as a Module type.
+        module = Module:moduleindex;
+        
+        // Disable before unregistering.
+        if (!ModuleMgr_IsDisabled(module))
+            ModuleMgr_Disable(module);
+    }
+    
     // Cleanup the event module cache.
     for (new eindex = 0; eindex < sizeof(g_hEventModuleCache); eindex++)
         CloseHandle(g_hEventModuleCache[eindex]);
@@ -215,6 +228,97 @@ stock ProjectEvent:EventMgr_RegisterEvent(Module:module, const String:eventname[
     
     // Return the event ID.
     return eventid;
+}
+
+/**
+ * Changes event firing priority by moving a module above another in the event fire order.
+ * 
+ * @param eventid   The event to set priority for.
+ * @param module1   The module that should have priority over the other.
+ * @param module2   The module that will be second in priority to module1.
+ * 
+ * @return          True if module1 was given priority over module2, false if module1 already has priority or event isn't registered for one of the modules.
+ */
+stock bool:EventMgr_GivePriority(ProjectEvent:eventid, Module:module1, Module:module2)
+{
+    // Find the indexes of the modules in the event cache.
+    new mpriority1 = EventMgr_GetModuleCacheIndex(module1, eventid);
+    new mpriority2 = EventMgr_GetModuleCacheIndex(module2, eventid);
+    if (mpriority1 == -1 || mpriority2 == -1)
+        return false;
+    
+    // Check if module1 has higher priority than module2.
+    if (mpriority1 < mpriority2)
+        return false;
+    
+    // Move module1 right above module2.
+    new Handle:adtModule = GetArrayCell(g_hEventModuleCache[_:eventid], mpriority1);    //  Copy the handle of the module we're moving
+    RemoveFromArray(g_hEventModuleCache[_:eventid], mpriority1);    // Remove from the array.
+    ShiftArrayUp(g_hEventModuleCache[_:eventid], mpriority2);   // Free a space right above module2, sliding module2 up 1 index.
+    SetArrayCell(g_hEventModuleCache[_:eventid], mpriority2, adtModule);    // Stick the copied handle where module2 used to be.
+    
+    return true;
+}
+
+/**
+ * Changes event firing priority by moving a module below another in the event fire order.
+ * Inverse of GivePriority. 
+ * 
+ * @param eventid   The event to set priority for.
+ * @param module1   The module that should not have priority over the other.
+ * @param module2   The module that module1 will be under in priority.
+ * 
+ * @return          True if priority was taken from module1 and given to module2, false if module1 already doesn't have priority over module2 or event isn't registered for one of the modules.
+ */
+stock bool:EventMgr_TakePriority(ProjectEvent:eventid, Module:module1, Module:module2)
+{
+    // Find the indexes of the modules in the event cache.
+    new mpriority1 = EventMgr_GetModuleCacheIndex(module1, eventid);
+    new mpriority2 = EventMgr_GetModuleCacheIndex(module2, eventid);
+    if (mpriority1 == -1 || mpriority2 == -1)
+        return false;
+    
+    // Check if module2 has higher priority than module1.
+    if (mpriority1 > mpriority2)
+        return false;
+    
+    // Move module1 right above module2.
+    new Handle:adtModule = GetArrayCell(g_hEventModuleCache[_:eventid], mpriority1);    //  Copy the handle of the module we're moving
+    RemoveFromArray(g_hEventModuleCache[_:eventid], mpriority1);    // Remove from the array.
+    
+    // Check if there is an existing slot after module2, if not then just push the handle to the end.
+    if (GetArraySize(g_hEventModuleCache[_:eventid]) < mpriority2 + 1)
+    {
+        PushArrayCell(g_hEventModuleCache[_:eventid], adtModule);
+    }
+    else
+    {
+        ShiftArrayUp(g_hEventModuleCache[_:eventid], mpriority2 + 1);   // Free a space right below module2.
+        SetArrayCell(g_hEventModuleCache[_:eventid], mpriority2 + 1, adtModule);    // Stick the copied handle one index after module2.
+    }
+    
+    return true;
+}
+
+/**
+ * Checks if a module has priority over another one for a certain event.
+ * 
+ * @param eventid   The event to set priority for.
+ * @param module1   The module to check if above module2.
+ * @param module2   The module being checked to see if module1 is higher than this.
+ * 
+ * @return          True if module1 has priority over module2, false if not or event isn't registered for one of the modules.
+ */
+stock bool:EventMgr_HasPriority(ProjectEvent:eventid, Module:module1, Module:module2)
+{
+    // Find the indexes of the modules in the event cache.
+    new mpriority1 = EventMgr_GetModuleCacheIndex(module1, eventid);
+    new mpriority2 = EventMgr_GetModuleCacheIndex(module2, eventid);
+    if (mpriority1 == -1 || mpriority2 == -1)
+        return false;
+    
+    // Return true if module1 has a lower index.  Lower index = higher priority.
+    return (mpriority1 < mpriority2);
 }
 
 /**
@@ -400,7 +504,7 @@ stock Module:EventMgr_GetEventOwner()
 // **********************************************
 
 /**
- * Returns the index in the event module cache that holds the given module identifier.
+ * Returns the event ID for the given event name.
  * 
  * @param eventname The name of the event to find the ID for.
  * 
@@ -427,14 +531,30 @@ stock ProjectEvent:EventMgr_EventNameToID(const String:eventname[])
  */
 stock EventMgr_GetModuleCacheIndex(Module:module, ProjectEvent:eventid)
 {
-    new count = GetArraySize(g_hEventModuleCache[eventid]);
+    new count = GetArraySize(g_hEventModuleCache[_:eventid]);
     for (new moduleindex = 0; moduleindex < count; moduleindex++)
     {
-        if (module == Module:GetArrayCell(g_hEventModuleCache[eventid], moduleindex))
+        if (module == Module:GetArrayCell(g_hEventModuleCache[_:eventid], moduleindex))
             return moduleindex;
     }
     
     return -1;
+}
+
+/**
+ * Print event fire order to server console for a specific event.
+ * 
+ * @param eventid   The event to print fire order of.
+ */
+stock EventMgr_PrintPriority(ProjectEvent:eventid)
+{
+    decl String:modulefullname[CM_DATA_FULLNAME];
+    new count = GetArraySize(g_hEventModuleCache[_:eventid]);
+    for (new moduleindex = 0; moduleindex < count; moduleindex++)
+    {
+        ModuleMgr_ReadString(Module:GetArrayCell(g_hEventModuleCache[_:eventid], moduleindex), ModuleData_FullName, modulefullname, sizeof(modulefullname));
+        PrintToServer("Module: %s", modulefullname);
+    }
 }
 
 /**

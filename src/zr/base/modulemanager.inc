@@ -119,16 +119,11 @@ ModuleMgr_OnPluginStart()
  */
 ModuleMgr_OnPluginEnd()
 {
-    new Module:module;
-    
     // Loop through all the modules, and kill them.
     new count = MODULE_COUNT;
     for (new moduleindex = 0; moduleindex < count; moduleindex++)
     {
-        // Read moduleindex as a Module type.
-        module = Module:moduleindex;
-        
-        ModuleMgr_Unregister(module);
+        ModuleMgr_Unregister(Module:moduleindex);
     }
     
     // Destroy base command data.
@@ -216,12 +211,17 @@ stock ModuleToggleQuery:ModuleMgr_Disable(Module:module)
         eventdata[0][0] = module;
         
         new Action:result1 = EventMgr_Forward(g_EvOnModuleDisable, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+        new Action:result2 = Plugin_Continue;
         
-        // Send this event only to the module being disabled.
-        new Module:modules[2] = {INVALID_MODULE, ...};
-        modules[0] = module;
-        
-        new Action:result2 = EventMgr_Forward(g_EvOnMyModuleDisable, g_CommonEventData1, 0, 0, g_CommonDataType1, modules);
+        // If a module stops this module from disabling, then don't forward this event.
+        if (result1 == Plugin_Continue)
+        {
+            // Send this event only to the module being disabled.
+            new Module:modules[2] = {INVALID_MODULE, ...};
+            modules[0] = module;
+            
+            result2 = EventMgr_Forward(g_EvOnMyModuleDisable, g_CommonEventData1, 0, 0, g_CommonDataType1, modules);
+        }
         
         if (result1 == Plugin_Handled || result2 == Plugin_Handled)
             return ToggleQuery_Refuse;
@@ -281,12 +281,17 @@ stock ModuleToggleQuery:ModuleMgr_Enable(Module:module)
         eventdata[0][0] = module;
         
         new Action:result1 = EventMgr_Forward(g_EvOnModuleEnable, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+        new Action:result2 = Plugin_Continue;
         
-        // Send this event only to the module being enabled.
-        new Module:modules[2] = {INVALID_MODULE, ...};
-        modules[0] = module;
-        
-        new Action:result2 = EventMgr_Forward(g_EvOnMyModuleEnable, g_CommonEventData1, 0, 0, g_CommonDataType1, modules);
+        // If a module stops this module from enabling, then don't forward this event.
+        if (result1 == Plugin_Continue)
+        {
+            // Send this event only to the module being enabled.
+            new Module:modules[2] = {INVALID_MODULE, ...};
+            modules[0] = module;
+            
+            result2 = EventMgr_Forward(g_EvOnMyModuleEnable, g_CommonEventData1, 0, 0, g_CommonDataType1, modules);
+        }
         
         // Undo the enabling if it refuses.
         if (result1 == Plugin_Handled || result2 == Plugin_Handled)

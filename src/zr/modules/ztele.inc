@@ -107,7 +107,19 @@ ZTele_Register()
     // Send this array of data to the module manager.
     g_moduleZTele = ModuleMgr_Register(moduledata);
     
-    // Register all the events needed for this module.
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnEventsRegister",       "ZTele_OnEventsRegister");
+    
+    // Create events.
+    g_EvOnTeleportTimerStarted =    EventMgr_CreateEvent("OnTeleportTimerStarted");
+    g_EvOnPlayerTeleported =        EventMgr_CreateEvent("OnPlayerTeleported");
+    g_EvOnPlayerTeleportAborted =   EventMgr_CreateEvent("OnPlayerTeleportAbort");
+}
+
+/**
+ * Register all events here.
+ */
+public ZTele_OnEventsRegister()
+{
     EventMgr_RegisterEvent(g_moduleZTele, "OnClientConnected",              "ZTele_OnClientConnected");
     
     // TODO: Need event OnClientInfected and OnClientHuman. For now the event forwards are hard coded.
@@ -118,11 +130,6 @@ ZTele_Register()
     EventMgr_RegisterEvent(g_moduleZTele, "Event_PlayerDeath",              "ZTele_PlayerDeath");
     
     #endif
-    
-    // Create events.
-    g_EvOnTeleportTimerStarted =    EventMgr_CreateEvent("OnTeleportTimerStarted");
-    g_EvOnPlayerTeleported =        EventMgr_CreateEvent("OnPlayerTeleported");
-    g_EvOnPlayerTeleportAborted =   EventMgr_CreateEvent("OnPlayerTeleportAbort");
 }
 
 /**
