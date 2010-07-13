@@ -400,7 +400,7 @@ bool:ZMarketMenuWeaponSetup(client)
     new Handle:menu_zmarket_weaponsetup = CreateMenu(ZMarketMenuWeaponSetupHandle);
     
     // Transfer cookie values into an array.
-    new String:rebuyweapons[WeaponsSlot][WEAPONS_MAX_LENGTH * ZMARKET_MAX_WEAPONS_PER_SLOT];
+    new String:rebuyweapons[WepLib_Slots][WEAPONS_MAX_LENGTH * ZMARKET_MAX_WEAPONS_PER_SLOT];
     ZMarketCookiesToArray(client, rebuyweapons, WEAPONS_SLOTS_MAX + 1, sizeof(rebuyweapons[]));
     
     SetGlobalTransTarget(client);
@@ -410,11 +410,11 @@ bool:ZMarketMenuWeaponSetup(client)
     Format(empty, sizeof(empty), "%t", "Menu none");
     
     // Count and format.
-    new weaponcount[WeaponsSlot];
+    new weaponcount[WepLib_Slots];
     for (new x = 0; x < sizeof(rebuyweapons); x++)
     {
         // Ignore the NVG slot, we handle this separately.
-        if (WeaponsSlot:x == Slot_NVGs)
+        if (WepLib_Slots:x == Slot_NVGs)
         {
             continue;
         }
@@ -543,7 +543,7 @@ public ZMarketMenuWeaponSetupHandle(Handle:menu_zmarket_weaponsetup, MenuAction:
         // Convert the menu slot chosen by the client to a weapon slot datatype.
         decl String:infostring[4];
         GetMenuItem(menu_zmarket_weaponsetup, slot, infostring, sizeof(infostring));
-        new WeaponsSlot:weaponslot = WeaponsSlot:StringToInt(infostring);
+        new WepLib_Slots:weaponslot = WepLib_Slots:StringToInt(infostring);
         
         // This means the "Clear All" button was pressed.
         if (weaponslot == Slot_Invalid)
@@ -552,7 +552,7 @@ public ZMarketMenuWeaponSetupHandle(Handle:menu_zmarket_weaponsetup, MenuAction:
             for (new x = 0; x < WEAPONS_SLOTS_MAX + 1; x++)
             {
                 // Clear rebuy slot.
-                ZMarketHandleRebuyCookie(client, WeaponsSlot:x, "");
+                ZMarketHandleRebuyCookie(client, WepLib_Slots:x, "");
             }
             
             // Re-send menu.
@@ -599,7 +599,7 @@ public ZMarketMenuWeaponSetupHandle(Handle:menu_zmarket_weaponsetup, MenuAction:
     }
 }
 
-ZMarketMenuSubWeaponSetup(client, WeaponsSlot:weaponslot)
+ZMarketMenuSubWeaponSetup(client, WepLib_Slots:weaponslot)
 {
     // Create menu handle.
     new Handle:menu_zmarket_subweaponsetup = CreateMenu(ZMarketMenuSubWeaponSetupHandle);
@@ -668,7 +668,7 @@ public ZMarketMenuSubWeaponSetupHandle(Handle:menu_zmarket_subweaponsetup, MenuA
         // Separate slot and weapon in an array.
         new String:weaponinfo[2][WEAPONS_MAX_LENGTH];
         ExplodeString(infostring, "|", weaponinfo, 2, WEAPONS_MAX_LENGTH);
-        new WeaponsSlot:weaponslot = WeaponsSlot:StringToInt(weaponinfo[0]);
+        new WepLib_Slots:weaponslot = WepLib_Slots:StringToInt(weaponinfo[0]);
         
         // weaponinfo[0] = weaponslot = slot
         // weaponinfo[1] = weapon
@@ -864,7 +864,7 @@ ZMarketMenuTypeWeapons(client)
         new itemprice;
         
         // Do appropriate formatting for the type of item client is buying.
-        new WeaponsSlot:slot = WeaponsGetSlot(weaponindex);
+        new WepLib_Slots:slot = WeaponsGetSlot(weaponindex);
         if (!hasweapon || slot == Slot_Projectile)
         {
             // Get the weapon price.
@@ -1009,7 +1009,7 @@ stock bool:ZMarketEquip(client, const String:weapon[], bool:rebuy = false)
             // Search for the weapon in every slot and remove it.
             
             // Copy all cookie values to an array
-            new String:rebuyweapons[WeaponsSlot][WEAPONS_MAX_LENGTH * ZMARKET_MAX_WEAPONS_PER_SLOT];
+            new String:rebuyweapons[WepLib_Slots][WEAPONS_MAX_LENGTH * ZMARKET_MAX_WEAPONS_PER_SLOT];
             ZMarketCookiesToArray(client, rebuyweapons, WEAPONS_SLOTS_MAX + 1, sizeof(rebuyweapons[]));
             
             // x = Weapon slot
@@ -1032,7 +1032,7 @@ stock bool:ZMarketEquip(client, const String:weapon[], bool:rebuy = false)
     }
     
     // Get slot index of the weapon being purchased.
-    new WeaponsSlot:slot = WeaponsGetSlot(weaponindex);
+    new WepLib_Slots:slot = WeaponsGetSlot(weaponindex);
     
     // If client is a zombie, then update weapon weaponsetup and stop.
     if (InfectIsClientInfected(client))
@@ -1155,7 +1155,7 @@ stock bool:ZMarketEquip(client, const String:weapon[], bool:rebuy = false)
     AccountSetClientCash(client, cash - itemprice);
     
     // Get a list of the client's current weapons.
-    new weapons[WeaponsSlot];
+    new weapons[WepLib_Slots];
     WeaponsGetClientWeapons(client, weapons);
     
     // Check if client is buying the weapon or ammo for it.
@@ -1254,7 +1254,7 @@ bool:ZMarketSaveCurrentSetup(client)
     }
     
     // Get all of client's current weapons.
-    new weapons[WeaponsSlot];
+    new weapons[WepLib_Slots];
     WeaponsGetClientWeapons(client, weapons);
     
     decl String:weaponname[WEAPONS_MAX_LENGTH];
@@ -1264,7 +1264,7 @@ bool:ZMarketSaveCurrentSetup(client)
     for (new x = 0; x < WEAPONS_SLOTS_MAX; x++)
     {
         // Cast int type into our custom enum type.
-        new WeaponsSlot:weaponslot = WeaponsSlot:x;
+        new WepLib_Slots:weaponslot = WepLib_Slots:x;
         
         // If slot is empty, then clear this slot in rebuy cache and stop.
         if (weapons[x] == -1 || weaponslot == Slot_Projectile)
@@ -1341,7 +1341,7 @@ bool:ZMarketSaveCurrentSetup(client)
  * @param maxweapons    The max amount of weapons in the array.
  * @param maxlen        The max length of each cookie result.
  */
-stock ZMarketArrayToCookies(client, String:rebuyweapons[WeaponsSlot][], maxweapons, maxlen)
+stock ZMarketArrayToCookies(client, String:rebuyweapons[WepLib_Slots][], maxweapons, maxlen)
 {
     decl String:rebuycookiename[32];
     new Handle:rebuycookie;
@@ -1367,7 +1367,7 @@ stock ZMarketArrayToCookies(client, String:rebuyweapons[WeaponsSlot][], maxweapo
  * @param maxweapons    The max amount of weapons in the array.
  * @param maxlen        The max length of each cookie result.
  */
-stock ZMarketCookiesToArray(client, String:rebuyweapons[WeaponsSlot][], maxweapons, maxlen)
+stock ZMarketCookiesToArray(client, String:rebuyweapons[WepLib_Slots][], maxweapons, maxlen)
 {
     decl String:rebuycookiename[32];
     new Handle:rebuycookie;
@@ -1393,7 +1393,7 @@ stock ZMarketCookiesToArray(client, String:rebuyweapons[WeaponsSlot][], maxweapo
  * @param value     The value (weaponname) of the slot to handle.
  * @param overwrite If true, the function will overwrite the old rebuy cookie value with 'value.' 
  */
-stock ZMarketHandleRebuyCookie(client, WeaponsSlot:slot, const String:value[], bool:overwrite = false)
+stock ZMarketHandleRebuyCookie(client, WepLib_Slots:slot, const String:value[], bool:overwrite = false)
 {
     // Format cookie name.
     decl String:rebuycookiename[32];
@@ -1459,7 +1459,7 @@ stock ZMarketHandleRebuyCookie(client, WeaponsSlot:slot, const String:value[], b
  * @param slot      The weapon slot to set value to.
  * @param value     The value (weaponname) of the slot.
  */
-stock ZMarketAddToRebuyCookie(client, WeaponsSlot:slot, const String:value[])
+stock ZMarketAddToRebuyCookie(client, WepLib_Slots:slot, const String:value[])
 {
     // Format cookie name.
     decl String:rebuycookiename[32];
@@ -1512,7 +1512,7 @@ stock ZMarketAddToRebuyCookie(client, WeaponsSlot:slot, const String:value[])
  * 
  * @return          True if the weapon was found and removed, false if no weapon was found.  
  */
-stock bool:ZMarketRemoveFromRebuyCookie(client, WeaponsSlot:slot, const String:value[], bool:all = false)
+stock bool:ZMarketRemoveFromRebuyCookie(client, WepLib_Slots:slot, const String:value[], bool:all = false)
 {
     decl String:weapons[WEAPONS_MAX_LENGTH * ZMARKET_MAX_WEAPONS_PER_SLOT];
     ZMarketGetRebuyCookie(client, slot, weapons, sizeof(weapons));
@@ -1548,7 +1548,7 @@ stock bool:ZMarketRemoveFromRebuyCookie(client, WeaponsSlot:slot, const String:v
  * @param value     The output string of the weapon list.
  * @param maxlen    The maximum length of the output string. 
  */
-stock ZMarketGetRebuyCookie(client, WeaponsSlot:slot, String:value[], maxlen)
+stock ZMarketGetRebuyCookie(client, WepLib_Slots:slot, String:value[], maxlen)
 {
     // Format cookie name.
     decl String:rebuycookiename[32];
@@ -1587,7 +1587,7 @@ ZMarketRebuySavedSetup(client, bool:autorebuy = false)
     }
     
     // Transfer cookie values into an array.
-    new String:rebuyweapons[WeaponsSlot][WEAPONS_MAX_LENGTH * ZMARKET_MAX_WEAPONS_PER_SLOT];
+    new String:rebuyweapons[WepLib_Slots][WEAPONS_MAX_LENGTH * ZMARKET_MAX_WEAPONS_PER_SLOT];
     ZMarketCookiesToArray(client, rebuyweapons, WEAPONS_SLOTS_MAX + 1, sizeof(rebuyweapons[]));
     
     new String:weapons[ZMARKET_MAX_WEAPONS_PER_SLOT][WEAPONS_MAX_LENGTH];

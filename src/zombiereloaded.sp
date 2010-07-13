@@ -75,7 +75,7 @@
 #include "zr/libraries/offsetlib"
 #include "zr/libraries/shoppinglistlib"
 #include "zr/libraries/teamlib"
-//#include "zr/libraries/weaponlib"
+#include "zr/libraries/weaponlib"
 
 // Module includes (for the new base)
 #include "zr/baseadapter"

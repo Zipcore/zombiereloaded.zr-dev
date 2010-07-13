@@ -515,7 +515,7 @@ public BaseAdapter_WeaponFire(client, const String:weapon[])
     // Validate weapon index.
     if (weaponIndex >= 0)
     {
-        new WeaponsSlot:weaponSlot = WeaponsGetSlot(weaponIndex);
+        new WepLib_Slots:weaponSlot = WeaponsGetSlot(weaponIndex);
         AmmoOnWeaponFire(client, weaponSlot);
     }
 }
@@ -535,7 +535,7 @@ public BaseAdapter_WeaponFireOnEmpty(client, const String:weapon[])
     // Validate weapon index.
     if (weaponIndex >= 0)
     {
-        new WeaponsSlot:weaponSlot = WeaponsGetSlot(weaponIndex);
+        new WepLib_Slots:weaponSlot = WeaponsGetSlot(weaponIndex);
         AmmoOnWeaponFireOnEmpty(client, weaponSlot);
     }
 }

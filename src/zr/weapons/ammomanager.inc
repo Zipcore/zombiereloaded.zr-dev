@@ -66,7 +66,7 @@ AmmoAssignManagers(client)
     // Get free ammo managers for each slot if they don't exist.
     for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
     {
-        AmmoAssignManager(client, WeaponsSlot:slot);
+        AmmoAssignManager(client, WepLib_Slots:slot);
     }
 }
 
@@ -79,7 +79,7 @@ AmmoAssignManagers(client)
  * @return          The ammo manager index if assigned. -1 if not. -2 if no
  *                  free managers (bug in code somewhere!).
  */
-AmmoAssignManager(client, WeaponsSlot:slot)
+AmmoAssignManager(client, WepLib_Slots:slot)
 {
     // Check if the slot is supported and that there's no ammo manager
     // assigned to that slot.
@@ -99,7 +99,7 @@ AmmoAssignManager(client, WeaponsSlot:slot)
         AmmoManagerIndex[client][slot] = manager;
         
         // Set slot type in manager.
-        AmmoManagers[manager][AmmoManager_Slot] = WeaponsSlot:slot;
+        AmmoManagers[manager][AmmoManager_Slot] = WepLib_Slots:slot;
         
         return manager;
     }
@@ -120,7 +120,7 @@ AmmoManagerAttach(client)
     // Verify weapon profile. It might not be available.
     if (WeaponProfilesIsValidIndex(weaponProfile))
     {
-        new profiles[WeaponsSlot];
+        new profiles[WepLib_Slots];
         WeaponProfilesGetAmmoProfiles(weaponProfile, profiles);
         
         // Load ammo profiles.
@@ -128,7 +128,7 @@ AmmoManagerAttach(client)
         {
             // Try to attach the manager. If it fails the slot is not supported or
             // the ammo profile index is invalid.
-            AmmoManagerAttachSlot(client, WeaponsSlot:slot, profiles[slot]);
+            AmmoManagerAttachSlot(client, WepLib_Slots:slot, profiles[slot]);
         }
         
         LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_Weapons, "Ammo manager", "Attatched ammo managers on %N.", client);
@@ -143,7 +143,7 @@ AmmoManagerAttach(client)
  * @param ammoProfile   Ammo profile to use.
  * @return              True if successful, false otherwise.
  */
-bool:AmmoManagerAttachSlot(client, WeaponsSlot:slot, ammoProfile)
+bool:AmmoManagerAttachSlot(client, WepLib_Slots:slot, ammoProfile)
 {
     // Verify that the slot is managed.
     if (!AmmoManagedSlots[slot])
@@ -191,7 +191,7 @@ AmmoManagerDetach(client)
     for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
     {
         // Try to detach ammo manager. If it fails it's already detached.
-        AmmoManagerDetachSlot(client, WeaponsSlot:slot);
+        AmmoManagerDetachSlot(client, WepLib_Slots:slot);
     }
     
     LogEvent(false, LogTypeOld_Normal, LOG_DEBUG, LogModule_Weapons, "Ammo manager", "Detached ammo managers on %N.", client);
@@ -204,7 +204,7 @@ AmmoManagerDetach(client)
  * @param slot          What slot to detach.
  * @return              True if successful, false otherwise.
  */
-bool:AmmoManagerDetachSlot(client, WeaponsSlot:slot)
+bool:AmmoManagerDetachSlot(client, WepLib_Slots:slot)
 {
     // Verify that the slot is managed.
     if (!AmmoManagedSlots[slot])
@@ -386,7 +386,7 @@ stock bool:AmmoIsValidManager(index)
  * @param slot      Weapon slot to check.
  * @return          True if supported, false otherwise.
  */
-stock bool:AmmoIsSlotManaged(WeaponsSlot:slot)
+stock bool:AmmoIsSlotManaged(WepLib_Slots:slot)
 {
     return AmmoManagedSlots[slot];
 }
@@ -476,7 +476,7 @@ stock AmmoManagerGetProfile(index)
  * @param index     Ammo manager.
  * @param slot      What weapon slot the manager is managing.
  */
-stock AmmoManagerSetSlot(index, WeaponsSlot:slot)
+stock AmmoManagerSetSlot(index, WepLib_Slots:slot)
 {
     AmmoManagers[index][AmmoManager_Slot] = slot;
 }
@@ -487,7 +487,7 @@ stock AmmoManagerSetSlot(index, WeaponsSlot:slot)
  * @param index     Ammo manager.
  * @return          What weapon slot the manager is managing.
  */
-stock WeaponsSlot:AmmoManagerGetSlot(index)
+stock WepLib_Slots:AmmoManagerGetSlot(index)
 {
     return AmmoManagers[index][AmmoManager_Slot];
 }

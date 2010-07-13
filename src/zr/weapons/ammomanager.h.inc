@@ -43,7 +43,7 @@
  *
  * Note: Do not modify these values unless you're making support for a slot.
  */
-new const bool:AmmoManagedSlots[WeaponsSlot] = 
+new const bool:AmmoManagedSlots[WepLib_Slots] = 
 {
     //false,  /* Dummy for invalid slot */
     true,   /* Primary */
@@ -80,7 +80,7 @@ new const bool:AmmoManagedSlots[WeaponsSlot] =
 enum AmmoManager
 {
     bool:AmmoManager_InUse,         /** Specifies whether the profile is used or not. */
-    WeaponsSlot:AmmoManager_Slot,   /** What weapon slot that's managed.  TODO: Change tags to use WepLib_Slots when it's imported. */
+    WepLib_Slots:AmmoManager_Slot,  /** What weapon slot that's managed.  TODO: Change tags to use WepLib_Slots when it's imported. */
     AmmoManager_Clip,               /** Current weapon clip value. */
     AmmoManager_Reserve,            /** Current weapon reserve value. */
     AmmoManager_ProfileIndex,       /** Index to a ammo profile. */
@@ -96,4 +96,4 @@ new AmmoManagers[AMMO_MANAGER_MAX][AmmoManager];
 /**
  * Ammo manager index for assigning ammo managers to clients.
  */
-new AmmoManagerIndex[MAXPLAYERS + 1][WeaponsSlot];
+new AmmoManagerIndex[MAXPLAYERS + 1][WepLib_Slots];

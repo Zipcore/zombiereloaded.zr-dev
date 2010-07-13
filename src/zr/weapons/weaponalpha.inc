@@ -96,7 +96,7 @@ WeaponAlphaApplyWeaponAlpha(entity, alpha)
     }
     
     // Get client's list of weapons.
-    new weapons[WeaponsSlot];
+    new weapons[WepLib_Slots];
     WeaponsGetClientWeapons(entity, weapons);
     
     // Loop through array slots and set alpha.

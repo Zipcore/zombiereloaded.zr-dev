@@ -30,7 +30,7 @@
  * @param client        Client that reloaded weapon.
  * @param weaponSlot    Weapon slot.
  */
-stock AmmoOnWeaponReloaded(client, weaponsSlot:weaponSlot)
+stock AmmoOnWeaponReloaded(client, WepLib_Slots:weaponSlot)
 {
     // Check if the slot is supported by the manager.
     if (!AmmoIsSlotManaged(weaponSlot))
@@ -54,7 +54,7 @@ stock AmmoOnWeaponReloaded(client, weaponsSlot:weaponSlot)
  * @param client        Client index.
  * @param weaponSlot    Weapon slot.
  */
-AmmoOnWeaponFire(client, WeaponsSlot:weaponSlot)
+AmmoOnWeaponFire(client, WepLib_Slots:weaponSlot)
 {
     // Check if the slot is supported by the manager.
     if (!AmmoIsSlotManaged(weaponSlot))
@@ -79,7 +79,7 @@ AmmoOnWeaponFire(client, WeaponsSlot:weaponSlot)
  * @param client        Client index.
  * @param weaponSlot    Weapon slot.
  */
-AmmoOnWeaponFireOnEmpty(client, WeaponsSlot:weaponSlot)
+AmmoOnWeaponFireOnEmpty(client, WepLib_Slots:weaponSlot)
 {
     // Check if the slot is supported by the manager.
     if (!AmmoIsSlotManaged(weaponSlot))
@@ -104,7 +104,7 @@ AmmoOnWeaponFireOnEmpty(client, WeaponsSlot:weaponSlot)
  * @param client        Client index.
  * @param weaponSlot    Weapon slot switched to.
  */
-stock AmmoOnWeaponSwitch(client, WeaponsSlot:weaponSlot)
+stock AmmoOnWeaponSwitch(client, WepLib_Slots:weaponSlot)
 {
     // Check if the slot is supported by the manager.
     if (!AmmoIsSlotManaged(weaponSlot))
@@ -129,7 +129,7 @@ stock AmmoOnWeaponSwitch(client, WeaponsSlot:weaponSlot)
  * @param client        Client index.
  * @param weaponSlot    Weapon slot.
  */
-stock AmmoOnWeaponPickup(client, WeaponsSlot:weaponSlot)
+stock AmmoOnWeaponPickup(client, WepLib_Slots:weaponSlot)
 {
     // Check if the slot is supported by the manager.
     if (!AmmoIsSlotManaged(weaponSlot))
@@ -157,7 +157,7 @@ stock AmmoOnWeaponPickup(client, WeaponsSlot:weaponSlot)
  * @param client        Client index.
  * @param weaponSlot    Weapon slot.
  */
-stock AmmoOnWeaponDrop(client, WeaponsSlot:weaponSlot)
+stock AmmoOnWeaponDrop(client, WepLib_Slots:weaponSlot)
 {
     // Check if the slot is supported by the manager.
     if (!AmmoIsSlotManaged(weaponSlot))

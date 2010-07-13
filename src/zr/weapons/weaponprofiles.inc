@@ -316,7 +316,7 @@ stock WeaponProfilesGetAmmoProfile(index, WeaponsSlot:slot)
  * @param profiles  Array to store profile indexes in. The type is WeaponsSlot.
  * @return          Number of valid profiles returned.
  */
-stock WeaponProfilesGetAmmoProfiles(index, profiles[WeaponsSlot])
+stock WeaponProfilesGetAmmoProfiles(index, profiles[WepLib_Slots])
 {
     // Initialize/reset array.
     for (new slot = 0; slot < sizeof(g_WeaponsSlotDummy); slot++)
