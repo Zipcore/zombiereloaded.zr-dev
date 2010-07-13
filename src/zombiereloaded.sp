@@ -73,7 +73,7 @@
 #include "zr/libraries/cookielib"
 #include "zr/libraries/menulib"
 #include "zr/libraries/offsetlib"
-//#include "zr/libraries/shoppinglistlib"
+#include "zr/libraries/shoppinglistlib"
 #include "zr/libraries/teamlib"
 //#include "zr/libraries/weaponlib"
 
@@ -98,7 +98,7 @@
 #include "zr/cookies"
 #include "zr/paramtools"
 #include "zr/paramparser"
-#include "zr/shoppinglist"
+//#include "zr/shoppinglist"
 #include "zr/downloads"
 #include "zr/overlays"
 #include "zr/playerclasses/playerclasses"
