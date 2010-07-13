@@ -172,7 +172,7 @@ ZTele_OnPluginStart()
 public ZTele_OnClientConnected(client)
 {
     // Reset timer handle.
-    Util_CloseHandle(tZTele[client]);
+    tZTele[client] = INVALID_HANDLE;
 }
 
 /**
@@ -521,7 +521,7 @@ public Action:ZTele_Timer(Handle:timer, any:client)
     if (!IsClientInGame(client))
     {
         // Reset timer handle.
-        Util_CloseHandle(tZTele[client]);
+        tZTele[client] = INVALID_HANDLE;
         return Plugin_Stop;
     }
     
@@ -539,7 +539,7 @@ public Action:ZTele_Timer(Handle:timer, any:client)
         if (distance > autocanceldistance)
         {
             // Reset timer handle.
-            Util_CloseHandle(tZTele[client]);
+            tZTele[client] = INVALID_HANDLE;
             
             // Tell client teleport has been cancelled.
             TranslationPrintCenterText(client, "ZTele autocancel centertext");
@@ -575,7 +575,7 @@ public Action:ZTele_Timer(Handle:timer, any:client)
         TranslationPrintCenterText(client, "ZTele countdown end", g_iZTeleCount[client], ztelemax);
         
         // Clear timer handle.
-        Util_CloseHandle(tZTele[client]);
+        tZTele[client] = INVALID_HANDLE;
         
         // Stop timer.
         return Plugin_Stop;
