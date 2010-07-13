@@ -420,7 +420,7 @@ bool:ZMarketMenuWeaponSetup(client)
         }
         
         // Count how many weapons are in the slot before inserting the "empty" phrase.
-        weaponcount[x] = ShoppingListCount(rebuyweapons[x], "", ZMARKET_WEAPON_COOKIE_TOKEN);
+        weaponcount[x] = ShopListLib_Count(rebuyweapons[x], "", ZMARKET_WEAPON_COOKIE_TOKEN);
         
         // If the client doesn't have any weapons in this slot, then set the weapon to the "empty" phrase.
         if (weaponcount[x] == 0)
@@ -455,7 +455,7 @@ bool:ZMarketMenuWeaponSetup(client)
     else
     {
         // TODO: MAKE FORMATTING A CVAR
-        ShoppingListConstruct(rebuyweapons[Slot_Primary], shoppinglist, MENU_LINE_HUGE_LENGTH, ZMARKET_WEAPON_COOKIE_TOKEN, "\n \t", " (##)");
+        ShopListLib_Construct(rebuyweapons[Slot_Primary], shoppinglist, MENU_LINE_HUGE_LENGTH, ZMARKET_WEAPON_COOKIE_TOKEN, "\n \t", " (##)");
         Format(primary, sizeof(primary), "%t \n \t%s", "Weapons menu zmarket weapon setup primary", shoppinglist);
     }
     
@@ -467,7 +467,7 @@ bool:ZMarketMenuWeaponSetup(client)
     else
     {
         // TODO: MAKE FORMATTING A CVAR
-        ShoppingListConstruct(rebuyweapons[Slot_Secondary], shoppinglist, MENU_LINE_HUGE_LENGTH, ZMARKET_WEAPON_COOKIE_TOKEN, "\n \t", " (##)");
+        ShopListLib_Construct(rebuyweapons[Slot_Secondary], shoppinglist, MENU_LINE_HUGE_LENGTH, ZMARKET_WEAPON_COOKIE_TOKEN, "\n \t", " (##)");
         Format(secondary, sizeof(secondary), "%t \n \t%s", "Weapons menu zmarket weapon setup secondary", shoppinglist);
     }
     
@@ -479,7 +479,7 @@ bool:ZMarketMenuWeaponSetup(client)
     else
     {
         // TODO: MAKE FORMATTING A CVAR
-        ShoppingListConstruct(rebuyweapons[Slot_Melee], shoppinglist, MENU_LINE_HUGE_LENGTH, ZMARKET_WEAPON_COOKIE_TOKEN, "\n \t", " (##)");
+        ShopListLib_Construct(rebuyweapons[Slot_Melee], shoppinglist, MENU_LINE_HUGE_LENGTH, ZMARKET_WEAPON_COOKIE_TOKEN, "\n \t", " (##)");
         Format(melee, sizeof(melee), "%t \n \t%s", "Weapons menu zmarket weapon setup melee", shoppinglist);
     }
     
@@ -491,7 +491,7 @@ bool:ZMarketMenuWeaponSetup(client)
     else
     {
         // TODO: MAKE FORMATTING A CVAR
-        ShoppingListConstruct(rebuyweapons[Slot_Projectile], shoppinglist, MENU_LINE_HUGE_LENGTH, ZMARKET_WEAPON_COOKIE_TOKEN, "\n \t", " (##)");
+        ShopListLib_Construct(rebuyweapons[Slot_Projectile], shoppinglist, MENU_LINE_HUGE_LENGTH, ZMARKET_WEAPON_COOKIE_TOKEN, "\n \t", " (##)");
         Format(projectile, sizeof(projectile), "%t \n \t%s", "Weapons menu zmarket weapon setup projectile", shoppinglist);
     }
     
@@ -503,7 +503,7 @@ bool:ZMarketMenuWeaponSetup(client)
     else
     {
         // TODO: MAKE FORMATTING A CVAR
-        ShoppingListConstruct(rebuyweapons[Slot_Explosive], shoppinglist, MENU_LINE_HUGE_LENGTH, ZMARKET_WEAPON_COOKIE_TOKEN, "\n \t", " (##)");
+        ShopListLib_Construct(rebuyweapons[Slot_Explosive], shoppinglist, MENU_LINE_HUGE_LENGTH, ZMARKET_WEAPON_COOKIE_TOKEN, "\n \t", " (##)");
         Format(explosive, sizeof(explosive), "%t \n \t%s", "Weapons menu zmarket weapon setup explosive", shoppinglist);
     }
     
@@ -566,7 +566,7 @@ public ZMarketMenuWeaponSetupHandle(Handle:menu_zmarket_weaponsetup, MenuAction:
         ZMarketGetRebuyCookie(client, weaponslot, weapons, sizeof(weapons));
         
         // Count how many weapons are in the slot.
-        new weaponcount = ShoppingListCount(weapons, "", ZMARKET_WEAPON_COOKIE_TOKEN);
+        new weaponcount = ShopListLib_Count(weapons, "", ZMARKET_WEAPON_COOKIE_TOKEN);
         
         // If there's only 1 weapon in the slot then just clear it.
         if (weaponcount <= 1)
@@ -699,7 +699,7 @@ public ZMarketMenuSubWeaponSetupHandle(Handle:menu_zmarket_subweaponsetup, MenuA
         ZMarketGetRebuyCookie(client, weaponslot, weapons, sizeof(weapons));
         
         // Resend this menu if there is more to remove, resend weapon setup menu if all is removed.
-        if (ShoppingListCount(weapons, "", ZMARKET_WEAPON_COOKIE_TOKEN) > 0)
+        if (ShopListLib_Count(weapons, "", ZMARKET_WEAPON_COOKIE_TOKEN) > 0)
             ZMarketMenuSubWeaponSetup(client, weaponslot);
         else
             ZMarketMenuWeaponSetup(client);
@@ -1018,7 +1018,7 @@ stock bool:ZMarketEquip(client, const String:weapon[], bool:rebuy = false)
                 // Remove all occurences of the weapon.
                 while (StrContains(rebuyweapons[x], weapon, false) > -1)
                 {
-                    ShoppingListRemove(rebuyweapons[x], sizeof(rebuyweapons[]), weapon, ZMARKET_WEAPON_COOKIE_TOKEN);
+                    ShopListLib_Remove(rebuyweapons[x], sizeof(rebuyweapons[]), weapon, ZMARKET_WEAPON_COOKIE_TOKEN);
                 }
             }
             
@@ -1309,7 +1309,7 @@ bool:ZMarketSaveCurrentSetup(client)
             continue;
         
         for (new y = 0; y < grenadecount[x]; y++)
-            ShoppingListAdd(grenades, sizeof(grenades), weaponname, ZMARKET_WEAPON_COOKIE_TOKEN);
+            ShopListLib_Add(grenades, sizeof(grenades), weaponname, ZMARKET_WEAPON_COOKIE_TOKEN);
     }
     
     // Copy the grenade list to the rebuy cache.
@@ -1440,7 +1440,7 @@ stock ZMarketHandleRebuyCookie(client, WeaponsSlot:slot, const String:value[], b
     GetClientCookie(client, rebuycookie, weaponsetup, sizeof(weaponsetup));
     
     // Get how many grenades the client currently has in their setup.
-    new grenadecount = ShoppingListCount(weaponsetup, value, ZMARKET_WEAPON_COOKIE_TOKEN);
+    new grenadecount = ShopListLib_Count(weaponsetup, value, ZMARKET_WEAPON_COOKIE_TOKEN);
     
     // Get grenade limit.
     new grenadelimit = WeaponAmmoGetGrenadeLimit(grenadetype);
@@ -1479,7 +1479,7 @@ stock ZMarketAddToRebuyCookie(client, WeaponsSlot:slot, const String:value[])
     GetClientCookie(client, rebuycookie, curvalue, sizeof(curvalue));
     
     // Count how many weapons are in the slot.
-    new weaponcount = ShoppingListCount(curvalue, "", ZMARKET_WEAPON_COOKIE_TOKEN);
+    new weaponcount = ShopListLib_Count(curvalue, "", ZMARKET_WEAPON_COOKIE_TOKEN);
     if (weaponcount >= ZMARKET_MAX_WEAPONS_PER_SLOT)
     {
         LogEvent(false, LogTypeOld_Error, LOG_GAME_EVENTS, LogModule_Weapons, "ZMarket", "Weapon setup for client %N has reached the maximum limit of %d weapons for slot %d.", client, ZMARKET_MAX_WEAPONS_PER_SLOT, _:slot);
@@ -1524,14 +1524,14 @@ stock bool:ZMarketRemoveFromRebuyCookie(client, WeaponsSlot:slot, const String:v
         // Removes all occurences of a single weapon in the rebuy cookie
         while (StrContains(weapons, value, false) > -1)
         {
-            ShoppingListRemove(weapons, sizeof(weapons), value, ZMARKET_WEAPON_COOKIE_TOKEN);
+            ShopListLib_Remove(weapons, sizeof(weapons), value, ZMARKET_WEAPON_COOKIE_TOKEN);
             success = true;
         }
     }
     else
     {
         // Remove weapon from list and overwrite old value.
-        success = ShoppingListRemove(weapons, sizeof(weapons), value, ZMARKET_WEAPON_COOKIE_TOKEN);
+        success = ShopListLib_Remove(weapons, sizeof(weapons), value, ZMARKET_WEAPON_COOKIE_TOKEN);
     }
     
     // Overwrite old value.
