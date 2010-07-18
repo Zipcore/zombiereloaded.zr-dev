@@ -1,13 +1,13 @@
 /*
  * ============================================================================
  *
- *  Project
+ *  Zombie Reloaded
  *
  *  File:          project.inc
  *  Type:          Base
  *  Description:   Contains defines, enums, etc available to anywhere in the project.
  *
- *  Copyright (C) 2009-2010  Greyscale
+ *  Copyright (C) 2009-2010  Greyscale, Richard Helgeby
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ stock ForwardOnPluginStart()
     BaseAdapter_OnPluginStart();
     MapConfig_OnPluginStart();
     ZTele_OnPluginStart();
+    ClassMgr_OnPluginStart();
 }
 
 // **********************************************
