@@ -135,6 +135,7 @@
 // New modules
 #include "zr/modules/mapconfig"
 #include "zr/modules/ztele"
+#include "zr/modules/functionregister"
 #include "zr/modules/classes/classmanager"
 
 // Include this last since nothing should be using it anyway.  Aside from external plugins.

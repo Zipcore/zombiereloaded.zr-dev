@@ -14,7 +14,10 @@ LINES_VISUALEFFECTS=`wc zr/visualeffects/*.* -l | tail -n1 | sed 's/^ *\(.*\) *$
 LINES_VOLFEATURES=`wc zr/volfeatures/*.* -l | tail -n1 | sed 's/^ *\(.*\) *$/\1/' | cut -d ' ' -f1`
 LINES_WEAPONS=`wc zr/weapons/*.* -l | tail -n1 | sed 's/^ *\(.*\) *$/\1/' | cut -d ' ' -f1`
 
-LINES_TOTAL="$(($LINES_MAIN + $LINES_BASE + $LINES_OTHER + $LINES_HEADERS + $LINES_PLAYERCLASSES + $LINES_SOUNDEFFECTS + $LINES_VISUALEFFECTS + $LINES_VOLFEATURES + $LINES_WEAPONS))"
+LINES_MODULES=`wc zr/modules/*.* -l | tail -n1 | sed 's/^ *\(.*\) *$/\1/' | cut -d ' ' -f1`
+LINES_CLASSES=`wc zr/modules/classes/*.* -l | tail -n1 | sed 's/^ *\(.*\) *$/\1/' | cut -d ' ' -f1`
+
+LINES_TOTAL="$(($LINES_MAIN + $LINES_BASE + $LINES_OTHER + $LINES_HEADERS + $LINES_PLAYERCLASSES + $LINES_SOUNDEFFECTS + $LINES_VISUALEFFECTS + $LINES_VOLFEATURES + $LINES_WEAPONS + $LINES_MODULES + $LINES_CLASSES))"
 
 echo "Number of lines:"
 echo "$LINES_MAIN\tmain sp"
@@ -26,6 +29,10 @@ echo "$LINES_SOUNDEFFECTS\tsoundeffects"
 echo "$LINES_VISUALEFFECTS\tvisualeffects"
 echo "$LINES_VOLFEATURES\tvolfeatures"
 echo "$LINES_WEAPONS\tweapons"
+
+echo "\nNew modules:"
+echo "$LINES_MODULES\tmodules"
+echo "$LINES_CLASSES\tclasses"
 
 echo "\nTotal:"
 echo "$LINES_TOTAL"

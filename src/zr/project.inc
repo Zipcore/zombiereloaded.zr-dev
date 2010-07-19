@@ -53,6 +53,7 @@ stock ForwardOnPluginStart()
     BaseAdapter_OnPluginStart();
     MapConfig_OnPluginStart();
     ZTele_OnPluginStart();
+    FuncRegister_OnPluginStart();
     ClassMgr_OnPluginStart();
 }
 
