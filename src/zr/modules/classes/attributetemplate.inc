@@ -47,7 +47,7 @@ new Module:g_moduleClass<ModuleVarName>;
 /**
  * Function for outside files to use to return the module's identifier.
  */
-stock Module:<FuncPrefix>_GetIdentifier() { return g_moduleClass<ModuleVarName>; }
+stock Module:Class<FuncPrefix>_GetIdentifier() { return g_moduleClass<ModuleVarName>; }
 
 /**
  * Register this module.
@@ -62,13 +62,17 @@ Class<FuncPrefix>_Register()
     strcopy(moduledata[ModuleData_FullName], CM_DATA_FULLNAME, "");
     strcopy(moduledata[ModuleData_ShortName], CM_DATA_SHORTNAME, "");
     strcopy(moduledata[ModuleData_Description], CM_DATA_DESCRIPTION, "");
-    moduledata[ModuleData_Dependencies][0] = ClassManager_GetIdentifier;
+    moduledata[ModuleData_Dependencies][0] = ClassMgr_GetIdentifier();
     moduledata[ModuleData_Dependencies][1] = INVALID_MODULE;
     
     // Send this array of data to the module manager.
     g_moduleClass<ModuleVarName> = ModuleMgr_Register(moduledata);
     
     EventMgr_RegisterEvent(g_moduleClass<ModuleVarName>, "Event_OnEventsRegister",      "Class<FuncPrefix>_OnEventsRegister");
+    
+    // Register attributes in the attribute register.
+    //ClassAttribReg_AddAttrib(g_moduleClass<ModuleVarName>, "<attribute>");
+    //ClassAttribReg_AddAttrib(g_moduleClass<ModuleVarName>, "<attribute2>");
 }
 
 /**
@@ -77,7 +81,7 @@ Class<FuncPrefix>_Register()
 Class<FuncPrefix>_OnPluginStart()
 {
     // Register the module.
-    <FuncPrefix>_Register();
+    Class<FuncPrefix>_Register();
 }
 
 /**
@@ -99,8 +103,6 @@ public Class<FuncPrefix>_OnPluginEnd()
  */
 public Class<FuncPrefix>_OnEventsRegister()
 {
-    EventMgr_RegisterEvent(g_moduleClass<ModuleVarName>, "Event_OnClassAttributeRegister",      "Class<FuncPrefix>_OnClassAttributeRegister");
-    
     //EventMgr_RegisterEvent(g_moduleClass<ModuleVarName>, "Event_OnAllPluginsLoaded",      "Class<FuncPrefix>_OnAllPluginsLoaded");
     //EventMgr_RegisterEvent(g_moduleClass<ModuleVarName>, "Event_OnPluginEnd",             "Class<FuncPrefix>_OnPluginEnd");
     //EventMgr_RegisterEvent(g_moduleClass<ModuleVarName>, "Event_OnAllModulesLoaded",      "Class<FuncPrefix>_OnAllModulesLoaded");
@@ -135,14 +137,6 @@ public Class<FuncPrefix>_OnEventsRegister()
  */
 public Class<FuncPrefix>_OnEventsReady()
 {
-}
-
-/**
- * Register this class attribute in the class manager.
- */
-public Class<FuncPrefix>_OnClassAttributeRegister()
-{
-    //ClassManager_RegisterAttribute( ... );
 }
 
 /**

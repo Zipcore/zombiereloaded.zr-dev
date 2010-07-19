@@ -36,14 +36,15 @@ new Module:g_moduleClassMgr;
  */
 
 /**
- * A class is loading and ready to be cached.
+ * A class attribute is loading and ready to be cached.
  *
  * @param classIndex    Class index.
  * @param kv            Handle to keyvalue tree, ready to read attribute value.
  * @param attribute     Name of the current attribute.
- * OnClassLoad(classIndex, Handle:kv, const String:attribute[])
+ * @param className     Name of the current class (section name in keyvalue tree).
+ * OnClassAttribLoad(classIndex, Handle:kv, const String:attribute[], const String:className[])
  */
-new ProjectEvent:g_EvOnClassLoad;
+new ProjectEvent:g_EvOnClassAttribLoad;
 
 /**
  * Class manager sent an validation request. Attribute modules do validation on
@@ -144,36 +145,45 @@ new Handle:g_hCvarClassesHumanSelect;
 /**
  * Function for outside files to use to return the module's identifier.
  */
-stock Module:ClassMgr_GetIdentifier() { return g_moduleClassClassMgr; }
+stock Module:ClassMgr_GetIdentifier() { return g_moduleClassMgr; }
+
+#define CLASS_MAX           48
+#define CLASS_NAME_LEN      64
+#define CLASS_STRING_LEN    256
+
+/**
+ * Class cache types. Specifies which data array to use.
+ */
+enum ClassCacheType
+{
+    ClassCache_Original,        /** Points to original data array. Data in this array is never changed once loaded. */
+    ClassCache_Modified,        /** Points to writable data array. Data in this array may be modified through console commands. */
+    ClassCache_Player           /** Points to player cache array. Data in this array is always valid and ready to read/modify. */
+}
+
+/**
+ * Class teams.
+ * TODO: Rename without 'New' once old class system is removed.
+ */
+enum ClassTeam
+{
+    ClassTeamNew_Invalid = -1,     /** Not valid in a class! */
+    ClassTeamNew_Zombies,
+    ClassTeamNew_Humans,
+    ClassTeamNew_All               /** Not valid in a class! It's only used by filters. */
+}
+
+/**
+ * Number of classes loaded.
+ */
+new g_ClassCount;
 
 
 // Utility includes.
 #include "zr/modules/classes/attributeregister"
 
 // Attribute includes
-// (...)
-
-#define CLASSES_MAX     48
-#define CLASS_NAME_LEN  64
-
-/**
- * Class teams.
- */
-enum ClassTeam
-{
-    ClassTeam_Invalid = -1,
-    ClassTeam_Zombies,
-    ClassTeam_Humans
-}
-
-
-enum ClassAttributeModule
-{
-    Module:ClassAttrib_ModuleID,
-    Function:ClassAttrib_ValidationFunc
-}
-
-new g_ClassCount;
+#include "zr/modules/classes/genericattributes"
 
 
 /**
@@ -200,7 +210,7 @@ ClassMgr_Register()
     ConfigMgr_Register(g_moduleClassMgr, "ClassMgr_OnConfigReload", "");
     
     // Create events.
-    g_EvOnClassLoad =               EventMgr_CreateEvent("Event_OnClassLoad");
+    g_EvOnClassAttribLoad =         EventMgr_CreateEvent("Event_OnClassAttribLoad");
     g_EvOnClassValidate =           EventMgr_CreateEvent("Event_OnClassValidate");
     g_EvOnClassAllLoaded =          EventMgr_CreateEvent("Event_OnClassAllLoaded");
     g_EvOnClassPlayerPreload =      EventMgr_CreateEvent("Event_OnClassPlayerPreload");
@@ -211,9 +221,6 @@ ClassMgr_Register()
     
     // Prepare attribute register.
     ClassAttribReg_Create();
-    
-    // Add the class manager's own attribute to the attribute register.
-    ClassAttribReg_AddAttrib(g_moduleClassMgr, "name");
 }
 
 /**
@@ -248,10 +255,6 @@ public ClassMgr_OnEventsRegister()
     //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_WeaponFire",              "ClassMgr_WeaponFire");
     
     #endif
-    
-    EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnClassLoad",               "ClassMgr_OnClassLoad");
-    EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnClassValidate",           "ClassMgr_OnClassValidate");
-    
 }
 
 /**
@@ -271,17 +274,23 @@ ClassMgr_LoadClasses()
     }
     else
     {
-        LogMgr_Print(g_moduleClassMgr, LogType_Fatal_Module, "Config Validation", "Error: Invalid config file path in cvar zr_classes_file: \"%s\"", configfile);
+        LogMgr_Print(g_moduleClassMgr, LogType_Fatal_Plugin, "Config Validation", "Error: Invalid config file path in cvar zr_classes_file: \"%s\"", configfile);
         return;
     }
     
-    // Parse class file.
-    new count = ConfigMgr_CacheKv(g_moduleClassMgr, CM_CONFIGINDEX_FIRST, "ClassMgr_LoadClass");
+    // Log loading-message.
+    LogMgr_Print(g_moduleClassMgr, LogType_Normal, "Config Loading", "Loading classes from file \"%s\".", configfile);
     
-    // There were classes found.
-    if (count == 0)
+    // Parse class file.
+    g_ClassCount = ConfigMgr_CacheKv(g_moduleClassMgr, CM_CONFIGINDEX_FIRST, "ClassMgr_LoadClass");
+    
+    // Log loaded-message.
+    LogMgr_Print(g_moduleClassMgr, LogType_Normal, "Config Loading", "%d class(es) loaded.", g_ClassCount);
+    
+    // Check if there are no classes.
+    if (g_ClassCount == 0)
     {
-        LogMgr_Print(g_moduleClassMgr, LogType_Fatal_Module, "Config Validation", "Error: No usable data found in class config file: %s", configfile);
+        LogMgr_Print(g_moduleClassMgr, LogType_Fatal_Plugin, "Config Validation", "Error: No usable data found in class config file: %s", configfile);
     }
 }
 
@@ -298,8 +307,12 @@ public KvCache:ClassMgr_LoadClass(Handle:kv, sectionindex, const String:sectionn
 {
     decl String:attributeName[CLASS_NAME_LEN];
     
-    // Save class section name.
-    // TODO
+    // Check if maximum number of classes is reached.
+    if (sectionindex == CLASS_MAX)
+    {
+        LogMgr_Print(g_moduleClassMgr, LogType_Error, "Config Validation", "Warning: Maximum number of classes reached (%d), ignoring classes from class \"%s\" (%d).", CLASS_MAX, sectionname, sectionindex);
+        return KvCache_Hault;
+    }
     
     KvGotoFirstSubKey(kv, false);
     do
@@ -314,31 +327,35 @@ public KvCache:ClassMgr_LoadClass(Handle:kv, sectionindex, const String:sectionn
         new Module:attributeModule = ClassAttribReg_GetAttrib(attributeName);
         
         // Validate module.
-        if (attributeModule == INVALID_MODULE)
+        if (attributeModule != INVALID_MODULE)
+        {
+            // Prepare event data.
+            static EventDataTypes:eventdatatypes[] = {DataType_Cell, DataType_Cell, DataType_String, DataType_String};
+            decl any:eventdata[sizeof(eventdatatypes)][CLASS_NAME_LEN];
+            eventdata[0][0] = sectionindex;
+            eventdata[1][0] = kv;
+            strcopy(eventdata[2][0], CLASS_NAME_LEN, attributeName);
+            strcopy(eventdata[3][0], CLASS_NAME_LEN, sectionname);
+            new Module:eventFilter[2];
+            eventFilter[0] = attributeModule;
+            eventFilter[1] = INVALID_MODULE;
+            
+            // Send the load event to the attribute module only.
+            EventMgr_Forward(g_EvOnClassAttribLoad, eventdata, sizeof(eventdata), sizeof(eventdata[]), eventdatatypes, eventFilter);
+        }
+        else
         {
             // Attribute wasn't registered.
-            continue;
+            PrintToServer("Class attribute not registered: %s", attributeName);
         }
-        
-        // Prepare event data.
-        static EventDataTypes:eventdatatypes[] = {DataType_Cell, DataType_Cell, DataType_String};
-        decl any:eventdata[sizeof(eventdatatypes)][CLASS_NAME_LEN];
-        eventdata[0][0] = g_ClassCount;
-        eventdata[1][0] = kv;
-        strcopy(eventdata[2][0], CLASS_NAME_LEN, attributeName);
-        new Module:eventFilter[2];
-        eventFilter[0] = attributeModule;
-        eventFilter[1] = INVALID_MODULE;
-        
-        // Send the load event to the attribute module only.
-        EventMgr_Forward(g_EvOnClassLoad, eventdata, sizeof(eventdata), sizeof(eventdata[]), eventdatatypes, eventFilter);
         
         // Jump back to the attribute again so the parser will find the next attribute.
         KvJumpToKey(kv, attributeName);
-        
     } while (KvGotoNextKey(kv, false));
     
-    g_ClassCount++;
+    // Go one level up (to the class section level).
+    KvGoBack(kv);
+    
     return KvCache_Continue;
 }
 
@@ -351,7 +368,7 @@ ClassMgr_OnPluginStart()
     ClassMgr_Register();
     
     // Create cvars.
-    g_hCvarClassFile =              Project_CreateConVar("classes_file",                    "configs/zr/playerclasses.txt",     "Path to class config file.  Path is relative to the SourceMod directory.");
+    g_hCvarClassFile =              Project_CreateConVar("classes_file",                    "configs/zr/classes.txt",       "Path to class config file.  Path is relative to the SourceMod directory.");
     //g_hCvarClassesMenuSpawn =       Project_CreateConVar("classes_menu_spawn",              "0",                "Re-display class selection menu every spawn.");
     //g_hCvarClassesMenuJoin =        Project_CreateConVar("classes_menu_join",               "0",                "Display class selection menu when a player spawn for the first time.");
     //g_hCvarClassesRandom =          Project_CreateConVar("classes_random",                  "0",                "Player is assigned a random class every spawn. [Override: <prefix>_classes_default_*]");
@@ -365,7 +382,7 @@ ClassMgr_OnPluginStart()
     //g_hCvarClassesHumanSelect =     Project_CreateConVar("classes_human_select",            "1",                "Allow players to select human classes.");
     
     // Forward plugin start event to attribute modules.
-    // (...)
+    ClsGeneric_OnPluginStart();
 }
 
 
@@ -380,40 +397,25 @@ public ClassMgr_OnConfigsExecuted()
 {
     ClassMgr_LoadClasses();
     
-    // TODO: Send validation event. Read final result from event manager.
+    // Loop through all classes and send validation event. Read final result from event manager.
+    for (new classIndex = 0; classIndex < g_ClassCount; classIndex++)
+    {
+        new any:eventdata[1][1];
+        eventdata[0][0] = classIndex;
+        
+        new Action:result = EventMgr_Forward(g_EvOnClassValidate, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+        
+        // Check for validation errors.
+        if (result == Plugin_Handled)
+        {
+            // TODO: Tell generic attribute module to disable class.
+        }
+    }
     
     // TODO: Validate class minimum reqirements.
     
     // TODO: Send all classes loaded event (so modules can copy their cache).
 }
-
-/**
- * A class is loading and ready to be cached.
- *
- * @param classIndex    Class index.
- * @param kv            Handle to keyvalue tree, ready to read attribute value.
- * @param attribute     Name of the current attribute.
- */
-public ClassMgr_OnClassLoad(classIndex, Handle:kv, const String:attribute[])
-{
-}
-
-/**
- * Class manager sent an validation request. Attribute modules do validation on
- * all their attributes, and log errors if any.
- *
- * @param classIndex    Class index.
- * @param kv            Handle to keyvalue tree, ready to read attribute value.
- * @param attribute     Name of the current attribute.
- *
- * @return              Attribute module returns Plugin_Handled on validation error,
- *                      or Plugin_Continue if ok.
- */
-public Action:ClassMgr_OnClassValidate(classIndex)
-{
-    return Plugin_Continue;
-}
-
 
 /**
  * All plugins have loaded.
@@ -623,4 +625,56 @@ public ClassMgr_PlayerJump(client)
  */
 public ClassMgr_WeaponFire(client, const String:weapon[])
 {
+}
+
+
+/******************************
+ *    CONVERSION FUNCTIONS    *
+ ******************************/
+
+/**
+ * Converts the specified string to a class team.
+ *
+ * @param team      Team string to convert.
+ *
+ * @return          Team if successful, otherwise ClassTeam_Invalid.
+ */
+ClassTeam:ClassMgr_StringToTeam(const String:team[])
+{
+    if (StrEqual(team, "zombies", false))
+    {
+        return ClassTeamNew_Zombies;
+    }
+    else if (StrEqual(team, "humans", false))
+    {
+        return ClassTeamNew_Humans;
+    }
+    else if (StrEqual(team, "all", false))
+    {
+        return ClassTeamNew_All;
+    }
+    
+    return ClassTeamNew_Invalid;
+}
+
+/**
+ * Converts the specified team to a string.
+ *
+ * @param team      Team to convert.
+ * @param buffer    Destination string buffer.
+ * @param maxlen    Size of buffer.
+ *
+ * @return          Number of cells written.
+ */
+ClassMgr_TeamToString(ClassTeam:team, String:buffer[], maxlen)
+{
+    switch (team)
+    {
+        case ClassTeamNew_Zombies: return strcopy(buffer, maxlen, "zombies");
+        case ClassTeamNew_Humans: return strcopy(buffer, maxlen, "humans");
+        case ClassTeamNew_All: return strcopy(buffer, maxlen, "all");
+        case ClassTeamNew_Invalid: return strcopy(buffer, maxlen, "INVALID_TEAM");
+    }
+    
+    return 0;
 }
