@@ -11,20 +11,20 @@
 		{
 			"FlashlightIsOn"
 			{
-				"windows"	"290"
-				"linux"		"291"
+				"windows"	"342"
+				"linux"		"343"
 			}
 
 			"FlashlightTurnOn"
 			{
-				"windows"	"291"
-				"linux"		"292"
+				"windows"	"343"
+				"linux"		"344"
 			}
 
 			"FlashlightTurnOff"
 			{
-				"windows"	"292"
-				"linux"		"293"
+				"windows"	"344"
+				"linux"		"345"
 			}
 		}
 
