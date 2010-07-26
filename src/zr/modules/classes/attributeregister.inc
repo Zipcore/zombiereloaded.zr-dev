@@ -54,7 +54,7 @@ ClassAttribReg_Create()
  *                  -2 if invalid name.
  *                  -3 if attribute already exist.
  */
-ClassAttribReg_AddAttrib(Module:attribute, const String:name[])
+stock ClassAttribReg_AddAttrib(Module:attribute, const String:name[])
 {
     // Validate module.
     if (attribute == INVALID_MODULE)
@@ -89,7 +89,7 @@ ClassAttribReg_AddAttrib(Module:attribute, const String:name[])
  *
  * @return          True if removed, false if it doesn't exist.
  */
-bool:ClassAttribReg_RemoveAttrib(const String:name[])
+stock bool:ClassAttribReg_RemoveAttrib(const String:name[])
 {
     return RemoveFromTrie(ClassAttribRegData, name);
 }
@@ -101,7 +101,7 @@ bool:ClassAttribReg_RemoveAttrib(const String:name[])
  *
  * @return          Attribute module on success, otherwise INVALID_MODULE.
  */
-Module:ClassAttribReg_GetAttrib(const String:name[])
+stock Module:ClassAttribReg_GetAttrib(const String:name[])
 {
     new Module:attribute;
     if (GetTrieValue(ClassAttribRegData, name, attribute))
