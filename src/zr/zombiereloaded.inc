@@ -75,7 +75,7 @@ stock bool:ZRIsTimerRunning(Handle:timer)
 }
 
 /**
- * Wrapper functions for KilLTimer.
+ * Wrapper function for KillTimer.
  * Ends a timer if running, and resets its timer handle variable.
  * 
  * @param timer     The timer handle.

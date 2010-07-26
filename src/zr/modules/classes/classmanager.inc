@@ -30,9 +30,13 @@
  */
 new Module:g_moduleClassMgr;
 
+/**
+ * Function for outside files to use to return the module's identifier.
+ */
+stock Module:ClassMgr_GetIdentifier() { return g_moduleClassMgr; }
 
 /**
- * @section Event ID variables and documentation.
+ * @section Event ID variables with documentation.
  */
 
 /**
@@ -64,8 +68,8 @@ new ProjectEvent:g_EvOnClassValidate;
  * All classes are loaded now. Attribute modules should now make a copy of their array
  * so the original values can be kept.
  *
- * @param classIndex    Class index.
- * Action:OnClassAllLoaded(classIndex)
+ * @param classCount    Number of classes loaded.
+ * Action:OnClassAllLoaded(classCount)
  */
 new ProjectEvent:g_EvOnClassAllLoaded;
 
@@ -108,9 +112,9 @@ new ProjectEvent:g_EvOnClassApply;
  * @param client        Client index.
  * @param attacker      Attacker client index.
  * @param motherZombie  Specifies whether the attacker was a mother zombie.
- * OnClassPlayerInfected(client, attacker, bool:motherZombie)
+ * OnClassPlayerInfect(client, attacker, bool:motherZombie)
  */
-new ProjectEvent:g_EvOnClassPlayerInfected;
+new ProjectEvent:g_EvOnClassPlayerInfect;
 
 /**
  * A player was turned back into a human. This event is fired AFTER class attributes
@@ -130,22 +134,17 @@ new ProjectEvent:g_EvOnClassPlayerHuman;
  * Cvar handles.
  */
 new Handle:g_hCvarClassFile;
-new Handle:g_hCvarClassesMenuSpawn;
-new Handle:g_hCvarClassesMenuJoin;
-new Handle:g_hCvarClassesRandom;
+//new Handle:g_hCvarClassesMenuSpawn;
+//new Handle:g_hCvarClassesMenuJoin;
+//new Handle:g_hCvarClassesRandom;
 new Handle:g_hCvarClassesChangeTimelimit;
-new Handle:g_hCvarClassesSave;
-new Handle:g_hCvarClassesDefaultZombie;
-new Handle:g_hCvarClassesDefaultMZombie;
-new Handle:g_hCvarClassesDefaultHuman;
-new Handle:g_hCvarClassesDefaultAdmin;
-new Handle:g_hCvarClassesZombieSelect;
-new Handle:g_hCvarClassesHumanSelect;
-
-/**
- * Function for outside files to use to return the module's identifier.
- */
-stock Module:ClassMgr_GetIdentifier() { return g_moduleClassMgr; }
+//new Handle:g_hCvarClassesSave;
+//new Handle:g_hCvarClassesDefaultZombie;
+//new Handle:g_hCvarClassesDefaultMZombie;
+//new Handle:g_hCvarClassesDefaultHuman;
+//new Handle:g_hCvarClassesDefaultAdmin;
+//new Handle:g_hCvarClassesZombieSelect;
+//new Handle:g_hCvarClassesHumanSelect;
 
 #define CLASS_MAX           48
 #define CLASS_NAME_LEN      64
@@ -178,12 +177,56 @@ enum ClassTeam
  */
 new g_ClassCount;
 
+/**
+ * Function for outside files to use to return number of classes loaded.
+ */
+stock ClassMgr_GetClassCount() { return g_ClassCount; }
 
-// Utility includes.
+/**
+ * Specifies whether classes are loaded.
+ */
+new bool:g_ClassLoaded = false;
+
+/**
+ * Function for outside files to use to return if classes are loaded.
+ */
+stock bool:ClassMgr_IsClassesLoaded() { return g_ClassLoaded; }
+
+/**
+ * Selected classes.
+ */
+new g_ClassSelected[MAXPLAYERS + 1][ClassTeam];
+new g_ClassNextClass[MAXPLAYERS + 1][ClassTeam];
+
+/**
+ * Specifies whether a player is allowed to change class with instant effect.
+ * This is only used on human classes, and in combination with the
+ * zr_classes_change_timelimit time limit, but could be used other places too.
+ * The class menu will automatically check this setting and apply attributes if
+ * set to true.
+ */
+new bool:g_ClassAllowInstantChange[MAXPLAYERS + 1];
+
+/**
+ * Timers for instant class change.
+ */
+new Handle:g_hClassInstantChange[MAXPLAYERS + 1];
+
+/**
+ * Specifies whether a player has spawned at least once, to check when a player
+ * spawn for the first time.
+ */
+new bool:g_ClassPlayerSpawned[MAXPLAYERS + 1];
+
+
+// Utility and logic includes.
 #include "zr/modules/classes/attributeregister"
+#include "zr/modules/classes/nextindexes"
+#include "zr/modules/classes/instantchange"
 
-// Attribute includes
+// Attribute module includes
 #include "zr/modules/classes/genericattributes"
+#include "zr/modules/classes/model"
 
 
 /**
@@ -216,7 +259,7 @@ ClassMgr_Register()
     g_EvOnClassPlayerPreload =      EventMgr_CreateEvent("Event_OnClassPlayerPreload");
     g_EvOnClassPlayerLoad =         EventMgr_CreateEvent("Event_OnClassPlayerLoad");
     g_EvOnClassApply =              EventMgr_CreateEvent("Event_OnClassApply");
-    g_EvOnClassPlayerInfected =     EventMgr_CreateEvent("Event_OnClassPlayerInfected");
+    g_EvOnClassPlayerInfect =       EventMgr_CreateEvent("Event_OnClassPlayerInfect");
     g_EvOnClassPlayerHuman =        EventMgr_CreateEvent("Event_OnClassPlayerHuman");
     
     // Prepare attribute register.
@@ -238,23 +281,23 @@ public ClassMgr_OnEventsRegister()
     //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnMapStart",              "ClassMgr_OnMapStart");
     //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnMapEnd",                "ClassMgr_OnMapEnd");
     //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnAutoConfigsBuffered",   "ClassMgr_OnAutoCfgBuffered");
-    EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnConfigsExecuted",       "ClassMgr_OnConfigsExecuted");
+    EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnConfigsExecuted",         "ClassMgr_OnConfigsExecuted");
     //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnClientPutInServer",     "ClassMgr_OnClientPutInServer");
     //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnClientDisconnect",      "ClassMgr_OnClientDisconnect");
     
+    EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnPlayerReady",             "ClassMgr_OnPlayerReady");
+    
     #if defined PROJECT_GAME_CSS
     
-    //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_RoundStart",              "ClassMgr_RoundStart");
-    //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_RoundFreezeEnd",          "ClassMgr_RoundFreezeEnd");
-    //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_RoundEnd",                "ClassMgr_RoundEnd");
-    //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_PlayerTeam",              "ClassMgr_PlayerTeam");
-    //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_PlayerSpawn",             "ClassMgr_PlayerSpawn");
-    //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_PlayerHurt",              "ClassMgr_PlayerHurt");
-    //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_PlayerDeath",             "ClassMgr_PlayerDeath");
-    //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_PlayerJump",              "ClassMgr_PlayerJump");
-    //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_WeaponFire",              "ClassMgr_WeaponFire");
+    EventMgr_RegisterEvent(g_moduleClassMgr, "Event_PlayerSpawn",               "ClassMgr_PlayerSpawn");
+    EventMgr_RegisterEvent(g_moduleClassMgr, "Event_PlayerSpawn",               "ClassMgr_PlayerSpawnPost");
+    EventMgr_RegisterEvent(g_moduleClassMgr, "Event_PlayerDeath",               "ClassMgr_PlayerDeath");
     
     #endif
+    
+    // TODO: Activate these events when the new infection module is imported.
+    //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnPlayerInfected",        "ClassMgr_OnPlayerInfected");
+    //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnPlayerHuman",           "ClassMgr_OnPlayerHuman");
 }
 
 /**
@@ -292,6 +335,8 @@ ClassMgr_LoadClasses()
     {
         LogMgr_Print(g_moduleClassMgr, LogType_Fatal_Plugin, "Config Validation", "Error: No usable data found in class config file: %s", configfile);
     }
+    
+    
 }
 
 /**
@@ -345,7 +390,8 @@ public KvCache:ClassMgr_LoadClass(Handle:kv, sectionindex, const String:sectionn
         }
         else
         {
-            // Attribute wasn't registered.
+            // Attribute wasn't registered. Just a debug print and should never happen
+            // if all modules are available.
             PrintToServer("Class attribute not registered: %s", attributeName);
         }
         
@@ -383,6 +429,7 @@ ClassMgr_OnPluginStart()
     
     // Forward plugin start event to attribute modules.
     ClsGeneric_OnPluginStart();
+    ClsModel_OnPluginStart();
 }
 
 
@@ -395,15 +442,17 @@ ClassMgr_OnPluginStart()
  */
 public ClassMgr_OnConfigsExecuted()
 {
+    // Load classes from file.
     ClassMgr_LoadClasses();
+    
+    new any:eventdata[1][1];
+    new Action:result;
     
     // Loop through all classes and send validation event. Read final result from event manager.
     for (new classIndex = 0; classIndex < g_ClassCount; classIndex++)
     {
-        new any:eventdata[1][1];
         eventdata[0][0] = classIndex;
-        
-        new Action:result = EventMgr_Forward(g_EvOnClassValidate, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+        result = EventMgr_Forward(g_EvOnClassValidate, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
         
         // Check for validation errors.
         if (result == Plugin_Handled)
@@ -412,9 +461,15 @@ public ClassMgr_OnConfigsExecuted()
         }
     }
     
-    // TODO: Validate class minimum reqirements.
+    // Validate class minimum reqirements.
+    if (!ClsGeneric_ValidateRequirements())
+    {
+        LogMgr_Print(g_moduleClassMgr, LogType_Fatal_Plugin, "Config Validation", "Error: The class configuration doesn't match the team requirements.");
+    }
     
-    // TODO: Send all classes loaded event (so modules can copy their cache).
+    // Send all classes loaded event (so modules can copy their cache).
+    eventdata[0][0] = g_ClassCount;
+    result = EventMgr_Forward(g_EvOnClassAllLoaded, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
 }
 
 /**
@@ -484,30 +539,6 @@ public Action:ClassMgr_OnMyModuleDisable()
 }
 
 /**
- * The map has started.
- */
-public ClassMgr_OnMapStart()
-{
-}
-
-/**
- * The map has ended.
- */
-public ClassMgr_OnMapEnd()
-{
-}
-
-/**
- * This is called before OnConfigsExecuted but any time after OnMapStart.
- * Per-map settings should be set here. 
- */
-public ClassMgr_OnAutoCfgBuffered()
-{
-}
-
-
-
-/**
  * Called when a registered config file (by this module) is manually.
  */
 public ClassMgr_OnConfigReload(configindex)
@@ -527,6 +558,17 @@ public ClassMgr_OnConfigReload(configindex)
  */
 public ClassMgr_OnClientPutInServer(client)
 {
+    // Reset spawned flag.
+    g_ClassPlayerSpawned[client] = false;
+    
+    // Reset instant class change.
+    ClassMgr_ResetInstantChange(client);
+    
+    // Reset next-indexes.
+    ClassMgr_ResetNextIndexes(client);
+    
+    // Find clean class to preload.
+    // Send event OnClassPlayerPreload.
 }
 
 /**
@@ -536,39 +578,8 @@ public ClassMgr_OnClientPutInServer(client)
  */
 public ClassMgr_OnClientDisconnect(client)
 {
-}
-
-/**
- * Round has started.
- */
-public ClassMgr_RoundStart()
-{
-}
-
-/**
- * Pre-round freezetime has finished.
- */
-public ClassMgr_RoundFreezeEnd()
-{
-}
-
-/**
- * Round has ended.
- */
-public ClassMgr_RoundEnd()
-{
-}
-
-/**
- * Client has joined a team.
- * 
- * @param client        The client index.
- * @param team          The client's new team.
- * @param oldteam       The team the client is switching from.
- * @param disconnect    True if the client is disconnecting, false if switching to a team.
- */
-public ClassMgr_PlayerTeam(client, team, oldteam, bool:disconnect)
-{
+    // Reset instant class change.
+    ClassMgr_ResetInstantChange(client);
 }
 
 /**
@@ -578,22 +589,35 @@ public ClassMgr_PlayerTeam(client, team, oldteam, bool:disconnect)
  */
 public ClassMgr_PlayerSpawn(client)
 {
+    // Stop if classes aren't loaded.
+    
+    // Stop if not on a team.
+    
+    // Restore next-indexes.
+    ClassMgr_ResetNextIndexes(client);
+    
+    // Get random class if enabled in config. Always get random class for bots.
+    
+    // Display class menu configs according to config.
+    
+    // Send OnClassPlayerLoad event with active class index.
+    
+    // Setup instant class change if enabled.
+    ClassMgr_CheckInstantChange(client);
 }
 
 /**
- * Client has been damaged.
+ * Client has spawned (delayed event).
  * 
- * @param victim        The index of the hurt client.
- * @param attacker      The index of the attacking client.
- * @param health        How much health the client has after the damage.
- * @param armor         How much armor the client has after the damage.
- * @param weapon        The weapon classname used to hurt the victim. (No weapon_ prefix)
- * @param dmg_health    The amount of health the victim lost.
- * @param dmg_armor     The amount of armor the victim lost.
- * @param hitgroup      The hitgroup index of the victim that was damaged.
+ * @param client    The client index.
  */
-public ClassMgr_PlayerHurt(victim, attacker, health, armor, const String:weapon[], dmg_health, dmg_armor, hitgroup)
+public ClassMgr_PlayerSpawnPost(client)
 {
+    // Stop if classes aren't loaded.
+    
+    // Stop if not on a team.
+    
+    // Send OnClassApply event.
 }
 
 /**
@@ -606,25 +630,129 @@ public ClassMgr_PlayerHurt(victim, attacker, health, armor, const String:weapon[
  */
 public ClassMgr_PlayerDeath(victim, attacker, const String:weapon[], bool:headshot)
 {
+    // Reset instant class change.
+    ClassMgr_ResetInstantChange(victim);
 }
 
 /**
- * Client has jumped.
- * 
- * @param client        The client index.
+ * Client is connected, admin checked and cookies are loaded.
+ *
+ * @param client    Client index.
  */
-public ClassMgr_PlayerJump(client)
+public ClassMgr_OnPlayerReady(client)
 {
+    // Set class selection indexes if not already modified.
+    
+    // Tell player.
+    // TranslationPrintToChat(client, "Classes Selection Loaded");
 }
 
 /**
- * Client has fired a weapon.
- * 
- * @param client        The client index.
- * @param weapon        The weapon classname fired. (No weapon_ prefix)
+ * Client was infected.
+ *
+ * @param client            Client index.
+ * @param attacker          Attacker index, if any.
+ * @param motherZombie      Infected as mother zombie.
  */
-public ClassMgr_WeaponFire(client, const String:weapon[])
+public ClassMgr_OnClientInfect(client, attacker, bool:motherZombie)
 {
+    // Reset instant class change.
+    ClassMgr_ResetInstantChange(client);
+    
+    // Get active index.
+    
+    // If mother zombie, get class according to config.
+    
+    // Set slected zombie class to active index.
+    
+    // Restore next-indexes.
+    ClassMgr_ResetNextIndexes(client);
+    
+    // Send OnClassApply event.
+    
+    // Send OnClassPlayerInfect event.
+    
+}
+
+/**
+ * Client was turned back into a human.
+ *
+ * @param client            Client index.
+ */
+public ClassMgr_OnClientHuman(client)
+{
+    
+}
+
+/******************************
+ *    INTERNAL TOOLS/LOGIC    *
+ ******************************/
+
+
+
+
+/*********************************
+ *    CLASS MANAGER UTILITIES    *
+ *********************************/
+
+/**
+ * Returns whether the specified class valid.
+ *
+ * @param classIndex    The class index to validate.
+ * @return              True if the class exist, false otherwise.
+ */
+stock bool:ClassMg_IsValidIndex(classIndex)
+{
+    if (classIndex >= 0 && classIndex < g_ClassCount)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/**
+ * Logs a invalid attribute warning, for string attributes.
+ *
+ * @param module        Module responsible for the attribute.
+ * @param attribute     Name of attribute that failed validation.
+ * @param className     Name of the class.
+ * @param classIndex    Class index.
+ * @param value         Attribute value (string).
+ */
+stock ClassMgr_LogAttribErrString(Module:module, const String:attribute[], const String:className[], classIndex, const String:value[])
+{
+    LogMgr_Print(module, LogType_Error, "Config Validation", "Warning: Invalid \"%s\" in class \"%s\" (%d): \"%s\"", attribute, className, classIndex, value);
+}
+
+/**
+ * Logs a invalid attribute warning, for cell attributes.
+ *
+ * @param module        Module responsible for the attribute.
+ * @param attribute     Name of attribute that failed validation.
+ * @param className     Name of the class.
+ * @param classIndex    Class index.
+ * @param value         Attribute value (cell).
+ */
+stock ClassMgr_LogAttribErrCell(Module:module, const String:attribute[], const String:className[], classIndex, value)
+{
+    LogMgr_Print(module, LogType_Error, "Config Validation", "Warning: Invalid \"%s\" in class \"%s\" (%d): %d", attribute, className, classIndex, value);
+}
+
+/**
+ * Logs a invalid attribute warning, for float attributes.
+ *
+ * @param module        Module responsible for the attribute.
+ * @param attribute     Name of attribute that failed validation.
+ * @param className     Name of the class.
+ * @param classIndex    Class index.
+ * @param value         Attribute value (float).
+ */
+stock ClassMgr_LogAttribErrFloat(Module:module, const String:attribute[], const String:className[], classIndex, Float:value)
+{
+    LogMgr_Print(module, LogType_Error, "Config Validation", "Warning: Invalid \"%s\" in class \"%s\" (%d): %0.2f", attribute, className, classIndex, value);
 }
 
 

@@ -59,6 +59,12 @@ new ProjectEvent:g_EvOnConfigsExecuted;
 new ProjectEvent:g_EvOnClientPutInServer;
 new ProjectEvent:g_EvOnClientDisconnect;
 new ProjectEvent:g_EvOnClientConnected;
+//new ProjectEvent:g_EvOnGameFrame;
+new ProjectEvent:g_EvOnClientPostAdminCheck;
+new ProjectEvent:g_EvOnClientCookiesCached;
+
+// Project events.
+new ProjectEvent:g_EvOnClientReady;
 
 // CS:S events.
 #if defined PROJECT_GAME_CSS
@@ -67,6 +73,7 @@ new ProjectEvent:g_EvRoundFreezeEnd;
 new ProjectEvent:g_EvRoundEnd;
 new ProjectEvent:g_EvPlayerTeam;
 new ProjectEvent:g_EvPlayerSpawn;
+new ProjectEvent:g_EvPlayerSpawnPost;
 new ProjectEvent:g_EvPlayerHurt;
 new ProjectEvent:g_EvPlayerDeath;
 new ProjectEvent:g_EvPlayerJump;
@@ -103,6 +110,77 @@ stock EventDataTypes:g_CommonDataType1[] = {};
 
 // This indicates that you are passing a single cell into an event.  Common for events that only pass a client index.
 stock EventDataTypes:g_CommonDataType2[] = {DataType_Cell};
+
+/**
+ * Spawn post event delay time, in seconds.
+ */
+#define PROJECT_SPAWN_POST_DELAY    0.1
+
+/**
+ * Saved timestamp from the player spawn event.
+ */
+new Float:g_fPlayerSpawnTime = -1.0;
+
+/**
+ * Saved client indexes of the players that have spawned.
+ */
+new bool:g_PlayerSpawned[MAXPLAYERS + 1];
+
+/**
+ * Saves states for the OnPlayerReady event.
+ */
+new bool:g_PlayerAdminChecked[MAXPLAYERS + 1];
+new bool:g_PlayerCookiesLoaded[MAXPLAYERS + 1];
+new bool:g_PlayerReadyEventFired[MAXPLAYERS + 1];
+
+/**
+ * Resets states for the OnPlayerReady event.
+ */
+ResetReadyState(client)
+{
+    g_PlayerAdminChecked[client] = false;
+    g_PlayerCookiesLoaded[client] = false;
+    g_PlayerReadyEventFired[client] = false;
+}
+
+/**
+ * Returns whether the player is ready or not.
+ *
+ * @param client    Client index.
+ * @return          True if ready, false otherwise.
+ */
+bool:IsClientReady(client)
+{
+    if (IsClientConnected(client) &&
+        g_PlayerAdminChecked[client] &&
+        g_PlayerCookiesLoaded[client] &&
+        !g_PlayerReadyEventFired[client])
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+/**
+ * Fires the ready event if the client is ready.
+ *
+ * @param client    Client index.
+ */
+CheckReadyState(client)
+{
+    // Fire ready event if ready.
+    if (IsClientReady(client))
+    {
+        // Forward event to all modules.
+        new any:eventdata[1][1];
+        eventdata[0][0] = client;
+        EventMgr_Forward(g_EvOnClientReady, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+        
+        g_PlayerReadyEventFired[client] = true;
+    }
+}
+
 
 // **********************************************
 //            SourceMod Forwards
@@ -180,6 +258,9 @@ public OnClientDisconnect(client)
     eventdata[0][0] = client;
     
     EventMgr_Forward(g_EvOnClientDisconnect, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+    
+    // Clean up after OnPlayerReady event.
+    ResetReadyState(client);
 }
 
 /**
@@ -194,6 +275,76 @@ public OnClientConnected(client)
     eventdata[0][0] = client;
     
     EventMgr_Forward(g_EvOnClientConnected, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+    
+    // Check if ready to fire OnPlayerReady event.
+    CheckReadyState(client);
+}
+
+/**
+ * Client is authorized.
+ *
+ * @param client    The client index.
+ */
+public OnClientPostAdminCheck(client)
+{
+    // Forward event to all modules.
+    new any:eventdata[1][1];
+    eventdata[0][0] = client;
+    
+    EventMgr_Forward(g_EvOnClientPostAdminCheck, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+    
+    // Set state for OnPlayerReady event and check if ready.
+    g_PlayerAdminChecked[client] = true;
+    CheckReadyState(client);
+}
+
+/**
+ * Client cookies are loaded.
+ *
+ * @param client    The client index.
+ */
+public OnClientCookiesCached(client)
+{
+    // Forward event to all modules.
+    new any:eventdata[1][1];
+    eventdata[0][0] = client;
+    
+    EventMgr_Forward(g_EvOnClientCookiesCached, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+    
+    // Set state for OnPlayerReady event and check if ready.
+    g_PlayerCookiesLoaded[client] = true;
+    CheckReadyState(client);
+}
+
+/**
+ * Called before every game frame.
+ */
+public OnGameFrame()
+{
+    // Forward event to all modules.
+    //EventMgr_Forward(g_EvOnGameFrame, g_CommonEventData1, 0, 0, g_CommonDataType1);
+    
+    #if defined PROJECT_GAME_CSS
+    if (GetGameTime() - PROJECT_SPAWN_POST_DELAY >= g_fPlayerSpawnTime)
+    {
+        g_fPlayerSpawnTime = -1.0;
+        
+        // Loop through all players and forward spawn post event if the flag is set.
+        for (new client = 1; client <= MAXPLAYERS; client++)
+        {
+            // Forward spawn post event if flag is set.
+            if (g_PlayerSpawned[client])
+            {
+                new any:eventdata[1][1];
+                eventdata[0][0] = client;
+                EventMgr_Forward(g_EvPlayerSpawnPost, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+                
+                // Reset flag.
+                g_PlayerSpawned[client] = false;
+            }
+        }
+    }
+    #endif
 }
 
 
@@ -225,7 +376,13 @@ stock EventMgr_CreateEvents()
     g_EvOnConfigsExecuted =         EventMgr_CreateEvent("Event_OnConfigsExecuted");        /** All convars are set, cvar-dependent code should use this. */
     g_EvOnClientPutInServer =       EventMgr_CreateEvent("Event_OnClientPutInServer");      /** Client has joined the server. */
     g_EvOnClientDisconnect =        EventMgr_CreateEvent("Event_OnClientDisconnect");       /** Client is disconnecting from the server. */
-    g_EvOnClientConnected =         EventMgr_CreateEvent("OnClientConnected");              /** Client connected to the server. */
+    g_EvOnClientConnected =         EventMgr_CreateEvent("Event_OnClientConnected");        /** Client connected to the server. */
+    //g_EvOnGameFrame =               EventMgr_CreateEvent("Event_OnGameFrame");              /** Called before every game frame. */
+    g_EvOnClientPostAdminCheck =    EventMgr_CreateEvent("Event_OnClientPostAdminCheck");   /** Client is authorized. */
+    g_EvOnClientCookiesCached =     EventMgr_CreateEvent("Event_OnClientCookiesCached");    /** Client cookies are loaded. */
+    
+    // Project events.
+    g_EvOnClientReady =             EventMgr_CreateEvent("Event_OnClientReady");            /** Client is connected, admin checked and cookies are loaded. */
     
     // CS:S events.
     #if defined PROJECT_GAME_CSS
@@ -234,6 +391,7 @@ stock EventMgr_CreateEvents()
         g_EvRoundEnd =              EventMgr_CreateEvent("Event_RoundEnd");                 /** Round has ended. */
         g_EvPlayerTeam =            EventMgr_CreateEvent("Event_PlayerTeam");               /** Client has joined a team. */
         g_EvPlayerSpawn =           EventMgr_CreateEvent("Event_PlayerSpawn");              /** Client has spawned. */
+        g_EvPlayerSpawnPost =       EventMgr_CreateEvent("Event_PlayerSpawnPost");          /** Client has spawned (delayed event). */
         g_EvPlayerHurt =            EventMgr_CreateEvent("Event_PlayerHurt");               /** Client has been damaged. */
         g_EvPlayerDeath =           EventMgr_CreateEvent("Event_PlayerDeath");              /** Client has been killed. */
         g_EvPlayerJump =            EventMgr_CreateEvent("Event_PlayerJump");               /** Client has jumped. */
@@ -395,10 +553,14 @@ public GameEvent_PlayerTeam(Handle:event, const String:name[], bool:dontBroadcas
 public GameEvent_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
     // Forward event to all modules.
+    new client = GetClientOfUserId(GetEventInt(event, "userid"));
     new any:eventdata[1][1];
-    eventdata[0][0] = GetClientOfUserId(GetEventInt(event, "userid"));
+    eventdata[0][0] = client;
     
     EventMgr_Forward(g_EvPlayerSpawn, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+    
+    g_fPlayerSpawnTime = GetGameTime();
+    g_PlayerSpawned[client] = true;
 }
 
 /**
