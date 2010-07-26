@@ -877,6 +877,7 @@ stock WeaponsRemoveClientGrenades(client, bool:weaponsdrop)
         else
         {
             RemovePlayerItem(client, grenade);
+            RemoveEdict(grenade);
         }
         
         // Find next grenade.
@@ -906,6 +907,7 @@ stock WeaponsRefreshClientWeapon(client, WepLib_Slots:slot)
     
     // Refresh weapon.
     RemovePlayerItem(client, weaponindex);
+    RemoveEdict(weaponindex);
     GivePlayerItem(client, entityname);
 }
 
