@@ -102,11 +102,15 @@ ClsGeneric_Register()
     
     // Add public API functions to function register.
     new Handle:pluginHandle = GetMyHandle();
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_ValidateRequirements"), "Class_ValidateRequirements");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_IsValidTeam"), "Class_IsValidTeam");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_IsValidGroup"), "Class_IsValidGroup");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_IsValidDisplayName"), "Class_IsValidDisplayName");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_IsValidDescription"), "Class_IsValidDescription");
+    
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_ValidateRequirements"),    "Class_ValidateRequirements");
+    
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_IsValidTeam"),             "Class_IsValidTeam");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_IsValidGroup"),            "Class_IsValidGroup");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_IsValidDisplayName"),      "Class_IsValidDisplayName");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_IsValidDescription"),      "Class_IsValidDescription");
+    
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetName"),                 "Class_GetName");
 }
 
 /**
@@ -282,9 +286,9 @@ public Action:ClsGeneric_OnClassValidate(classIndex)
  * All classes are loaded now. Attribute modules should now make a copy of their array
  * so the original values can be kept.
  *
- * @param classIndex    Class index.
+ * @param classCount    Number of classes loaded.
  */
-public ClsGeneric_OnClassAllLoaded(classIndex)
+public ClsGeneric_OnClassAllLoaded(classCount)
 {
 }
 
@@ -540,6 +544,25 @@ public ClsGeneric_WeaponFire(client, const String:weapon[])
 }
 
 
+/***************************
+ *    GET/SET FUNCTIONS    *
+ ***************************/
+
+/**
+ * Gets the name of the specified class.
+ *
+ * @param classIndex    Class to get name from.
+ * @param buffer        Destination string buffer.
+ * @param maxlen        Size of buffer.
+ *
+ * @return              Number of cells written.
+ */
+public ClsGeneric_GetName(classIndex, String:buffer[], maxlen)
+{
+    return strcopy(buffer, maxlen, ClassGenericData[classIndex][ClassAttrib_Name]);
+}
+
+
 /******************************
  *    VALIDATION FUNCTIONS    *
  ******************************/
@@ -554,9 +577,9 @@ bool:ClsGeneric_ValidateRequirements()
 {
     // Setup filter
     
-    // Find clean zombie class.
+    // Find clean zombie class, log error if not found.
     
-    // Find clean human class.
+    // Find clean human class, log error if not found.
     
     return true;
 }
