@@ -396,6 +396,28 @@ ModelsGetName(index, String:buffer[], maxlen)
 }
 
 /**
+ * Gets the index for the specified model name.
+ *
+ * @param name      Name of model to find.
+ * @return          Number of cells written, or -1 on error.
+ */
+stock ModelsGetIndex(const String:name[])
+{
+    decl String:nameBuffer[64];
+    nameBuffer[0] = 0;
+    for (new index = 0; index < ModelCount; index++)
+    {
+        ModelsGetName(index, nameBuffer, sizeof(nameBuffer));
+        if (StrEqual(name, nameBuffer, false))
+        {
+            return index;
+        }
+    }
+    
+    return -1;
+}
+
+/**
  * Gets the path for the specified model.
  *
  * @param index     Model index.

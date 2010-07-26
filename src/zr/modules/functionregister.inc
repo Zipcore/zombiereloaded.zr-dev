@@ -95,7 +95,7 @@ FuncRegister_CreateRegister()
  *                  -2 if invalid name.
  *                  -3 if name already exist.
  */
-FuncRegister_AddFunction(Function:function, const String:name[])
+stock FuncRegister_AddFunction(Function:function, const String:name[])
 {
     // Validate function.
     if (function == INVALID_FUNCTION)
@@ -130,7 +130,7 @@ FuncRegister_AddFunction(Function:function, const String:name[])
  *
  * @return          True if removed, false if it doesn't exist.
  */
-bool:FuncRegister_RemoveFunction(const String:name[])
+stock bool:FuncRegister_RemoveFunction(const String:name[])
 {
     return RemoveFromTrie(FunctionRegisterData, name);
 }
@@ -142,7 +142,7 @@ bool:FuncRegister_RemoveFunction(const String:name[])
  *
  * @return          Function on success, otherwise INVALID_FUNCTION.
  */
-Function:FuncRegister_GetFunction(const String:name[])
+stock Function:FuncRegister_GetFunction(const String:name[])
 {
     new Function:function;
     if (GetTrieValue(FunctionRegisterData, name, function))
