@@ -936,6 +936,7 @@ stock WeaponsRemoveAllClientWeapons(client, bool:weaponsdrop)
         {
             // Strip knife.
             RemovePlayerItem(client, weapons[x]);
+            RemoveEdict(weapons[x]);
             continue;
         }
         
@@ -948,6 +949,7 @@ stock WeaponsRemoveAllClientWeapons(client, bool:weaponsdrop)
         {
             // Strip weapon.
             RemovePlayerItem(client, weapons[x]);
+            RemoveEdict(weapons[x]);
         }
     }
     
