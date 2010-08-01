@@ -6,9 +6,17 @@
 //
 // ============================================================================
 //
+// Max classes: 48
+//
+// There MUST be one zombie and one human class with these requirements:
+//   - marked as team default
+//   - not a admin class
+//   - not a mother zombie class
+//   - no group specified ("")
+//
 // SHORT DESCRIPTIONS
 //
-// Class section names: Unique name of the class.
+// Section name: Unique user defined name to identify the class.
 //
 // Attribute:               Values:     Description:
 // ----------------------------------------------------------------------------
@@ -22,7 +30,7 @@
 // group                    text        Restrict class to member of this SourceMod group. Leave blank for no restriction.
 // display_name             text        The class name used in class menu.
 // description              text        The class description used in class menu.
-// model_path               text        Path to model to use. Relative to cstrike folder.
+// model                    text        Name of model to use, or predefined filter option.
 // alpha_initial            number      Initial transparency setting.
 // alpha_damaged            number      Transparency when damaged.
 // alpha_damage             number      How much damage to do before switching alpha.
@@ -66,7 +74,7 @@
         "description"           "Need brains!!! Arrrrggghh!"
         
         // Model
-        "model_path"            "models/player/zh/zh_charple001.mdl"
+        "model"                 "zh_charple001"
         "alpha_initial"         "255"
         "alpha_damaged"         "255"
         "alpha_damage"          "0"
@@ -112,7 +120,7 @@
         "description"           "-HP | +Speed | +Jump | +Knockback"
         
         // Model
-        "model_path"            "models/player/zh/zh_corpse002.mdl"
+        "model"                 "zh_corpse002"
         "alpha_initial"         "255"
         "alpha_damaged"         "255"
         "alpha_damage"          "0"
@@ -158,7 +166,7 @@
         "description"           "+HP | -Speed | +Jump | +Knockback"
         
         // Model
-        "model_path"            "models/player/zh/zh_zombie003.mdl"
+        "model"                 "zh_zombie003"
         "alpha_initial"         "255"
         "alpha_damaged"         "255"
         "alpha_damage"          "0"
@@ -204,7 +212,7 @@
         "description"           "+HP | -Speed | -Jump | -Knockback"
         
         // Model
-        "model_path"            "models/player/ics/hellknight_red/t_guerilla.mdl"
+        "model"                 "t_guerilla"
         "alpha_initial"         "255"
         "alpha_damaged"         "255"
         "alpha_damage"          "0"

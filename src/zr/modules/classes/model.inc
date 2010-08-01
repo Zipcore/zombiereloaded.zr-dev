@@ -225,6 +225,7 @@ public Action:ClsModel_OnClassValidate(classIndex)
     Call_PushCell(classIndex);
     Call_PushStringEx(className, sizeof(className), 0, SM_PARAM_COPYBACK);
     Call_PushCell(sizeof(className));
+    Call_PushCell(_:ClassCache_Original);
     Call_Finish();
     
     strcopy(buffer, sizeof(buffer), classCache[ClassAttrib_Model]);
@@ -403,6 +404,8 @@ public bool:ClsModel_IsValidModel(const String:model[])
         {
             return true;
         }
+        
+        // TODO: Look up name in model list.
     }
     
     return false;
