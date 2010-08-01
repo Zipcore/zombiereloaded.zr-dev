@@ -113,8 +113,8 @@ ConfigMgr_OnPluginStart()
     ModuleMgr_Allocate(CM_MODULE_MAX_CONFIGS, g_iCMAllocatedIndexes);
     
     // Create config commands.
-    Project_RegServerCmd("reload_config", Command_ReloadConfig, "Reloads a module's config files.  Usage: <prefix>_reload_config <moduleshortname> [module2] ...\nRelated command(s): <prefix>_reload_config_all");
-    Project_RegServerCmd("reload_config_all", Command_ReloadConfigAll, "Reloads all modules' config files.\nRelated command(s): <prefix>_reload_config");
+    Project_RegServerCmd("reload_config", ConfigMgr_ReloadCfgCommand, "Reloads a module's config files.  Usage: <prefix>_reload_config <moduleshortname> [module2] ...\nRelated command(s): <prefix>_reload_config_all");
+    Project_RegServerCmd("reload_config_all", ConfigMgr_ReloadCfgAllCommand, "Reloads all modules' config files.\nRelated command(s): <prefix>_reload_config");
 }
 
 /**
@@ -190,7 +190,7 @@ stock ConfigMgr_OnPrintModuleInfo(client, Module:module)
  */
 stock ConfigRegistrationResults:ConfigMgr_Register(Module:module, const String:configreloadfunc[], const String:configpath[], &configindex = -1)
 {
-    decl String:modulefullname[CM_DATA_FULLNAME];
+    decl String:modulefullname[MM_DATA_FULLNAME];
     ModuleMgr_ReadString(module, ModuleData_FullName, modulefullname, sizeof(modulefullname));
     
     // Check if the module has registered the max number of config files.
@@ -597,7 +597,7 @@ stock ConfigMgr_WriteString(Module:module, configindex, ConfigData:data, maxlen,
  * 
  * @param argc      The number of arguments that the server sent with the command.
  */
-public Action:Command_ReloadConfig(argc)
+public Action:ConfigMgr_ReloadCfgCommand(argc)
 {
     // Check if no arguments.
     if (argc < 1)
@@ -636,7 +636,7 @@ public Action:Command_ReloadConfig(argc)
  * 
  * @param argc      The number of arguments that the server sent with the command.
  */
-public Action:Command_ReloadConfigAll(argc)
+public Action:ConfigMgr_ReloadCfgAllCommand(argc)
 {
     new Module:module;
     

@@ -59,9 +59,9 @@ stock Module:<FuncPrefix>_GetIdentifier() { return g_module<ModuleVarName>; }
     
     moduledata[ModuleData_Disabled] = ;
     moduledata[ModuleData_Hidden] = ;
-    strcopy(moduledata[ModuleData_FullName], CM_DATA_FULLNAME, "");
-    strcopy(moduledata[ModuleData_ShortName], CM_DATA_SHORTNAME, "");
-    strcopy(moduledata[ModuleData_Description], CM_DATA_DESCRIPTION, "");
+    strcopy(moduledata[ModuleData_FullName], MM_DATA_FULLNAME, "");
+    strcopy(moduledata[ModuleData_ShortName], MM_DATA_SHORTNAME, "");
+    strcopy(moduledata[ModuleData_Description], MM_DATA_DESCRIPTION, "");
     moduledata[ModuleData_Dependencies][0] = ;
     moduledata[ModuleData_Dependencies][1] = ;
     // End the last one with INVALID_MODULE.

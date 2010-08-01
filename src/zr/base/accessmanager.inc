@@ -273,7 +273,7 @@ stock bool:AccessMgr_ClientInGroup(client, GroupId:groupid)
  */
 stock AccessMgr_ModuleToGroupName(Module:module, String:group[], maxlen)
 {
-    decl String:moduleshortname[CM_DATA_SHORTNAME];
+    decl String:moduleshortname[MM_DATA_SHORTNAME];
     ModuleMgr_ReadString(module, ModuleData_ShortName, moduleshortname, sizeof(moduleshortname));
     
     // Format output.
@@ -289,7 +289,7 @@ stock AccessMgr_ModuleToGroupName(Module:module, String:group[], maxlen)
  */
 stock AccessMgr_ModuleToCvarName(Module:module, String:cvar[], maxlen)
 {
-    decl String:moduleshortname[CM_DATA_SHORTNAME];
+    decl String:moduleshortname[MM_DATA_SHORTNAME];
     ModuleMgr_ReadString(module, ModuleData_ShortName, moduleshortname, sizeof(moduleshortname));
     
     Format(cvar, maxlen, AM_FORMAT_CVAR);

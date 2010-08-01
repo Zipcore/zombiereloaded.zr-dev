@@ -231,7 +231,7 @@ stock ModuleToggleQuery:ModuleMgr_Disable(Module:module)
     ModuleMgr_WriteCell(module, ModuleData_Disabled, true);
     
     new bool:disableddependents = false;
-    new Module:dependents[CM_DATA_DEPENDENCIES];
+    new Module:dependents[MM_DATA_DEPENDENCIES];
     new count = ModuleMgr_FindDependentModules(module, dependents);
     for (new dindex = 0; dindex < count; dindex++)
     {
@@ -258,7 +258,7 @@ stock ModuleToggleQuery:ModuleMgr_Enable(Module:module)
     if (!ModuleMgr_IsDisabled(module))
         return ToggleQuery_Stopped;
     
-    new Module:dependencies[CM_DATA_DEPENDENCIES];
+    new Module:dependencies[MM_DATA_DEPENDENCIES];
     ModuleMgr_ReadArray(module, ModuleData_Dependencies, dependencies, sizeof(dependencies));
     
     // Validate that the module's dependencies are registered/enabled.
@@ -483,10 +483,10 @@ stock ModuleMgr_ReadString(Module:module, ModuleData:data, String:output[], maxl
  * 
  * @return              The number of modules that depend on the given module.
  */
-stock ModuleMgr_FindDependentModules(Module:module, Module:dependencies[CM_DATA_DEPENDENCIES])
+stock ModuleMgr_FindDependentModules(Module:module, Module:dependencies[MM_DATA_DEPENDENCIES])
 {
     new dindex = 0;
-    new Module:_dependencies[CM_DATA_DEPENDENCIES];
+    new Module:_dependencies[MM_DATA_DEPENDENCIES];
     
     // Loop through all the modules.
     new count = MODULE_COUNT;
@@ -571,7 +571,7 @@ stock bool:ModuleMgr_Validate(moduledata[ModuleData], &moduleflags = 0)
         new Module:clashmodule = ModuleMgr_FindByString(ModuleData_ShortName, moduledata[ModuleData_ShortName]);
         if (clashmodule != INVALID_MODULE)
         {
-            decl String:clashmodulefullname[CM_DATA_FULLNAME];
+            decl String:clashmodulefullname[MM_DATA_FULLNAME];
             ModuleMgr_ReadString(clashmodule, ModuleData_FullName, clashmodulefullname, sizeof(clashmodulefullname));
             
             moduleflags |= MODULE_DATA_SHORTNAME;
@@ -614,7 +614,7 @@ stock bool:ModuleMgr_Validate(moduledata[ModuleData], &moduleflags = 0)
  */
 stock Module:ModuleMgr_FindByID(moduleID = 0, const String:moduleshortname[] = "")
 {
-    decl String:matchshortname[CM_DATA_SHORTNAME];
+    decl String:matchshortname[MM_DATA_SHORTNAME];
     new Module:module;
     
     // Loop through all the modules.
@@ -819,7 +819,7 @@ stock BaseCmd_Init()
     // Create base command.
     #if defined PROJECT_BASE_CMD
         // Register the base command of the project module system.
-        RegConsoleCmd(PROJECT_BASE_CMD, Command_Base, "The plugins base command to handle modules.");
+        RegConsoleCmd(PROJECT_BASE_CMD, ModuleMgr_BaseCommand, "The plugins base command to handle modules.");
     #endif
     
     g_hServerSubCmds = CreateKeyValues("basecmd_server");
@@ -958,7 +958,7 @@ stock Handle:BaseCmd_GetKV(who)
  * @param client    The client index.  Or SERVER_INDEX if coming from the server.
  * @param argc      The number of arguments that the client sent with the command.
  */
-public Action:Command_Base(client, argc)
+public Action:ModuleMgr_BaseCommand(client, argc)
 {
     // Derive 'who' from the client using the command.
     new who = (client > 0 && client <= MaxClients) ? BASECMD_CLIENT : BASECMD_SERVER;
@@ -1129,7 +1129,7 @@ public BaseCmd_Enable(client, Handle:hParams, argc)
     
     new ModuleToggleQuery:result = ModuleMgr_Enable(module);
     
-    decl String:modulefullname[CM_DATA_FULLNAME];
+    decl String:modulefullname[MM_DATA_FULLNAME];
     ModuleMgr_ReadString(module, ModuleData_FullName, modulefullname, sizeof(modulefullname));
     
     switch (result)
@@ -1170,7 +1170,7 @@ public BaseCmd_Disable(client, Handle:hParams, argc)
     
     new ModuleToggleQuery:result = ModuleMgr_Disable(module);
     
-    decl String:modulefullname[CM_DATA_FULLNAME];
+    decl String:modulefullname[MM_DATA_FULLNAME];
     ModuleMgr_ReadString(module, ModuleData_FullName, modulefullname, sizeof(modulefullname));
     
     switch (result)
@@ -1225,9 +1225,9 @@ public BaseCmd_Info(client, Handle:hParams, argc)
         return;
     }
     
-    decl String:modulefullname[CM_DATA_FULLNAME];
-    decl String:moduleshortname[CM_DATA_SHORTNAME];
-    decl String:moduledesc[CM_DATA_DESCRIPTION];
+    decl String:modulefullname[MM_DATA_FULLNAME];
+    decl String:moduleshortname[MM_DATA_SHORTNAME];
+    decl String:moduledesc[MM_DATA_DESCRIPTION];
     new bool:bModuleDisabled;
     decl String:strModuleEnabled[16];
     
@@ -1272,8 +1272,8 @@ public BaseCmd_Info(client, Handle:hParams, argc)
  */
 public BaseCmd_List(client)
 {
-    decl String:modulefullname[CM_DATA_FULLNAME];
-    decl String:moduleshortname[CM_DATA_SHORTNAME];
+    decl String:modulefullname[MM_DATA_FULLNAME];
+    decl String:moduleshortname[MM_DATA_SHORTNAME];
     new bool:bModuleDisabled;
     decl String:strModuleEnabled[16];
     decl String:line[256];
@@ -1372,7 +1372,7 @@ public BaseCmd_Reload(client, Handle:hParams, argc)
     if (ModuleMgr_IsDisabled(module))
         return;
     
-    decl String:modulefullname[CM_DATA_FULLNAME];
+    decl String:modulefullname[MM_DATA_FULLNAME];
     ModuleMgr_ReadString(module, ModuleData_FullName, modulefullname, sizeof(modulefullname));
     Project_PrintToServer("%T", "ModuleMgr modules reload", LANG_SERVER, modulefullname);
 }

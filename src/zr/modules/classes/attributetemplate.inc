@@ -59,9 +59,9 @@ Cls<FuncPrefix>_Register()
     
     moduledata[ModuleData_Disabled] = false;
     moduledata[ModuleData_Hidden] = false;
-    strcopy(moduledata[ModuleData_FullName], CM_DATA_FULLNAME, "");
-    strcopy(moduledata[ModuleData_ShortName], CM_DATA_SHORTNAME, "");
-    strcopy(moduledata[ModuleData_Description], CM_DATA_DESCRIPTION, "");
+    strcopy(moduledata[ModuleData_FullName], MM_DATA_FULLNAME, "");
+    strcopy(moduledata[ModuleData_ShortName], MM_DATA_SHORTNAME, "");
+    strcopy(moduledata[ModuleData_Description], MM_DATA_DESCRIPTION, "");
     moduledata[ModuleData_Dependencies][0] = ClassMgr_GetIdentifier();
     moduledata[ModuleData_Dependencies][1] = INVALID_MODULE;
     
