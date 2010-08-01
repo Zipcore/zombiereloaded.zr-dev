@@ -165,9 +165,9 @@ public ClsGeneric_OnEventsRegister()
     EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassAttribLoad",           "ClsGeneric_OnClassAttribLoad");
     EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassValidate",             "ClsGeneric_OnClassValidate");
     //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassAllLoaded",          "ClsGeneric_OnClassAllLoaded");
-    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerPreload",        "ClsGeneric_OnClassPlayerPreload");
+    //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerPreload",      "ClsGeneric_OnClassPlayerPreload");
     //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassApply",              "ClsGeneric_OnClassApply");
-    //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerInfected",     "ClsGeneric_OnClassPlayerInfected");
+    //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerInfect",       "ClsGeneric_OnClassPlayerInfect");
     //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerHuman",        "ClsGeneric_OnClassPlayerHuman");
 }
 
@@ -306,7 +306,7 @@ public ClsGeneric_OnClassAllLoaded(classCount)
  * @param client        Client index.
  * @param classIndex    Class index.
  */
-public OnClassPlayerPreload(client, classIndex)
+public ClsGeneric_OnClassPlayerPreload(client, classIndex)
 {
 }
 
@@ -318,7 +318,7 @@ public OnClassPlayerPreload(client, classIndex)
  * @param client        Client index.
  * @param classIndex    Class index.
  */
-public OnClassPlayerLoad(client, classIndex)
+public ClsGeneric_OnClassPlayerLoad(client, classIndex)
 {
 }
 
@@ -329,7 +329,7 @@ public OnClassPlayerLoad(client, classIndex)
  * @param client        Client index.
  * @param classIndex    Class index.
  */
-public OnClassApply(client, classIndex)
+public ClsGeneric_OnClassApply(client, classIndex)
 {
 }
 
@@ -342,7 +342,7 @@ public OnClassApply(client, classIndex)
  * @param attacker      Attacker client index.
  * @param motherZombie  Specifies whether the attacker was a mother zombie.
  */
-public OnClassPlayerInfected(client, attacker, bool:motherZombie)
+public ClsGeneric_OnClassPlayerInfect(client, attacker, bool:motherZombie)
 {
 }
 
@@ -353,7 +353,7 @@ public OnClassPlayerInfected(client, attacker, bool:motherZombie)
  *
  * @param client        Client index.
  */
-public OnClassPlayerHuman(client)
+public ClsGeneric_OnClassPlayerHuman(client)
 {
 }
 
