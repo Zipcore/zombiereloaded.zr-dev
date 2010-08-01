@@ -128,7 +128,7 @@ public ClsModel_OnEventsRegister()
 {
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnAllPluginsLoaded",      "ClsModel_OnAllPluginsLoaded");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnPluginEnd",             "ClsModel_OnPluginEnd");
-    //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnAllModulesLoaded",      "ClsModel_OnAllModulesLoaded");
+    EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnAllModulesLoaded",      "ClsModel_OnAllModulesLoaded");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnModuleEnable",          "ClsModel_OnModuleEnable");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnMyModuleEnable",        "ClsModel_OnMyModuleEnable");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnModuleDisable",         "ClsModel_OnModuleDisable");

@@ -111,6 +111,13 @@ ClsGeneric_Register()
     FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_IsValidDescription"),      "Class_IsValidDescription");
     
     FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetName"),                 "Class_GetName");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetTeam"),                 "Class_GetTeam");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetTeamDefault"),          "Class_GetTeamDefault");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetIsAdminClass"),         "Class_GetIsAdminClass");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetIsMotherZombie"),       "Class_GetIsMotherZombie");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetGroup"),                "Class_GetGroup");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetDisplayName"),          "Class_GetDisplayName");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetDescription"),          "Class_GetDescription");
 }
 
 /**
@@ -358,36 +365,11 @@ public ClsGeneric_OnEventsReady()
 }
 
 /**
- * All modules have been registered.
- */
-public ClsGeneric_OnAllModulesLoaded()
-{
-}
-
-/**
- * A module has been enabled.
- * 
- * @return      Return Plugin_Handled to stop enable, and Plugin_Continue to allow it.
- */
-public Action:ClsGeneric_OnModuleEnable(Module:module)
-{
-}
-
-/**
  * The module that hooked this event callback has been enabled.
  * 
  * @return      Return Plugin_Handled to stop enable, and Plugin_Continue to allow it.
  */
 public Action:ClsGeneric_OnMyModuleEnable()
-{
-}
-
-/**
- * A module has been disabled.
- * 
- * @return      Return Plugin_Handled to stop disable, and Plugin_Continue to allow it.
- */
-public Action:ClsGeneric_OnModuleDisable(Module:module)
 {
 }
 
@@ -398,41 +380,14 @@ public Action:ClsGeneric_OnModuleDisable(Module:module)
  */
 public Action:ClsGeneric_OnMyModuleDisable()
 {
-}
-
-/**
- * The map has started.
- */
-public ClsGeneric_OnMapStart()
-{
-}
-
-/**
- * The map has ended.
- */
-public ClsGeneric_OnMapEnd()
-{
-}
-
-/**
- * This is called before OnConfigsExecuted but any time after OnMapStart.
- * Per-map settings should be set here. 
- */
-public ClsGeneric_OnAutoCfgsBuffered()
-{
+    // Force enabled.
+    return Plugin_Handled;
 }
 
 /**
  * All convars are set, cvar-dependent code should use this.
  */
 public ClsGeneric_OnConfigsExecuted()
-{
-}
-
-/**
- * Called when a registered config file (by this module) is manually.
- */
-public ClsGeneric_OnConfigReload(configindex)
 {
 }
 
@@ -454,112 +409,246 @@ public ClsGeneric_OnClientDisconnect(client)
 {
 }
 
-/**
- * Round has started.
- */
-public ClsGeneric_RoundStart()
-{
-}
-
-/**
- * Pre-round freezetime has finished.
- */
-public ClsGeneric_RoundFreezeEnd()
-{
-}
-
-/**
- * Round has ended.
- */
-public ClsGeneric_RoundEnd()
-{
-}
-
-/**
- * Client has joined a team.
- * 
- * @param client        The client index.
- * @param team          The client's new team.
- * @param oldteam       The team the client is switching from.
- * @param disconnect    True if the client is disconnecting, false if switching to a team.
- */
-public ClsGeneric_PlayerTeam(client, team, oldteam, bool:disconnect)
-{
-}
-
-/**
- * Client has spawned.
- * 
- * @param client    The client index.
- */
-public ClsGeneric_PlayerSpawn(client)
-{
-}
-
-/**
- * Client has been damaged.
- * 
- * @param victim        The index of the hurt client.
- * @param attacker      The index of the attacking client.
- * @param health        How much health the client has after the damage.
- * @param armor         How much armor the client has after the damage.
- * @param weapon        The weapon classname used to hurt the victim. (No weapon_ prefix)
- * @param dmg_health    The amount of health the victim lost.
- * @param dmg_armor     The amount of armor the victim lost.
- * @param hitgroup      The hitgroup index of the victim that was damaged.
- */
-public ClsGeneric_PlayerHurt(victim, attacker, health, armor, const String:weapon[], dmg_health, dmg_armor, hitgroup)
-{
-}
-
-/**
- * Client has been killed.
- * 
- * @param victim    The index of the killed client.
- * @param attacker  The killer of the victim.
- * @param weapon    The weapon classname used to kill the victim. (No weapon_ prefix)
- * @param headshot  True if the death was by headshot, false if not.
- */
-public ClsGeneric_PlayerDeath(victim, attacker, const String:weapon[], bool:headshot)
-{
-}
-
-/**
- * Client has jumped.
- * 
- * @param client        The client index.
- */
-public ClsGeneric_PlayerJump(client)
-{
-}
-
-/**
- * Client has fired a weapon.
- * 
- * @param client        The client index.
- * @param weapon        The weapon classname fired. (No weapon_ prefix)
- */
-public ClsGeneric_WeaponFire(client, const String:weapon[])
-{
-}
-
 
 /***************************
  *    GET/SET FUNCTIONS    *
  ***************************/
 
 /**
- * Gets the name of the specified class.
+ * Gets the group name of the specified class.
  *
- * @param classIndex    Class to get name from.
+ * @param index         Class index or client index.
  * @param buffer        Destination string buffer.
  * @param maxlen        Size of buffer.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
  *
  * @return              Number of cells written.
  */
-public ClsGeneric_GetName(classIndex, String:buffer[], maxlen)
+public ClsGeneric_GetGroup(classIndex, String:buffer[], maxlen, ClassCacheType:cache)
 {
-    return strcopy(buffer, maxlen, ClassGenericData[classIndex][ClassAttrib_Name]);
+    switch (cache)
+    {
+        case ClassCache_Original, ClassCache_Modified:
+        {
+            return strcopy(buffer, maxlen, ClassGenericData[classIndex][ClassAttrib_Group]);
+        }
+        case ClassCache_Player:
+        {
+            return strcopy(buffer, maxlen, ClassPlayerData[classIndex][ClassAttrib_Group]);
+        }
+    }
+    
+    return 0;
+}
+
+/**
+ * Gets the name of the specified class.
+ *
+ * @param index         Class index or client index.
+ * @param buffer        Destination string buffer.
+ * @param maxlen        Size of buffer.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
+ *
+ * @return              Number of cells written.
+ */
+public ClsGeneric_GetName(classIndex, String:buffer[], maxlen, ClassCacheType:cache)
+{
+    switch (cache)
+    {
+        case ClassCache_Original, ClassCache_Modified:
+        {
+            return strcopy(buffer, maxlen, ClassGenericData[classIndex][ClassAttrib_Name]);
+        }
+        case ClassCache_Player:
+        {
+            return strcopy(buffer, maxlen, ClassPlayerData[classIndex][ClassAttrib_Name]);
+        }
+    }
+    
+    return 0;
+}
+
+/**
+ * Gets the display name of the specified class.
+ *
+ * @param index         Class index or client index.
+ * @param buffer        Destination string buffer.
+ * @param maxlen        Size of buffer.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
+ *
+ * @return              Number of cells written.
+ */
+public ClsGeneric_GetDisplayName(classIndex, String:buffer[], maxlen, ClassCacheType:cache)
+{
+    switch (cache)
+    {
+        case ClassCache_Original, ClassCache_Modified:
+        {
+            return strcopy(buffer, maxlen, ClassGenericData[classIndex][ClassAttrib_DisplayName]);
+        }
+        case ClassCache_Player:
+        {
+            return strcopy(buffer, maxlen, ClassPlayerData[classIndex][ClassAttrib_DisplayName]);
+        }
+    }
+    
+    return 0;
+}
+
+/**
+ * Gets the description of the specified class.
+ *
+ * @param index         Class index or client index.
+ * @param buffer        Destination string buffer.
+ * @param maxlen        Size of buffer.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
+ *
+ * @return              Number of cells written.
+ */
+public ClsGeneric_GetDescription(classIndex, String:buffer[], maxlen, ClassCacheType:cache)
+{
+    switch (cache)
+    {
+        case ClassCache_Original, ClassCache_Modified:
+        {
+            return strcopy(buffer, maxlen, ClassGenericData[classIndex][ClassAttrib_Description]);
+        }
+        case ClassCache_Player:
+        {
+            return strcopy(buffer, maxlen, ClassPlayerData[classIndex][ClassAttrib_Description]);
+        }
+    }
+    
+    return 0;
+}
+
+/**
+ * Returns whether the specified class is enabled or not.
+ *
+ * @param index         Class index or client index.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
+ *
+ * @return              True if enabled, false otherwise.
+ */
+public bool:ClsGeneric_IsEnabled(index, ClassCacheType:cache)
+{
+    switch (cache)
+    {
+        case ClassCache_Original, ClassCache_Modified: return ClassGenericData[index][ClassAttrib_Enabled];
+        case ClassCache_Player: return ClassPlayerData[index][ClassAttrib_Enabled];
+    }
+    
+    return false;
+}
+
+/**
+ * Gets the team from the specified class.
+ *
+ * @param index         Class index or client index.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
+ *
+ * @return              Class team or ClassTeamNew_Invalid on error.
+ */
+public ClassTeam:ClsGeneric_GetTeam(index, ClassCacheType:cache)
+{
+    switch (cache)
+    {
+        case ClassCache_Original, ClassCache_Modified: return ClassGenericData[index][ClassAttrib_Team];
+        case ClassCache_Player: return ClassPlayerData[index][ClassAttrib_Team];
+    }
+    
+    return ClassTeamNew_Invalid;
+}
+
+/**
+ * Gets the team default flag from the specified class.
+ *
+ * @param index         Class index or client index.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
+ *
+ * @return              Team default flag, or false on error.
+ */
+public bool:ClsGeneric_GetTeamDefault(index, ClassCacheType:cache)
+{
+    switch (cache)
+    {
+        case ClassCache_Original, ClassCache_Modified: return ClassGenericData[index][ClassAttrib_TeamDefault];
+        case ClassCache_Player: return ClassPlayerData[index][ClassAttrib_TeamDefault];
+    }
+    
+    return false;
+}
+
+/**
+ * Gets the is admin flag from the specified class.
+ *
+ * @param index         Class index or client index.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
+ *
+ * @return              Is admin flag, or false on error.
+ */
+public bool:ClsGeneric_GetIsAdminClass(index, ClassCacheType:cache)
+{
+    switch (cache)
+    {
+        case ClassCache_Original, ClassCache_Modified: return ClassGenericData[index][ClassAttrib_IsAdminClass];
+        case ClassCache_Player: return ClassPlayerData[index][ClassAttrib_IsAdminClass];
+    }
+    
+    return false;
+}
+
+/**
+ * Gets the is mother zombie flag from the specified class.
+ *
+ * @param index         Class index or client index.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
+ *
+ * @return              Is mother zombie flag, or false on error.
+ */
+public bool:ClsGeneric_GetIsMotherZombie(index, ClassCacheType:cache)
+{
+    switch (cache)
+    {
+        case ClassCache_Original, ClassCache_Modified: return ClassGenericData[index][ClassAttrib_IsMotherZombie];
+        case ClassCache_Player: return ClassPlayerData[index][ClassAttrib_IsMotherZombie];
+    }
+    
+    return false;
+}
+
+/**
+ * Gets settings as flags from the specified class.
+ *
+ * @param index         Class index or client index.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
+ *
+ * @return              Class flags.
+ */
+public ClsGeneric_GetFlags(index, ClassCacheType:cache)
+{
+    new flags = 0;
+    
+    if (ClsGeneric_GetIsAdminClass(index, cache))
+    {
+        flags += CLASS_FLAG_ADMIN_ONLY;
+    }
+    if (ClsGeneric_GetIsMotherZombie(index, cache))
+    {
+        flags += CLASS_FLAG_MOTHER_ZOMBIE;
+    }
+    
+    return flags;
 }
 
 

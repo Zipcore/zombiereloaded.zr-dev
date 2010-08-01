@@ -139,12 +139,11 @@ new Handle:g_hCvarClassFile;
 //new Handle:g_hCvarClassesRandom;
 new Handle:g_hCvarClassesChangeTimelimit;
 //new Handle:g_hCvarClassesSave;
-//new Handle:g_hCvarClassesDefaultZombie;
+new Handle:g_hCvarClassesDefaultZombie;
 //new Handle:g_hCvarClassesDefaultMZombie;
-//new Handle:g_hCvarClassesDefaultHuman;
-//new Handle:g_hCvarClassesDefaultAdmin;
-//new Handle:g_hCvarClassesZombieSelect;
-//new Handle:g_hCvarClassesHumanSelect;
+new Handle:g_hCvarClassesDefaultHuman;
+new Handle:g_hCvarClassesZombieSelect;
+new Handle:g_hCvarClassesHumanSelect;
 
 #define CLASS_MAX           48
 #define CLASS_NAME_LEN      64
@@ -218,11 +217,46 @@ new Handle:g_hClassInstantChange[MAXPLAYERS + 1];
  */
 new bool:g_ClassPlayerSpawned[MAXPLAYERS + 1];
 
+/**
+ * @section Flags for special classes.
+ */
+#define CLASS_FLAG_ADMIN_ONLY       (1<<0)  /** Class is usable by admins only. */
+#define CLASS_FLAG_MOTHER_ZOMBIE    (1<<1)  /** Class is usable by mother zombies only. */
+
+/** A combination of special class flags. Used to exclude special classes. */
+#define CLASS_SPECIALFLAGS           CLASS_FLAG_ADMIN_ONLY + CLASS_FLAG_MOTHER_ZOMBIE
+/**
+ * @endsection
+ */
+
+/**
+ * Structure for class filter settings passed to various functions.
+ */
+// TODO: Uncomment when old class system is removed.
+//enum ClassFilter
+//{
+//    bool:ClassFilter_IgnoreEnabled,     /** Ignore whether the class is disabled or not. */
+//    ClassFilter_RequireFlags,           /** Flags the classes must have set. */
+//    ClassFilter_DenyFlags,              /** Flags the classes cannot have set. */
+//    ClassFilter_Client                  /** The client to check for class group permissions. Use 0 to ignore group filter, and negative to exclude classes with groups set. */
+//}
+
+/**
+ * Empty filter structure.
+ */
+stock g_ClassNoFilter[ClassFilter];
+
+/**
+ * Filter structure for excluding special classes.
+ */
+stock g_ClassNoSpecialClasses[ClassFilter] = {false, 0, CLASS_SPECIALFLAGS, -1};
+
 
 // Utility and logic includes.
 #include "zr/modules/classes/attributeregister"
 #include "zr/modules/classes/nextindexes"
 #include "zr/modules/classes/instantchange"
+#include "zr/modules/classes/classfilter"
 
 // Attribute module includes
 #include "zr/modules/classes/genericattributes"
@@ -699,17 +733,108 @@ public ClassMgr_OnClientHuman(client)
  * Returns whether the specified class valid.
  *
  * @param classIndex    The class index to validate.
+ *
  * @return              True if the class exist, false otherwise.
  */
-stock bool:ClassMg_IsValidIndex(classIndex)
+stock bool:ClassMgr_IsValidIndex(classIndex)
 {
     if (classIndex >= 0 && classIndex < g_ClassCount)
     {
         return true;
     }
+    return false;
+}
+
+/**
+ * Compares the specified team with a class' team.
+ *
+ * @param index     Index of the class in a class cache or a client index,
+ *                  depending on the cache type specified.
+ * @param team      The team to compare with the class.
+ * @param cache     Optional. Specifies what class cache to read from. If player
+ *                  cache is used 'index' will be used as a client index.
+ *                  Default is modified cache.
+ *
+ * @return          True if equal, false otherwise.
+ */
+stock bool:ClassMgr_TeamEqual(index, ClassTeam:team, ClassCacheType:cache = ClassCache_Modified)
+{
+    return ClsGeneric_GetTeam(index, cache) == team;
+}
+
+/**
+ * Gets the currently active class index that the player is using.
+ *
+ * @param client    The client index.
+ *
+ * @return          The active class index. -1 if a spectactor or not alive.
+ */
+stock ClassMgr_GetActiveIndex(client)
+{
+    // Check if alive.
+    if (!IsPlayerAlive(client))
+    {
+        return -1;
+    }
+    
+    // Check if on a valid team.
+    if (!ZRIsClientOnTeam(client))
+    {
+        return -1;
+    }
+    
+    // Check if player is human or zombie.
+    new ClassTeam:team;
+    if (InfectIsClientHuman(client))
+    {
+        team = ClassTeamNew_Humans;
+    }
     else
     {
+        team = ClassTeamNew_Zombies;
+    }
+    
+    // Return the active class for the current team.
+    return g_ClassSelected[client][team];
+}
+
+/**
+ * Decides whether a class selection menu should be enabled. The decision is
+ * based on zr_class_allow_* console variables.
+ *
+ * @param team      Optional. Team to match. Default is all.
+ *
+ * @return          True if allowed, false otherwise.
+ */
+stock bool:ClassMgr_AllowSelection(client, ClassTeam:team = ClassTeamNew_All)
+{
+    // Get selection settings.
+    new bool:zombie = GetConVarBool(g_hCvarClassesZombieSelect);
+    new bool:human = GetConVarBool(g_hCvarClassesHumanSelect);
+    
+    // Check if a team id is specified.
+    if (team != ClassTeamNew_All)
+    {
+        // Check team and return the corresponding selection setting.
+        switch (team)
+        {
+            case ClassTeamNew_Zombies:
+            {
+                return zombie;
+            }
+            case ClassTeamNew_Humans:
+            {
+                return human;
+            }
+        }
+        
+        // Team ID didn't match.
         return false;
+    }
+    else
+    {
+        // Check zombie and human.
+        return zombie || human;
     }
 }
 

@@ -53,7 +53,7 @@ ClassMgr_RestoreNextIndexes(client, ClassTeam:excludeTeam = ClassTeamNew_Invalid
     if (excludeTeam != ClassTeamNew_Zombies)
     {
         // Validate zombie class index.
-        if (ClassMg_IsValidIndex(zombie))
+        if (ClassMgr_IsValidIndex(zombie))
         {
             // Mark next zombie class as selected.
             g_ClassSelected[client][ClassTeamNew_Zombies] = zombie;
@@ -67,7 +67,7 @@ ClassMgr_RestoreNextIndexes(client, ClassTeam:excludeTeam = ClassTeamNew_Invalid
     if (excludeTeam != ClassTeamNew_Humans)
     {
         // Validate human class index.
-        if (ClassMg_IsValidIndex(human))
+        if (ClassMgr_IsValidIndex(human))
         {
             // Mark next zombie class as selected.
             g_ClassSelected[client][ClassTeamNew_Humans] = human;

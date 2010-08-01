@@ -53,7 +53,7 @@ MapConfig_Register()
     // Send this array of data to the module manager.
     g_moduleMapConfig = ModuleMgr_Register(moduledata);
     
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnEventsRegister",       "MapConfig_OnEventsRegister");
+    EventMgr_RegisterEvent(g_moduleMapConfig, "Event_OnEventsRegister",       "MapConfig_OnEventsRegister");
     
     // Create events.
     g_EvOnPostConfigsExecuted = EventMgr_CreateEvent("OnPostConfigsExecuted");

@@ -107,7 +107,7 @@ ZTele_Register()
     // Send this array of data to the module manager.
     g_moduleZTele = ModuleMgr_Register(moduledata);
     
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnEventsRegister",       "ZTele_OnEventsRegister");
+    EventMgr_RegisterEvent(g_moduleZTele, "Event_OnEventsRegister",       "ZTele_OnEventsRegister");
     
     // Create events.
     g_EvOnTeleportTimerStarted =    EventMgr_CreateEvent("OnTeleportTimerStarted");
