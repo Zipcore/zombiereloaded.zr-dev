@@ -105,7 +105,7 @@ TransMgr_OnPluginStart()
     TransMgr_LoadTranslations();
     
     // Create translations commands.
-    Project_RegServerCmd("reload_translations", Command_ReloadTranslations, "Reload all project translation files.");
+    Project_RegServerCmd("reload_translations", TransMgr_ReloadCommand, "Reload all project translation files.");
 }
 
 /**
@@ -160,7 +160,7 @@ stock TransMgr_PrintText(client, MsgFormatting:msgformat, MsgTypes:msgtype, Modu
     g_bMsgTypeColor[MsgType_Reply] = bool:(GetCmdReplySource() == SM_REPLY_TO_CHAT);
     
     // Get the name of the module if a module identifier was given.
-    new String:modulefullname[CM_DATA_FULLNAME] = "Invalid Module";
+    new String:modulefullname[MM_DATA_FULLNAME] = "Invalid Module";
     if (ModuleMgr_IsModuleValid(module))
     {
         ModuleMgr_ReadString(module, ModuleData_FullName, modulefullname, sizeof(modulefullname));
@@ -258,6 +258,11 @@ stock TransMgr_PrintTextAll(bool:server, bool:admin, MsgFormatting:msgformat, Ms
         else
             VFormat(translated, sizeof(translated), "%t", 7);
         
+        // Remove color tags before printing in server console.
+        #if defined _colors_included
+            CRemoveTags(translated, sizeof(translated));
+        #endif
+        
         TransMgr_PrintText(SERVER_INDEX, msgformat, MsgType_Server, module, true, translated);
     }
     
@@ -280,6 +285,30 @@ stock TransMgr_PrintTextAll(bool:server, bool:admin, MsgFormatting:msgformat, Ms
             VFormat(translated, sizeof(translated), "%t", 7);
         
         TransMgr_PrintText(client, msgformat, msgtype, module, true, translated);
+    }
+}
+
+/**
+ * Replies to a client with a given message describing a targetting 
+ * failure reason. (formatted for project)
+ *
+ * Note: The translation phrases are found in common.phrases.txt.
+ *
+ * @param client		Client index, or 0 for server.
+ * @param reason		COMMAND_TARGET reason.
+ */
+stock TransMgr_ReplyToTargetError(client, reason)
+{
+    switch (reason)
+    {
+        case COMMAND_TARGET_NONE:         TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Reply, _, _, "No matching client");
+        case COMMAND_TARGET_NOT_ALIVE:    TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Reply, _, _, "Target must be alive");
+        case COMMAND_TARGET_NOT_DEAD:     TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Reply, _, _, "Target must be dead");
+        case COMMAND_TARGET_NOT_IN_GAME:  TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Reply, _, _, "Target is not in game");
+        case COMMAND_TARGET_IMMUNE:       TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Reply, _, _, "Unable to target");
+        case COMMAND_TARGET_EMPTY_FILTER: TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Reply, _, _, "No matching clients");
+        case COMMAND_TARGET_NOT_HUMAN:    TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Reply, _, _, "Cannot target bot");
+        case COMMAND_TARGET_AMBIGUOUS:    TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Reply, _, _, "More than one client matched");
     }
 }
 
@@ -421,6 +450,17 @@ stock PhraseToBool:TransMgr_KvPhraseToBoolEx(Handle:kv, BoolPhrases:boolphrase, 
     return TransMgr_PhraseToBoolEx(boolphrase, phrase);
 }
 
+/**
+ * Interprets a PhraseToBool enum member as a boolean value.
+ * 
+ * @param phrasebool    The PhraseToBool member to interpret.
+ * @param neither       The boolean value to return for PhraseToBool_Neither
+ */
+stock bool:TransMgr_InterpretPhraseBool(PhraseToBool:phrasebool, bool:neither)
+{
+    return (phrasebool == PhraseToBool_Neither) ? neither : bool:phrasebool;
+}
+
 // **********************************************
 //   Private API (For base project files only)
 // **********************************************
@@ -476,7 +516,7 @@ stock TransMgr_LoadTranslations()
  * 
  * @param argc      The number of arguments that the server sent with the command.
  */
-public Action:Command_ReloadTranslations(arc)
+public Action:TransMgr_ReloadCommand(arc)
 {
     TransMgr_LoadTranslations();
     

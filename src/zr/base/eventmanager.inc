@@ -46,6 +46,11 @@
  */
 //#define PROFILE_EVENTS
 
+/**
+ * Uncomment this to debug crashes happening somewhere inside an event.
+ */
+//#define DEBUG_EVENTS
+
 // ---------------
 //     Private
 // ---------------
@@ -219,6 +224,12 @@ stock ProjectEvent:EventMgr_RegisterEvent(Module:module, const String:eventname[
     
     // Find the function ID for the given function name.
     new Function:func = GetFunctionByName(GetMyHandle(), functionname);
+    if (func == INVALID_FUNCTION)
+    {
+        decl String:modulefullname[MM_DATA_FULLNAME];
+        ModuleMgr_ReadString(module, ModuleData_FullName, modulefullname, sizeof(modulefullname));
+        SetFailState("[Event Manager] Invalid function (%s) being registered as an event forward by module \"%s\" for event \"%s\"", functionname, modulefullname, g_EMEvents[_:eventid]);
+    }
     
     // Enable the event to be forwarded to the module, and set the function ID to the event forward.
     EventMgr_WriteFuncValue(module, eventid, func);
@@ -237,10 +248,15 @@ stock ProjectEvent:EventMgr_RegisterEvent(Module:module, const String:eventname[
  * @param module1   The module that should have priority over the other.
  * @param module2   The module that will be second in priority to module1.
  * 
- * @return          True if module1 was given priority over module2, false if module1 already has priority or event isn't registered for one of the modules.
+ * @return          True if module1 ends up with priority over module2, false if invalid information is given.
  */
-stock bool:EventMgr_GivePriority(ProjectEvent:eventid, Module:module1, Module:module2)
+stock bool:EventMgr_GivePriority(const String:eventname[], Module:module1, Module:module2)
 {
+    // Get the event ID given its name.
+    new ProjectEvent:eventid = EventMgr_EventNameToID(eventname);
+    if (eventid == INVALID_EVENT)
+        return false;
+    
     // Find the indexes of the modules in the event cache.
     new mpriority1 = EventMgr_GetModuleCacheIndex(module1, eventid);
     new mpriority2 = EventMgr_GetModuleCacheIndex(module2, eventid);
@@ -249,7 +265,7 @@ stock bool:EventMgr_GivePriority(ProjectEvent:eventid, Module:module1, Module:mo
     
     // Check if module1 has higher priority than module2.
     if (mpriority1 < mpriority2)
-        return false;
+        return true;
     
     // Move module1 right above module2.
     new Handle:adtModule = GetArrayCell(g_hEventModuleCache[_:eventid], mpriority1);    //  Copy the handle of the module we're moving
@@ -268,10 +284,15 @@ stock bool:EventMgr_GivePriority(ProjectEvent:eventid, Module:module1, Module:mo
  * @param module1   The module that should not have priority over the other.
  * @param module2   The module that module1 will be under in priority.
  * 
- * @return          True if priority was taken from module1 and given to module2, false if module1 already doesn't have priority over module2 or event isn't registered for one of the modules.
+ * @return          True if module1 ends up with lower priority than module2, false if invalid information is given.
  */
-stock bool:EventMgr_TakePriority(ProjectEvent:eventid, Module:module1, Module:module2)
+stock bool:EventMgr_TakePriority(const String:eventname[], Module:module1, Module:module2)
 {
+    // Get the event ID given its name.
+    new ProjectEvent:eventid = EventMgr_EventNameToID(eventname);
+    if (eventid == INVALID_EVENT)
+        return false;
+    
     // Find the indexes of the modules in the event cache.
     new mpriority1 = EventMgr_GetModuleCacheIndex(module1, eventid);
     new mpriority2 = EventMgr_GetModuleCacheIndex(module2, eventid);
@@ -280,21 +301,21 @@ stock bool:EventMgr_TakePriority(ProjectEvent:eventid, Module:module1, Module:mo
     
     // Check if module2 has higher priority than module1.
     if (mpriority1 > mpriority2)
-        return false;
+        return true;
     
     // Move module1 right above module2.
     new Handle:adtModule = GetArrayCell(g_hEventModuleCache[_:eventid], mpriority1);    //  Copy the handle of the module we're moving
     RemoveFromArray(g_hEventModuleCache[_:eventid], mpriority1);    // Remove from the array.
     
     // Check if there is an existing slot after module2, if not then just push the handle to the end.
-    if (GetArraySize(g_hEventModuleCache[_:eventid]) < mpriority2 + 1)
+    if (GetArraySize(g_hEventModuleCache[_:eventid]) < mpriority2)
     {
         PushArrayCell(g_hEventModuleCache[_:eventid], adtModule);
     }
     else
     {
-        ShiftArrayUp(g_hEventModuleCache[_:eventid], mpriority2 + 1);   // Free a space right below module2.
-        SetArrayCell(g_hEventModuleCache[_:eventid], mpriority2 + 1, adtModule);    // Stick the copied handle one index after module2.
+        ShiftArrayUp(g_hEventModuleCache[_:eventid], mpriority2);   // Free a space right below module2.
+        SetArrayCell(g_hEventModuleCache[_:eventid], mpriority2, adtModule);    // Stick the copied handle one index after module2.
     }
     
     return true;
@@ -466,8 +487,18 @@ stock Action:EventMgr_Forward(ProjectEvent:eventid, any:eventdata[][], numValues
             }
         }
         
+        #if defined DEBUG_EVENTS
+            decl String:modulefullname[MM_DATA_FULLNAME];
+            ModuleMgr_ReadString(module, ModuleData_FullName, modulefullname, sizeof(modulefullname));
+            LogMessage("EVENT DEBUGGER: Event %s: Module: %s BEFORE CALLING", g_EMEvents[_:eventid], modulefullname);
+        #endif
+        
         // Call the function.
         Call_Finish(result);
+        
+        #if defined DEBUG_EVENTS
+            LogMessage("EVENT DEBUGGER: Event %s: Module: %s AFTER CALLING", g_EMEvents[_:eventid], modulefullname);
+        #endif
         
         if (result == Plugin_Stop)
         {
@@ -548,7 +579,7 @@ stock EventMgr_GetModuleCacheIndex(Module:module, ProjectEvent:eventid)
  */
 stock EventMgr_PrintPriority(ProjectEvent:eventid)
 {
-    decl String:modulefullname[CM_DATA_FULLNAME];
+    decl String:modulefullname[MM_DATA_FULLNAME];
     new count = GetArraySize(g_hEventModuleCache[_:eventid]);
     for (new moduleindex = 0; moduleindex < count; moduleindex++)
     {

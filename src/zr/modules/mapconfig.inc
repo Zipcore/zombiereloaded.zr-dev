@@ -45,9 +45,9 @@ MapConfig_Register()
     
     moduledata[ModuleData_Disabled] = false;
     moduledata[ModuleData_Hidden] = false;
-    strcopy(moduledata[ModuleData_FullName], CM_DATA_FULLNAME, "Map configs");
-    strcopy(moduledata[ModuleData_ShortName], CM_DATA_SHORTNAME, "mapconfig");
-    strcopy(moduledata[ModuleData_Description], CM_DATA_DESCRIPTION, "Executes map configuration files.");
+    strcopy(moduledata[ModuleData_FullName], MM_DATA_FULLNAME, "Map configs");
+    strcopy(moduledata[ModuleData_ShortName], MM_DATA_SHORTNAME, "mapconfig");
+    strcopy(moduledata[ModuleData_Description], MM_DATA_DESCRIPTION, "Executes map configuration files.");
     moduledata[ModuleData_Dependencies][0] = INVALID_MODULE;
     
     // Send this array of data to the module manager.

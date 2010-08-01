@@ -42,7 +42,8 @@ enum LogTypes
     LogType_Normal,         // Normal log message.  Printed in SourceMod logs.
     LogType_Error,          // Error message.  Printed in SourceMod error logs.
     LogType_Fatal_Module,   // Error message.  Disables the module that prints it.
-    LogType_Fatal_Plugin    // Error message.  Kills the entire plugin.
+    LogType_Fatal_Plugin,   // Error message.  Kills the entire plugin.
+    LogType_Debug           // Debug message.  Normal log message, but only printed if debugging is enabled.
 }
 
 // ---------------
@@ -74,10 +75,11 @@ new g_iLMAllocatedIndexes[1];
 /**
  * Log cvars.
  */
-new Handle:cvarLog;
-new Handle:cvarLogWhitelist;
-new Handle:cvarLogPrintAdmins;
-new Handle:cvarLogPrintPublic;
+new Handle:g_hCvarLog;
+new Handle:g_hCvarLogDebug;
+new Handle:g_hCvarLogWhitelist;
+new Handle:g_hCvarLogPrintAdmins;
+new Handle:g_hCvarLogPrintPublic;
 
 // **********************************************
 //                 Forwards
@@ -92,20 +94,19 @@ LogMgr_OnPluginStart()
     ModuleMgr_Allocate(1, g_iLMAllocatedIndexes);
     
     // Create log cvars.
-    cvarLog =               Project_CreateConVar("log", "1", "Enable logging in the plugin.  Error messages will always be logged.");
-    cvarLogWhitelist =      Project_CreateConVar("log_whitelist", "0", "Only modules added to the whitelist (project_log_whitelist_add) will be logged.");
-    cvarLogPrintPublic =    Project_CreateConVar("log_print_public", "0", "Logs will be printed to public chat in addition to log files.");
+    g_hCvarLog =               Project_CreateConVar("log", "1", "Enable logging in the plugin.  Error messages will always be logged.");
+    g_hCvarLogDebug =          Project_CreateConVar("log_debug", "0", "Show debug logging.  This will just create more detailed logs.");
+    g_hCvarLogWhitelist =      Project_CreateConVar("log_whitelist", "0", "Only modules added to the whitelist (project_log_whitelist_add) will be logged.");
+    g_hCvarLogPrintPublic =    Project_CreateConVar("log_print_public", "0", "Logs will be printed to public chat in addition to log files.");
     
     // This cvar needs the translations manager to filter out the non-admins and the access manager to determine what "admin" is.
-    #if defined TRANSLATIONS_MANAGER
-    #if defined ACCESS_MANAGER
-        cvarLogPrintAdmins = Project_CreateConVar("log_print_admins", "0", "Logs will be printed to admin chat in addition to log files.");
-    #endif
+    #if defined TRANSLATIONS_MANAGER && defined ACCESS_MANAGER
+        g_hCvarLogPrintAdmins = Project_CreateConVar("log_print_admins", "0", "Logs will be printed to admin chat in addition to log files.");
     #endif
     
     // Create log commands.
-    Project_RegServerCmd("log_whitelist_add", Command_LogWhitelistAdd, "Adds one or more modules to the whitelist.  Usage: <prefix>_log_whitelist_add <moduleshortname [module2] ...");
-    Project_RegServerCmd("log_whitelist_remove", Command_LogWhitelistRemove, "Removes one or more modules from the whitelist.  Usage: <prefix>_log_whitelist_remove <moduleshortname [module2] ...");
+    Project_RegServerCmd("log_whitelist_add", LogMgr_WhitelistAddCommand, "Adds one or more modules to the whitelist.  Usage: <prefix>_log_whitelist_add <moduleshortname [module2] ...");
+    Project_RegServerCmd("log_whitelist_remove", LogMgr_WhitelistRemCommand, "Removes one or more modules from the whitelist.  Usage: <prefix>_log_whitelist_remove <moduleshortname [module2] ...");
 }
 
 /**
@@ -170,11 +171,15 @@ stock LogMgr_Print(Module:module, LogTypes:logtype, const String:description[], 
         return;
     
     // If the log manager is disabled, and this is a normal log, then don't print the log.
-    if (!LogMgr_CvarLog() && logtype == LogType_Normal)
+    if (!GetConVarBool(g_hCvarLog) && logtype == LogType_Normal)
+        return;
+    
+    // If debugging is disabled and this is a debug log, then don't print it.
+    if (!GetConVarBool(g_hCvarLogDebug) && logtype == LogType_Debug)
         return;
     
     // Check if whitelist is enabled.
-    if (LogMgr_CvarWhitelist())
+    if (GetConVarBool(g_hCvarLogWhitelist))
     {
         // Check if the module is on the whitelist.
         if (!LogMgr_IsModuleOnWhitelist(module))
@@ -186,7 +191,7 @@ stock LogMgr_Print(Module:module, LogTypes:logtype, const String:description[], 
     VFormat(logbuffer, sizeof(logbuffer), text, 5);
     
     // Get the module's full name.
-    decl String:modulefullname[CM_DATA_FULLNAME];
+    decl String:modulefullname[MM_DATA_FULLNAME];
     ModuleMgr_ReadString(module, ModuleData_FullName, modulefullname, sizeof(modulefullname));
     
     // Format the text string.
@@ -218,19 +223,17 @@ stock LogMgr_Print(Module:module, LogTypes:logtype, const String:description[], 
         }
     }
     
-    #if defined TRANSLATIONS_MANAGER
-    #if defined ACCESS_MANAGER
+    #if defined TRANSLATIONS_MANAGER && defined ACCESS_MANAGER
         // Print log to all in-game admins if the cvar is enabled.
-        if (LogMgr_CvarPrintAdmins())
+        if (GetConVarBool(g_hCvarLogPrintAdmins))
         {
             // Print text to admins.
             TransMgr_PrintTextAll(false, true, MsgFormat_None, MsgType_Chat, _, true, logbuffer);
         }
     #endif
-    #endif
     
     // Print log to all in-game clients if the cvar is enabled.
-    if (LogMgr_CvarPrintPublic())
+    if (GetConVarBool(g_hCvarLogPrintPublic))
     {
         PrintToChatAll(logbuffer);
     }
@@ -309,7 +312,7 @@ stock bool:LogMgr_WhitelistRemove(Module:module)
  * 
  * @param argc      The number of arguments that the server sent with the command.
  */
-public Action:Command_LogWhitelistAdd(argc)
+public Action:LogMgr_WhitelistAddCommand(argc)
 {
     // Check if no arguments.
     if (argc < 1)
@@ -336,7 +339,7 @@ public Action:Command_LogWhitelistAdd(argc)
         
         LogMgr_WhitelistAdd(module);
         
-        decl String:modulefullname[CM_DATA_FULLNAME];
+        decl String:modulefullname[MM_DATA_FULLNAME];
         ModuleMgr_ReadString(module, ModuleData_FullName, modulefullname, sizeof(modulefullname));
         Project_PrintToServer("%T", "LogMgr cmd whitelistadd", LANG_SERVER, modulefullname);
     }
@@ -351,7 +354,7 @@ public Action:Command_LogWhitelistAdd(argc)
  * 
  * @param argc      The number of arguments that the server sent with the command.
  */
-public Action:Command_LogWhitelistRemove(argc)
+public Action:LogMgr_WhitelistRemCommand(argc)
 {
     // Check if no arguments.
     if (argc < 1)
@@ -378,7 +381,7 @@ public Action:Command_LogWhitelistRemove(argc)
         
         LogMgr_WhitelistRemove(module);
         
-        decl String:modulefullname[CM_DATA_FULLNAME];
+        decl String:modulefullname[MM_DATA_FULLNAME];
         ModuleMgr_ReadString(module, ModuleData_FullName, modulefullname, sizeof(modulefullname));
         Project_PrintToServer("%T", "LogMgr cmd whitelistremove", LANG_SERVER, modulefullname);
     }
@@ -394,20 +397,25 @@ public Action:Command_LogWhitelistRemove(argc)
 
 stock bool:LogMgr_CvarLog()
 {
-    return GetConVarBool(cvarLog);
+    return GetConVarBool(g_hCvarLog);
+}
+
+stock bool:LogMgr_CvarDebug()
+{
+    return GetConVarBool(g_hCvarLogDebug);
 }
 
 stock bool:LogMgr_CvarWhitelist()
 {
-    return GetConVarBool(cvarLogWhitelist);
+    return GetConVarBool(g_hCvarLogWhitelist);
 }
 
 stock bool:LogMgr_CvarPrintAdmins()
 {
-    return GetConVarBool(cvarLogPrintAdmins);
+    return GetConVarBool(g_hCvarLogPrintAdmins);
 }
 
 stock bool:LogMgr_CvarPrintPublic()
 {
-    return GetConVarBool(cvarLogPrintPublic);
+    return GetConVarBool(g_hCvarLogPrintPublic);
 }

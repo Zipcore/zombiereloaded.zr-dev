@@ -26,7 +26,7 @@
  */
 
 /*
- * Base version: 68:1771c3b5b623
+ * Base version: 81:4142206b3c92
  */
 
 /**
@@ -103,10 +103,10 @@ enum Module
 /**
  * The max string/array lengths of module data variables.
  */
-#define CM_DATA_FULLNAME        32
-#define CM_DATA_SHORTNAME       16
-#define CM_DATA_DESCRIPTION     256
-#define CM_DATA_DEPENDENCIES    8
+#define MM_DATA_FULLNAME        32
+#define MM_DATA_SHORTNAME       16
+#define MM_DATA_DESCRIPTION     256
+#define MM_DATA_DEPENDENCIES    8
 
 /**
  * All the data modules need to register.
@@ -115,10 +115,10 @@ enum ModuleData
 {
     bool:ModuleData_Disabled = 0,                           /** True if the module is disabled. */
     bool:ModuleData_Hidden,                                 /** True to hide the module from console. (base cmd can't touch it) */
-    String:ModuleData_FullName[CM_DATA_FULLNAME],           /** Used for displaying modules. */
-    String:ModuleData_ShortName[CM_DATA_SHORTNAME],         /** Used for client interaction with modules. */
-    String:ModuleData_Description[CM_DATA_DESCRIPTION],     /** A description of the module */
-    Module:ModuleData_Dependencies[CM_DATA_DEPENDENCIES],   /** An array of module IDs that the module depends on.  {INVALID_MODULE} = no dependencies.  Must end with INVALID_MODULE. */
+    String:ModuleData_FullName[MM_DATA_FULLNAME],           /** Used for displaying modules. */
+    String:ModuleData_ShortName[MM_DATA_SHORTNAME],         /** Used for client interaction with modules. */
+    String:ModuleData_Description[MM_DATA_DESCRIPTION],     /** A description of the module */
+    Module:ModuleData_Dependencies[MM_DATA_DEPENDENCIES],   /** An array of module IDs that the module depends on.  {INVALID_MODULE} = no dependencies.  Must end with INVALID_MODULE. */
     any:ModuleData_Extra1,                                  /** An extra spot to store any value that other modules can read.  This can be renamed to whatever you want. */
     any:ModuleData_Extra2,                                  /** An extra spot to store any value that other modules can read.  This can be renamed to whatever you want. */
     any:ModuleData_Extra3                                   /** An extra spot to store any value that other modules can read.  This can be renamed to whatever you want. */

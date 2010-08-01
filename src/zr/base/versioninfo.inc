@@ -41,7 +41,7 @@ VersionInfo_OnPluginStart()
 {
     #if !defined PROJECT_BASE_CMD
         // Create a version information print command.
-        Project_RegConsoleCmd("version", Command_Version, "Prints version info about this project.");
+        Project_RegConsoleCmd("version", VersionInfo_Command, "Prints version info about this project.");
     #endif
     
     #if defined PROJECT_PUBLIC_CVAR
@@ -69,7 +69,7 @@ VersionInfo_OnPluginEnd()
  * @param client    The client index.  Or SERVER_INDEX if coming from the server.
  * @param argc      The number of arguments that the client sent with the command.
  */
-public Action:Command_Version(client, argc)
+public Action:VersionInfo_Command(client, argc)
 {
     VersionPrint(client);
     
