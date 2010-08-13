@@ -31,9 +31,13 @@
 // display_name             text        The class name used in class menu.
 // description              text        The class description used in class menu.
 // model                    text        Name of model to use, or predefined filter option.
-// alpha_initial            number      Initial transparency setting.
-// alpha_damaged            number      Transparency when damaged.
-// alpha_damage             number      How much damage to do before switching alpha.
+// alpha_mode               text        Alpha blending mode. Options: none, switch, switch_once, linear and exp.
+// alpha_invert             yes/no      Invert alpha blending (transparent when low health, opaque when high health).
+// alpha_health             number      Health level (switch mode) or minimum health level (fading modes).
+// alpha_min                number      Minimum alpha value.
+// alpha_max                number      Maximum alpha value.
+// alpha_min_dist           number      Minimum fade distance.
+// alpha_max_dist           number      Maximum fade distance.
 // overlay_path             text        Overlay displayed at the player.
 // nvgs                     yes/no      Give and turn on night vision.
 // fov                      number      Field of view value. 90 is default.
@@ -75,9 +79,13 @@
         
         // Model
         "model"                 "zh_charple001"
-        "alpha_initial"         "255"
-        "alpha_damaged"         "255"
-        "alpha_damage"          "0"
+        "alpha_mode"            "none"
+        "alpha_invert"          "no"
+        "alpha_health"          "1000
+        "alpha_min"             "0"
+        "alpha_max"             "255"
+        "alpha_min_dist"        "0"
+        "alpha_max_dist"        "0"
         
         // Hud
         "overlay_path"          "overlays/zr/zvision"
@@ -121,9 +129,13 @@
         
         // Model
         "model"                 "zh_corpse002"
-        "alpha_initial"         "255"
-        "alpha_damaged"         "255"
-        "alpha_damage"          "0"
+        "alpha_mode"            "none"
+        "alpha_invert"          "no"
+        "alpha_health"          "1000
+        "alpha_min"             "0"
+        "alpha_max"             "255"
+        "alpha_min_dist"        "0"
+        "alpha_max_dist"        "0"
         
         // Hud
         "overlay_path"          "overlays/zr/zvision"
@@ -167,9 +179,13 @@
         
         // Model
         "model"                 "zh_zombie003"
-        "alpha_initial"         "255"
-        "alpha_damaged"         "255"
-        "alpha_damage"          "0"
+        "alpha_mode"            "none"
+        "alpha_invert"          "no"
+        "alpha_health"          "1000
+        "alpha_min"             "0"
+        "alpha_max"             "255"
+        "alpha_min_dist"        "0"
+        "alpha_max_dist"        "0"
         
         // Hud
         "overlay_path"          "overlays/zr/zvision"
@@ -213,9 +229,13 @@
         
         // Model
         "model"                 "t_guerilla"
-        "alpha_initial"         "255"
-        "alpha_damaged"         "255"
-        "alpha_damage"          "0"
+        "alpha_mode"            "none"
+        "alpha_invert"          "no"
+        "alpha_health"          "1000
+        "alpha_min"             "0"
+        "alpha_max"             "255"
+        "alpha_min_dist"        "0"
+        "alpha_max_dist"        "0"
         
         // Hud
         "overlay_path"          "overlays/zr/zvision"
@@ -258,10 +278,14 @@
         "description"           "+HP regen | +Speed | +Jump | -Knockback"
         
         // Model
-        "model_path"            "models/player/zh/zh_charple001.mdl"
-        "alpha_initial"         "255"
-        "alpha_damaged"         "255"
-        "alpha_damage"          "0"
+        "model"                 "zh_charple001"
+        "alpha_mode"            "none"
+        "alpha_invert"          "no"
+        "alpha_health"          "1000
+        "alpha_min"             "0"
+        "alpha_max"             "255"
+        "alpha_min_dist"        "0"
+        "alpha_max_dist"        "0"
         
         // Hud
         "overlay_path"          "overlays/zr/zvision"
@@ -304,10 +328,14 @@
         "description"           "+HP regen | +Speed | +Jump | -Knockback"
         
         // Model
-        "model_path"            "models/player/zh/zh_charple001.mdl"
-        "alpha_initial"         "255"
-        "alpha_damaged"         "255"
-        "alpha_damage"          "0"
+        "model"                 "zh_charple001"
+        "alpha_mode"            "none"
+        "alpha_invert"          "no"
+        "alpha_health"          "1000
+        "alpha_min"             "0"
+        "alpha_max"             "255"
+        "alpha_min_dist"        "0"
+        "alpha_max_dist"        "0"
         
         // Hud
         "overlay_path"          "overlays/zr/zvision"
@@ -356,10 +384,14 @@
         "description"           "Default Counter-Strike settings"
         
         // Model
-        "model_path"            "default"
-        "alpha_initial"         "255"
-        "alpha_damaged"         "255"
-        "alpha_damage"          "0"
+        "model"                 "default"
+        "alpha_mode"            "none"
+        "alpha_invert"          "no"
+        "alpha_health"          "1000
+        "alpha_min"             "0"
+        "alpha_max"             "255"
+        "alpha_min_dist"        "0"
+        "alpha_max_dist"        "0"
         
         // Hud
         "overlay_path"          ""
@@ -402,10 +434,14 @@
         "description"           "Human class for important players"
         
         // Model
-        "model_path"            "default"
-        "alpha_initial"         "255"
-        "alpha_damaged"         "255"
-        "alpha_damage"          "0"
+        "model"                 "default"
+        "alpha_mode"            "none"
+        "alpha_invert"          "no"
+        "alpha_health"          "1000
+        "alpha_min"             "0"
+        "alpha_max"             "255"
+        "alpha_min_dist"        "0"
+        "alpha_max_dist"        "0"
         
         // Hud
         "overlay_path"          ""
@@ -448,10 +484,14 @@
         "description"           "Human class for admins"
         
         // Model
-        "model_path"            "default"
-        "alpha_initial"         "255"
-        "alpha_damaged"         "255"
-        "alpha_damage"          "0"
+        "model"                 "default"
+        "alpha_mode"            "none"
+        "alpha_invert"          "no"
+        "alpha_health"          "1000
+        "alpha_min"             "0"
+        "alpha_max"             "255"
+        "alpha_min_dist"        "0"
+        "alpha_max_dist"        "0"
         
         // Hud
         "overlay_path"          ""
@@ -494,10 +534,14 @@
         "description"           "Fast human"
         
         // Model
-        "model_path"            "default"
-        "alpha_initial"         "255"
-        "alpha_damaged"         "255"
-        "alpha_damage"          "0"
+        "model"                 "default"
+        "alpha_mode"            "none"
+        "alpha_invert"          "no"
+        "alpha_health"          "1000
+        "alpha_min"             "0"
+        "alpha_max"             "255"
+        "alpha_min_dist"        "0"
+        "alpha_max_dist"        "0"
         
         // Hud
         "overlay_path"          ""
@@ -540,10 +584,14 @@
         "description"           "Regular human with improved jump skills"
         
         // Model
-        "model_path"            "default"
-        "alpha_initial"         "255"
-        "alpha_damaged"         "255"
-        "alpha_damage"          "0"
+        "model"                 "default"
+        "alpha_mode"            "none"
+        "alpha_invert"          "no"
+        "alpha_health"          "1000
+        "alpha_min"             "0"
+        "alpha_max"             "255"
+        "alpha_min_dist"        "0"
+        "alpha_max_dist"        "0"
         
         // Hud
         "overlay_path"          ""

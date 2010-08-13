@@ -839,6 +839,19 @@ stock bool:ClassMgr_AllowSelection(client, ClassTeam:team = ClassTeamNew_All)
 }
 
 /**
+ * Logs a generic invalid attribute warning.
+ *
+ * @param module        Module responsible for the attribute.
+ * @param attribute     Name of attribute that failed validation.
+ * @param className     Name of the class.
+ * @param classIndex    Class index.
+ */
+stock ClassMgr_LogAttribErrGeneric(Module:module, const String:attribute[], const String:className[], classIndex)
+{
+    LogMgr_Print(module, LogType_Error, "Config Validation", "Warning: Invalid \"%s\" in class \"%s\" (%d).", attribute, className, classIndex);
+}
+
+/**
  * Logs a invalid attribute warning, for string attributes.
  *
  * @param module        Module responsible for the attribute.
