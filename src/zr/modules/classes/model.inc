@@ -36,14 +36,31 @@ new Module:g_moduleClsModel;
 stock Module:ClsModel_GetIdentifier() { return g_moduleClsModel; }
 
 /**
+ * Health alpha blending modes.
+ */
+enum ClassAlphaModes
+{
+    ClassAlphaFade_Invalid = -1,
+    ClassAlphaFade_None,            /** No health alpha blending. */
+    ClassAlphaFade_Switch,          /** Switch between max (initial) and min depending on health level. */
+    ClassAlphaFade_SwitchOnce,      /** Switch from max to min once when below specified health level. */
+    ClassAlphaFade_Linear,          /** Linear fading synced with health. */
+    ClassAlphaFade_Exp              /** Exponential fading synced with health. */
+}
+
+/**
  * Data structure for model attributes.
  */
 enum ClassModelAttributes
 {
     String:ClassAttrib_Model[CLASS_NAME_LEN],   /** Name of the model or a predefined model option. */
-    ClassAttrib_AlphaInitial,                   /** Initial alpha value. Used when spawning. */
-    ClassAttrib_AlphaDamaged,                   /** Alpha value when damaged. */
-    ClassAttrib_AlphaDamage                     /** How much damage that must be done before alpha is changed. */
+    ClassAlphaModes:ClassAttrib_AlphaFadeMode,  /** Alpha blending mode. */
+    bool:ClassAttrib_AlphaInvert,               /** Invert alpha blending (transparent when close, and opaque on distance). */
+    ClassAttrib_AlphaHealth,                    /** Health level (switch mode) or minimum health level (fading modes). */
+    ClassAttrib_AlphaMin,                       /** Minimum alpha value. */
+    ClassAttrib_AlphaMax,                       /** Maximum alpha value. */
+    ClassAttrib_AlphaMinDist,                   /** Minimum fade distance. */
+    ClassAttrib_AlphaMaxDist,                   /** Maximum fade distance. */   
 }
 
 /**
@@ -62,14 +79,24 @@ new ClassModelData2[CLASS_MAX][ClassModelAttributes];
 new ClassModelPlayerData[MAXPLAYERS + 1][ClassModelAttributes];
 
 /**
+ * Original model path cache.
+ */
+new String:ClassModelOriginalPath[MAXPLAYERS + 1][PLATFORM_MAX_PATH];
+
+/**
+ * Stores whether the alpha have been switched on a player (switch mode blending).
+ */
+new bool:ClassModelAlphaSwitched[MAXPLAYERS + 1];
+
+/**
  * @section Attribute limit values. Used when validating.
  */
-#define CLASS_ALPHA_INITIAL_MIN     0
-#define CLASS_ALPHA_INITIAL_MAX     255
-#define CLASS_ALPHA_DAMAGED_MIN     0
-#define CLASS_ALPHA_DAMAGED_MAX     255
-#define CLASS_ALPHA_DAMAGE_MIN      0
-#define CLASS_ALPHA_DAMAGE_MAX      30000
+#define CLASS_ALPHA_MIN             0
+#define CLASS_ALPHA_MAX             255
+#define CLASS_ALPHA_HEALTH_MIN      0
+#define CLASS_ALPHA_HEALTH_MAX      30000
+#define CLASS_ALPHA_DIST_MIN        0
+#define CLASS_ALPHA_DIST_MAX        32767
 /**
  * @endsection
  */
@@ -78,6 +105,7 @@ new ClassModelPlayerData[MAXPLAYERS + 1][ClassModelAttributes];
  * Function cache for API functions that this module use.
  */
 new Function:ClsModel_GetNameFunc;
+new Function:ClsModel_GetHealthFunc;
 
 /**
  * Register this module.
@@ -93,6 +121,7 @@ ClsModel_Register()
     strcopy(moduledata[ModuleData_ShortName], MM_DATA_SHORTNAME, "model");
     strcopy(moduledata[ModuleData_Description], MM_DATA_DESCRIPTION, "Stores model attributes.");
     moduledata[ModuleData_Dependencies][0] = ClassMgr_GetIdentifier();
+    //moduledata[ModuleData_Dependencies][1] = ClsHealth_GetIdentifier();   // Depends on health module because of alpha.
     moduledata[ModuleData_Dependencies][1] = INVALID_MODULE;
     
     // Send this array of data to the module manager.
@@ -102,13 +131,23 @@ ClsModel_Register()
     
     // Register attributes in the attribute register.
     ClassAttribReg_AddAttrib(g_moduleClsModel, "model");
-    ClassAttribReg_AddAttrib(g_moduleClsModel, "alpha_initial");
-    ClassAttribReg_AddAttrib(g_moduleClsModel, "alpha_damaged");
-    ClassAttribReg_AddAttrib(g_moduleClsModel, "alpha_damage");
+    ClassAttribReg_AddAttrib(g_moduleClsModel, "alpha_mode");
+    ClassAttribReg_AddAttrib(g_moduleClsModel, "alpha_invert");
+    ClassAttribReg_AddAttrib(g_moduleClsModel, "alpha_health");
+    ClassAttribReg_AddAttrib(g_moduleClsModel, "alpha_min");
+    ClassAttribReg_AddAttrib(g_moduleClsModel, "alpha_max");
+    ClassAttribReg_AddAttrib(g_moduleClsModel, "alpha_min_dist");
+    ClassAttribReg_AddAttrib(g_moduleClsModel, "alpha_max_dist");
     
     // Add public API function to function register.
-    //new Handle:pluginHandle = GetMyHandle();
-    //FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_<function>"), "Class_<function alias>");
+    new Handle:pluginHandle = GetMyHandle();
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidModel"), "Class_IsValidModel");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidAlphaMode"), "Class_IsValidAlphaMode");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidAlphaHealth"), "Class_IsValidAlphaHealth");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidAlphaMin"), "Class_IsValidAlphaMin");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidAlphaMax"), "Class_IsValidAlphaMax");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidAlphaMinDist"), "Class_IsValidAlphaMinDist");
+    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidAlphaMaxDist"), "Class_IsValidAlphaMaxDist");
 }
 
 /**
@@ -128,7 +167,7 @@ public ClsModel_OnEventsRegister()
 {
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnAllPluginsLoaded",      "ClsModel_OnAllPluginsLoaded");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnPluginEnd",             "ClsModel_OnPluginEnd");
-    EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnAllModulesLoaded",      "ClsModel_OnAllModulesLoaded");
+    EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnAllModulesLoaded",        "ClsModel_OnAllModulesLoaded");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnModuleEnable",          "ClsModel_OnModuleEnable");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnMyModuleEnable",        "ClsModel_OnMyModuleEnable");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnModuleDisable",         "ClsModel_OnModuleDisable");
@@ -147,21 +186,21 @@ public ClsModel_OnEventsRegister()
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_RoundEnd",                "ClsModel_RoundEnd");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_PlayerTeam",              "ClsModel_PlayerTeam");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_PlayerSpawn",             "ClsModel_PlayerSpawn");
-    //EventMgr_RegisterEvent(g_moduleClsModel, "Event_PlayerHurt",              "ClsModel_PlayerHurt");
+    EventMgr_RegisterEvent(g_moduleClsModel, "Event_PlayerHurt",                "ClsModel_PlayerHurt");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_PlayerDeath",             "ClsModel_PlayerDeath");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_PlayerJump",              "ClsModel_PlayerJump");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_WeaponFire",              "ClsModel_WeaponFire");
     
     #endif
     
-    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassAttribLoad",           "ClsModel_OnClassAttribLoad");
-    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassValidate",             "ClsModel_OnClassValidate");
-    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassAllLoaded",            "ClsModel_OnClassAllLoaded");
-    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerLoad",           "ClsModel_OnClassPlayerLoad");
-    //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerPreload",      "ClsModel_OnClassPlayerPreload");
-    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassApply",                "ClsModel_OnClassApply");
-    //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerInfected",     "ClsModel_OnClassPlayerInfected");
-    //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerHuman",        "ClsModel_OnClassPlayerHuman");
+    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassAttribLoad",       "ClsModel_OnClassAttribLoad");
+    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassValidate",         "ClsModel_OnClassValidate");
+    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassAllLoaded",        "ClsModel_OnClassAllLoaded");
+    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerLoad",       "ClsModel_OnClassPlayerLoad");
+    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerPreload",    "ClsModel_OnClassPlayerPreload");
+    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassApply",            "ClsModel_OnClassApply");
+    //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerInfected", "ClsModel_OnClassPlayerInfected");
+    //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerHuman",    "ClsModel_OnClassPlayerHuman");
 }
 
 /**
@@ -182,17 +221,31 @@ public ClsModel_OnClassAttribLoad(classIndex, Handle:kv, const String:attribute[
         KvGetString(kv, attribute, buffer, sizeof(buffer));
         strcopy(ClassModelData[classIndex][ClassAttrib_Model], CLASS_NAME_LEN, buffer);
     }
-    else if (StrEqual(attribute, "alpha_initial", false))
+    else if (StrEqual(attribute, "alpha_mode", false))
     {
-        ClassModelData[classIndex][ClassAttrib_AlphaInitial] = KvGetNum(kv, attribute);
+        KvGetString(kv, attribute, buffer, sizeof(buffer));
+        ClassModelData[classIndex][ClassAttrib_AlphaFadeMode] = ClsModel_StringToMode(buffer);
     }
-    else if (StrEqual(attribute, "alpha_damaged", false))
+    else if (StrEqual(attribute, "alpha_invert", false))
     {
-        ClassModelData[classIndex][ClassAttrib_AlphaDamaged] = KvGetNum(kv, attribute);
+        KvGetString(kv, attribute, buffer, sizeof(buffer));
+        ClassModelData[classIndex][ClassAttrib_AlphaInvert] = ConfigSettingToBool(buffer);
     }
-    else if (StrEqual(attribute, "alpha_damage", false))
+    else if (StrEqual(attribute, "alpha_min", false))
     {
-        ClassModelData[classIndex][ClassAttrib_AlphaDamage] = KvGetNum(kv, attribute);
+        ClassModelData[classIndex][ClassAttrib_AlphaMin] = KvGetNum(kv, attribute);
+    }
+    else if (StrEqual(attribute, "alpha_max", false))
+    {
+        ClassModelData[classIndex][ClassAttrib_AlphaMax] = KvGetNum(kv, attribute);
+    }
+    else if (StrEqual(attribute, "alpha_min_dist", false))
+    {
+        ClassModelData[classIndex][ClassAttrib_AlphaMinDist] = KvGetNum(kv, attribute);
+    }
+    else if (StrEqual(attribute, "alpha_max_dist", false))
+    {
+        ClassModelData[classIndex][ClassAttrib_AlphaMaxDist] = KvGetNum(kv, attribute);
     }
 }
 
@@ -234,20 +287,45 @@ public Action:ClsModel_OnClassValidate(classIndex)
         ClassMgr_LogAttribErrString(g_moduleClsModel, "model", className, classIndex, buffer);
         hasErrors = true;
     }
-    if (!ClsModel_IsValidAlphaInitial(classCache[ClassAttrib_AlphaInitial]))
+    if (!ClsModel_IsValidAlphaMode(classCache[ClassAttrib_AlphaFadeMode]))
     {
-        ClassMgr_LogAttribErrCell(g_moduleClsModel, "alpha_initial", className, classIndex, classCache[ClassAttrib_AlphaInitial]);
+        ClassMgr_LogAttribErrGeneric(g_moduleClsModel, "alpha_mode", className, classIndex);
         hasErrors = true;
     }
-    if (!ClsModel_IsValidAlphaDamaged(classCache[ClassAttrib_AlphaDamaged]))
+    if (!ClsModel_IsValidAlphaHealth(classCache[ClassAttrib_AlphaHealth]))
     {
-        ClassMgr_LogAttribErrCell(g_moduleClsModel, "alpha_damaged", className, classIndex, classCache[ClassAttrib_AlphaDamaged]);
+        ClassMgr_LogAttribErrCell(g_moduleClsModel, "alpha_health", className, classIndex, classCache[ClassAttrib_AlphaHealth]);
         hasErrors = true;
     }
-    if (!ClsModel_IsValidAlphaDamage(classCache[ClassAttrib_AlphaDamage]))
+    if (!ClsModel_IsValidAlpha(classCache[ClassAttrib_AlphaMin]))
     {
-        ClassMgr_LogAttribErrCell(g_moduleClsModel, "alpha_damage", className, classIndex, classCache[ClassAttrib_AlphaDamage]);
+        ClassMgr_LogAttribErrCell(g_moduleClsModel, "alpha_min", className, classIndex, classCache[ClassAttrib_AlphaMin]);
         hasErrors = true;
+    }
+    if (!ClsModel_IsValidAlpha(classCache[ClassAttrib_AlphaMax]))
+    {
+        ClassMgr_LogAttribErrCell(g_moduleClsModel, "alpha_max", className, classIndex, classCache[ClassAttrib_AlphaMax]);
+        hasErrors = true;
+    }
+    if (!ClsModel_IsValidAlphaDist(classCache[ClassAttrib_AlphaMinDist]))
+    {
+        ClassMgr_LogAttribErrCell(g_moduleClsModel, "alpha_min_dist", className, classIndex, classCache[ClassAttrib_AlphaMinDist]);
+        hasErrors = true;
+    }
+    if (!ClsModel_IsValidAlphaDist(classCache[ClassAttrib_AlphaMaxDist]))
+    {
+        ClassMgr_LogAttribErrCell(g_moduleClsModel, "alpha_max_dist", className, classIndex, classCache[ClassAttrib_AlphaMaxDist]);
+        hasErrors = true;
+    }
+    
+    // Swap min/max alpha values if needed.
+    // Note: Do not swap distance values, because inversion is allowed.
+    if (classCache[ClassAttrib_AlphaMin] > classCache[ClassAttrib_AlphaMax])
+    {
+        new temp = classCache[ClassAttrib_AlphaMin];
+        classCache[ClassAttrib_AlphaMin] = classCache[ClassAttrib_AlphaMax];
+        classCache[ClassAttrib_AlphaMax] = temp;
+        LogMgr_Print(g_moduleClsModel, LogType_Error, "Config Validation", "Warning: Mismatched alpha_min and alpha_max attributes in class \"%s\" (%d). Values have been automatically swapped.", className, classIndex);
     }
     
     if (hasErrors)
@@ -276,9 +354,13 @@ public ClsModel_OnClassAllLoaded(classCount)
     for (new classIndex = 0; classIndex < classCount; classIndex++)
     {
         strcopy(ClassModelData2[classIndex][ClassAttrib_Model], CLASS_NAME_LEN, ClassModelData[classIndex][ClassAttrib_Model]);
-        ClassModelData2[classIndex][ClassAttrib_AlphaInitial] = ClassModelData[classIndex][ClassAttrib_AlphaInitial];
-        ClassModelData2[classIndex][ClassAttrib_AlphaDamaged] = ClassModelData[classIndex][ClassAttrib_AlphaDamaged];
-        ClassModelData2[classIndex][ClassAttrib_AlphaDamage] = ClassModelData[classIndex][ClassAttrib_AlphaDamage];
+        ClassModelData2[classIndex][ClassAttrib_AlphaFadeMode] = ClassModelData[classIndex][ClassAttrib_AlphaFadeMode];
+        ClassModelData2[classIndex][ClassAttrib_AlphaInvert] = ClassModelData[classIndex][ClassAttrib_AlphaInvert];
+        ClassModelData2[classIndex][ClassAttrib_AlphaHealth] = ClassModelData[classIndex][ClassAttrib_AlphaHealth];
+        ClassModelData2[classIndex][ClassAttrib_AlphaMin] = ClassModelData[classIndex][ClassAttrib_AlphaMin];
+        ClassModelData2[classIndex][ClassAttrib_AlphaMax] = ClassModelData[classIndex][ClassAttrib_AlphaMax];
+        ClassModelData2[classIndex][ClassAttrib_AlphaMinDist] = ClassModelData[classIndex][ClassAttrib_AlphaMinDist];
+        ClassModelData2[classIndex][ClassAttrib_AlphaMaxDist] = ClassModelData[classIndex][ClassAttrib_AlphaMaxDist];
     }
 }
 
@@ -291,6 +373,8 @@ public ClsModel_OnClassAllLoaded(classCount)
  */
 public ClsModel_OnClassPlayerPreload(client, classIndex)
 {
+    // Forward event.
+    ClsModel_OnClassPlayerLoad(client, classIndex);
 }
 
 /**
@@ -303,7 +387,15 @@ public ClsModel_OnClassPlayerPreload(client, classIndex)
  */
 public ClsModel_OnClassPlayerLoad(client, classIndex)
 {
-    // TODO: Load attributes from the specified class into the player's cache.
+    // Load attributes from the specified class into the player's cache.
+    strcopy(ClassModelPlayerData[client][ClassAttrib_Model], CLASS_NAME_LEN, ClassModelData2[classIndex][ClassAttrib_Model]);
+    ClassModelPlayerData[client][ClassAttrib_AlphaFadeMode] = ClassModelData2[classIndex][ClassAttrib_AlphaFadeMode];
+    ClassModelPlayerData[client][ClassAttrib_AlphaInvert] = ClassModelData2[classIndex][ClassAttrib_AlphaInvert];
+    ClassModelPlayerData[client][ClassAttrib_AlphaHealth] = ClassModelData2[classIndex][ClassAttrib_AlphaHealth];
+    ClassModelPlayerData[client][ClassAttrib_AlphaMin] = ClassModelData2[classIndex][ClassAttrib_AlphaMin];
+    ClassModelPlayerData[client][ClassAttrib_AlphaMax] = ClassModelData2[classIndex][ClassAttrib_AlphaMax];
+    ClassModelPlayerData[client][ClassAttrib_AlphaMinDist] = ClassModelData2[classIndex][ClassAttrib_AlphaMinDist];
+    ClassModelPlayerData[client][ClassAttrib_AlphaMaxDist] = ClassModelData2[classIndex][ClassAttrib_AlphaMaxDist];
 }
 
 /**
@@ -332,6 +424,7 @@ public ClsModel_OnAllModulesLoaded()
 {
     // Chache api function IDs that this module use.
     ClsModel_GetNameFunc = FuncRegister_GetFunction("Class_GetName");
+    ClsModel_GetHealthFunc = FuncRegister_GetFunction("Class_GetHealth");
 }
 
 /**
@@ -357,7 +450,11 @@ public ClsModel_OnMyModuleDisable()
  */
 public ClsModel_PlayerSpawn(client)
 {
-    // TODO: Cache original model
+    // Cache original model.
+    GetClientModel(client, ClassModelOriginalPath[client], PLATFORM_MAX_PATH);
+    
+    // Reset alpha switched setting.
+    ClassModelAlphaSwitched[client] = false;
 }
 
 /**
@@ -374,7 +471,185 @@ public ClsModel_PlayerSpawn(client)
  */
 public ClsModel_PlayerHurt(victim, attacker, health, armor, const String:weapon[], dmg_health, dmg_armor, hitgroup)
 {
-    // TODO: Update alpha.
+    // Update alpha.
+    ClsModel_UpdateAlpha(victim);
+}
+
+
+/************************
+ *    INTERNAL LOGIC    *
+ ************************/
+
+/**
+ * Updates the alpha value on a player.
+ */
+ClsModel_UpdateAlpha(client)
+{
+    // Validate dependencies.
+    if (ClsModel_GetHealthFunc == INVALID_FUNCTION)
+    {
+        return;
+    }
+    
+    new currentHealth = GetClientHealth(client);
+    
+    Call_StartFunction(GetMyHandle(), ClsModel_GetHealthFunc);
+    Call_PushCell(client);
+    Call_PushCell(_:ClassCache_Player);
+    new maxHealth = Call_Finish(maxHealth);
+    
+    // Cache attributes.
+    decl attributes[ClassModelAttributes];
+    attributes = ClassModelPlayerData[client];
+    
+    new alphaHealth = attributes[ClassAttrib_AlphaHealth];
+    new min = attributes[ClassAttrib_AlphaMin];
+    new max = attributes[ClassAttrib_AlphaMax];
+    new bool:invert = attributes[ClassAttrib_AlphaInvert];
+    
+    switch (attributes[ClassAttrib_AlphaFadeMode])
+    {
+        case ClassAlphaFade_Invalid, ClassAlphaFade_None:
+        {
+            // No health alpha blending.
+            return;
+        }
+        case ClassAlphaFade_Switch:
+        {
+            // Switch between max (initial) and min depending on health level.
+            new alpha;
+            if (currentHealth < alphaHealth)
+            {
+                alpha = invert ? max : min;
+                ToolsSetClientAlpha(client, alpha);
+            }
+            else
+            {
+                alpha = invert ? min : max;
+                ToolsSetClientAlpha(client, alpha);
+            }
+        }
+        case ClassAlphaFade_SwitchOnce:
+        {
+            // Switch from max to min once when below specified health level.
+            if (!ClassModelAlphaSwitched[client] && currentHealth < alphaHealth)
+            {
+                new alpha = invert ? max : min;
+                ToolsSetClientAlpha(client, alpha);
+                ClassModelAlphaSwitched[client] = true;
+            }
+        }
+        case ClassAlphaFade_Linear, ClassAlphaFade_Exp:
+        {
+            // Linear or exponential fading synced with health.
+            
+            // Only update alpha when health is within the range.
+            if (alphaHealth <= currentHealth <= maxHealth)
+            {
+                new Float:alpha;
+                new Float:alphaRange = float(max) - float(min);
+                new Float:healthRange = float(maxHealth) - float(alphaHealth);
+                
+                // Get fade offset value.
+                if (attributes[ClassAttrib_AlphaFadeMode] == ClassAlphaFade_Linear)
+                {
+                    alpha = ClsModel_FadeLinear(healthRange, alphaRange, float(currentHealth));
+                }
+                else
+                {
+                    alpha = ClsModel_FadeExp(healthRange, alphaRange, float(currentHealth));
+                }
+                
+                // Invert ofsset.
+                alpha = healthRange - alpha;
+                
+                // Push offset up to match min health offset.
+                alpha += alphaHealth;
+                
+                // Apply alpha.
+                ToolsSetClientAlpha(client, RoundToNearest(alpha));
+            }
+        }
+    }
+}
+
+/**
+ * Returns the (y) value of a point in a linear fading process (from max to zero).
+ *
+ * @param fadeRange     Fade range (x range).
+ * @param valueRange    Range of values to fade (y range).
+ * @param point         A value witin the range (x value).
+ */
+Float:ClsModel_FadeLinear(Float:fadeRange, Float:valueRange, Float:point)
+{
+    return point * (valueRange / fadeRange);
+}
+
+/**
+ * Returns the (y) value of a point in a exponential fading process (from max to zero).
+ *
+ * @param fadeRange     Fade range (x range).
+ * @param valueRange    Range of values to fade (y range).
+ * @param point         A value witin the fade range (x value).
+ */
+Float:ClsModel_FadeExp(Float:fadeRange, Float:valueRange, Float:point)
+{
+    /* Formula info:
+     * - A graph shaped like 1/X
+     * - Hits Y-axis at Y=valueRange when X is 0
+     * - Hits X-axis when X is ~fadeRange
+     */
+    
+    // Credit to Scone for this formula. It may go below the x-axis at the end,
+    // but not much, so we cap it.
+    // http://forums.alliedmods.net/showthread.php?t=135065
+    
+    new Float:value = valueRange * ((1 / (point / fadeRange + 0.05) - 1) / 19);
+    
+    // The formula is not perfect at end x-values, so make sure the value
+    // is always positive.
+    if (value < 0)
+    {
+        value = 0.0;
+    }
+    
+    return value;
+}
+
+/**
+ * Converts a string to a alpha blending mode.
+ *
+ * @param mode      Mode string to convert.
+ *
+ * @return          Alpha blending mode, or ClassAlphaFade_Invalid on error.
+ */
+ClassAlphaModes:ClsModel_StringToMode(const String:mode[])
+{
+    if (strlen(mode) > 0)
+    {
+        if (StrEqual(mode, "none", false))
+        {
+            return ClassAlphaFade_None;
+        }
+        else if (StrEqual(mode, "switch", false))
+        {
+            return ClassAlphaFade_Switch;
+        }
+        else if (StrEqual(mode, "switch_once", false))
+        {
+            return ClassAlphaFade_SwitchOnce;
+        }
+        else if (StrEqual(mode, "linear", false))
+        {
+            return ClassAlphaFade_Linear;
+        }
+        else if (StrEqual(mode, "exp", false))
+        {
+            return ClassAlphaFade_Exp;
+        }
+    }
+    
+    return ClassAlphaFade_Invalid;
 }
 
 
@@ -412,15 +687,15 @@ public bool:ClsModel_IsValidModel(const String:model[])
 }
 
 /**
- * Validates alpha initial value.
+ * Validates alpha mode.
  *
- * @pram alphaInitial   Alpha initial value to validate.
+ * @pram mode           Alpha blending mode to validate.
  *
  * @return              True if valid, false otherwise.
  */
-public bool:ClsModel_IsValidAlphaInitial(alphaInitial)
+public bool:ClsModel_IsValidAlphaMode(ClassAlphaModes:mode)
 {
-    if (alphaInitial >= CLASS_ALPHA_INITIAL_MIN && alphaInitial <= CLASS_ALPHA_INITIAL_MAX)
+    if (mode != ClassAlphaFade_Invalid)
     {
         return true;
     }
@@ -429,15 +704,15 @@ public bool:ClsModel_IsValidAlphaInitial(alphaInitial)
 }
 
 /**
- * Validates alpha damaged value.
+ * Validates alpha value.
  *
- * @pram alphaDamaged   Alpha damaged value to validate.
+ * @pram alpha          Alpha value to validate.
  *
  * @return              True if valid, false otherwise.
  */
-public bool:ClsModel_IsValidAlphaDamaged(alphaDamaged)
+public bool:ClsModel_IsValidAlpha(alpha)
 {
-    if (alphaDamaged >= CLASS_ALPHA_DAMAGED_MIN && alphaDamaged <= CLASS_ALPHA_DAMAGED_MAX)
+    if (CLASS_ALPHA_MIN <= alpha <= CLASS_ALPHA_MAX)
     {
         return true;
     }
@@ -446,15 +721,32 @@ public bool:ClsModel_IsValidAlphaDamaged(alphaDamaged)
 }
 
 /**
- * Validates alpha damage value.
+ * Validates alpha health value.
  *
- * @pram alphaDamage    Alpha damage value to validate.
+ * @pram health         Alpha health value to validate.
  *
  * @return              True if valid, false otherwise.
  */
-public bool:ClsModel_IsValidAlphaDamage(alphaDamage)
+public bool:ClsModel_IsValidAlphaHealth(health)
 {
-    if (alphaDamage >= CLASS_ALPHA_DAMAGE_MIN && alphaDamage <= CLASS_ALPHA_DAMAGE_MAX)
+    if (CLASS_ALPHA_HEALTH_MIN <= health <= CLASS_ALPHA_HEALTH_MAX)
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+/**
+ * Validates alpha distance value.
+ *
+ * @pram dist           Distance value to validate.
+ *
+ * @return              True if valid, false otherwise.
+ */
+public bool:ClsModel_IsValidAlphaDist(dist)
+{
+    if (CLASS_ALPHA_DIST_MIN <= dist <= CLASS_ALPHA_DIST_MAX)
     {
         return true;
     }

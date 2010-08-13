@@ -261,23 +261,22 @@ public Action:ClsGeneric_OnClassValidate(classIndex)
     
     if (!ClsGeneric_IsValidTeam(classCache[ClassAttrib_Team]))
     {
-        ClassMgr_TeamToString(classCache[ClassAttrib_Team], buffer, sizeof(buffer));
-        LogMgr_Print(g_moduleClsGeneric, LogType_Error, "Config Validation", "Warning: Invalid team in class \"%s\" (%d): \"%s\"", className, classIndex, buffer);
+        ClassMgr_LogAttribErrGeneric(g_moduleClsGeneric, "team", className, classIndex);
         hasErrors = true;
     }
     if (!ClsGeneric_IsValidGroup(classCache[ClassAttrib_Group]))
     {
-        LogMgr_Print(g_moduleClsGeneric, LogType_Error, "Config Validation", "Warning: Invalid group in class \"%s\" (%d): \"%s\"", className, classIndex, classCache[ClassAttrib_Group]);
+        ClassMgr_LogAttribErrString(g_moduleClsGeneric, "group", className, classIndex, classCache[ClassAttrib_Group]);
         hasErrors = true;
     }
     if (!ClsGeneric_IsValidDisplayName(classCache[ClassAttrib_DisplayName]))
     {
-        LogMgr_Print(g_moduleClsGeneric, LogType_Error, "Config Validation", "Warning: Invalid display name in class \"%s\" (%d): \"%s\"", className, classIndex, classCache[ClassAttrib_DisplayName]);
+        ClassMgr_LogAttribErrString(g_moduleClsGeneric, "display_name", className, classIndex, classCache[ClassAttrib_DisplayName]);
         hasErrors = true;
     }
     if (!ClsGeneric_IsValidDescription(classCache[ClassAttrib_Description]))
     {
-        LogMgr_Print(g_moduleClsGeneric, LogType_Error, "Config Validation", "Warning: Invalid description in class \"%s\" (%d): \"%s\"", className, classIndex, classCache[ClassAttrib_DisplayName]);
+        ClassMgr_LogAttribErrString(g_moduleClsGeneric, "description", className, classIndex, classCache[ClassAttrib_Description]);
         hasErrors = true;
     }
     
