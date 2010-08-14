@@ -4,6 +4,7 @@
  *  Zombie:Reloaded
  *
  *  File:          shoppinglistlib.inc
+ *  Version:       56:579d41e8e083 (projectcomponents)
  *  Type:          Library
  *  Description:   Formats raw strings into shopping list-styled lists.
  *
@@ -25,8 +26,13 @@
  * ============================================================================
  */
 
+#if defined _shoppinglistlib_included
+ #endinput
+#endif
+#define _shoppinglistlib_included
+
 /**
- * This library meant for formatting a given string into a list formatted around the style of a shopping
+ * This file is meant for formatting a given string into a list formatted around the style of a shopping
  * list.
  * Example:
  * String: "Bacon, Egg, Egg, Milk, Butter"

@@ -4,6 +4,7 @@
  *  Zombie:Reloaded
  *
  *  File:          menulib.inc
+ *  Version:       56:579d41e8e083 (projectcomponents)
  *  Type:          Library
  *  Description:   
  *
@@ -25,14 +26,13 @@
  * ============================================================================
  */
 
-/**
- * Menu filters.
- */
-#define MENULIB_FILTER_TEAM         (1 << 0)    /** Only allow clients on a team. */
-#define MENULIB_FILTER_UNASSIGNED   (1 << 1)    /** Only allow clients not on a team. */
-#define MENULIB_FILTER_ALIVE        (1 << 2)    /** Only allow live clients. */
-#define MENULIB_FILTER_DEAD         (1 << 3)    /** Only allow dead clients. */
-#define MENULIB_FILTER_CANTARGET    (1 << 4)    /** Only list clients that the menu recipient can target. */
+#if defined _menulib_included
+ #endinput
+#endif
+#define _menulib_included
+
+// Include libraries.
+#include "zr/libraries/utilities"
 
 /**
  * Shows a list of all clients to a client, different handlers can be used for this, as well as title.
@@ -40,7 +40,7 @@
  * @param client    The client index.
  * @param handler   The menu handler.
  * @param title     The title of the menu.
- * @param filters   A bit field made up of MENULIB_FILTER_* defines.  See top of file.
+ * @param filters   A bit field made up of UTILS_FILTER_* defines.  See utilities.inc.
  *                  Note: This is only checked at time of menu creation.  It is
  *                  recommended to re-check these filters in the callback.
  */
@@ -51,43 +51,14 @@ stock MenuLib_ClientMenu(client, MenuHandler:handler, const String:title[], filt
     
     decl String:clientoption[64];
     decl String:clientuserid[8];
-    new count;
+    new menuclient;
     
-    for (new menuclient = 1; menuclient <= MaxClients; menuclient++)
+    new Handle:adtClients;
+    new count = Util_BuildClientList(adtClients, filters, client);
+    for (new cindex = 0; cindex < count; cindex++)
     {
-        if (!IsClientInGame(menuclient))
-            continue;
-        
-        // Check filters.
-        if (Util_IsClientOnTeam(menuclient))
-        {
-            // The client is on a team, so check if the filter is asking only for unassigned clients.
-            if (filters & MENULIB_FILTER_UNASSIGNED)
-                continue;
-        }
-        else
-        {
-            // The client is unassigned, so check if the filter is asking only for clients on a team.
-            if (filters & MENULIB_FILTER_TEAM)
-                continue;
-        }
-        
-        if (IsPlayerAlive(menuclient))
-        {
-            // The client is alive, so check if the filter is asking only for dead clients.
-            if (filters & MENULIB_FILTER_DEAD)
-                continue;
-        }
-        else
-        {
-            // The client is dead, so check if the filter is asking only for alive clients.
-            if (filters & MENULIB_FILTER_TEAM)
-                continue;
-        }
-        
-        // Check if the menu recipient can target this client, if not then don't add to the menu.
-        if (filters & MENULIB_FILTER_CANTARGET && !CanUserTarget(client, menuclient))
-            continue;
+        // Get the client index from the array.
+        menuclient = GetArrayCell(adtClients, cindex);
         
         // Get client info.
         GetClientName(menuclient, clientoption, sizeof(clientoption));
@@ -97,6 +68,8 @@ stock MenuLib_ClientMenu(client, MenuHandler:handler, const String:title[], filt
         AddMenuItem(menu_clients, clientuserid, clientoption);
         count++;
     }
+    
+    CloseHandle(adtClients);
     
     // If there are no clients, add an "(Empty)" line.
     if (count == 0)

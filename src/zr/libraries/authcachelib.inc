@@ -4,6 +4,7 @@
  *  Zombie:Reloaded
  *
  *  File:          authcachelib.inc
+ *  Version:       56:579d41e8e083 (projectcomponents)
  *  Type:          Library
  *  Description:   API to store auth strings of players in a cache.
  *
@@ -35,6 +36,11 @@
  * played this round.  So ZSpawn can create lists of players that will stop rejoining players
  * from exploiting.
  */
+
+#if defined _authcachelib_included
+ #endinput
+#endif
+#define _authcachelib_included
 
 /**
  * Creates a cache to store clients.
