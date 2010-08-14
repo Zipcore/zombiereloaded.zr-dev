@@ -70,11 +70,16 @@
 
 // Library includes.
 #include "zr/libraries/authcachelib"
+#include "zr/libraries/conversionlib"
 #include "zr/libraries/cookielib"
+#include "zr/libraries/cvarlib"
+#include "zr/libraries/functionlib"
 #include "zr/libraries/menulib"
 #include "zr/libraries/offsetlib"
+#include "zr/libraries/sdktoolslib"
 #include "zr/libraries/shoppinglistlib"
 #include "zr/libraries/teamlib"
+#include "zr/libraries/utilities"
 #include "zr/libraries/weaponlib"
 
 // Module includes (for the new base)
