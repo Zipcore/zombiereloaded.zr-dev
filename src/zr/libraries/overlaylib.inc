@@ -4,6 +4,7 @@
  *  Zombie:Reloaded
  *
  *  File:          overlaylib.inc
+ *  Version:       56:579d41e8e083 (projectcomponents)
  *  Type:          Library
  *  Description:   Helps to properly display multiple overlays at once.
  *
@@ -24,6 +25,11 @@
  *
  * ============================================================================
  */
+
+#if defined _overlaylib_included
+ #endinput
+#endif
+#define _overlaylib_included
 
 #include <sdktools>
 
