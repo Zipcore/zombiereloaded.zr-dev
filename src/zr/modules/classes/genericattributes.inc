@@ -99,25 +99,6 @@ ClsGeneric_Register()
     ClassAttribReg_AddAttrib(g_moduleClsGeneric, "group");
     ClassAttribReg_AddAttrib(g_moduleClsGeneric, "display_name");
     ClassAttribReg_AddAttrib(g_moduleClsGeneric, "description");
-    
-    // Add public API functions to function register.
-    new Handle:pluginHandle = GetMyHandle();
-    
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_ValidateRequirements"),    "Class_ValidateRequirements");
-    
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_IsValidTeam"),             "Class_IsValidTeam");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_IsValidGroup"),            "Class_IsValidGroup");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_IsValidDisplayName"),      "Class_IsValidDisplayName");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_IsValidDescription"),      "Class_IsValidDescription");
-    
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetName"),                 "Class_GetName");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetTeam"),                 "Class_GetTeam");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetTeamDefault"),          "Class_GetTeamDefault");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetIsAdminClass"),         "Class_GetIsAdminClass");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetIsMotherZombie"),       "Class_GetIsMotherZombie");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetGroup"),                "Class_GetGroup");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetDisplayName"),          "Class_GetDisplayName");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsGeneric_GetDescription"),          "Class_GetDescription");
 }
 
 /**
@@ -326,9 +307,8 @@ public ClsGeneric_OnClassPlayerLoad(client, classIndex)
  * on the player now.
  *
  * @param client        Client index.
- * @param classIndex    Class index.
  */
-public ClsGeneric_OnClassApply(client, classIndex)
+public ClsGeneric_OnClassApply(client)
 {
 }
 

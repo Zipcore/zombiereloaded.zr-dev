@@ -52,15 +52,23 @@ ClassMgr_CheckInstantChange(client)
 /**
  * Stops the instant change timer and resets the flag.
  *
- * @param client    Client index.
+ * @param client        Client index.
+ * @param killTimer     Also end the timer if it's running.
  */
-ClassMgr_ResetInstantChange(client)
+ClassMgr_ResetInstantChange(client, bool:killTimer = true)
 {
     // Disable instant class change.
     g_ClassAllowInstantChange[client] = false;
     
     // Reset the variable.
-    ZREndTimer(g_hClassInstantChange[client], false);
+    if (killTimer)
+    {
+        Util_CloseHandle(g_hClassInstantChange[client]);
+    }
+    else
+    {
+        g_hClassInstantChange[client] = INVALID_HANDLE;
+    }
 }
 
 /**
@@ -68,5 +76,5 @@ ClassMgr_ResetInstantChange(client)
  */
 public Action:ClassMgr_InstantChange(Handle:timer, any:client)
 {
-    ClassMgr_ResetInstantChange(client);
+    ClassMgr_ResetInstantChange(client, false);
 }

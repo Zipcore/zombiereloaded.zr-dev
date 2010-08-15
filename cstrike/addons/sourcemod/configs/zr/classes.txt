@@ -81,7 +81,7 @@
         "model"                 "zh_charple001"
         "alpha_mode"            "none"
         "alpha_invert"          "no"
-        "alpha_health"          "1000
+        "alpha_health"          "1000"
         "alpha_min"             "0"
         "alpha_max"             "255"
         "alpha_min_dist"        "0"
@@ -131,7 +131,7 @@
         "model"                 "zh_corpse002"
         "alpha_mode"            "none"
         "alpha_invert"          "no"
-        "alpha_health"          "1000
+        "alpha_health"          "1000"
         "alpha_min"             "0"
         "alpha_max"             "255"
         "alpha_min_dist"        "0"
@@ -181,7 +181,7 @@
         "model"                 "zh_zombie003"
         "alpha_mode"            "none"
         "alpha_invert"          "no"
-        "alpha_health"          "1000
+        "alpha_health"          "1000"
         "alpha_min"             "0"
         "alpha_max"             "255"
         "alpha_min_dist"        "0"
@@ -231,7 +231,7 @@
         "model"                 "t_guerilla"
         "alpha_mode"            "none"
         "alpha_invert"          "no"
-        "alpha_health"          "1000
+        "alpha_health"          "1000"
         "alpha_min"             "0"
         "alpha_max"             "255"
         "alpha_min_dist"        "0"
@@ -281,7 +281,7 @@
         "model"                 "zh_charple001"
         "alpha_mode"            "none"
         "alpha_invert"          "no"
-        "alpha_health"          "1000
+        "alpha_health"          "1000"
         "alpha_min"             "0"
         "alpha_max"             "255"
         "alpha_min_dist"        "0"
@@ -331,7 +331,7 @@
         "model"                 "zh_charple001"
         "alpha_mode"            "none"
         "alpha_invert"          "no"
-        "alpha_health"          "1000
+        "alpha_health"          "1000"
         "alpha_min"             "0"
         "alpha_max"             "255"
         "alpha_min_dist"        "0"
@@ -387,7 +387,7 @@
         "model"                 "default"
         "alpha_mode"            "none"
         "alpha_invert"          "no"
-        "alpha_health"          "1000
+        "alpha_health"          "1000"
         "alpha_min"             "0"
         "alpha_max"             "255"
         "alpha_min_dist"        "0"
@@ -437,7 +437,7 @@
         "model"                 "default"
         "alpha_mode"            "none"
         "alpha_invert"          "no"
-        "alpha_health"          "1000
+        "alpha_health"          "1000"
         "alpha_min"             "0"
         "alpha_max"             "255"
         "alpha_min_dist"        "0"
@@ -487,7 +487,7 @@
         "model"                 "default"
         "alpha_mode"            "none"
         "alpha_invert"          "no"
-        "alpha_health"          "1000
+        "alpha_health"          "1000"
         "alpha_min"             "0"
         "alpha_max"             "255"
         "alpha_min_dist"        "0"
@@ -537,7 +537,7 @@
         "model"                 "default"
         "alpha_mode"            "none"
         "alpha_invert"          "no"
-        "alpha_health"          "1000
+        "alpha_health"          "1000"
         "alpha_min"             "0"
         "alpha_max"             "255"
         "alpha_min_dist"        "0"
@@ -587,7 +587,7 @@
         "model"                 "default"
         "alpha_mode"            "none"
         "alpha_invert"          "no"
-        "alpha_health"          "1000
+        "alpha_health"          "1000"
         "alpha_min"             "0"
         "alpha_max"             "255"
         "alpha_min_dist"        "0"
