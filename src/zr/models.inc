@@ -377,6 +377,22 @@ bool:ModelsIsValidIndex(index, bool:rangeOnly = false)
 }
 
 /**
+ * Validates the specified model name.
+ *
+ * @param name          Model name to validate.
+ * @return              True if valid, false otherwise.
+ */
+bool:ModelsIsValidName(const String:name[])
+{
+    if (ModelsIsValidIndex(ModelsGetIndex(name)))
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+/**
  * Gets the name for the specified model.
  *
  * @param index     Model index.
@@ -401,7 +417,7 @@ ModelsGetName(index, String:buffer[], maxlen)
  * @param name      Name of model to find.
  * @return          Number of cells written, or -1 on error.
  */
-stock ModelsGetIndex(const String:name[])
+ModelsGetIndex(const String:name[])
 {
     decl String:nameBuffer[64];
     nameBuffer[0] = 0;

@@ -49,6 +49,8 @@ ClassMgr_RestoreNextIndexes(client, ClassTeam:excludeTeam = ClassTeamNew_Invalid
     new zombie = g_ClassNextClass[client][ClassTeamNew_Zombies];
     new human = g_ClassNextClass[client][ClassTeamNew_Humans];
     
+    // TODO: This code is redundant and can be improved by looping through teams.
+    
     // Check if the zombie team should be excluded.
     if (excludeTeam != ClassTeamNew_Zombies)
     {

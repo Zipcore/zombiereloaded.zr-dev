@@ -99,8 +99,7 @@ new ProjectEvent:g_EvOnClassPlayerLoad;
  * on the player now.
  *
  * @param client        Client index.
- * @param classIndex    Class index.
- * OnClassApply(client, classIndex)
+ * OnClassApply(client)
  */
 new ProjectEvent:g_EvOnClassApply;
 
@@ -131,12 +130,17 @@ new ProjectEvent:g_EvOnClassPlayerHuman;
  */
 
 /**
+ * Function cache for API functions that this module use.
+ */
+new Function:ClsMgr_GetDisplayNameFunc;
+
+/**
  * Cvar handles.
  */
 new Handle:g_hCvarClassFile;
-//new Handle:g_hCvarClassesMenuSpawn;
-//new Handle:g_hCvarClassesMenuJoin;
-//new Handle:g_hCvarClassesRandom;
+new Handle:g_hCvarClassesMenuSpawn;
+new Handle:g_hCvarClassesMenuJoin;
+new Handle:g_hCvarClassesRandom;
 new Handle:g_hCvarClassesChangeTimelimit;
 //new Handle:g_hCvarClassesSave;
 new Handle:g_hCvarClassesDefaultZombie;
@@ -296,6 +300,9 @@ ClassMgr_Register()
     g_EvOnClassPlayerInfect =       EventMgr_CreateEvent("Event_OnClassPlayerInfect");
     g_EvOnClassPlayerHuman =        EventMgr_CreateEvent("Event_OnClassPlayerHuman");
     
+    // Chache api function IDs that this module use.
+    ClsMgr_GetDisplayNameFunc = FuncLib_IsFunctionAvailable("ClsGeneric_GetDisplayName");
+    
     // Prepare attribute register.
     ClassAttribReg_Create();
 }
@@ -324,7 +331,7 @@ public ClassMgr_OnEventsRegister()
     #if defined PROJECT_GAME_CSS
     
     EventMgr_RegisterEvent(g_moduleClassMgr, "Event_PlayerSpawn",               "ClassMgr_PlayerSpawn");
-    EventMgr_RegisterEvent(g_moduleClassMgr, "Event_PlayerSpawn",               "ClassMgr_PlayerSpawnPost");
+    EventMgr_RegisterEvent(g_moduleClassMgr, "Event_PlayerSpawnPost",           "ClassMgr_PlayerSpawnPost");
     EventMgr_RegisterEvent(g_moduleClassMgr, "Event_PlayerDeath",               "ClassMgr_PlayerDeath");
     
     #endif
@@ -479,8 +486,10 @@ public ClassMgr_OnConfigsExecuted()
     // Load classes from file.
     ClassMgr_LoadClasses();
     
-    new any:eventdata[1][1];
+    new eventdata[1][1];
     new Action:result;
+    
+    LogMgr_Print(g_moduleClassMgr, LogType_Normal, "Config Validation", "Validating loaded classes.");
     
     // Loop through all classes and send validation event. Read final result from event manager.
     for (new classIndex = 0; classIndex < g_ClassCount; classIndex++)
@@ -503,7 +512,7 @@ public ClassMgr_OnConfigsExecuted()
     
     // Send all classes loaded event (so modules can copy their cache).
     eventdata[0][0] = g_ClassCount;
-    result = EventMgr_Forward(g_EvOnClassAllLoaded, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+    EventMgr_Forward(g_EvOnClassAllLoaded, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
 }
 
 /**
@@ -623,18 +632,97 @@ public ClassMgr_OnClientDisconnect(client)
  */
 public ClassMgr_PlayerSpawn(client)
 {
+    // TODO
+    
     // Stop if classes aren't loaded.
+    if (!g_ClassLoaded)
+    {
+        return;
+    }
     
     // Stop if not on a team.
+    // TODO: Use teamlib when the team manager is available.
+    if (!ZRIsClientOnTeam(client))
+    {
+        return;
+    }
     
     // Restore next-indexes.
     ClassMgr_ResetNextIndexes(client);
     
+    // Get config and steam id.
+    new bool:randomClass = GetConVarBool(g_hCvarClassesRandom);
+    decl String:steamId[32];
+    steamId[0] = 0;
+    GetClientAuthString(client, steamId, sizeof(steamId));
+    
     // Get random class if enabled in config. Always get random class for bots.
+    if (randomClass || StrEqual(steamId, "BOT"))
+    {
+        // Setup filtering
+        // ---------------
+        new filter[ClassFilter];
+        
+        // Exclude special class flags like mother zombies and admin classes.
+        filter[ClassFilter_DenyFlags] = CLASS_SPECIALFLAGS;
+                    
+        // Allow admin classes if admin.
+        filter[ClassFilter_DenyFlags] -= ZRIsClientAdmin(client) ? CLASS_FLAG_ADMIN_ONLY : 0;
+        
+        // Specify client for checking group permissions.
+        filter[ClassFilter_Client] = client;
+        
+        // Get classes
+        // -----------
+        
+        decl String:className[CLASS_NAME_LEN];
+        className[0] = 0;
+        
+        // Get random classes for each type.
+        new randomZombie = ClassMgr_GetRandomClass(ClassTeamNew_Zombies, filter, ClassCache_Modified);
+        new randomHuman = ClassMgr_GetRandomClass(ClassTeamNew_Humans, filter, ClassCache_Modified);
+        
+        // Set selected zombie class index.
+        g_ClassSelected[client][ClassTeamNew_Zombies] = randomZombie;
+        
+        // Get zombie class name and inform player about class assignment.
+        Call_StartFunction(GetMyHandle(), ClsMgr_GetDisplayNameFunc);
+        Call_PushCell(randomZombie);
+        Call_PushStringEx(className, sizeof(className), 0, SM_PARAM_COPYBACK);
+        Call_PushCell(sizeof(className));
+        Call_PushCell(_:ClassCache_Modified);
+        Call_Finish();
+        TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Chat, _, _, "Classes random assignment", className);
+        
+        // Set selected human class index.
+        g_ClassSelected[client][ClassTeamNew_Humans] = randomHuman;
+        
+        // Get human class name and inform player about class assignment.
+        className[0] = 0;
+        Call_StartFunction(GetMyHandle(), ClsMgr_GetDisplayNameFunc);
+        Call_PushCell(randomHuman);
+        Call_PushStringEx(className, sizeof(className), 0, SM_PARAM_COPYBACK);
+        Call_PushCell(sizeof(className));
+        Call_PushCell(_:ClassCache_Modified);
+        Call_Finish();
+        TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Chat, _, _, "Classes random assignment", className);
+    }
     
     // Display class menu configs according to config.
+    new bool:menuSpawn = GetConVarBool(g_hCvarClassesMenuSpawn);
+    new bool:menuJoin = GetConVarBool(g_hCvarClassesMenuJoin);
+    if (menuSpawn || (menuJoin && !g_ClassPlayerSpawned[client]))
+    {
+        g_ClassPlayerSpawned[client] = true;
+        // TODO: Display class menu.
+    }
     
     // Send OnClassPlayerLoad event with active class index.
+    static EventDataTypes:eventdatatypes[] = {DataType_Cell, DataType_Cell};
+    decl any:eventdata[sizeof(eventdatatypes)][1];
+    eventdata[0][0] = client;
+    eventdata[1][0] = ClassMgr_GetActiveIndex(client);
+    EventMgr_Forward(g_EvOnClassPlayerLoad, eventdata, sizeof(eventdata), sizeof(eventdata[]), eventdatatypes);
     
     // Setup instant class change if enabled.
     ClassMgr_CheckInstantChange(client);
@@ -648,10 +736,22 @@ public ClassMgr_PlayerSpawn(client)
 public ClassMgr_PlayerSpawnPost(client)
 {
     // Stop if classes aren't loaded.
+    if (!g_ClassLoaded)
+    {
+        return;
+    }
     
     // Stop if not on a team.
+    // TODO: Use teamlib when the team manager is available.
+    if (!ZRIsClientOnTeam(client))
+    {
+        return;
+    }
     
     // Send OnClassApply event.
+    decl any:eventdata[sizeof(g_CommonDataType2)][1];
+    eventdata[0][0] = client;
+    EventMgr_Forward(g_EvOnClassApply, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
 }
 
 /**

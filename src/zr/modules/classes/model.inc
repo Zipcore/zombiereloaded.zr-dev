@@ -36,6 +36,15 @@ new Module:g_moduleClsModel;
 stock Module:ClsModel_GetIdentifier() { return g_moduleClsModel; }
 
 /**
+ * The alpha value was changed on a player.
+ *
+ * @param client        Client index.
+ * @param alpha         Alpha value.
+ * OnClassAlphaChanhed(client, alpha)
+ */
+new ProjectEvent:g_EvOnClassAlphaChanged;
+
+/**
  * Health alpha blending modes.
  */
 enum ClassAlphaModes
@@ -129,6 +138,8 @@ ClsModel_Register()
     
     EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnEventsRegister",      "ClsModel_OnEventsRegister");
     
+    g_EvOnClassAlphaChanged = EventMgr_CreateEvent("Event_OnClassAlphaChanged");
+    
     // Register attributes in the attribute register.
     ClassAttribReg_AddAttrib(g_moduleClsModel, "model");
     ClassAttribReg_AddAttrib(g_moduleClsModel, "alpha_mode");
@@ -139,15 +150,9 @@ ClsModel_Register()
     ClassAttribReg_AddAttrib(g_moduleClsModel, "alpha_min_dist");
     ClassAttribReg_AddAttrib(g_moduleClsModel, "alpha_max_dist");
     
-    // Add public API function to function register.
-    new Handle:pluginHandle = GetMyHandle();
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidModel"), "Class_IsValidModel");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidAlphaMode"), "Class_IsValidAlphaMode");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidAlphaHealth"), "Class_IsValidAlphaHealth");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidAlphaMin"), "Class_IsValidAlphaMin");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidAlphaMax"), "Class_IsValidAlphaMax");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidAlphaMinDist"), "Class_IsValidAlphaMinDist");
-    FuncRegister_AddFunction(GetFunctionByName(pluginHandle, "ClsModel_IsValidAlphaMaxDist"), "Class_IsValidAlphaMaxDist");
+    // Chache api function IDs that this module use.
+    ClsModel_GetNameFunc = FuncLib_IsFunctionAvailable("ClsGeneric_GetName");
+    ClsModel_GetHealthFunc = FuncLib_IsFunctionAvailable("ClsHealth_GetHealth");
 }
 
 /**
@@ -274,12 +279,15 @@ public Action:ClsModel_OnClassValidate(classIndex)
     // Get class name.
     decl String:className[CLASS_NAME_LEN];
     className[0] = 0;
-    Call_StartFunction(GetMyHandle(), ClsModel_GetNameFunc);
+    Call_StartFunction(INVALID_HANDLE, ClsModel_GetNameFunc);
     Call_PushCell(classIndex);
     Call_PushStringEx(className, sizeof(className), 0, SM_PARAM_COPYBACK);
     Call_PushCell(sizeof(className));
     Call_PushCell(_:ClassCache_Original);
-    Call_Finish();
+    if (Call_Finish() != SP_ERROR_NONE)
+    {
+        PrintToServer("Error getting class name for class %d.", classIndex);
+    }
     
     strcopy(buffer, sizeof(buffer), classCache[ClassAttrib_Model]);
     if (!ClsModel_IsValidModel(buffer))
@@ -403,9 +411,8 @@ public ClsModel_OnClassPlayerLoad(client, classIndex)
  * on the player now.
  *
  * @param client        Client index.
- * @param classIndex    Class index.
  */
-public ClsModel_OnClassApply(client, classIndex)
+public ClsModel_OnClassApply(client)
 {
     // TODO: Apply model and alpha.
 }
@@ -422,9 +429,6 @@ public ClsModel_OnEventsReady()
  */
 public ClsModel_OnAllModulesLoaded()
 {
-    // Chache api function IDs that this module use.
-    ClsModel_GetNameFunc = FuncRegister_GetFunction("Class_GetName");
-    ClsModel_GetHealthFunc = FuncRegister_GetFunction("Class_GetHealth");
 }
 
 /**
@@ -521,12 +525,12 @@ ClsModel_UpdateAlpha(client)
             if (currentHealth < alphaHealth)
             {
                 alpha = invert ? max : min;
-                ToolsSetClientAlpha(client, alpha);
+                ClsModel_SetAlpha(client, alpha);
             }
             else
             {
                 alpha = invert ? min : max;
-                ToolsSetClientAlpha(client, alpha);
+                ClsModel_SetAlpha(client, alpha);
             }
         }
         case ClassAlphaFade_SwitchOnce:
@@ -535,8 +539,8 @@ ClsModel_UpdateAlpha(client)
             if (!ClassModelAlphaSwitched[client] && currentHealth < alphaHealth)
             {
                 new alpha = invert ? max : min;
-                ToolsSetClientAlpha(client, alpha);
                 ClassModelAlphaSwitched[client] = true;
+                ClsModel_SetAlpha(client, alpha);
             }
         }
         case ClassAlphaFade_Linear, ClassAlphaFade_Exp:
@@ -567,7 +571,7 @@ ClsModel_UpdateAlpha(client)
                 alpha += alphaHealth;
                 
                 // Apply alpha.
-                ToolsSetClientAlpha(client, RoundToNearest(alpha));
+                ClsModel_SetAlpha(client, RoundToNearest(alpha));
             }
         }
     }
@@ -614,6 +618,28 @@ Float:ClsModel_FadeExp(Float:fadeRange, Float:valueRange, Float:point)
     }
     
     return value;
+}
+
+/**
+ * Sets a client's alpha value.
+ * 
+ * @param client    The client index.
+ * @param alpha     Alpha value to set. (0-255)
+ */
+ClsModel_SetAlpha(client, alpha)
+{
+    // Turn rendermode on, on the client.
+    SetEntityRenderMode(client, RENDER_TRANSALPHA);
+    
+    // Set alpha value on the client.
+    SetEntityRenderColor(client, _, _, _, alpha);
+    
+    // Trigger alpha changed event.
+    static EventDataTypes:eventdatatypes[] = {DataType_Cell, DataType_Cell};
+    decl any:eventdata[sizeof(eventdatatypes)][1];
+    eventdata[0][0] = client;
+    eventdata[1][0] = alpha;
+    EventMgr_Forward(g_EvOnClassAlphaChanged, eventdata, sizeof(eventdata), sizeof(eventdata[]), eventdatatypes);
 }
 
 /**
@@ -680,7 +706,11 @@ public bool:ClsModel_IsValidModel(const String:model[])
             return true;
         }
         
-        // TODO: Look up name in model list.
+        // Look up the name in the model list.
+        if (ModelsIsValidName(model))
+        {
+            return true;
+        }
     }
     
     return false;
