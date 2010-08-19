@@ -53,13 +53,17 @@ enum ClassGenericAttributes
 }
 
 /**
- * Class data cache. This one applies to both original and modified cache
- * because generic attributes are read-only anyways.
+ * Original class data cache.
  */
 new ClassGenericData[CLASS_MAX][ClassGenericAttributes];
 
 /**
- * Buffer to store whether the class name have been saved.
+ * Writable class data cache.
+ */
+new ClassGenericData2[CLASS_MAX][ClassGenericAttributes];
+
+/**
+ * Buffer to store whether the class name has been saved.
  */
 new bool:ClassGotName[CLASS_MAX];
 
@@ -67,6 +71,11 @@ new bool:ClassGotName[CLASS_MAX];
  * Player class data cache.
  */
 new ClassPlayerData[MAXPLAYERS + 1][ClassGenericAttributes];
+
+/**
+ * Cache of default class indexes.
+ */
+new ClassDefaultClass[ClassTeam];
 
 
 /**
@@ -277,6 +286,7 @@ public Action:ClsGeneric_OnClassValidate(classIndex)
  */
 public ClsGeneric_OnClassAllLoaded(classCount)
 {
+
 }
 
 /**
@@ -388,6 +398,16 @@ public ClsGeneric_OnClientDisconnect(client)
 {
 }
 
+
+/**
+ * Enables the specified class in the writable cache.
+ *
+ * @param index         Class index.
+ */
+public ClsGeneric_EnableClass(index)
+{
+    ClassGenericData2[index][ClassAttrib_Enabled] = true;
+}
 
 /***************************
  *    GET/SET FUNCTIONS    *
@@ -639,13 +659,28 @@ public ClsGeneric_GetFlags(index, ClassCacheType:cache)
  * Validates the minimum class requirements.
  * Note: This function will log errors, but not stop the plugin.
  *
- * @return      True if valid, false otherwise.
+ * @param cacheDefaults     Optional. Cache default class indexes.
+ *                          Note: Writes -1 to cache if not found!
+ *
+ * @return                  True if valid, false otherwise.
  */
-bool:ClsGeneric_ValidateRequirements()
+bool:ClsGeneric_ValidateRequirements(bool:cacheDefaults = false)
 {
+    if (g_ClassCount == 0)
+    {
+        if (cacheDefaults)
+        {
+            ClassDefaultClass[ClassTeamNew_Zombies] = -1;
+            ClassDefaultClass[ClassTeamNew_Humans] = -1;
+        }
+        return false;
+    }
+    
     // Setup filter
     
     // Find clean zombie class, log error if not found.
+    new zombie = ClassMgr_GetDefaultClass(ClassTeamNew_Zombies);
+    new human = ClassMgr_GetDefaultClass(ClassTeamNew_Humans);
     
     // Find clean human class, log error if not found.
     

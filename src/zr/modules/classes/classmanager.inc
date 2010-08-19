@@ -40,6 +40,14 @@ stock Module:ClassMgr_GetIdentifier() { return g_moduleClassMgr; }
  */
 
 /**
+ * Class data clear request.
+ *
+ * @param classIndex    Class index to clear, or -1 to clear all classes.
+ * OnClassClear(classIndex)
+ */
+new ProjectEvent:g_EvOnClassClear;
+
+/**
  * A class attribute is loading and ready to be cached.
  *
  * @param classIndex    Class index.
@@ -201,6 +209,7 @@ stock bool:ClassMgr_IsClassesLoaded() { return g_ClassLoaded; }
 new g_ClassSelected[MAXPLAYERS + 1][ClassTeam];
 new g_ClassNextClass[MAXPLAYERS + 1][ClassTeam];
 
+
 /**
  * Specifies whether a player is allowed to change class with instant effect.
  * This is only used on human classes, and in combination with the
@@ -220,6 +229,7 @@ new Handle:g_hClassInstantChange[MAXPLAYERS + 1];
  * spawn for the first time.
  */
 new bool:g_ClassPlayerSpawned[MAXPLAYERS + 1];
+
 
 /**
  * @section Flags for special classes.
@@ -291,6 +301,7 @@ ClassMgr_Register()
     ConfigMgr_Register(g_moduleClassMgr, "ClassMgr_OnConfigReload", "");
     
     // Create events.
+    g_EvOnClassClear =              EventMgr_CreateEvent("Event_OnClassClear");
     g_EvOnClassAttribLoad =         EventMgr_CreateEvent("Event_OnClassAttribLoad");
     g_EvOnClassValidate =           EventMgr_CreateEvent("Event_OnClassValidate");
     g_EvOnClassAllLoaded =          EventMgr_CreateEvent("Event_OnClassAllLoaded");
@@ -483,11 +494,15 @@ ClassMgr_OnPluginStart()
  */
 public ClassMgr_OnConfigsExecuted()
 {
-    // Load classes from file.
-    ClassMgr_LoadClasses();
-    
     new eventdata[1][1];
     new Action:result;
+    
+    // Clear all classes.
+    eventdata[0][0] = -1;
+    EventMgr_Forward(g_EvOnClassClear, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType2);
+    
+    // Load classes from file.
+    ClassMgr_LoadClasses();
     
     LogMgr_Print(g_moduleClassMgr, LogType_Normal, "Config Validation", "Validating loaded classes.");
     
@@ -586,12 +601,11 @@ public Action:ClassMgr_OnMyModuleDisable()
  */
 public ClassMgr_OnConfigReload(configindex)
 {
-    // TODO: Send clear event to attributes.
-    
     // Forward event.
-    // ClassMgr_OnConfigsExecuted();
+    ClassMgr_OnConfigsExecuted();
     
-    // TODO: Validate class selection indexes. If team mismach, use config default.
+    // Re-validate class selection indexes. If team mismach, use config default.
+    
 }
 
 /**
