@@ -200,7 +200,7 @@ stock bool:ClassMgr_FilterMatch(index, filter[ClassFilter], ClassCacheType:cache
  * Gets all class indexes or from a specified team, and adds them to the
  * specified array.
  * 
- * @param array         The destination ADT array to add class indexes.
+ * @param array         The destination ADT array to add class indexes to.
  * @param team          Optional. Team to match. Default is all.
  * @param filter        Optional. Structure with filter settings.
  * @param cache         Optional. Specifies what class cache to read from. If
@@ -260,7 +260,7 @@ stock ClassMgr_GetClasses(Handle:array, ClassTeam:team = ClassTeamNew_All, filte
 }
 
 /**
- * Counts total classes or classes in the specified team.
+ * Counts number of classes according to the filter settings. Default is no filter.
  *
  * @param team      Optional. Team to count. Default is all.
  * @param filter    Optional. Structure with filter settings.
@@ -268,7 +268,7 @@ stock ClassMgr_GetClasses(Handle:array, ClassTeam:team = ClassTeamNew_All, filte
  *                  player cache is used 'index' will be used as a client
  *                  index. Default is modified cache.
  *
- * @return          Number of total classes or classes in the specified team.
+ * @return          Number of classes found.
  */
 stock ClassMgr_Count(ClassTeam:team = ClassTeamNew_All, filter[ClassFilter] = g_ClassNoFilter, ClassCacheType:cache = ClassCache_Modified)
 {
