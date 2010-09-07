@@ -198,6 +198,7 @@ public ClsModel_OnEventsRegister()
     
     #endif
     
+    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassClear",            "ClsModel_OnClassClear");
     EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassAttribLoad",       "ClsModel_OnClassAttribLoad");
     EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassValidate",         "ClsModel_OnClassValidate");
     EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassAllLoaded",        "ClsModel_OnClassAllLoaded");
@@ -206,6 +207,30 @@ public ClsModel_OnEventsRegister()
     EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassApply",            "ClsModel_OnClassApply");
     //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerInfected", "ClsModel_OnClassPlayerInfected");
     //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerHuman",    "ClsModel_OnClassPlayerHuman");
+}
+
+/**
+ * Class data clear request.
+ *
+ * @param classIndex    Class index to clear, or -1 to clear all classes.
+ */
+public ClsModel_OnClassClear(classIndex)
+{
+    new start = 0;
+    new end = CLASS_MAX;
+    
+    if (classIndex >= 0)
+    {
+        // Clear specified class only.
+        start = classIndex;
+        end = classIndex + 1;
+    }
+    
+    for (new i = start; i < end; i ++)
+    {
+        // Clear original cache.
+        ClsModel_ClearClass(i);
+    }
 }
 
 /**
@@ -483,6 +508,38 @@ public ClsModel_PlayerHurt(victim, attacker, health, armor, const String:weapon[
 /************************
  *    INTERNAL LOGIC    *
  ************************/
+
+/**
+ * Clears the specified class.
+ *
+ * @param classIndex    Class index.
+ * @param cache         Optional. Specifies what class cache to clear. Player
+ *                      cache is ignored.
+ */
+ClsModel_ClearClass(classIndex, ClassCacheType:cache = ClassCache_Original)
+{
+    decl attributes[ClassModelAttributes];
+    attributes[ClassAttrib_Model][0] = 0;
+    attributes[ClassAttrib_AlphaFadeMode] = ClassAlphaFade_None;
+    attributes[ClassAttrib_AlphaInvert] = false;
+    attributes[ClassAttrib_AlphaHealth] = 0;
+    attributes[ClassAttrib_AlphaMin] = 0;
+    attributes[ClassAttrib_AlphaMax] = 0;
+    attributes[ClassAttrib_AlphaMinDist] = 0;
+    attributes[ClassAttrib_AlphaMaxDist] = 0;
+    
+    switch (cache)
+    {
+        case ClassCache_Original:
+        {
+            ClassModelData[classIndex] = attributes;
+        }
+        case ClassCache_Modified:
+        {
+            ClassModelData2[classIndex] = attributes;
+        }
+    }
+}
 
 /**
  * Updates the alpha value on a player.
