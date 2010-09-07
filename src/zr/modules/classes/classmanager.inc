@@ -354,7 +354,9 @@ public ClassMgr_OnEventsRegister()
 
 /**
  * Loads classes from file.
+ *
  * Note: Classes must NOT be loaded BEFORE OnConfigsExecuted event!
+ * Note: Failing to load classes will stop the plugin.
  */
 ClassMgr_LoadClasses()
 {
@@ -387,8 +389,6 @@ ClassMgr_LoadClasses()
     {
         LogMgr_Print(g_moduleClassMgr, LogType_Fatal_Plugin, "Config Validation", "Error: No usable data found in class config file: %s", configfile);
     }
-    
-    
 }
 
 /**
@@ -442,8 +442,8 @@ public KvCache:ClassMgr_LoadClass(Handle:kv, sectionindex, const String:sectionn
         }
         else
         {
-            // Attribute wasn't registered. Just a debug print and should never happen
-            // if all modules are available.
+            // Attribute wasn't registered. This is just a debug print and
+            // should never happen if all modules are available.
             PrintToServer("Class attribute not registered: %s", attributeName);
         }
         
@@ -522,7 +522,7 @@ public ClassMgr_OnConfigsExecuted()
     // Validate class minimum reqirements.
     if (!ClsGeneric_ValidateRequirements())
     {
-        LogMgr_Print(g_moduleClassMgr, LogType_Fatal_Plugin, "Config Validation", "Error: The class configuration doesn't match the team requirements.");
+        LogMgr_Print(g_moduleClassMgr, LogType_Fatal_Plugin, "Config Validation", "Error: The class configuration doesn't match the minimum requirements.");
     }
     
     // Send all classes loaded event (so modules can copy their cache).
@@ -604,8 +604,9 @@ public ClassMgr_OnConfigReload(configindex)
     // Forward event.
     ClassMgr_OnConfigsExecuted();
     
-    // Re-validate class selection indexes. If team mismach, use config default.
-    
+    // Re-validate class selection indexes. If team mismach, config default
+    // will be used on next spawn.
+    ClassMgr_ValidateSelClasses();
 }
 
 /**
@@ -836,6 +837,49 @@ public ClassMgr_OnClientHuman(client)
  *    INTERNAL TOOLS/LOGIC    *
  ******************************/
 
+/**
+ * Validates and fix a client's selected classes. If invalid, use config default
+ * for next spawn.
+ *
+ * @param client    Optional. Client index. Use -1 to validate all players.
+ */
+ClassMgr_ValidateSelClasses(client = -1)
+{
+    new start = 1;
+    new end = MaxClients;
+    
+    if (client > 0)
+    {
+        // Do client only.
+        start = client;
+        end = client;
+    }
+    
+    // Loop through players.
+    for (new i = start; i <= end; i++)
+    {
+        new zombie = g_ClassSelected[i][ClassTeamNew_Zombies];
+        new human = g_ClassSelected[i][ClassTeamNew_Humans];
+        new nextZombie = g_ClassNextClass[i][ClassTeamNew_Zombies];
+        new nextHuman = g_ClassNextClass[i][ClassTeamNew_Humans];
+        
+        // Check if current or next zombie class is not a zombie.
+        if (nextZombie >= 0 && ClsGeneric_GetTeam(nextZombie, ClassCache_Modified) != ClassTeamNew_Zombies ||
+            ClsGeneric_GetTeam(zombie, ClassCache_Modified) != ClassTeamNew_Zombies)
+        {
+            // Set next class to be config default.
+            g_ClassNextClass[i][ClassTeamNew_Zombies] = ClassDefaultClass[ClassTeamNew_Zombies];
+        }
+        
+        // Check if current or next human class is not a human.
+        if (nextHuman >= 0 && ClsGeneric_GetTeam(nextHuman, ClassCache_Modified) != ClassTeamNew_Humans ||
+            ClsGeneric_GetTeam(human, ClassCache_Modified) != ClassTeamNew_Humans)
+        {
+            // Set next class to be config default.
+            g_ClassNextClass[i][ClassTeamNew_Humans] = ClassDefaultClass[ClassTeamNew_Humans];
+        }
+    }
+}
 
 
 

@@ -152,6 +152,7 @@ public ClsGeneric_OnEventsRegister()
     
     #endif
     
+    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassClear",                "ClsGeneric_OnClassClear");
     EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassAttribLoad",           "ClsGeneric_OnClassAttribLoad");
     EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassValidate",             "ClsGeneric_OnClassValidate");
     //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassAllLoaded",          "ClsGeneric_OnClassAllLoaded");
@@ -159,6 +160,30 @@ public ClsGeneric_OnEventsRegister()
     //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassApply",              "ClsGeneric_OnClassApply");
     //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerInfect",       "ClsGeneric_OnClassPlayerInfect");
     //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerHuman",        "ClsGeneric_OnClassPlayerHuman");
+}
+
+/**
+ * Class data clear request.
+ *
+ * @param classIndex    Class index to clear, or -1 to clear all classes.
+ */
+public ClsGeneric_OnClassClear(classIndex)
+{
+    new start = 0;
+    new end = CLASS_MAX;
+    
+    if (classIndex >= 0)
+    {
+        // Clear specified class only.
+        start = classIndex;
+        end = classIndex + 1;
+    }
+    
+    for (new i = start; i < end; i ++)
+    {
+        // Clear original cache.
+        ClsGeneric_ClearClass(i);
+    }
 }
 
 /**
@@ -408,6 +433,40 @@ public ClsGeneric_EnableClass(index)
 {
     ClassGenericData2[index][ClassAttrib_Enabled] = true;
 }
+
+/**
+ * Clears the specified class.
+ *
+ * @param classIndex    Class index.
+ * @param cache         Optional. Specifies what class cache to clear. Player
+ *                      cache is ignored.
+ */
+ClsGeneric_ClearClass(classIndex, ClassCacheType:cache = ClassCache_Original)
+{
+    decl attributes[ClassGenericAttributes];
+    attributes[ClassAttrib_Enabled] = false;
+    attributes[ClassAttrib_Team] = ClassTeamNew_Invalid;
+    attributes[ClassAttrib_TeamDefault] = false;
+    attributes[ClassAttrib_IsAdminClass] = false;
+    attributes[ClassAttrib_IsMotherZombie] = false;
+    attributes[ClassAttrib_Group][0] = 0;
+    attributes[ClassAttrib_Name][0] = 0;
+    attributes[ClassAttrib_DisplayName][0] = 0;
+    attributes[ClassAttrib_Description][0] = 0;
+    
+    switch (cache)
+    {
+        case ClassCache_Original:
+        {
+            ClassGenericData[classIndex] = attributes;
+        }
+        case ClassCache_Modified:
+        {
+            ClassGenericData2[classIndex] = attributes;
+        }
+    }
+}
+
 
 /***************************
  *    GET/SET FUNCTIONS    *
@@ -676,15 +735,49 @@ bool:ClsGeneric_ValidateRequirements(bool:cacheDefaults = false)
         return false;
     }
     
-    // Setup filter
+    new bool:failed = false;
     
-    // Find clean zombie class, log error if not found.
+    // Find a clean default zombie class, log error if not found.
     new zombie = ClassMgr_GetDefaultClass(ClassTeamNew_Zombies);
+    if (zombie < 0)
+    {
+        LogMgr_Print(g_moduleClsGeneric, LogType_Error, "Config Validation", "Error: Unable to find a clean default zombie class. Check class config.");
+        if (cacheDefaults)
+        {
+            ClassDefaultClass[ClassTeamNew_Zombies] = -1;
+        }
+        failed = true;
+    }
+    else
+    {
+        // Cache default class index.
+        if (cacheDefaults)
+        {
+            ClassDefaultClass[ClassTeamNew_Zombies] = zombie;
+        }
+    }
+    
+    // Find a clean default human class, log error if not found.
     new human = ClassMgr_GetDefaultClass(ClassTeamNew_Humans);
+    if (human < 0)
+    {
+        LogMgr_Print(g_moduleClsGeneric, LogType_Error, "Config Validation", "Error: Unable to find a clean default human class. Check class config.");
+        if (cacheDefaults)
+        {
+            ClassDefaultClass[ClassTeamNew_Humans] = -1;
+        }
+        failed = true;
+    }
+    else
+    {
+        // Cache default class index.
+        if (cacheDefaults)
+        {
+            ClassDefaultClass[ClassTeamNew_Humans] = human;
+        }
+    }
     
-    // Find clean human class, log error if not found.
-    
-    return true;
+    return !failed;
 }
 
 /**
