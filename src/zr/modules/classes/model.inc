@@ -198,15 +198,15 @@ public ClsModel_OnEventsRegister()
     
     #endif
     
-    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassClear",            "ClsModel_OnClassClear");
-    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassAttribLoad",       "ClsModel_OnClassAttribLoad");
-    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassValidate",         "ClsModel_OnClassValidate");
-    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassAllLoaded",        "ClsModel_OnClassAllLoaded");
-    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerLoad",       "ClsModel_OnClassPlayerLoad");
-    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerPreload",    "ClsModel_OnClassPlayerPreload");
-    EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassApply",            "ClsModel_OnClassApply");
-    //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerInfected", "ClsModel_OnClassPlayerInfected");
-    //EventMgr_RegisterEvent(g_moduleClsGeneric, "Event_OnClassPlayerHuman",    "ClsModel_OnClassPlayerHuman");
+    EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassClear",              "ClsModel_OnClassClear");
+    EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassAttribLoad",         "ClsModel_OnClassAttribLoad");
+    EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassValidate",           "ClsModel_OnClassValidate");
+    EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassAllLoaded",          "ClsModel_OnClassAllLoaded");
+    EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassPlayerLoad",         "ClsModel_OnClassPlayerLoad");
+    EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassPlayerPreload",      "ClsModel_OnClassPlayerPreload");
+    EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassApply",              "ClsModel_OnClassApply");
+    //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassPlayerInfected",   "ClsModel_OnClassPlayerInfected");
+    //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassPlayerHuman",      "ClsModel_OnClassPlayerHuman");
 }
 
 /**

@@ -455,7 +455,10 @@ stock Action:EventMgr_Forward(ProjectEvent:eventid, any:eventdata[][], numValues
         for (new filter_module = 0; modules[filter_module] != INVALID_MODULE; filter_module++)
         {
             if (module == modules[filter_module])
+            {
                 pass_filter = true;
+                break;
+            }
         }
         
         if (!pass_filter)
