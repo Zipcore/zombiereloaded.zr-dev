@@ -444,7 +444,7 @@ public KvCache:ClassMgr_LoadClass(Handle:kv, sectionindex, const String:sectionn
         {
             // Attribute wasn't registered. This is just a debug print and
             // should never happen if all modules are available.
-            PrintToServer("Class attribute not registered: %s", attributeName);
+            PrintToServer("[ZR] Class attribute not registered: %s", attributeName);
         }
         
         // Jump back to the attribute again so the parser will find the next attribute.

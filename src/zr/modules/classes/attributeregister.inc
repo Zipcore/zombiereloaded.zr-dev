@@ -70,10 +70,8 @@ stock ClassAttribReg_AddAttrib(Module:attribute, const String:name[])
         return -2;
     }
     
-    new bool:result = SetTrieValue(ClassAttribRegData, name, attribute, false);
-    
-    // Check result.
-    if (!result)
+    // Try to add.
+    if (!SetTrieValue(ClassAttribRegData, name, attribute, false))
     {
         // Attribute already exist.
         return -3;
