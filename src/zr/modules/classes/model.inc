@@ -204,7 +204,7 @@ public ClsModel_OnEventsRegister()
     EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassAllLoaded",          "ClsModel_OnClassAllLoaded");
     EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassPlayerLoad",         "ClsModel_OnClassPlayerLoad");
     EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassPlayerPreload",      "ClsModel_OnClassPlayerPreload");
-    EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassApply",              "ClsModel_OnClassApply");
+    //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassApply",              "ClsModel_OnClassApply");     // Do not apply yet.
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassPlayerInfected",   "ClsModel_OnClassPlayerInfected");
     //EventMgr_RegisterEvent(g_moduleClsModel, "Event_OnClassPlayerHuman",      "ClsModel_OnClassPlayerHuman");
 }
@@ -440,6 +440,7 @@ public ClsModel_OnClassPlayerLoad(client, classIndex)
 public ClsModel_OnClassApply(client)
 {
     // TODO: Apply model and alpha.
+    
 }
 
 /**
@@ -539,6 +540,126 @@ ClsModel_ClearClass(classIndex, ClassCacheType:cache = ClassCache_Original)
             ClassModelData2[classIndex] = attributes;
         }
     }
+}
+
+/**
+ * Changes the model on a player.
+ *
+ * @param client        The client index.
+ * @param classIndex    The class to read from.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
+ * @return  True on success, false otherwise.
+ */
+ClsModel_ApplyModel(client, classIndex, ClassCacheType:cache = ClassCache_Player)
+{
+    // TODO: Update code to use new modules and libraries.
+    
+    /*new bool:isAttributePreset = false;
+    new index;
+    new ModelTeam:team;
+    new access;
+    new model;
+    
+    decl String:model[CLASS_STRING_LEN];
+    model[0] = 0;
+    
+    // Get correct index according to cache type.
+    if (cache == ClassCache_Player)
+    {
+        index = client;
+    }
+    else
+    {
+        index = classIndex;
+    }
+    
+    // Get the model path from the specified cache.
+    ClsModel_GetModel(index, model, sizeof(model), cache);
+    
+    // Get model team setting from the specified cache.
+    team = ModelsTeamIdToTeam(ClassGetTeamID(index, cachetype));
+    
+    // Check if the user specified a pre-defined model setting. If so, setup
+    // model filter settings.
+    if (StrEqual(modelpath, "random", false))
+    {
+        // Set access filter flags.
+        access = MODEL_ACCESS_PUBLIC | MODEL_ACCESS_ADMINS;
+        
+        // Specify client for including admin models if client is admin.
+        index = client;
+        
+        isAttributePreset = true;
+    }
+    else if (StrEqual(modelpath, "random_public", false))
+    {
+        access = MODEL_ACCESS_PUBLIC;
+        index = -1;
+        isAttributePreset = true;
+    }
+    else if (StrEqual(modelpath, "random_hidden", false))
+    {
+        access = MODEL_ACCESS_HIDDEN;
+        index = -1;
+        isAttributePreset = true;
+    }
+    else if (StrEqual(modelpath, "random_admin", false))
+    {
+        access = MODEL_ACCESS_ADMINS;
+        index = -1;
+        isAttributePreset = true;
+    }
+    else if (StrEqual(modelpath, "random_mother_zombie", false))
+    {
+        access = MODEL_ACCESS_MOTHER_ZOMBIES;
+        index = -1;
+        isAttributePreset = true;
+    }
+    else if (StrEqual(modelpath, "default", false))
+    {
+        // Get current model.
+        GetClientModel(client, modelpath, sizeof(modelpath));
+        
+        // Restore original model if not already set.
+        if (!StrEqual(ClassOriginalPlayerModel[client], modelpath))
+        {
+            strcopy(modelpath, sizeof(modelpath), ClassOriginalPlayerModel[client]);
+        }
+        else
+        {
+            // Wanted model is already set, don't change.
+            return true;
+        }
+    }
+    else if (StrEqual(modelpath, "no_change", false))
+    {
+        // Do nothing.
+        return true;
+    }
+    
+    // Check if model setting is a attribute preset.
+    if (isAttributePreset)
+    {
+        // Get model based on filter settings set up earlier.
+        model = ModelsGetRandomModel(index, team, access);
+        
+        // Check if found.
+        if (model >= 0)
+        {
+            // Get model path.
+            ModelsGetFullPath(model, modelpath, sizeof(modelpath));
+        }
+        else
+        {
+            // Couldn't find any models based on filter. Fall back to a random
+            // public model. Then get its path.
+            model = ModelsGetRandomModel(-1, team, MODEL_ACCESS_PUBLIC);
+            ModelsGetFullPath(model, modelpath, sizeof(modelpath));
+        }
+    }
+    
+    SetEntityModel(client, modelpath);*/
 }
 
 /**
@@ -839,4 +960,40 @@ public bool:ClsModel_IsValidAlphaDist(dist)
     }
     
     return false;
+}
+
+/***************************
+ *    GET/SET FUNCTIONS    *
+ ***************************/
+
+/**
+ * Gets the model name from the specified class.
+ *
+ * @param index         Class index or client index.
+ * @param buffer        Destination string buffer.
+ * @param maxlen        Size of buffer.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
+ *
+ * @return              Number of cells written.
+ */
+public ClsModel_GetModel(classIndex, String:buffer[], maxlen, ClassCacheType:cache)
+{
+    switch (cache)
+    {
+        case ClassCache_Original:
+        {
+            return strcopy(buffer, maxlen, ClassModelData[classIndex][ClassAttrib_Model]);
+        }
+        case ClassCache_Modified:
+        {
+            return strcopy(buffer, maxlen, ClassModelData2[classIndex][ClassAttrib_Model]);
+        }
+        case ClassCache_Player:
+        {
+            return strcopy(buffer, maxlen, ClassModelData2[classIndex][ClassAttrib_Model]);
+        }
+    }
+    
+    return 0;
 }
