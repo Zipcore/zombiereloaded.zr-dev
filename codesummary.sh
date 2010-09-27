@@ -16,8 +16,9 @@ LINES_WEAPONS=`wc zr/weapons/*.* -l | tail -n1 | sed 's/^ *\(.*\) *$/\1/' | cut 
 
 LINES_MODULES=`wc zr/modules/*.* -l | tail -n1 | sed 's/^ *\(.*\) *$/\1/' | cut -d ' ' -f1`
 LINES_CLASSES=`wc zr/modules/classes/*.* -l | tail -n1 | sed 's/^ *\(.*\) *$/\1/' | cut -d ' ' -f1`
+LINES_ZRC_CORE=`wc zr/modules/zrc_core/*.* -l | tail -n1 | sed 's/^ *\(.*\) *$/\1/' | cut -d ' ' -f1`
 
-LINES_TOTAL="$(($LINES_MAIN + $LINES_BASE + $LINES_OTHER + $LINES_HEADERS + $LINES_PLAYERCLASSES + $LINES_SOUNDEFFECTS + $LINES_VISUALEFFECTS + $LINES_VOLFEATURES + $LINES_WEAPONS + $LINES_MODULES + $LINES_CLASSES))"
+LINES_TOTAL="$(($LINES_MAIN + $LINES_BASE + $LINES_OTHER + $LINES_HEADERS + $LINES_PLAYERCLASSES + $LINES_SOUNDEFFECTS + $LINES_VISUALEFFECTS + $LINES_VOLFEATURES + $LINES_WEAPONS + $LINES_MODULES + $LINES_ZRC_CORE + $LINES_CLASSES))"
 
 echo "Number of lines:"
 echo "$LINES_MAIN\tmain sp"
@@ -31,6 +32,7 @@ echo "$LINES_VOLFEATURES\tvolfeatures"
 echo "$LINES_WEAPONS\tweapons"
 
 echo "\nNew modules:"
+echo "$LINES_ZRC_CORE\tzrc_core"
 echo "$LINES_MODULES\tmodules"
 echo "$LINES_CLASSES\tclasses"
 

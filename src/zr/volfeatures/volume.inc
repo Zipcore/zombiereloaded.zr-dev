@@ -189,12 +189,12 @@ bool:VolTeamFilterMatch(client, volumeIndex)
         case VolTeam_Humans:
         {
             // Check if client is a human.
-            return InfectIsClientHuman(client);
+            return TLib_IsClientHuman(client);
         }
         case VolTeam_Zombies:
         {
             // Check if client is a zombie.
-            return InfectIsClientInfected(client);
+            return TLib_IsClientZombie(client);
         }
     }
     

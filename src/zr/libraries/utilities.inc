@@ -4,7 +4,7 @@
  *  Zombie:Reloaded
  *
  *  File:          utilities.inc
- *  Version:       56:579d41e8e083 (projectcomponents)
+ *  Version:       Based on 56:579d41e8e083 (projectcomponents)
  *  Type:          Utilities
  *  Description:   Place for various utility functions.
  *
@@ -31,6 +31,9 @@
 #endif
 #define _utilities_included
 
+// Include libraries.
+#include "zr/libraries/teamlib"
+
 /**
  * Filters.
  */
@@ -38,7 +41,9 @@
 #define UTILS_FILTER_UNASSIGNED   (1 << 1)    /** Only allow clients not on a team. */
 #define UTILS_FILTER_ALIVE        (1 << 2)    /** Only allow live clients. */
 #define UTILS_FILTER_DEAD         (1 << 3)    /** Only allow dead clients. */
-#define UTILS_FILTER_CANTARGET    (1 << 4)    /** Only list clients that the menu recipient can target.  Needs target client!*/
+#define UTILS_FILTER_ZOMBIE       (1 << 4)    /** Only allow zombies. */
+#define UTILS_FILTER_HUMAN        (1 << 5)    /** Only allow humans. */
+#define UTILS_FILTER_CANTARGET    (1 << 6)    /** Only list clients that the menu recipient can target.  Needs target client!*/
 
 /**
  * Build an array of clients that pass the filters.
@@ -136,6 +141,22 @@ stock Util_RemovePlayerItem(client, weaponindex)
 {
     RemovePlayerItem(client, weaponindex);
     RemoveEdict(weaponindex);
+}
+
+/**
+ * Switch a clients team only if their current one differs.
+ * 
+ * @param client    The client to switch.
+ * @param team      The team index to switch client to.
+ */
+stock Util_SwitchTeam(client, team)
+{
+    if (GetClientTeam(client) != team)
+    {
+        #if defined PROJECT_GAME_CSS
+            CS_SwitchTeam(client, team);
+        #endif
+    }
 }
 
 /**

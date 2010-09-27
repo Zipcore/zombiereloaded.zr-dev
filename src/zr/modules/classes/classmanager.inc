@@ -943,7 +943,7 @@ stock ClassMgr_GetActiveIndex(client)
     
     // Check if player is human or zombie.
     new ClassTeam:team;
-    if (InfectIsClientHuman(client))
+    if (TLib_IsClientHuman(client))
     {
         team = ClassTeamNew_Humans;
     }

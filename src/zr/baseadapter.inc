@@ -80,7 +80,10 @@ public BaseAdapter_OnEventsRegister()
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_PlayerTeam",             "BaseAdapter_PlayerTeam");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_PlayerSpawn",            "BaseAdapter_PlayerSpawn");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_PlayerJump",             "BaseAdapter_PlayerJump");
-
+    
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnClientInfected",       "BaseAdapter_OnClientInfected");
+    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_OnClientHuman",          "BaseAdapter_OnClientHuman");
+    
     #if defined PROJECT_GAME_CSS
     
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_RoundFreezeEnd",         "BaseAdapter_RoundFreezeEnd");
@@ -175,7 +178,7 @@ public BaseAdapter_OnMapStart()
     ClassOnMapStart();
     OverlaysOnMapStart();
     RoundEndOnMapStart();
-    InfectOnMapStart();
+    //InfectOnMapStart();
     SEffectsOnMapStart();
     ZSpawnOnMapStart();
     VolInit();
@@ -212,8 +215,8 @@ public BaseAdapter_OnConfigsExecuted()
     WeaponsLoad();
     HitgroupsLoad();
     RoundEndLoad();
-    InfectLoad();
-    DamageLoad();
+    //InfectLoad();
+    //DamageLoad();
     VEffectsLoad();
     SEffectsLoad();
     ClassOnConfigsExecuted();   // MUST be called before ClassLoad.
@@ -252,11 +255,11 @@ public BaseAdapter_OnClientPutInServer(client)
     ClassClientInit(client);
     OverlaysClientInit(client);
     WeaponsClientInit(client);
-    InfectClientInit(client);
-    DamageClientInit(client);
+    //InfectClientInit(client);
+    //DamageClientInit(client);
     SEffectsClientInit(client);
     AntiStickClientInit(client);
-    SpawnProtectClientInit(client);
+    //SpawnProtectClientInit(client);
     RespawnClientInit(client);
     ZHPClientInit(client);
 }
@@ -271,11 +274,11 @@ public BaseAdapter_OnClientDisconnect(client)
     // Forward event to modules.
     ClassOnClientDisconnect(client);
     WeaponsOnClientDisconnect(client);
-    InfectOnClientDisconnect(client);
-    DamageOnClientDisconnect(client);
+    //InfectOnClientDisconnect(client);
+    //DamageOnClientDisconnect(client);
     SEffectsOnClientDisconnect(client);
     AntiStickOnClientDisconnect(client);
-    SpawnProtectOnClientDisconnect(client);
+    //SpawnProtectOnClientDisconnect(client);
     RespawnOnClientDisconnect(client);
     ZSpawnOnClientDisconnect(client);
     ZHPOnClientDisconnect(client);
@@ -322,7 +325,7 @@ public BaseAdapter_RoundStart()
     OverlaysOnRoundStart();
     RoundStartOnRoundStart();
     RoundEndOnRoundStart();
-    InfectOnRoundStart();
+    //InfectOnRoundStart();
     SEffectsOnRoundStart();
     ZSpawnOnRoundStart();
     VolOnRoundStart();
@@ -335,7 +338,7 @@ public BaseAdapter_RoundFreezeEnd()
 {
     // Forward events to modules.
     RoundEndOnRoundFreezeEnd();
-    InfectOnRoundFreezeEnd();
+    //InfectOnRoundFreezeEnd();
     ZSpawnOnRoundFreezeEnd();
 }
 
@@ -347,7 +350,7 @@ public BaseAdapter_RoundEnd(winner, reason, const String:message[])
     // Forward event to modules.
     WeaponsOnRoundEnd();
     RoundEndOnRoundEnd(reason);
-    InfectOnRoundEnd();
+    //InfectOnRoundEnd();
     SEffectsOnRoundEnd();
     RespawnOnRoundEnd();
     ZSpawnOnRoundEnd();
@@ -366,7 +369,7 @@ public BaseAdapter_RoundEnd(winner, reason, const String:message[])
 public BaseAdapter_PlayerTeam(client, team, oldteam, bool:disconnect)
 {
     // Forward event to modules.
-    InfectOnClientTeam(client, team);
+    //InfectOnClientTeam(client, team);
     
     // TODO: Should this event be blocked? In events.inc it is. How do we block it here?
 }
@@ -380,7 +383,7 @@ public BaseAdapter_PlayerTeam(client, team, oldteam, bool:disconnect)
 public BaseAdapter_PlayerSpawn(client)
 {
     // Forward event to modules.
-    InfectOnClientSpawn(client);     // Some modules depend on this to finish first.
+    //InfectOnClientSpawn(client);     // Some modules depend on this to finish first.
     AccountOnClientSpawn(client);    // Some modules depend on this to finish first.
     ClassOnClientSpawn(client);
     WeaponsOnClientSpawn(client);
@@ -415,7 +418,7 @@ public Action:BaseAdapter_PlayerSpawnPost(Handle:timer, any:client)
     WeaponsOnClientSpawnPost(client);
     SEffectsOnClientSpawnPost(client);
     ClassOnClientSpawnPost(client);
-    SpawnProtectOnClientSpawnPost(client);	// Must be executed after class attributes are applied.
+    //SpawnProtectOnClientSpawnPost(client);	// Must be executed after class attributes are applied.
 }
 
 /**
@@ -434,7 +437,7 @@ public BaseAdapter_PlayerHurt(victim, attacker, health, armor, const String:weap
 {
     // Forward event to modules.
     ClassOnClientHurt(victim);
-    InfectOnClientHurt(victim, attacker, weapon);
+    //InfectOnClientHurt(victim, attacker, weapon);
     AccountOnClientHurt(victim, attacker, dmg_health);
     SEffectsOnClientHurt(victim);
     KnockbackOnClientHurt(victim, attacker, weapon, hitgroup, dmg_health);
@@ -460,10 +463,10 @@ public BaseAdapter_PlayerDeath(victim, attacker, const String:weapon[], bool:hea
     
     // Forward event to modules.
     ClassOnClientDeath(victim);
-    InfectOnClientDeath(victim, attacker);
+    //InfectOnClientDeath(victim, attacker);
     VEffectsOnClientDeath(victim);
     SEffectsOnClientDeath(victim);
-    SpawnProtectOnClientDeath(victim);
+    //SpawnProtectOnClientDeath(victim);
     RespawnOnClientDeath(victim, attacker);
     NapalmOnClientDeath(victim);
     ZSpawnOnClientDeath(victim);
@@ -472,6 +475,42 @@ public BaseAdapter_PlayerDeath(victim, attacker, const String:weapon[], bool:hea
     RoundEndOnClientDeath();
     AmmoOnClientDeath(victim);
     APIOnClientDeath(victim, attacker, weapon, headshot);
+}
+
+/**
+ * Client was infected.
+ *
+ * @param client    Victim index.
+ * @param attacker  Attacker index.
+ * @param mzombie   Whether the victim is infected as mother zombie.
+ */
+public BaseAdapter_OnClientInfected(client, attacker, bool:mzombie)
+{
+    ClassOnClientInfected(client, mzombie);
+    RoundEndOnClientInfected();
+    //DamageOnClientInfected(client, mzombie);
+    SEffectsOnClientInfected(client);
+    //ZTele_OnClientInfected(client);
+    ZHPOnClientInfected(client, attacker);
+    AmmoOnClientInfected(client);
+    VolOnClientInfected(client);
+    //APIOnClientInfected(client, attacker, mzombie, respawnoverride, respawn);
+}
+
+/**
+ * Client was turned back into a human.
+ *
+ * @param client    Client index.
+ */
+public BaseAdapter_OnClientHuman(client)
+{
+    ClassOnClientHuman(client);
+    RoundEndOnClientHuman();
+    SEffectsOnClientHuman(client);
+    ZTele_OnClientHuman(client);
+    AmmoOnClientHuman(client);
+    VolOnClientHuman(client);
+    //APIOnClientHuman(client, respawn, protect);
 }
 
 /**

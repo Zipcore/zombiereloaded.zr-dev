@@ -75,7 +75,7 @@ RespawnOnClientSpawn(client)
 RespawnOnClientDeath(client, attacker)
 {
     // If client is a zombie, check if they were killed by world.
-    if (InfectIsClientInfected(client))
+    if (TLib_IsClientZombie(client))
     {
         // Set g_bKilledByWorld to true if attacker is not a valid client.
         g_bKilledByWorld[client] = !ZRIsClientValid(attacker);
@@ -148,12 +148,12 @@ RespawnSpawnClient(client, bool:zombie = false, bool:zombie_if_suicide = false)
         // Infect if player should spawn as zombie.
         if (zombie)
         {
-            InfectHumanToZombie(client);
+            ZRCInfect_HumanToZombie(client, 0, false);
         }
         // Infect if player committed suicide by world damage.
         else if (zombie_if_suicide && g_bKilledByWorld[client])
         {
-            InfectHumanToZombie(client);
+            ZRCInfect_HumanToZombie(client, 0, false);
             g_bKilledByWorld[client] = false;
         }
     }

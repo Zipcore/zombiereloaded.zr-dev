@@ -96,7 +96,7 @@ AccountOnClientHurt(client, attacker, dmg_health)
     }
     
     // If attacker isn't a human, then stop.
-    if (!InfectIsClientHuman(attacker))
+    if (!TLib_IsClientHuman(attacker))
     {
         return;
     }

@@ -131,8 +131,9 @@ ZHPOnClientDeath(client)
  * Client has been infected.
  * 
  * @param client    The client index.
+ * @param attacker  Attacker index.
  */
-ZHPOnClientInfected(client)
+ZHPOnClientInfected(client, attacker)
 {
     // If ZHP is disabled, then stop.
     new bool:zhp = GetConVarBool(g_hCvarsList[CVAR_ZHP]);
@@ -141,8 +142,9 @@ ZHPOnClientInfected(client)
         return;
     }
     
-    // Update HP display.
+    // Update HP displays.
     ZHPUpdateHUD(client);
+    if (ZRIsClientValid(attacker)) ZHPUpdateHUD(attacker);
     
     // If timer is currently running, kill it.
     ZREndTimer(tZHP[client]);
@@ -243,7 +245,7 @@ ZHPUpdateHUD(client)
     new bool:zhpstate = CookiesGetBool(client, g_hZHPEnabledCookie);
     
     // If player is a zombie, or has ZHP disabled, then stop.
-    if (!InfectIsClientInfected(client) || !zhpstate)
+    if (!TLib_IsClientZombie(client) || !zhpstate)
     {
         return;
     }

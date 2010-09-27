@@ -69,7 +69,7 @@ public APIIsClientInfected(Handle:plugin, numParams)
     // Validate the client index.
     APIValidateClientIndex(client, Condition_True);
     
-    return InfectIsClientInfected(client);
+    return TLib_IsClientZombie(client);
 }
 
 /**
@@ -85,7 +85,7 @@ public APIIsClientHuman(Handle:plugin, numParams)
     // Validate the client index.
     APIValidateClientIndex(client, Condition_True);
     
-    return InfectIsClientHuman(client);
+    return TLib_IsClientHuman(client);
 }
 
 /**

@@ -49,13 +49,13 @@ KnockbackOnClientHurt(client, attacker, const String:weapon[], hitgroup, dmg_hea
     }
     
     // Client is a human, then stop.
-    if (InfectIsClientHuman(client))
+    if (TLib_IsClientHuman(client))
     {
         return;
     }
     
     // If attacker is a zombie, then stop.
-    if (InfectIsClientInfected(attacker))
+    if (TLib_IsClientZombie(attacker))
     {
         return;
     }

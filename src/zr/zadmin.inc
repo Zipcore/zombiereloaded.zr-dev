@@ -106,9 +106,9 @@ bool:ZAdminMenu(client)
     AddMenuItem(menu_zadmin, "classmultipliers", classmultipliers, configdraw);
     AddMenuItem(menu_zadmin, "weapons", weapons, configdraw);
     AddMenuItem(menu_zadmin, "hitgroups", hitgroups, hitgroupdraw);
-    AddMenuItem(menu_zadmin, "infect", infect, moderatordraw);
+    AddMenuItem(menu_zadmin, "infect", infect, ITEMDRAW_DISABLED);  // Disabled until menu is ready.
     AddMenuItem(menu_zadmin, "zspawn", zspawn, moderatordraw);
-    AddMenuItem(menu_zadmin, "ztele", ztele, moderatordraw);
+    AddMenuItem(menu_zadmin, "ztele", ztele, ITEMDRAW_DISABLED);    // Disabled until menu is ready.
     
     // Set "Back" button.
     SetMenuExitBackButton(menu_zadmin, true);
@@ -159,7 +159,7 @@ public ZAdminMenuHandle(Handle:menu_zadmin, MenuAction:action, client, slot)
                 resend = false;
                 
                 // Send list of clients to infect.
-                InfectMenuClients(client);
+                // InfectMenuClients(client);
             }
             // Force ZSpawn.
             case 4:
@@ -177,7 +177,7 @@ public ZAdminMenuHandle(Handle:menu_zadmin, MenuAction:action, client, slot)
                 resend = false;
                 
                 // Send list of clients to infect.
-                MenuClientList(client, ZTele_ForceHandle, true, true, false, "ZTele clients title");
+                // MenuClientList(client, ZTele_ForceHandle, true, true, false, "ZTele clients title");
             }
         }
         

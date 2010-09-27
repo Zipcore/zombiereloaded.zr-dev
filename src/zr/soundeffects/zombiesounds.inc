@@ -148,7 +148,7 @@ ZombieSoundsOnCommandsCreate()
 ZombieSoundsOnClientHurt(client)
 {
     // If player isn't a zombie, then stop.
-    if (!InfectIsClientInfected(client))
+    if (!TLib_IsClientZombie(client))
     {
         return;
     }
@@ -182,7 +182,7 @@ ZombieSoundsOnClientDeath(client)
     ZREndTimer(tSEffectsMoan[client]);
     
     // If player isn't a zombie, then stop.
-    if (!InfectIsClientInfected(client))
+    if (!TLib_IsClientZombie(client))
     {
         return;
     }
@@ -294,7 +294,7 @@ bool:ZombieSoundsGetRandomSound(String:sound[], ZombieSoundsType:soundtype)
 public Action:ZombieSoundsMoanTimer(Handle:timer, any:client)
 {
     // If client isn't in-game or client is no longer a zombie, then stop.
-    if (!IsClientInGame(client) || !InfectIsClientInfected(client))
+    if (!IsClientInGame(client) || !TLib_IsClientZombie(client))
     {
         // Reset timer handle, and stop timer.
         ZREndTimer(tSEffectsMoan[client], false);
@@ -409,7 +409,7 @@ public Action:ZombieSoundsScreamCommand(client, const String:command[], argc)
 {
     if (IsClientInGame(client) &&
         IsPlayerAlive(client) &&
-        InfectIsClientInfected(client) &&
+        TLib_IsClientZombie(client) &&
         ZombieSoundsCommandAllowed(client))
     {
         ZombieSoundsScream(client);
@@ -427,7 +427,7 @@ public Action:ZombieSoundsMoanCommand(client, const String:command[], argc)
 {
     if (IsClientInGame(client) &&
         IsPlayerAlive(client) &&
-        InfectIsClientInfected(client) &&
+        TLib_IsClientZombie(client) &&
         ZombieSoundsCommandAllowed(client))
     {
         ZombieSoundsMoan(client);

@@ -45,7 +45,7 @@ ClassMgr_CheckInstantChange(client)
     else
     {
         // Make sure instant change is not allowed.
-        ClassAllowInstantChange[client] = false;
+        g_ClassAllowInstantChange[client] = false;
     }
 }
 

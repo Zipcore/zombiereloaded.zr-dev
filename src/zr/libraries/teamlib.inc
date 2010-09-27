@@ -4,7 +4,7 @@
  *  Zombie:Reloaded
  *
  *  File:          teamlib.inc
- *  Version:       56:579d41e8e083 (projectcomponents)
+ *  Version:       Based on 56:579d41e8e083 (projectcomponents)
  *  Type:          Library
  *  Description:   Virtual team managing API.
  *
@@ -33,7 +33,7 @@
  * Team defines.
  */
 #if defined PROJECT_GAME_CSS
-  #define TEAM_0 CS_TEAM_NON
+  #define TEAM_0 CS_TEAM_NONE
   #define TEAM_1 CS_TEAM_SPECTATOR
   #define TEAM_2 CS_TEAM_T
   #define TEAM_3 CS_TEAM_CT
@@ -51,8 +51,10 @@
  */
 enum VTeam
 {
-    VTeam_Team1,            /** A virtual team. */
-    VTeam_Team2             /** Another virtual team. */
+    VTeam_Unassigned = 0,   /** Client isn't on a team. */
+    VTeam_Spectator,        /** Client is a spectator. */
+    VTeam_Zombie,           /** Client is a zombie. */
+    VTeam_Human             /** Client is a human. */
 }
 
 /**
@@ -68,8 +70,22 @@ stock VTeam:TLib_GetClientTeam(client) { return g_TLibClientTeam[client]; }
 /**
  * Check client's virtual team via boolean return type.
  */
-stock bool:TLib_IsClientTeam1(client) { return (g_TLibClientTeam[client] == VTeam_Team1); }
-stock bool:TLib_IsClientTeam2(client) { return (g_TLibClientTeam[client] == VTeam_Team2); }
+stock bool:TLib_IsClientUnassigned(client) { return (g_TLibClientTeam[client] == VTeam_Unassigned); }
+stock bool:TLib_IsClientSpectator(client) { return (g_TLibClientTeam[client] == VTeam_Spectator); }
+stock bool:TLib_IsClientZombie(client) { return (g_TLibClientTeam[client] == VTeam_Zombie); }
+stock bool:TLib_IsClientHuman(client) { return (g_TLibClientTeam[client] == VTeam_Human); }
+
+/**
+ * Check if a client is either a human or zombie.
+ * 
+ * @param client    The client index.
+ * 
+ * @return          True if client is a zombie or human, false if not.
+ */
+stock bool:TLib_IsClientPlaying(client)
+{
+    return (TLib_IsClientZombie(client) || TLib_IsClientHuman(client));
+}
 
 /**
  * Set a client's team.
