@@ -221,7 +221,7 @@ stock VoiceSetClientTeam(client, bool:zombie, bool:mute = false)
         }
         
         // Client can only listen/speak if the sender is on their team.
-        new ListenOverride:override = (zombie == InfectIsClientInfected(x) && !mute) ? Listen_Yes : Listen_No;
+        new ListenOverride:override = (zombie == TLib_IsClientZombie(x) && !mute) ? Listen_Yes : Listen_No;
         
         // (Dis)allow clients to listen/speak with each other, don't touch if the sender is muted.
         VoiceSetClientOverride(client, x, override);
@@ -237,7 +237,7 @@ stock VoiceSetClientTeam(client, bool:zombie, bool:mute = false)
 stock VoiceUpdateClient(client)
 {
     new bool:zombies_mute = GetConVarBool(g_hCvarsList[CVAR_VOICE_ZOMBIES_MUTE]);
-    new bool:infected = InfectIsClientInfected(client);
+    new bool:infected = TLib_IsClientZombie(client);
     
     // Set the client's listening/speaking status to their current team, or if the client is a zombie and zombie mute is enabled, then mute.
     VoiceSetClientTeam(client, infected, (zombies_mute && infected));

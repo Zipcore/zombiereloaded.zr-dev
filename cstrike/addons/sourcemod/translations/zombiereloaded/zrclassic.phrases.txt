@@ -1,0 +1,86 @@
+"Phrases"
+{
+	// **********************************************
+	//         Zombie:Reloaded Classic Core
+	// **********************************************
+
+
+	//                  Gameplay		       //
+	/////////////////////////////////////////////////
+
+	"ZRC gameplay round objective"
+	{
+		"en"		"The game is {green}Humans vs. Zombies{default}, the goal for zombies is to infect all humans by knifing them."
+	}
+
+	//                  Infection		       //
+	/////////////////////////////////////////////////
+
+	"ZRC human to zombie"
+	{
+		"en"		"You have been infected!  Go pass it on to as many other players as you can."
+	}
+
+	"ZRC zombie to human"
+	{
+		"en"		"The merciful gods (known as admins) have resurrected your soul, find some cover!"
+	}
+
+	"ZRC infect disconnect"
+	{
+		"en"		"The last zombie has left the game, and has passed the infection on to you."
+	}
+
+	"ZRC command infect syntax"
+	{
+		"en"		"Turn a player into a zombie.  Usage: zr_infect <#userid|name> [respawn - 1/0]"
+	}
+
+	"ZRC command human syntax"
+	{
+		"en"		"Turn a player into a human.  Usage: zr_human <#userid|name> [respawn - 1/0] [protect - 1/0]"
+	}
+
+	// {1}: Name of the player.
+	"ZRC command infect successful"
+	{
+		"#format"	"{1:N}"
+		"en"		"Player {green}{1} {default}has been successfully infected."
+	}
+
+	// {1}: Name of the player.
+	"ZRC command infect mother successful"
+	{
+		"#format"	"{1:N}"
+		"en"		"Player {green}{1} {default}has been successfully infected as the mother zombie."
+	}
+
+	// {1}: Name of the player.
+	"ZRC command infect unsuccessful"
+	{
+		"#format"	"{1:N}"
+		"en"		"Player {green}{1} {default}is already a zombie."
+	}
+
+	// {1}: Name of the player.
+	"ZRC command human successful"
+	{
+		"#format"	"{1:N}"
+		"en"		"Player {green}{1} {default}has been successfully brought back as a human."
+	}
+
+	// {1}: Name of the player.
+	"ZRC command human unsuccessful"
+	{
+		"#format"	"{1:N}"
+		"en"		"Player {green}{1} {default}is already a human."
+	}
+
+	//                   Weapons		       //
+	/////////////////////////////////////////////////
+
+	"ZRC weapons zombie cant use weapon"
+	{
+		"en"		"Zombies can't use weapons!"
+	}
+}

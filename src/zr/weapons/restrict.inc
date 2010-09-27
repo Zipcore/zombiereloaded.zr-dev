@@ -171,7 +171,7 @@ RestrictOnRoundEnd()
         }
         
         // If client is a human, then stop.
-        if (InfectIsClientHuman(x))
+        if (TLib_IsClientHuman(x))
         {
             continue;
         }
@@ -203,7 +203,7 @@ public Action:RestrictBuyCommand(client, const String:command[], argc)
     }
     
     // If player is a zombie, then block command.
-    if (InfectIsClientInfected(client))
+    if (TLib_IsClientZombie(client))
     {
         TranslationPrintToChat(client, "Zombie cant use weapon");
         
@@ -570,7 +570,7 @@ Action:RestrictCanUse(client, weapon)
     }
     
     // If the player is a zombie, then prevent pickup.
-    if (InfectIsClientInfected(client))
+    if (TLib_IsClientZombie(client))
     {
         return Plugin_Handled;
     }

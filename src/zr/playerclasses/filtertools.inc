@@ -696,7 +696,7 @@ stock ClassGetActiveIndex(client)
     else
     {
         // Not in admin mode, check if player is human or zombie.
-        if (InfectIsClientHuman(client))
+        if (TLib_IsClientHuman(client))
         {
             teamid = ZR_CLASS_TEAM_HUMANS;
         }
@@ -726,7 +726,7 @@ stock Float:ClassGetAttributeMultiplier(client, ClassMultipliers:attribute)
     if (!ClassPlayerInAdminMode[client])
     {
         // Not in admin mode, check if player is human or zombie.
-        if (InfectIsClientHuman(client))
+        if (TLib_IsClientHuman(client))
         {
             teamid = ZR_CLASS_TEAM_HUMANS;
         }

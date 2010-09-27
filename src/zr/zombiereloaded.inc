@@ -148,7 +148,7 @@ stock ZRCreateEligibleClientList(&Handle:arrayEligibleClients, EligibleCondition
         }
         
         new bool:bHuman = bool:human;
-        if (human != Condition_Either && bHuman != InfectIsClientHuman(x))
+        if (human != Condition_Either && bHuman != TLib_IsClientHuman(x))
         {
             continue;
         }
@@ -230,12 +230,12 @@ stock bool:ZRCountValidClients(&zombiecount = 0, &humancount = 0, bool:alive = t
         }
         
         // If player is a zombie, then increment zombie variable.
-        if (InfectIsClientInfected(x))
+        if (TLib_IsClientZombie(x))
         {
             zombiecount++;
         }
         // If player is a human, then increment human variable.
-        else if (InfectIsClientHuman(x))
+        else if (TLib_IsClientHuman(x))
         {
             humancount++;
         }

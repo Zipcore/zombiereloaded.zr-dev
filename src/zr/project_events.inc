@@ -65,6 +65,8 @@ new ProjectEvent:g_EvOnClientCookiesCached;
 
 // Project events.
 new ProjectEvent:g_EvOnClientReady;
+new ProjectEvent:g_EvOnClientInfected;
+new ProjectEvent:g_EvOnClientHuman;
 
 // CS:S events.
 #if defined PROJECT_GAME_CSS
@@ -383,6 +385,9 @@ stock EventMgr_CreateEvents()
     
     // Project events.
     g_EvOnClientReady =             EventMgr_CreateEvent("Event_OnClientReady");            /** Client is connected, admin checked and cookies are loaded. */
+    g_EvOnClientInfected =          EventMgr_CreateEvent("Event_OnClientInfected");         /** Client has been infected as zombie. */
+    g_EvOnClientHuman =             EventMgr_CreateEvent("Event_OnClientHuman");            /** Client has become human from the infected state. */
+    
     
     // CS:S events.
     #if defined PROJECT_GAME_CSS

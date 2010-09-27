@@ -184,7 +184,7 @@ ZMarketOnClientSpawnPost(client)
     }
     
     // If client is a zombie, then stop.
-    if (InfectIsClientInfected(client))
+    if (TLib_IsClientZombie(client))
     {
         return;
     }
@@ -1038,7 +1038,7 @@ stock bool:ZMarketEquip(client, const String:weapon[], bool:rebuy = false)
     new WepLib_Slots:slot = WeaponsGetSlot(weaponindex);
     
     // If client is a zombie, then update weapon weaponsetup and stop.
-    if (InfectIsClientInfected(client))
+    if (TLib_IsClientZombie(client))
     {
         // Update cookie with new weapon.
         ZMarketHandleRebuyCookie(client, slot, weapon);
@@ -1576,7 +1576,7 @@ stock ZMarketGetRebuyCookie(client, WepLib_Slots:slot, String:value[], maxlen)
 ZMarketRebuySavedSetup(client, bool:autorebuy = false)
 {
     // If client is a zombie, then stop.
-    if (InfectIsClientInfected(client))
+    if (TLib_IsClientZombie(client))
     {
         TranslationPrintToChat(client, "Must be human");
         return;

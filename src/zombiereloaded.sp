@@ -47,6 +47,7 @@
 #endif
 
 // Header includes.
+// TODO: To be removed when base conversion is done.
 #include "zr/log.h"
 #include "zr/tools.h"
 #include "zr/models.h"
@@ -56,10 +57,11 @@
 #include "zr/weapons/weaponprofileheaders.h"
 #include "zr/headers/volfeatures.h"
 
+// Project settings.
 #include "zr/project"
-#include "zr/base/wrappers"
 
 // Base project includes.
+#include "zr/base/wrappers"
 #include "zr/base/versioninfo"
 #include "zr/base/accessmanager"
 #include "zr/base/logmanager"
@@ -68,7 +70,7 @@
 #include "zr/base/eventmanager"
 #include "zr/base/modulemanager"
 
-// Library includes.
+// Libraries and generic utilities.
 #include "zr/libraries/authcachelib"
 #include "zr/libraries/conversionlib"
 #include "zr/libraries/cookielib"
@@ -82,10 +84,27 @@
 #include "zr/libraries/utilities"
 #include "zr/libraries/weaponlib"
 
-// Module includes (for the new base)
+// Core modules (for the new base)
 #include "zr/baseadapter"
 
-// Core includes.
+#include "zr/modules/mapconfig"
+#include "zr/modules/gamedata"      // Depends on mapconfig
+#include "zr/modules/gamerules"     // Depends on mapconfig
+#include "zr/modules/sdkhooksadapter"
+#include "zr/modules/zr_core"
+#include "zr/modules/zrc_core/root.zrc"
+//#include "zr/modules/zriot_core/root.zriot" (not imported yet)
+
+// Game components
+#include "zr/modules/ztele"
+#include "zr/modules/stripobjectives"
+#include "zr/modules/classes/classmanager"
+// models, zmenu, cookies, etc.
+
+
+// ----- Old base -----
+
+// Core includes (old).
 #include "zr/zombiereloaded"
 
 #include "zr/translation"
@@ -112,9 +131,8 @@
 #include "zr/roundstart"
 #include "zr/roundend"
 #include "zr/flashlight"
-#include "zr/infect"
-#include "zr/damage"
-//#include "zr/event"
+//#include "zr/infect"
+//#include "zr/damage"
 #include "zr/zadmin"
 #include "zr/commands"
 
@@ -124,7 +142,7 @@
 #include "zr/soundeffects/soundeffects"
 #include "zr/antistick"
 #include "zr/knockback"
-#include "zr/spawnprotect"
+//#include "zr/spawnprotect"    // Disabled due to incompatibility with new infection modules.
 #include "zr/respawn"
 #include "zr/napalm"
 #include "zr/jumpboost"
@@ -136,13 +154,9 @@
 #include "zr/volfeatures/volfeatures"
 #include "zr/debugtools"
 
-// New modules
-#include "zr/modules/mapconfig"
-#include "zr/modules/ztele"
-#include "zr/modules/classes/classmanager"
-
 // Include this last since nothing should be using it anyway.  Aside from external plugins.
 #include "zr/api/api"
+
 /**
  * Record plugin info.
  */
@@ -286,11 +300,11 @@ public OnPluginEnd()
  * 
  * @return 			Plugin_Handled to block the commands from being processed, Plugin_Continue otherwise.
  */
-public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
+/*public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
     // Forward event to modules.
-    return InfectOnPlayerRunCmd(client, impulse);
-}
+    //return InfectOnPlayerRunCmd(client, impulse);
+}*/
 
 /**
  * TODO: Add this forward to the new base.
@@ -299,8 +313,8 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
  * @param entity    Entity index.
  * @param classname Class name.
  */
-public OnEntityCreated(entity, const String:classname[])
+/*public OnEntityCreated(entity, const String:classname[])
 {
     // Forward event to modules.
-    DamageOnEntityCreated(entity);
-}
+    //DamageOnEntityCreated(entity);
+}*/

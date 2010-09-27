@@ -25,6 +25,9 @@
  * ============================================================================
  */
 
+// Include libraries.
+#include "zr/libraries/conversionlib"
+
 /**
  * This module's identifier.
  */
@@ -33,13 +36,14 @@ new Module:g_moduleZTele;
 /**
  * Teleport events.
  */
-new ProjectEvent:g_EvOnTeleportTimerStarted;
-new ProjectEvent:g_EvOnPlayerTeleported;
-new ProjectEvent:g_EvOnPlayerTeleportAborted;
+new ProjectEvent:g_EvOnZTeleTimerStarted;
+new ProjectEvent:g_EvOnClientZTele;
+new ProjectEvent:g_EvOnZTeleAutoCancelled;
 
 /**
  * Teleport convars.
  */
+new Handle:g_hCvarZTeleRandom;
 new Handle:g_hCvarZTeleZombie;
 new Handle:g_hCvarZTeleHumanBefore;
 new Handle:g_hCvarZTeleHumanAfter;
@@ -47,23 +51,18 @@ new Handle:g_hCvarZTeleDelayZombie;
 new Handle:g_hCvarZTeleDelayHuman;
 new Handle:g_hCvarZTeleMaxZombie;
 new Handle:g_hCvarZTeleMaxHuman;
-new Handle:g_hCvarZTeleAutocancel;
-new Handle:g_hCvarZTeleAutocancelDistance;
+new Handle:g_hCvarZTeleAutoCancel;
+new Handle:g_hCvarZTeleAutoCancelDistance;
 
 /**
- * Teleport command to register.
+ * A list of all used spawnpoints on the current map.
  */
-#define ZTELE_TELEPORT_COMMAND "ztele"
+new Float:g_vecZTeleSpawnPoints[MAXPLAYERS + 1][3];
 
 /**
- * Array to store client's spawn location.
+ * Current number of spawnpoints in the map.
  */
-new Float:g_vecZTeleSpawn[MAXPLAYERS + 1][3];
-
-/**
- * Array to store client's current location.
- */
-new Float:g_vecZTeleOrigin[MAXPLAYERS + 1][3];
+new g_iZTeleNumSpawnPoints;
 
 /**
  * Array to store the tele count of each client.
@@ -73,7 +72,7 @@ new g_iZTeleCount[MAXPLAYERS + 1];
 /**
  * Array for storing ZTele timer handles per client.
  */
-new Handle:tZTele[MAXPLAYERS + 1];
+new Handle:g_hZTeleTimer[MAXPLAYERS + 1];
 
 /**
  * Array to store time left before teleport.
@@ -81,13 +80,9 @@ new Handle:tZTele[MAXPLAYERS + 1];
 new g_iZTeleTimeLeft[MAXPLAYERS + 1];
 
 /**
- * Teleport abort reasons.
+ * Location of client when they type !ztele.  This is used for the "auto-cancel" feature.
  */
-enum ZTele_AbortReason
-{
-    ZTeleAbort_Manual,      /** Player manually aborted teleport. */
-    ZTeleAbort_Autocancel   /** Teleport was aborted because of autocancel distance. */
-}
+new Float:g_vecAutoCancelBoundary[MAXPLAYERS + 1][3];
 
 /**
  * Register this module.
@@ -107,12 +102,13 @@ ZTele_Register()
     // Send this array of data to the module manager.
     g_moduleZTele = ModuleMgr_Register(moduledata);
     
-    EventMgr_RegisterEvent(g_moduleZTele, "Event_OnEventsRegister",       "ZTele_OnEventsRegister");
-    
     // Create events.
-    g_EvOnTeleportTimerStarted =    EventMgr_CreateEvent("OnTeleportTimerStarted");
-    g_EvOnPlayerTeleported =        EventMgr_CreateEvent("OnPlayerTeleported");
-    g_EvOnPlayerTeleportAborted =   EventMgr_CreateEvent("OnPlayerTeleportAbort");
+    g_EvOnZTeleTimerStarted = EventMgr_CreateEvent("Event_OnZTeleTimerStarted");
+    g_EvOnClientZTele = EventMgr_CreateEvent("Event_OnClientZTele");
+    g_EvOnZTeleAutoCancelled = EventMgr_CreateEvent("Event_OnZTeleAutoCancelled");
+    
+    // Register the OnEventsRegister event to register all events in it.
+    EventMgr_RegisterEvent(g_moduleZTele, "Event_OnEventsRegister",             "ZTele_OnEventsRegister");
 }
 
 /**
@@ -120,44 +116,18 @@ ZTele_Register()
  */
 public ZTele_OnEventsRegister()
 {
-    EventMgr_RegisterEvent(g_moduleZTele, "OnClientConnected",              "ZTele_OnClientConnected");
-    
-    // TODO: Need event OnClientInfected and OnClientHuman. For now the event forwards are hard coded.
+    EventMgr_RegisterEvent(g_moduleZTele, "Event_OnMapStart",                   "ZTele_OnMapStart");
+    EventMgr_RegisterEvent(g_moduleZTele, "Event_OnClientPutInServer",          "ZTele_OnClientPutInServer");
+    EventMgr_RegisterEvent(g_moduleZTele, "Event_OnClientDisconnect",           "ZTele_OnClientDisconnect");
+    EventMgr_RegisterEvent(g_moduleZTele, "Event_OnClientInfect",               "ZTele_OnClientInfect");
+    EventMgr_RegisterEvent(g_moduleZTele, "Event_OnClientHuman",                "ZTele_OnClientHuman");
     
     #if defined PROJECT_GAME_CSS
     
-    EventMgr_RegisterEvent(g_moduleZTele, "Event_PlayerSpawn",              "ZTele_PlayerSpawn");
-    EventMgr_RegisterEvent(g_moduleZTele, "Event_PlayerDeath",              "ZTele_PlayerDeath");
+    EventMgr_RegisterEvent(g_moduleZTele, "Event_PlayerSpawn",                  "ZTele_PlayerSpawn");
+    EventMgr_RegisterEvent(g_moduleZTele, "Event_PlayerDeath",                  "ZTele_PlayerDeath");
     
     #endif
-}
-
-/**
- * Creates teleport console commands.
- */
-ZTele_CreateCommands()
-{
-    // Register ZTele command.
-    RegConsoleCmd(ZTELE_TELEPORT_COMMAND, ZTele_Command, "Teleport back to spawn if you are stuck.");
-    
-    // Register admin command to force ZTele.
-    Project_RegConsoleCmd("ztele_force", ZTele_ForceCommand, "Force ZTele on a client. Usage: <prefix>_ztele_force <client>");
-}
-
-/**
- * Creates teleport console variables.
- */
-ZTele_CreateConvars()
-{
-    g_hCvarZTeleZombie =                Project_CreateConVar("ztele_zombie",                "1",    "Allow zombies to use ZTele.");
-    g_hCvarZTeleHumanBefore =           Project_CreateConVar("ztele_human_before",          "1",    "Allow humans to use ZTele before the mother zombie has spawned.");
-    g_hCvarZTeleHumanAfter =            Project_CreateConVar("ztele_human_after",           "1",    "Allow humans to use ZTele after the mother zombie has spawned.");
-    g_hCvarZTeleDelayZombie =           Project_CreateConVar("ztele_delay_zombie",          "3.0",  "Time between using ZTele command and teleportation for zombies. [Dependency: <prefix>_ztele_zombie]");
-    g_hCvarZTeleDelayHuman =            Project_CreateConVar("ztele_delay_human",           "3.0",  "Time between using ZTele command and teleportation for humans. [Dependency: <prefix>_ztele_human_(before)/(after)]");
-    g_hCvarZTeleMaxZombie =             Project_CreateConVar("ztele_max_zombie",            "3",    "Max number of times a zombie is allowed to use ZTele per round. [Dependency: <prefix>_ztele_zombie]");
-    g_hCvarZTeleMaxHuman =              Project_CreateConVar("ztele_max_human",             "1",    "Max number of times a human is allowed to use ZTele per round. [Dependency: <prefix>_ztele_human_(before)/(after)]");
-    g_hCvarZTeleAutocancel =            Project_CreateConVar("ztele_autocancel",            "1",    "Automatically cancel ZTele if player moves out of a set boundary. [Dependency: <prefix>_ztele_(zombie)/(human)[_(before)/(after)]]");
-    g_hCvarZTeleAutocancelDistance =    Project_CreateConVar("ztele_autocancel_distance",   "320",  "Maximum distance, in units, player is allowed to travel before teleport is cancelled. [Dependency: <prefix>_ztele_autocancel]");
 }
 
 /**
@@ -167,8 +137,36 @@ ZTele_OnPluginStart()
 {
     // Register the module.
     ZTele_Register();
-    ZTele_CreateCommands();
-    ZTele_CreateConvars();
+    
+    // Create cvars.
+    g_hCvarZTeleRandom =                Project_CreateConVar("ztele_random", "1", "Teleport back to a random spawnpoint on the map. ['0' = Teleports back to where you spawned during the round]");
+    g_hCvarZTeleZombie =                Project_CreateConVar("ztele_zombie", "1", "Allow zombies to use ZTele.");
+    g_hCvarZTeleHumanBefore =           Project_CreateConVar("ztele_human_before", "1", "Allow humans to use ZTele before the mother zombie has spawned.");
+    g_hCvarZTeleHumanAfter =            Project_CreateConVar("ztele_human_after", "1", "Allow humans to use ZTele after the mother zombie has spawned.");
+    g_hCvarZTeleDelayZombie =           Project_CreateConVar("ztele_delay_zombie", "3.0", "Time between using ZTele command and teleportation for zombies. [Dependency: <prefix>_ztele_zombie]");
+    g_hCvarZTeleDelayHuman =            Project_CreateConVar("ztele_delay_human", "3.0", "Time between using ZTele command and teleportation for humans. [Dependency: <prefix>_ztele_human_(before)/(after)]");
+    g_hCvarZTeleMaxZombie =             Project_CreateConVar("ztele_max_zombie", "3", "Max number of times a zombie is allowed to use ZTele per round. [Dependency: <prefix>_ztele_zombie]");
+    g_hCvarZTeleMaxHuman =              Project_CreateConVar("ztele_max_human", "1", "Max number of times a human is allowed to use ZTele per round. [Dependency: <prefix>_ztele_human_(before)/(after)]");
+    g_hCvarZTeleAutoCancel =            Project_CreateConVar("ztele_autocancel", "1", "Automatically cancel ZTele if player moves out of the set boundary.");
+    g_hCvarZTeleAutoCancelDistance =    Project_CreateConVar("ztele_autocancel_distance", "6.1 m", "The radius the player can move without ZTele being auto-cancelled.  See top of file for supported units of measurement.");
+    
+    // Create commands
+    RegConsoleCmd("ztele", ZTele_SayCommand, "Teleport to a known location by command.");
+    Project_RegConsoleCmd("ztele", ZTele_Command, "ZTele a client. Usage: <prefix>_ztele <client>");
+}
+
+/**
+ * The map has started.
+ */
+public ZTele_OnMapStart()
+{
+    // Reset spawn point data.
+    g_iZTeleNumSpawnPoints = 0;
+    for (new spindex = 0; spindex < sizeof(g_vecZTeleSpawnPoints); spindex++)
+    {
+        for (new i = 0; i < 3; i++)
+            g_vecZTeleSpawnPoints[spindex][i] = 0.0;
+    }
 }
 
 /**
@@ -176,10 +174,19 @@ ZTele_OnPluginStart()
  * 
  * @param client    The client index.
  */
-public ZTele_OnClientConnected(client)
+public ZTele_OnClientPutInServer(client)
 {
-    // Reset timer handle.
-    tZTele[client] = INVALID_HANDLE;
+    g_hZTeleTimer[client] = INVALID_HANDLE;
+}
+
+/**
+ * Client is disconnecting from the server.
+ * 
+ * @param client    The client index.
+ */
+public ZTele_OnClientDisconnect(client)
+{
+    Util_CloseHandle(g_hZTeleTimer[client]);
 }
 
 /**
@@ -189,21 +196,42 @@ public ZTele_OnClientConnected(client)
  */
 public ZTele_PlayerSpawn(client)
 {
-    // Check if the player is on a team. Spawning into the game is also a event in
+    // Check if the player is on a team. Spawning into the game is also an event in
     // the connection process where players get their observer camera.
-    if (!ZRIsClientOnTeam(client))
-    {
+    if (!Util_IsClientOnTeam(client))
         return;
+    
+    // Check if the spawn point is in the array, if not then add it.
+    new Float:vecLoc[3];
+    GetClientAbsOrigin(client, vecLoc);
+    
+    // Check if we should find random spawn points or record the spawn point for a specific client.
+    if (GetConVarBool(g_hCvarZTeleRandom))
+    {
+        if (Util_IsVecInArray(vecLoc, g_vecZTeleSpawnPoints, g_iZTeleNumSpawnPoints) == -1)
+        {
+            // Don't overflow the array.
+            if (g_iZTeleNumSpawnPoints < sizeof(g_vecZTeleSpawnPoints))
+            {
+                // Copy into the spawnpoint array.
+                for (new i = 0; i < 3; i++)
+                    g_vecZTeleSpawnPoints[g_iZTeleNumSpawnPoints][i] = vecLoc[i];
+                
+                LogMgr_Print(g_moduleZTele, LogType_Debug, "Spawnpoints", "New ZTele point (%f, %f, %f) being added to array index %d.", vecLoc[0], vecLoc[1], vecLoc[2], g_iZTeleNumSpawnPoints);
+                
+                g_iZTeleNumSpawnPoints++;
+            }
+        }
+    }
+    else
+    {
+        // Copy the client's spawn point to teleport back to later during the round.
+        for (new i = 0; i < 3; i++)
+            g_vecZTeleSpawnPoints[client][i] = vecLoc[i];
     }
     
-    // Reset tele count.
     g_iZTeleCount[client] = 0;
-    
-    // Get spawn location.
-    GetClientAbsOrigin(client, g_vecZTeleSpawn[client]);
-    
-    // If timer is running, kill it.
-    Util_CloseHandle(tZTele[client]);
+    Util_CloseHandle(g_hZTeleTimer[client]);
 }
 
 /**
@@ -216,8 +244,7 @@ public ZTele_PlayerSpawn(client)
  */
 public ZTele_PlayerDeath(victim, attacker, const String:weapon[], bool:headshot)
 {
-    // If timer is running, kill it.
-    Util_CloseHandle(tZTele[victim]);
+    Util_CloseHandle(g_hZTeleTimer[victim]);
 }
 
 /**
@@ -225,13 +252,10 @@ public ZTele_PlayerDeath(victim, attacker, const String:weapon[], bool:headshot)
  * 
  * @param client    The client index.
  */
-ZTele_OnClientInfected(client)
+public ZTele_OnClientInfect(client)
 {
-    // If timer is running, kill it.
-    Util_CloseHandle(tZTele[client]);
-    
-    // Reset tele count.
     g_iZTeleCount[client] = 0;
+    Util_CloseHandle(g_hZTeleTimer[client]);
 }
 
 /**
@@ -239,177 +263,300 @@ ZTele_OnClientInfected(client)
  * 
  * @param client    The client index.
  */
-ZTele_OnClientHuman(client)
+public ZTele_OnClientHuman(client)
 {
-    // If timer is running, kill it.
-    Util_CloseHandle(tZTele[client]);
-    
-    // Reset tele count.
     g_iZTeleCount[client] = 0;
+    Util_CloseHandle(g_hZTeleTimer[client]);
+}
+
+// ************************************************************
+//  The functions in this section are ordered chronologically.
+// ************************************************************
+
+/**
+ * Command callback (ztele)
+ * Teleport back to spawn if you are stuck.
+ * 
+ * @param client    The client index.
+ * @param argc      Argument count.
+ */
+public Action:ZTele_SayCommand(client, argc)
+{
+    if (client == SERVER_INDEX)
+    {
+        TransMgr_PrintText(SERVER_INDEX, MsgFormat_Plugin, MsgType_Server, _, _, "Must be player");
+        return Plugin_Handled;
+    }
+    
+    // Start teleportation process.
+    ZTele_Client(client);
+    
+    return Plugin_Handled;
 }
 
 /**
- * Teleports a client back to spawn if conditions are met.
+ * Checks everything before starting the teleport sequence.
  * 
  * @param client    The client index.
- * @param force     (Optional) True to force teleporting of the client, false to follow rules.
- * @param zombie    (Optional) True to teleport instantly, false to use delay.
- * @return          True if teleport was successful, false otherwise. 
  */
-bool:ZTele_StartTeleport(client, bool:force = false)
+bool:ZTele_Client(client)
 {
     // If the client is dead, then stop.
     if (!IsPlayerAlive(client))
     {
+        TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Chat, _, _, "Must be alive");
         return false;
     }
     
-    new bool:infected = InfectIsClientInfected(client);
+    new bool:zombie = TLib_IsClientZombie(client);
+    new bool:human = TLib_IsClientHuman(client);
     
     // If zombie cvar is disabled and the client is a zombie, then stop.
     new bool:ztelezombie = GetConVarBool(g_hCvarZTeleZombie);
-    if (!force && infected && !ztelezombie)
+    if (zombie && !ztelezombie)
     {
         // Tell client they must be human to use this feature.
-        TranslationPrintToChat(client, "Must be human");
+        TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Chat, _, _, "Must be human");
         return false;
     }
     
     // If zombie has spawned, get before value, get the after value otherwise.
     // If the cvar is disabled and the client is a human, then stop.
-    new bool:ztelehuman = g_bZombieSpawned ? GetConVarBool(g_hCvarZTeleHumanAfter) : GetConVarBool(g_hCvarZTeleHumanBefore);
-    if (!force && !infected && !ztelehuman)
+    new bool:ztelehuman = ZRCInfect_AreZombiesPresent() ? GetConVarBool(g_hCvarZTeleHumanAfter) : GetConVarBool(g_hCvarZTeleHumanBefore);
+    if (human && !ztelehuman)
     {
         // Tell client that feature is restricted at this time.
-        TranslationPrintToChat(client, "ZTele restricted human");
+        TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Chat, _, _, "ZTele restricted human");
         return false;
     }
     
     // If the tele limit has been reached, then stop.
-    new ztelemax = infected ? GetConVarInt(g_hCvarZTeleMaxZombie) : GetConVarInt(g_hCvarZTeleMaxHuman);
-    if (!force && g_iZTeleCount[client] >= ztelemax)
+    new ztelemax = zombie ? GetConVarInt(g_hCvarZTeleMaxZombie) : GetConVarInt(g_hCvarZTeleMaxHuman);
+    if (g_iZTeleCount[client] >= ztelemax)
     {
         // Tell client that they have already reached their limit.
-        TranslationPrintToChat(client, "ZTele max", ztelemax);
+        TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Chat, _, _, "ZTele max", ztelemax);
         return false;
     }
     
     // If teleport is already in progress, then stop.
-    if (ZRIsTimerRunning(tZTele[client]))
+    if (g_hZTeleTimer[client] != INVALID_HANDLE)
     {
-        if (!force)
-        {
-            TranslationPrintToChat(client, "ZTele in progress");
-        }
-        
+        TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Chat, _, _, "ZTele in progress");
         return false;
     }
     
-    // If we are forcing, then teleport now and stop.
-    if (force)
+    // Get the time the client has to wait before teleporting.
+    new time = zombie ? GetConVarInt(g_hCvarZTeleDelayZombie) : GetConVarInt(g_hCvarZTeleDelayHuman);
+    ZTele_StartTeleport(client, time);
+    
+    return true;
+}
+
+/**
+ * Starts the teleport sequence.
+ * 
+ * @param client    The client index.
+ * @param time      Time between calling this and actual teleportation.
+ */
+ZTele_StartTeleport(client, time)
+{
+    // Set boundary for auto-cancel feature.
+    ZTele_AutoCancelSetBoundary(client);
+    
+    if (time > 0)
     {
-        // Teleport client to spawn.
-        ZTele_TeleportClient(client);
+        g_iZTeleTimeLeft[client] = time;
         
-        return true;
-    }
-    
-    // Get current location.
-    GetClientAbsOrigin(client, g_vecZTeleOrigin[client]);
-    
-    // Set timeleft array to value of respective cvar.
-    g_iZTeleTimeLeft[client] = infected ? GetConVarInt(g_hCvarZTeleDelayZombie) : GetConVarInt(g_hCvarZTeleDelayHuman);
-    if (g_iZTeleTimeLeft[client] > 0)
-    {
         // Tell client how much time is left until teleport.
-        TranslationPrintCenterText(client, "ZTele countdown", g_iZTeleTimeLeft[client]);
+        PrintCenterText(client, "%t", "ZTele countdown", g_iZTeleTimeLeft[client]);
+        g_hZTeleTimer[client] = CreateTimer(1.0, ZTele_Timer, client, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
         
-        // Start timer.
-        tZTele[client] = CreateTimer(1.0, ZTele_Timer, client, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
+        // Forward event to all modules.
+        static EventDataTypes:eventdatatypes[] = {DataType_Cell, DataType_Cell, DataType_Cell};
+        new any:eventdata[sizeof(eventdatatypes)][1];
         
-        // Trigger event.
-        ZTele_SendStartEvent(client, g_iZTeleTimeLeft[client]);
+        eventdata[0][0] = client;
+        eventdata[1][0] = time;
+        eventdata[2][0] = g_hZTeleTimer[client];
+        
+        EventMgr_Forward(g_EvOnZTeleTimerStarted, eventdata, sizeof(eventdata), sizeof(eventdata[]), eventdatatypes);
     }
     else
     {
-        // Teleport client to spawn.
         ZTele_TeleportClient(client);
         
-        // Increment teleport count.
-        g_iZTeleCount[client]++;
+        new ztelemax = TLib_IsClientZombie(client) ? GetConVarInt(g_hCvarZTeleMaxZombie) : GetConVarInt(g_hCvarZTeleMaxHuman);
+        PrintCenterText(client, "%t", "ZTele countdown end", g_iZTeleCount[client], ztelemax);
+    }
+}
+
+/**
+ * Set move the center of the client's circular boundary to their current position.
+ * 
+ * @param client    The client index.
+ */
+ZTele_AutoCancelSetBoundary(client)
+{
+    GetClientAbsOrigin(client, g_vecAutoCancelBoundary[client]);
+}
+
+/**
+ * Check if a client has exceeded the defined boundary.
+ * See ZTele_AutoCancelSetBoundary to set the center of the circular boundary.
+ * 
+ * @param client    The client index.
+ * 
+ * @return          True if they are within the boundary, false if not.
+ */
+bool:ZTele_AutoCancelCheck(client)
+{
+    // If client has been running around after using ZTele, then stop timer.
+    new Float:vecClient[3];
+    GetClientAbsOrigin(client, vecClient);
+    
+    decl String:strDistance[16];
+    GetConVarString(g_hCvarZTeleAutoCancelDistance, strDistance, sizeof(strDistance));
+    new Float:flDistance = ConvertLib_DetectAndConvert(ConvLibMeasurement_Distance, strDistance, _:ConvLibDistance_GameUnit, _:ConvLibDistance_GameUnit);
+    new Float:distance = GetVectorDistance(vecClient, g_vecAutoCancelBoundary[client]);
+    
+    // Check if distance has been surpassed.
+    if (distance > flDistance)
+    {
+        // Reset timer handle.
+        g_hZTeleTimer[client] = INVALID_HANDLE;
         
-        // If we're forcing the ZTele, then don't increment the count or print how many teleports they have used.
-        // Tell client they've been teleported.
-        TranslationPrintCenterText(client, "ZTele countdown end", g_iZTeleCount[client], ztelemax);
+        // Tell client teleport has been cancelled.
+        PrintCenterText(client, "%t", "ZTele cancel");
+        TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Chat, _, _, "ZTele autocancel", strDistance);
         
-        // Send teleport event.
-        ZTele_SendTeleportedEvent(client);
+        // Forward event to all modules.
+        new any:eventdata[1][1];
+        eventdata[0][0] = client;
+        
+        EventMgr_Forward(g_EvOnZTeleAutoCancelled, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType1);
+        
+        // Stop timer.
+        return false;
     }
     
     return true;
 }
 
 /**
- * Teleport client to their spawn location.
+ * Timer callback, counts down teleport to the client.
+ * 
+ * @param timer     The timer handle.
+ * @param client    The client index.
+ */
+public Action:ZTele_Timer(Handle:timer, any:client)
+{
+    // Check if teleport should be auto-cancelled.
+    if (GetConVarBool(g_hCvarZTeleAutoCancel))
+    {
+        // If client has left the boundary then stop the timer.
+        if (!ZTele_AutoCancelCheck(client))
+            return Plugin_Stop;
+    }
+    
+    // Check if the time has expired.
+    g_iZTeleTimeLeft[client]--;
+    if (g_iZTeleTimeLeft[client] <= 0)
+    {
+        ZTele_TeleportClient(client);
+        g_iZTeleCount[client]++;
+        
+        new ztelemax = TLib_IsClientZombie(client) ? GetConVarInt(g_hCvarZTeleMaxZombie) : GetConVarInt(g_hCvarZTeleMaxHuman);
+        PrintCenterText(client, "%t", "ZTele countdown end", g_iZTeleCount[client], ztelemax);
+        
+        // Stop repeating timer.
+        g_hZTeleTimer[client] = INVALID_HANDLE;
+        return Plugin_Stop;
+    }
+    PrintCenterText(client, "%t", "ZTele countdown", g_iZTeleTimeLeft[client]);
+    
+    // Allow timer to continue repeating.
+    return Plugin_Continue;
+}
+
+/**
+ * Teleport client to a random spawn location.
  * 
  * @param client    The client index.
  */
 ZTele_TeleportClient(client)
 {
-    // Teleport client.
-    TeleportEntity(client, g_vecZTeleSpawn[client], NULL_VECTOR, Float:{0.0, 0.0, 0.0});
+    // Verify that there is a point to teleport client to.
+    if (g_iZTeleNumSpawnPoints <= 0)
+    {
+        LogMgr_Print(g_moduleZTele, LogType_Error, "ZTeleport", "No available point to teleport client %N to.", client);
+        return;
+    }
+    
+    // Check if we should teleport to a random point or teleport back to the client's spawn point.
+    if (GetConVarBool(g_hCvarZTeleRandom))
+    {
+        // Find random spawn point.
+        new rand_spindex = GetRandomInt(0, g_iZTeleNumSpawnPoints - 1);
+        TeleportEntity(client, g_vecZTeleSpawnPoints[rand_spindex], NULL_VECTOR, Float:{0.0, 0.0, 0.0});
+    }
+    else
+    {
+        TeleportEntity(client, g_vecZTeleSpawnPoints[client], NULL_VECTOR, Float:{0.0, 0.0, 0.0});
+    }
+    
+    // Forward event to all modules.
+    new any:eventdata[1][1];
+    eventdata[0][0] = client;
+    
+    EventMgr_Forward(g_EvOnClientZTele, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType1);
 }
 
-
-/*****************
- *   CALLBACKS   *
- *****************/
+// **********************************************
+//                Admin Callbacks
+// **********************************************
 
 /**
- * Menu callback (ztele_force)
- * Forces ZTele on a client.
+ * Menu callback (ztele)
+ * Teleports client following rules of ZTele.
  * 
  * @param menu      The menu handle.
  * @param action    Action client is doing in menu.
  * @param client    The client index.
  * @param slot      The menu slot selected. (starting from 0)
  */
-public ZTele_ForceHandle(Handle:menu_ztele_force, MenuAction:action, client, slot)
+public ZTele_ClientMenuHandle(Handle:menu_ztele, MenuAction:action, client, slot)
 {
     // Client selected an option.
     if (action == MenuAction_Select)
     {
+        // Get menu title.
+        decl String:title[128];
+        Format(title, sizeof(title), "%T", client, "ZTele menu clients title");
+        
         // Get the client index of the selected client.
-        new target = MenuGetClientIndex(menu_ztele_force, slot);
+        new target = MenuLib_GetClientIndex(menu_ztele, slot);
         
         // If the target is 0, then the client left before being selected from the menu.
-        if (target == 0)
+        // Also much re-check the filters because the client could have died since the menu was sent.
+        if (target == 0 || !IsPlayerAlive(client))
         {
             // Re-send the menu.
-            MenuClientList(client, ZTele_ForceHandle, true, true, false, "ZTele clients title");
+            MenuLib_ClientMenu(client, ZTele_ClientMenuHandle, title, UTILS_FILTER_ALIVE | UTILS_FILTER_CANTARGET);
             
             return;
         }
         
+        // ZTele the client.
+        ZTele_StartTeleport(target, 0);
+        
         // Get the target's name for future use.
         decl String:targetname[MAX_NAME_LENGTH];
         GetClientName(target, targetname, sizeof(targetname));
-        
-        // Force ZSpawn on the target if client is allowed.
-        new bool:success = CanUserTarget(client, target) ? ZTele_StartTeleport(target, true) : false;
-        
-        // Tell admin the outcome of the action.
-        if (success)
-        {
-            TranslationReplyToCommand(client, "ZTele command force successful", targetname);
-        }
-        else
-        {
-            TranslationReplyToCommand(client, "ZTele command force unsuccessful", targetname);
-        }
+        TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Reply, _, _, "ZTele command successful", targetname);
         
         // Re-send the menu.
-        MenuClientList(client, ZTele_ForceHandle, true, true, false, "ZTele clients title");
+        MenuLib_ClientMenu(client, ZTele_ClientMenuHandle, title, UTILS_FILTER_ALIVE | UTILS_FILTER_CANTARGET);
     }
     // Client closed the menu.
     if (action == MenuAction_Cancel)
@@ -424,30 +571,30 @@ public ZTele_ForceHandle(Handle:menu_ztele_force, MenuAction:action, client, slo
     // Client exited menu.
     if (action == MenuAction_End)
     {
-        CloseHandle(menu_ztele_force);
+        CloseHandle(menu_ztele);
     }
 }
 
 /**
- * Command callback (zr_ztele_force)
+ * Command callback (zr_ztele)
  * Force ZSpawn on a client.
  * 
  * @param client    The client index.
  * @param argc      Argument count.
  */
-public Action:ZTele_ForceCommand(client, argc)
+public Action:ZTele_Command(client, argc)
 {
-    // Check if privileged.
-    if (!ZRIsClientPrivileged(client, OperationType_Generic))
+    // Check if client has access.
+    if (!AccessMgr_HasAccess(client, g_moduleZTele))
     {
-        TranslationReplyToCommand(client, "No access to command");
+        TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Reply, _, _, "No access to command");
         return Plugin_Handled;
     }
     
     // If not enough arguments given, then stop.
     if (argc < 1)
     {
-        TranslationReplyToCommand(client, "ZTele command force syntax");
+        TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Reply, _, _, "ZTele command syntax");
         return Plugin_Handled;
     }
     
@@ -463,185 +610,22 @@ public Action:ZTele_ForceCommand(client, argc)
     // Check if there was a problem finding a client.
     if (result <= 0)
     {
-        ZRReplyToTargetError(client, result);
+        TransMgr_ReplyToTargetError(client, result);
         return Plugin_Handled;
     }
     
-    // x = Client index.
-    for (new x = 0; x < result; x++)
+    for (new tindex = 0; tindex < result; tindex++)
     {
-        // Give client the item.
-        new bool:success = ZTele_StartTeleport(targets[x], true);
+        ZTele_StartTeleport(targets[tindex], 0);
         
         // Tell admin the outcome of the command if only 1 client was targetted.
         if (result == 1)
         {
-            if (success)
-            {
-                TranslationReplyToCommand(client, "ZTele command force successful", targetname);
-            }
-            else
-            {
-                TranslationReplyToCommand(client, "ZTele command force unsuccessful", targetname);
-            }
+            TransMgr_PrintText(client, MsgFormat_Plugin, MsgType_Reply, _, _, "ZTele command successful", targetname);
         }
         
-        // Log action to game events.
-        LogEvent(false, LogTypeOld_Normal, LOG_GAME_EVENTS, LogModule_ZTele, "Force ZTele", "\"%L\" teleported \"%L\" to spawn.", client, targets[x]);
+        LogMgr_Print(g_moduleZTele, LogType_Normal, "ZTele Command", "\"%L\" teleported \"%L\" to spawn.", client, targets[tindex]);
     }
     
     return Plugin_Handled;
-}
-
-/**
- * Command callback (ztele)
- * Teleport back to spawn if you are stuck.
- * 
- * @param client    The client index.
- * @param argc      Argument count.
- */
-public Action:ZTele_Command(client, argc)
-{
-    // If client is console, then stop and tell them this feature is for players only.
-    if (ZRIsConsole(client))
-    {
-        TranslationPrintToServer("Must be player");
-        return Plugin_Handled;
-    }
-    
-    // Start teleportation process.
-    ZTele_StartTeleport(client);
-    
-    // This stops the "Unknown command" message in client's console.
-    return Plugin_Handled;
-}
-
-/**
- * Timer callback, counts down teleport to the client.
- * 
- * @param timer     The timer handle.
- * @param client    The client index.
- */
-public Action:ZTele_Timer(Handle:timer, any:client)
-{
-    // If client leaves, then stop timer.
-    if (!IsClientInGame(client))
-    {
-        // Reset timer handle.
-        tZTele[client] = INVALID_HANDLE;
-        return Plugin_Stop;
-    }
-    
-    new bool:zteleautocancel = GetConVarBool(g_hCvarZTeleAutocancel);
-    if (zteleautocancel)
-    {
-        // If client has been running around after using ZTele, then stop timer.
-        new Float:vecClient[3];
-        GetClientAbsOrigin(client, vecClient);
-        
-        new Float:distance = GetVectorDistance(vecClient, g_vecZTeleOrigin[client]);
-        new Float:autocanceldistance = GetConVarFloat(g_hCvarZTeleAutocancelDistance);
-        
-        // Check if distance has been surpassed.
-        if (distance > autocanceldistance)
-        {
-            // Reset timer handle.
-            tZTele[client] = INVALID_HANDLE;
-            
-            // Tell client teleport has been cancelled.
-            TranslationPrintCenterText(client, "ZTele autocancel centertext");
-            TranslationPrintToChat(client, "ZTele autocancel text", RoundToNearest(autocanceldistance));
-            
-            // Send abort event.
-            ZTele_SendAbortedEvent(client, ZTeleAbort_Autocancel);
-            
-            // Stop timer.
-            return Plugin_Stop;
-        }
-    }
-    
-    // Decrement time left.
-    g_iZTeleTimeLeft[client]--;
-    
-    // Tell client how much time is left until teleport.
-    TranslationPrintCenterText(client, "ZTele countdown", g_iZTeleTimeLeft[client]);
-    
-    // Time has expired.
-    if (g_iZTeleTimeLeft[client] <= 0)
-    {
-        // Teleport client.
-        TeleportEntity(client, g_vecZTeleSpawn[client], NULL_VECTOR, NULL_VECTOR);
-        
-        // Increment teleport count.
-        g_iZTeleCount[client]++;
-        
-        // Get max teleports per round.
-        new ztelemax = InfectIsClientInfected(client) ? GetConVarInt(g_hCvarZTeleMaxZombie) : GetConVarInt(g_hCvarZTeleMaxHuman);
-        
-        // Tell client spawn protection is over.
-        TranslationPrintCenterText(client, "ZTele countdown end", g_iZTeleCount[client], ztelemax);
-        
-        // Clear timer handle.
-        tZTele[client] = INVALID_HANDLE;
-        
-        // Stop timer.
-        return Plugin_Stop;
-    }
-    
-    // Allow timer to continue repeating.
-    return Plugin_Continue;
-}
-
-
-/**********************
- *   EVENT TRIGGERS   *
- **********************/
-
-/**
- * Sends the teleport start event.
- *
- * @param client    Client that is teleported.
- * @param time      Countdown time.
- */
-ZTele_SendStartEvent(client, time)
-{
-    // Forward event to all modules.
-    static EventDataTypes:eventdatatypes[] = {DataType_Cell, DataType_Cell};
-    new any:eventdata[sizeof(eventdatatypes)][1];
-    
-    eventdata[0][0] = client;
-    eventdata[1][0] = time;
-    
-    EventMgr_Forward(g_EvOnTeleportTimerStarted, eventdata, sizeof(eventdata), sizeof(eventdata[]), eventdatatypes);
-}
-
-/**
- * Sends the teleported event.
- *
- * @param client    Client that was teleported.
- */
-ZTele_SendTeleportedEvent(client)
-{
-    // Forward event to all modules.
-    new any:eventdata[1][1];
-    eventdata[0][0] = client;
-    
-    EventMgr_Forward(g_EvOnPlayerTeleported, eventdata, sizeof(eventdata), sizeof(eventdata[]), g_CommonDataType1);
-}
-
-/**
- * Sends the teleported event.
- *
- * @param client    Client that aborted teleport.
- */
-ZTele_SendAbortedEvent(client, ZTele_AbortReason:reason)
-{
-    // Forward event to all modules.
-    static EventDataTypes:eventdatatypes[] = {DataType_Cell, DataType_Cell};
-    new any:eventdata[sizeof(eventdatatypes)][1];
-    
-    eventdata[0][0] = client;
-    eventdata[1][0] = _:reason;
-    
-    EventMgr_Forward(g_EvOnPlayerTeleportAborted, eventdata, sizeof(eventdata), sizeof(eventdata[]), eventdatatypes);
 }

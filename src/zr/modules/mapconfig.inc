@@ -26,14 +26,19 @@
  */
 
 /**
+ * Events.
+ */
+new ProjectEvent:g_EvOnPostConfigsExecuted;
+
+/**
  * This module's identifier.
  */
 new Module:g_moduleMapConfig;
 
 /**
- * Events created by this module.
+ * Function for outside files to use to return the module's identifier.
  */
-new ProjectEvent:g_EvOnPostConfigsExecuted;
+stock Module:MapConfig_GetIdentifier() { return g_moduleMapConfig; }
 
 /**
  * Register this module.
@@ -45,7 +50,7 @@ MapConfig_Register()
     
     moduledata[ModuleData_Disabled] = false;
     moduledata[ModuleData_Hidden] = false;
-    strcopy(moduledata[ModuleData_FullName], MM_DATA_FULLNAME, "Map configs");
+    strcopy(moduledata[ModuleData_FullName], MM_DATA_FULLNAME, "Map Config");
     strcopy(moduledata[ModuleData_ShortName], MM_DATA_SHORTNAME, "mapconfig");
     strcopy(moduledata[ModuleData_Description], MM_DATA_DESCRIPTION, "Executes map configuration files.");
     moduledata[ModuleData_Dependencies][0] = INVALID_MODULE;
@@ -53,10 +58,11 @@ MapConfig_Register()
     // Send this array of data to the module manager.
     g_moduleMapConfig = ModuleMgr_Register(moduledata);
     
-    EventMgr_RegisterEvent(g_moduleMapConfig, "Event_OnEventsRegister",       "MapConfig_OnEventsRegister");
-    
     // Create events.
     g_EvOnPostConfigsExecuted = EventMgr_CreateEvent("OnPostConfigsExecuted");
+
+    // Register the OnEventsRegister event to register all events in it.
+    EventMgr_RegisterEvent(g_moduleMapConfig, "Event_OnEventsRegister",         "MapConfig_OnEventsRegister");
 }
 
 /**
@@ -64,6 +70,7 @@ MapConfig_Register()
  */
 public MapConfig_OnEventsRegister()
 {
+    // Register all the events needed for this module.
     EventMgr_RegisterEvent(g_moduleMapConfig, "Event_OnAutoConfigsBuffered",    "MapConfig_OnAutoConfigsBuffered");
     EventMgr_RegisterEvent(g_moduleMapConfig, "Event_OnConfigsExecuted",        "MapConfig_OnConfigsExecuted");
 }
@@ -83,28 +90,23 @@ MapConfig_OnPluginStart()
  */
 public MapConfig_OnAutoConfigsBuffered()
 {
+    decl String:mapname[256];
     decl String:mapconfig[PLATFORM_MAX_PATH];
+    decl String:path[PLATFORM_MAX_PATH];
     
     // Get map name and format into config path.
-    GetCurrentMap(mapconfig, sizeof(mapconfig));
-    Format(mapconfig, sizeof(mapconfig), "sourcemod/zombiereloaded/%s.cfg", mapconfig);
+    GetCurrentMap(mapname, sizeof(mapname));
+    Format(mapconfig, sizeof(mapconfig), "sourcemod/zombiereloaded/%s.cfg", mapname);
     
     // Prepend cfg to path.
-    decl String:path[PLATFORM_MAX_PATH];
     Format(path, sizeof(path), "cfg/%s", mapconfig);
     
-    // Check if the file exist.
-    if (!FileExists(path))
+    // Check if the file exists.
+    if (FileExists(path))
     {
-        // There's no map config, stop.
-        return;
+        ServerCommand("exec %s", mapconfig);
+        LogMgr_Print(g_moduleMapConfig, LogType_Debug, "Map Configs", "Executed map config file: %s", path);
     }
-    
-    // Execute config file.
-    ServerCommand("exec %s", mapconfig);
-    
-    // Log action.
-    LogMgr_Print(g_moduleMapConfig, LogType_Normal, "Map Configs", "Executed map config file: %s", path);
 }
 
 /**
@@ -123,19 +125,13 @@ public MapConfig_OnConfigsExecuted()
     // Prepend cfg to path.
     Format(path, sizeof(path), "cfg/%s", mapconfig);
     
-    // Check if the file exist.
-    if (!FileExists(path))
+    // Check if the file exists.
+    if (FileExists(path))
     {
-        // There's no post map config, stop.
-        return;
+        ServerCommand("exec %s", mapconfig);
+        LogMgr_Print(g_moduleMapConfig, LogType_Debug, "Map Configs", "Executed post map config file: %s", path);
+        
+        // Trigger event.
+        EventMgr_Forward(g_EvOnPostConfigsExecuted, g_CommonEventData1, 0, 0, g_CommonDataType1);
     }
-    
-    // Execute config file.
-    ServerCommand("exec %s", mapconfig);
-    
-    // Log action.
-    LogMgr_Print(g_moduleMapConfig, LogType_Normal, "Map Configs", "Executed post map config file: %s", path);
-    
-    // Trigger event.
-    EventMgr_Forward(g_EvOnPostConfigsExecuted, g_CommonEventData1, 0, 0, g_CommonDataType1);
 }

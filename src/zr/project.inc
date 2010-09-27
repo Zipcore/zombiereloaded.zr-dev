@@ -46,12 +46,24 @@
  */
 stock ForwardOnPluginStart()
 {
-    // Forward event to non-modules.
-    
-    
     // Forward the OnPluginStart event to all modules here.
+    
+    // Old base. To be removed when all old modules are ported.
     BaseAdapter_OnPluginStart();
+    
+    // Core tools
+    GameData_OnPluginStart();
+    GameRules_OnPluginStart();
+    SDKHAdapt_OnPluginStart();
     MapConfig_OnPluginStart();
+    
+    // Game cores
+    ZRCore_OnPluginStart();
+    ZRC_OnPluginStart();
+    //ZRiot_OnPluginStart();    // Not impoted yet.
+    
+    // Game components
+    StripObj_OnPluginStart();
     ZTele_OnPluginStart();
     ClassMgr_OnPluginStart();
 }
@@ -118,7 +130,7 @@ enum ModuleData
     String:ModuleData_ShortName[MM_DATA_SHORTNAME],         /** Used for client interaction with modules. */
     String:ModuleData_Description[MM_DATA_DESCRIPTION],     /** A description of the module */
     Module:ModuleData_Dependencies[MM_DATA_DEPENDENCIES],   /** An array of module IDs that the module depends on.  {INVALID_MODULE} = no dependencies.  Must end with INVALID_MODULE. */
-    any:ModuleData_Extra1,                                  /** An extra spot to store any value that other modules can read.  This can be renamed to whatever you want. */
+    bool:ModuleData_Root,                                   /** True if the module is a root module.  Typically the top module of a game mode. */
     any:ModuleData_Extra2,                                  /** An extra spot to store any value that other modules can read.  This can be renamed to whatever you want. */
     any:ModuleData_Extra3                                   /** An extra spot to store any value that other modules can read.  This can be renamed to whatever you want. */
 }
@@ -224,7 +236,7 @@ enum ModuleToggleQuery
  * 
  * Note: This only used if translationsmanager.inc is included.
  */
-#define TM_BASE_DIR PROJECT_SHORTNAME
+#define TM_BASE_DIR "zombiereloaded"
 
 /**
  * The formatting string for each option in enum MsgFormatting.

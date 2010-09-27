@@ -1,0 +1,74 @@
+"Phrases"
+{
+	// **********************************************
+	//               Zombie:Riot Core
+	// **********************************************
+
+
+	//                  Gameplay		       //
+	/////////////////////////////////////////////////
+
+	"ZRiot gameplay round objective"
+	{
+		"en"		"The game is {green}Humans vs. Zombies{default}, humans must kill all zombies in order to advance to the next stage."
+	}
+
+	//                  Infection		       //
+	/////////////////////////////////////////////////
+
+	"ZRiot human to zombie"
+	{
+		"en"		"You have been infected, go eat some brains!"
+	}
+
+	"ZRiot zombie to human"
+	{
+		"en"		"The merciful gods (known as admins) have resurrected your soul, find some cover!"
+	}
+
+	"ZRiot command infect syntax"
+	{
+		"en"		"Turn a player into a zombie.  Usage: zriot_infect <#userid|name> [respawn - 1/0]"
+	}
+
+	"ZRiot command human syntax"
+	{
+		"en"		"Turn a player into a human.  Usage: zriot_human <#userid|name> [respawn - 1/0] [protect - 1/0]"
+	}
+
+	// {1}: Name of the player.
+	"ZRiot command infect successful"
+	{
+		"#format"	"{1:N}"
+		"en"		"Player {green}{1} {default}is now a zombie."
+	}
+
+	// {1}: Name of the player.
+	"ZRiot command infect unsuccessful"
+	{
+		"#format"	"{1:N}"
+		"en"		"Player {green}{1} {default}is already a zombie."
+	}
+
+	// {1}: Name of the player.
+	"ZRiot command human successful"
+	{
+		"#format"	"{1:N}"
+		"en"		"Player {green}{1} {default}has been successfully brought back as a human."
+	}
+
+	// {1}: Name of the player.
+	"ZRiot command human unsuccessful"
+	{
+		"#format"	"{1:N}"
+		"en"		"Player {green}{1} {default}is already a human."
+	}
+
+	//                   Weapons		       //
+	/////////////////////////////////////////////////
+
+	"ZRiot weapons zombie cant use weapon"
+	{
+		"en"		"Zombies can't use weapons!"
+	}
+}

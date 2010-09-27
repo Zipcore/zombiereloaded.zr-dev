@@ -60,6 +60,13 @@
 	}
 
 	// {1}: the disabled module's fullname.
+	"ModuleMgr modules enable refuse"
+	{
+		"#format"	"{1:s}"
+		"en"		"Module refused to be enabled: \"{1}\""
+	}
+
+	// {1}: the module's fullname.
 	"ModuleMgr modules enable dependent"
 	{
 		"#format"	"{1:s}"
@@ -80,18 +87,18 @@
 		"en"		"Module already disabled: \"{1}\""
 	}
 
+	// {1}: the module's fullname.
+	"ModuleMgr modules disable refuse"
+	{
+		"#format"	"{1:s}"
+		"en"		"Module refused to be disabled: \"{1}\""
+	}
+
 	// {1}: the disabled module's fullname.
 	"ModuleMgr modules disable dependent"
 	{
 		"#format"	"{1:s}"
 		"en"		"Disabled module: \"{1}\"  (Other module(s) dependent on this one were also disabled)"
-	}
-
-	// {1}: the disabled module's fullname.
-	"ModuleMgr modules refuse"
-	{
-		"#format"	"{1:s}"
-		"en"		"Module refused to be enabled: \"{1}\""
 	}
 
 }

@@ -344,7 +344,7 @@ public ClassMenuSelectHandle(Handle:menu, MenuAction:action, client, slot)
     new classindex;
     new teamid;
     new bool:autoclose = GetConVarBool(g_hCvarsList[CVAR_CLASSES_MENU_AUTOCLOSE]);
-    new bool:iszombie = InfectIsClientInfected(client);
+    new bool:iszombie = TLib_IsClientZombie(client);
     
     switch (action)
     {

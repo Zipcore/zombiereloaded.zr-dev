@@ -1,0 +1,9 @@
+"Phrases"
+{
+	"Config file reloaded successfully"
+	{
+		"#format"	"{1:s}"
+		"en"		"Successfully reloaded config file: \"{1}\""
+	}
+
+}

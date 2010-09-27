@@ -1,0 +1,39 @@
+// ============================================================================
+//
+//                              ZOMBIE:RELOADED
+//                        Game Rule Set Configuration
+//
+// See Game Rule Set Configuration (3.x) section in the manual for detailed
+// info.
+//
+// ============================================================================
+//
+// Valid module cmds:
+//
+// on           Enable the module.
+// force_on     Force the module to be enabled.  This guarantees that the module will be loaded at all times.
+// off          Disable the module.
+// force_off	Force the module to be disabled.  The module will be disabled after cvars are set, and this guarantees they will remain off.
+
+"gamerules"
+{
+	"zrclassic"
+	{
+		"core"		"zrc_root"
+
+		"modulecmds"
+		{
+			"objstripper"	"on"
+		}
+	}
+
+	//"zriot"
+	//{
+	//	"core"		"zriot_root"
+	//
+	//	"modulecmds"
+	//	{
+	//		"objstripper"	"on"
+	//	}
+	//}
+}
