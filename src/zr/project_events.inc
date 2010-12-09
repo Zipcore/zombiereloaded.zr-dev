@@ -73,6 +73,7 @@ new ProjectEvent:g_EvOnClientHuman;
 new ProjectEvent:g_EvRoundStart;
 new ProjectEvent:g_EvRoundFreezeEnd;
 new ProjectEvent:g_EvRoundEnd;
+new ProjectEvent:g_EvPlayerTeamPre;
 new ProjectEvent:g_EvPlayerTeam;
 new ProjectEvent:g_EvPlayerSpawn;
 new ProjectEvent:g_EvPlayerSpawnPost;
@@ -394,6 +395,7 @@ stock EventMgr_CreateEvents()
         g_EvRoundStart =            EventMgr_CreateEvent("Event_RoundStart");               /** Round has started. */
         g_EvRoundFreezeEnd =        EventMgr_CreateEvent("Event_RoundFreezeEnd");           /** Pre-round has freezetime has finished. */
         g_EvRoundEnd =              EventMgr_CreateEvent("Event_RoundEnd");                 /** Round has ended. */
+        g_EvPlayerTeamPre =         EventMgr_CreateEvent("Event_PlayerTeamPre");            /** Client has joined a team. (pre) */
         g_EvPlayerTeam =            EventMgr_CreateEvent("Event_PlayerTeam");               /** Client has joined a team. */
         g_EvPlayerSpawn =           EventMgr_CreateEvent("Event_PlayerSpawn");              /** Client has spawned. */
         g_EvPlayerSpawnPost =       EventMgr_CreateEvent("Event_PlayerSpawnPost");          /** Client has spawned (delayed event). */
@@ -445,6 +447,7 @@ stock EventMgr_HookEvents()
         HookEvent("round_start", GameEvent_RoundStart);
         HookEvent("round_freeze_end", GameEvent_RoundFreezeEnd);
         HookEvent("round_end", GameEvent_RoundEnd);
+        HookEvent("player_team", GameEvent_PlayerTeamPre, EventHookMode_Pre);
         HookEvent("player_team", GameEvent_PlayerTeam);
         HookEvent("player_spawn", GameEvent_PlayerSpawn);
         HookEvent("player_hurt", GameEvent_PlayerHurt);
@@ -523,6 +526,32 @@ public GameEvent_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
 {
     // Forward event to all modules.
     EventMgr_Forward(g_EvRoundEnd, g_CommonEventData1, 0, 0, g_CommonDataType1);
+}
+
+/**
+ * Client has joined a team. (pre)
+ * 
+ * @param event			Handle to event. This could be INVALID_HANDLE if every plugin hooking 
+ *						this event has set the hook mode EventHookMode_PostNoCopy.
+ * @param name			String containing the name of the event.
+ * @param dontBroadcast	True if event was not broadcast to clients, false otherwise.
+ */
+public GameEvent_PlayerTeamPre(Handle:event, const String:name[], bool:dontBroadcast)
+{
+    // Forward event to all modules.
+    static EventDataTypes:eventdatatypes[] = {DataType_Cell, DataType_Cell, DataType_Cell, DataType_Cell};
+    new any:eventdata[sizeof(eventdatatypes)][1];
+    
+    eventdata[0][0] = GetClientOfUserId(GetEventInt(event, "userid"));
+    eventdata[1][0] = GetEventInt(event, "team");
+    eventdata[2][0] = GetEventInt(event, "oldteam");
+    eventdata[3][0] = GetEventBool(event, "disconnect");
+    
+    new Action:result = EventMgr_Forward(g_EvPlayerTeamPre, eventdata, sizeof(eventdata), sizeof(eventdata[]), eventdatatypes);
+    
+    // If a module returns Plugin_Handled then stop the event from broadcasting to clients.
+    if (result == Plugin_Handled)
+        SetEventBroadcast(event, true);
 }
 
 /**

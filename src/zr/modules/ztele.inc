@@ -119,7 +119,7 @@ public ZTele_OnEventsRegister()
     EventMgr_RegisterEvent(g_moduleZTele, "Event_OnMapStart",                   "ZTele_OnMapStart");
     EventMgr_RegisterEvent(g_moduleZTele, "Event_OnClientPutInServer",          "ZTele_OnClientPutInServer");
     EventMgr_RegisterEvent(g_moduleZTele, "Event_OnClientDisconnect",           "ZTele_OnClientDisconnect");
-    EventMgr_RegisterEvent(g_moduleZTele, "Event_OnClientInfect",               "ZTele_OnClientInfect");
+    EventMgr_RegisterEvent(g_moduleZTele, "Event_OnClientInfected",             "ZTele_OnClientInfect");
     EventMgr_RegisterEvent(g_moduleZTele, "Event_OnClientHuman",                "ZTele_OnClientHuman");
     
     #if defined PROJECT_GAME_CSS

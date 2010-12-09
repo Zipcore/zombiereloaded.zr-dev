@@ -218,15 +218,19 @@ stock ProjectEvent:EventMgr_CreateEvent(const String:eventname[])
  */
 stock ProjectEvent:EventMgr_RegisterEvent(Module:module, const String:eventname[], const String:functionname[])
 {
+    decl String:modulefullname[MM_DATA_FULLNAME];
+    
     new ProjectEvent:eventid = EventMgr_EventNameToID(eventname);
     if (eventid == INVALID_EVENT)
-        return INVALID_EVENT;
+    {
+        ModuleMgr_ReadString(module, ModuleData_FullName, modulefullname, sizeof(modulefullname));
+        SetFailState("[Event Manager] Invalid event name (%s) in module \"%s\". Check for typos.", eventname, modulefullname);
+    }
     
     // Find the function ID for the given function name.
     new Function:func = GetFunctionByName(GetMyHandle(), functionname);
     if (func == INVALID_FUNCTION)
     {
-        decl String:modulefullname[MM_DATA_FULLNAME];
         ModuleMgr_ReadString(module, ModuleData_FullName, modulefullname, sizeof(modulefullname));
         SetFailState("[Event Manager] Invalid function (%s) being registered as an event forward by module \"%s\" for event \"%s\"", functionname, modulefullname, g_EMEvents[_:eventid]);
     }
