@@ -90,7 +90,7 @@ public BaseAdapter_OnEventsRegister()
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_PlayerHurt",             "BaseAdapter_PlayerHurt");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_PlayerDeath",            "BaseAdapter_PlayerDeath");
     EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_WeaponFire",             "BaseAdapter_WeaponFire");
-    EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_WeaponFireOnEmpty",      "BaseAdapter_WeaponFireOnEmpty");
+    //EventMgr_RegisterEvent(g_moduleBaseAdapter, "Event_WeaponFireOnEmpty",      "BaseAdapter_WeaponFireOnEmpty");     // Only used by ammo manager; incomplete.
     
     #endif
 }
@@ -572,7 +572,7 @@ public BaseAdapter_WeaponFire(client, const String:weapon[])
  * @param client        The client index.
  * @param weapon        The weapon classname fired. (No weapon_ prefix)
  */
-public BaseAdapter_WeaponFireOnEmpty(client, const String:weapon[])
+/*public BaseAdapter_WeaponFireOnEmpty(client, const String:weapon[])
 {
     new weaponIndex = WeaponsNameToIndex(weapon);
     
@@ -584,4 +584,4 @@ public BaseAdapter_WeaponFireOnEmpty(client, const String:weapon[])
         new WepLib_Slots:weaponSlot = WeaponsGetSlot(weaponIndex);
         AmmoOnWeaponFireOnEmpty(client, weaponSlot);
     }
-}
+}*/

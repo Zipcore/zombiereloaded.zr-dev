@@ -337,7 +337,7 @@ public ClassMgr_OnEventsRegister()
     //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnClientPutInServer",     "ClassMgr_OnClientPutInServer");
     //EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnClientDisconnect",      "ClassMgr_OnClientDisconnect");
     
-    EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnPlayerReady",             "ClassMgr_OnPlayerReady");
+    EventMgr_RegisterEvent(g_moduleClassMgr, "Event_OnClientReady",             "ClassMgr_OnClientReady");
     
     #if defined PROJECT_GAME_CSS
     
@@ -788,7 +788,7 @@ public ClassMgr_PlayerDeath(victim, attacker, const String:weapon[], bool:headsh
  *
  * @param client    Client index.
  */
-public ClassMgr_OnPlayerReady(client)
+public ClassMgr_OnClientReady(client)
 {
     // Set class selection indexes if not already modified.
     
