@@ -36,6 +36,21 @@ new Module:g_moduleZRCTM;
 stock Module:ZRCTM_GetIdentifier() { return g_moduleZRCTM; }
 
 /**
+ * Cvar handles.
+ */
+new Handle:g_hCvarTeamHumans;
+new Handle:g_hCvarTeamZombies;
+
+/**
+ * @section Default team indexes for classic zombie gameplay.
+ */
+#define ZRC_DEFAULT_ZOMBIE_TEAM TEAM_2
+#define ZRC_DEFAULT_HUMAN_TEAM  TEAM_3
+/**
+ * @endsection
+ */
+
+/**
  * Register this module.
  */
 ZRCTM_Register()
@@ -65,6 +80,7 @@ public ZRCTM_OnEventsRegister()
 {
     // Register all the events needed for this module.
     EventMgr_RegisterEvent(g_moduleZRCTM, "Event_OnClientPutInServer",          "ZRCTM_OnClientPutInServer");
+    EventMgr_RegisterEvent(g_moduleZRCTM, "Event_OnConfigsExecuted",            "ZRCTM_OnConfigsExecuted");
     
     #if defined PROJECT_GAME_CSS
     
@@ -76,8 +92,8 @@ public ZRCTM_OnEventsRegister()
     #endif
     
     // Register custom events.
-    EventMgr_RegisterEvent(g_moduleZRCTM, "Event_OnClientInfect",            "ZRCTM_OnClientInfect");
-    EventMgr_RegisterEvent(g_moduleZRCTM, "Event_OnClientHuman",             "ZRCTM_OnClientHuman");
+    EventMgr_RegisterEvent(g_moduleZRCTM, "Event_OnClientInfected",             "ZRCTM_OnClientInfected");
+    EventMgr_RegisterEvent(g_moduleZRCTM, "Event_OnClientHuman",                "ZRCTM_OnClientHuman");
 }
 
 /**
@@ -87,6 +103,17 @@ ZRCTM_OnPluginStart()
 {
     // Register the module.
     ZRCTM_Register();
+    
+    g_hCvarTeamHumans = 	CreateConVar("zrc_team_humans", "ct", "Which game team to put humans on.");
+    g_hCvarTeamZombies =    CreateConVar("zrc_team_zombies", "t", "Which game team to put zombies on.");
+}
+
+/**
+ * Configs are done executing.
+ */
+public ZRCTM_OnConfigsExecuted()
+{
+    ZRCTM_InitializeVTeams();
 }
 
 /**
@@ -107,7 +134,7 @@ public ZRCTM_OnClientPutInServer(client)
  * @param attacker      The zombie that infected the client.
  * @param mzombie       True if the client has been infected as a mother zombie.
  */
-public ZRCTM_OnClientInfect(client, attacker, bool:mzombie)
+public ZRCTM_OnClientInfected(client, attacker, bool:mzombie)
 {
     #if defined PROJECT_GAME_CSS
         Util_SwitchTeam(client, TLib_GetGameTeamIndex(VTeam_Zombie));
@@ -214,4 +241,46 @@ stock ZRCTM_BalanceTeams()
         
         team1 = !team1;
     }
+}
+
+/**
+ * Validates and initializes virtual team settings.
+ */
+ZRCTM_InitializeVTeams()
+{
+    decl String:humanTeam[32];
+    decl String:zombieTeam[32];
+    humanTeam[0] = 0;
+    zombieTeam[0] = 0;
+    
+    // Get team strings.
+    GetConVarString(g_hCvarTeamHumans, humanTeam, sizeof(humanTeam));
+    GetConVarString(g_hCvarTeamZombies, zombieTeam, sizeof(zombieTeam));
+    
+    // Attempt to convert to team indexes.
+    new humans = TLib_GTeamStringToIndex(humanTeam);
+    new zombies = TLib_GTeamStringToIndex(zombieTeam);
+    
+    // Validate. Fall back to defaults on errors.
+    if (humans < 0)
+    {
+        LogMgr_Print(g_moduleZRCTM, LogType_Error, "Config Validation", "Error: Invalid team name (%s). Check zrc_team_humans.", humanTeam);
+        humans = ZRC_DEFAULT_HUMAN_TEAM;
+    }
+    if (zombies < 0)
+    {
+        LogMgr_Print(g_moduleZRCTM, LogType_Error, "Config Validation", "Error: Invalid team name (%s). Check zrc_team_zombies.", zombieTeam);
+        zombies = ZRC_DEFAULT_ZOMBIE_TEAM;
+    }
+    if (humans == zombies)
+    {
+        LogMgr_Print(g_moduleZRCTM, LogType_Error, "Config Validation", "Error: Humans and zombies can't be on the same team. Check zrc_team_humans and zrc_team_zombies.");
+        humans = ZRC_DEFAULT_HUMAN_TEAM;
+        zombies = ZRC_DEFAULT_ZOMBIE_TEAM;
+    }
+    
+    // Set indexes.
+    TLib_SetGameTeamIndex(VTeam_Human, humans);
+    TLib_SetGameTeamIndex(VTeam_Zombie, zombies);
+    TLib_SetGameTeamIndex(VTeam_Spectator, TEAM_1);
 }

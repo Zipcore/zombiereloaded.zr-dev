@@ -87,7 +87,7 @@ public ZRCWeps_OnEventsRegister()
     #endif
     
     // Register custom events.
-    EventMgr_RegisterEvent(g_moduleZRCWeps, "Event_OnClientInfect",             "ZRCWeps_OnClientInfect");
+    EventMgr_RegisterEvent(g_moduleZRCWeps, "Event_OnClientInfected",           "ZRCWeps_OnClientInfected");
     EventMgr_RegisterEvent(g_moduleZRCWeps, "Hook_WeaponCanUse",                "ZRCWeps_CanUse");
 }
 
@@ -129,7 +129,7 @@ ZRCWeps_OnPluginStart()
  * @param attacker      The zombie that infected the client.
  * @param motherzombie  True if the client has been infected as a mother zombie.
  */
-public ZRCWeps_OnClientInfect(client, attacker, bool:motherzombie)
+public ZRCWeps_OnClientInfected(client, attacker, bool:motherzombie)
 {
     #if defined PROJECT_GAME_CSS
         new bool:weapons[WEPLIB_SLOT_COUNT] = {true, ...};

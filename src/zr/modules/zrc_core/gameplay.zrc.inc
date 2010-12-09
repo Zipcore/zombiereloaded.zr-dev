@@ -80,7 +80,7 @@ public ZRCGPlay_OnEventsRegister()
     //EventMgr_RegisterEvent(g_moduleZRCGPlay, "Event_OnMyModuleDisable",         "ZRCGPlay_OnMyModuleDisable");
     EventMgr_RegisterEvent(g_moduleZRCGPlay, "Event_OnClientDisconnect",        "ZRCGPlay_OnClientDisconnect");
     EventMgr_RegisterEvent(g_moduleZRCGPlay, "Event_OnMapStart",                "ZRCGPlay_OnMapStart");
-    EventMgr_RegisterEvent(g_moduleZRCGPlay, "Event_OnClientInfect",            "ZRCGPlay_OnClientInfect");
+    EventMgr_RegisterEvent(g_moduleZRCGPlay, "Event_OnClientInfected",          "ZRCGPlay_OnClientInfected");
     
     #if defined PROJECT_GAME_CSS
     
@@ -98,7 +98,7 @@ public ZRCGPlay_OnEventsReady()
 {
     // Push down priority for Event_OnClientInfect to below zrteammanager module.
     EventMgr_TakePriority("Event_OnClientDisconnect", g_moduleZRCGPlay, ZRCInfect_GetIdentifier());
-    EventMgr_TakePriority("Event_OnClientInfect", g_moduleZRCGPlay, ZRCTM_GetIdentifier());
+    EventMgr_TakePriority("Event_OnClientInfected", g_moduleZRCGPlay, ZRCTM_GetIdentifier());
 }
 
 
@@ -180,7 +180,7 @@ public ZRCGPlay_OnClientDisconnect(client)
  * @param attacker      The zombie that infected the client.
  * @param mzombie       True if the client has been infected as a mother zombie.
  */
-public ZRCGPlay_OnClientInfect(client, attacker, bool:mzombie)
+public ZRCGPlay_OnClientInfected(client, attacker, bool:mzombie)
 {
     // The core won't infect all clients as mother zombie so don't waste time checking.
     // This could be a big performance boost if 10 mother zombies are being spawned simultaneously.
