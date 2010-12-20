@@ -442,9 +442,9 @@ public KvCache:ClassMgr_LoadClass(Handle:kv, sectionindex, const String:sectionn
         }
         else
         {
-            // Attribute wasn't registered. This is just a debug print and
-            // should never happen if all modules are available.
-            PrintToServer("[ZR] Class attribute not registered: %s", attributeName);
+            // Attribute wasn't registered. This is either caused by a typo in
+            // the config or when a module isn't loaded.
+            LogMgr_Print(g_moduleClassMgr, LogType_Error, "Config Validation", "Warning: Ignoring invalid class attribute in class \"%s\" (%d): %s", sectionname, sectionindex, attributeName);
         }
         
         // Jump back to the attribute again so the parser will find the next attribute.
