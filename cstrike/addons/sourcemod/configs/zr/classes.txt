@@ -27,7 +27,15 @@
 // team_default             yes/no      Marks the class as the default class in its team.
 // is_admin_class           yes/no      Marks the class for admins only.
 // is_mother_zombie         yes/no      Marks the class for mother zombies only. Applies to zombie classes only.
-// group                    text        Restrict class to member of this SourceMod group. Leave blank for no restriction.
+// auth_mode                text        Authorization mode for the class. Options:
+//                                      "disabled" - No authorization. Everyone can use the class.
+//                                      "flag"     - Player must have at least one of the flags.
+//                                      "group"    - Player must be in at least one of the groups.
+//                                      "either"   - Player must either have one of the flags or be in one of the groups.
+//                                      "both"     - Player must both have one of the flags and be in one of the groups.
+//                                      "all"      - Player must have all flags and be in all groups.
+// flags                    text        List of flag names to authorize. Separated by comma (,). See auth_mode.
+// groups                   text        List of groups to authorize. Separated by comma (,). See auth_mode.
 // display_name             text        The class name used in class menu.
 // description              text        The class description used in class menu.
 // model                    text        Name of model to use, or predefined filter option.
@@ -72,7 +80,10 @@
         "team_default"          "yes"
         "is_admin_class"        "no"
         "is_mother_zombie"      "no"
-        "group"                 ""
+        
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
         
         "display_name"          "Classic"
         "description"           "Need brains!!! Arrrrggghh!"
@@ -122,7 +133,10 @@
         "team_default"          "no"
         "is_admin_class"        "no"
         "is_mother_zombie"      "no"
-        "group"                 ""
+        
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
         
         "display_name"          "Fast"
         "description"           "-HP | +Speed | +Jump | +Knockback"
@@ -172,7 +186,10 @@
         "team_default"          "no"
         "is_admin_class"        "no"
         "is_mother_zombie"      "no"
-        "group"                 ""
+        
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
         
         "display_name"          "Mutated"
         "description"           "+HP | -Speed | +Jump | +Knockback"
@@ -222,7 +239,10 @@
         "team_default"          "no"
         "is_admin_class"        "no"
         "is_mother_zombie"      "no"
-        "group"                 ""
+        
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
         
         "display_name"          "Heavy"
         "description"           "+HP | -Speed | -Jump | -Knockback"
@@ -272,7 +292,10 @@
         "team_default"          "no"
         "is_admin_class"        "no"
         "is_mother_zombie"      "yes"
-        "group"                 ""
+        
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
         
         "display_name"          "Mother zombie"
         "description"           "+HP regen | +Speed | +Jump | -Knockback"
@@ -322,7 +345,10 @@
         "team_default"          "no"
         "is_admin_class"        "yes"
         "is_mother_zombie"      "yes"
-        "group"                 ""
+        
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
         
         "display_name"          "Admin mother zombie"
         "description"           "+HP regen | +Speed | +Jump | -Knockback"
@@ -378,7 +404,10 @@
         "team_default"          "yes"
         "is_admin_class"        "no"
         "is_mother_zombie"      "no"
-        "group"                 ""
+        
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
         
         "display_name"          "Normal Human"
         "description"           "Default Counter-Strike settings"
@@ -428,7 +457,10 @@
         "team_default"          "yes"
         "is_admin_class"        "no"
         "is_mother_zombie"      "no"
-        "group"                 ""      // Write the name of a SourceMod group for vip players ("zr_vip"), then make it in SourceMod.
+        
+        "auth_mode"             "disabled"  // Example: "either"
+        "flags"                 ""          // Example: "generic,chat"
+        "groups"                ""          // Example: "vip,admins"
         
         "display_name"          "VIP Human"
         "description"           "Human class for important players"
@@ -478,7 +510,10 @@
         "team_default"          "no"
         "is_admin_class"        "yes"
         "is_mother_zombie"      "no"
-        "group"                 ""
+        
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
         
         "display_name"          "Admin Human"
         "description"           "Human class for admins"
@@ -528,7 +563,10 @@
         "team_default"          "no"
         "is_admin_class"        "no"
         "is_mother_zombie"      "no"
-        "group"                 ""
+        
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
         
         "display_name"          "Speedy"
         "description"           "Fast human"
@@ -578,7 +616,10 @@
         "team_default"          "no"
         "is_admin_class"        "no"
         "is_mother_zombie"      "no"
-        "group"                 ""
+        
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
         
         "display_name"          "Light"
         "description"           "Regular human with improved jump skills"

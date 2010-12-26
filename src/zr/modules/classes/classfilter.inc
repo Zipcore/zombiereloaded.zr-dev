@@ -107,7 +107,7 @@ stock bool:ClassMgr_FlagFilterMatch(index, require, deny, ClassCacheType:cache)
         return true;
     }
     
-    new flags = ClsGeneric_GetFlags(index, cache);
+    new flags = ClsGeneric_GetClassFlags(index, cache);
     new bool:requirePassed = false;
     new bool:denyPassed = false;
     
@@ -162,33 +162,33 @@ stock bool:ClassMgr_FilterMatch(index, filter[ClassFilter], ClassCacheType:cache
         return false;
     }
     
-    // Get class group name.
-    decl String:groupName[CLASS_NAME_LEN];
-    groupName[0] = 0;
-    ClsGeneric_GetGroup(index, groupName, sizeof(groupName), cache);
-    
-    // Check if a client is specified in the filter.
     new client = filter[ClassFilter_Client];
-    if (ZRIsClientValid(client))
+    
+    // Get authorization mode
+    new ClsGeneric_AuthModes:authMode = ClsGeneric_GetAuthMode(index, cache);
+    
+    // Check if classes with authorization should be excluded.
+    if (client < 0 && authMode != ClsGeneric_Disabled)
     {
-        // Check if a group is set on the class.
-        if (strlen(groupName))
-        {
-            // Check if the client is not a member of that group.
-            if (!ZRIsClientInGroup(client, groupName))
-            {
-                return false;
-            }
-        }
+        return false;
     }
     
-    // Check if classes with groups are set to be excluded.
-    if (client < 0)
+    // Check if client must be authorized.
+    if (ZRIsClientValid(client))
     {
-        // Exclude class if it has a group name.
-        if (strlen(groupName))
+        if (authMode != ClsGeneric_Disabled)
         {
-            return false;
+            decl String:groups[CLASS_STRING_LEN];
+            decl String:flags[CLASS_STRING_LEN];
+            groups[0] = 0;
+            flags[0] = 0;
+            
+            // Get lists.
+            ClsGeneric_GetGroups(index, groups, sizeof(groups), cache);
+            ClsGeneric_GetFlags(index, groups, sizeof(groups), cache);
+            
+            new Auth_Modes:libMode = ClassMgr_ClsAuthModeToAuthMode(authMode);
+            return Auth_IsClientAuthorized(client, groups, flags, CLASS_LIST_SEPARATOR, libMode, false);
         }
     }
     
