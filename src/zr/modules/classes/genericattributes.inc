@@ -25,6 +25,8 @@
  * ============================================================================
  */
 
+#include "zr/libraries/authlib"
+
 /**
  * This module's identifier.
  */
@@ -42,14 +44,18 @@ enum ClassGenericAttributes
 {
     bool:ClassAttrib_Enabled,                       /** Specifies whether the class is enabled or not. */
     ClassTeam:ClassAttrib_Team,                     /** Which team the class belongs to. */
+    
     bool:ClassAttrib_TeamDefault,                   /** Specifies whether it's the default class in its team. */
     bool:ClassAttrib_IsAdminClass,                  /** Specifies whether the class is a admins-only class or not. */
     bool:ClassAttrib_IsMotherZombie,                /** Specifies whether the class is mother zombie class or not (only valid in zombie team). */
-    String:ClassAttrib_Group[CLASS_NAME_LEN],       /** Restricts the class to only players in the specified SourceMod group. */
-    String:ClassAttrib_Name[CLASS_NAME_LEN],        /** Unique name used to identify the class (section name in keyvalue file). */
     
-    String:ClassAttrib_DisplayName[CLASS_NAME_LEN], /** Name displayed in the class menu. */
-    String:ClassAttrib_Description[CLASS_NAME_LEN]  /** Description displayed in the class menu. */
+    ClsGeneric_AuthModes:ClassAttrib_AuthMode,      /** Authorization mode. Restricts the class according to this setting, groups and flags. */
+    String:ClassAttrib_Flags[CLASS_STRING_LEN],     /** List of SourceMod flag names for authorization. Separated by comma (,) */
+    String:ClassAttrib_Groups[CLASS_STRING_LEN],    /** List of SourceMod groups for authorization. Separated by comma (,). */
+    
+    String:ClassAttrib_Name[CLASS_NAME_LEN],        /** Unique name used to identify the class (section name in keyvalue file). */
+    String:ClassAttrib_DisplayName[CLASS_NAME_LEN],     /** Name displayed in the class menu. */
+    String:ClassAttrib_Description[CLASS_STRING_LEN]    /** Description displayed in the class menu. */
 }
 
 /**
@@ -105,7 +111,9 @@ ClsGeneric_Register()
     ClassAttribReg_AddAttrib(g_moduleClsGeneric, "team_default");
     ClassAttribReg_AddAttrib(g_moduleClsGeneric, "is_admin_class");
     ClassAttribReg_AddAttrib(g_moduleClsGeneric, "is_mother_zombie");
-    ClassAttribReg_AddAttrib(g_moduleClsGeneric, "group");
+    ClassAttribReg_AddAttrib(g_moduleClsGeneric, "auth_mode");
+    ClassAttribReg_AddAttrib(g_moduleClsGeneric, "flags");
+    ClassAttribReg_AddAttrib(g_moduleClsGeneric, "groups");
     ClassAttribReg_AddAttrib(g_moduleClsGeneric, "display_name");
     ClassAttribReg_AddAttrib(g_moduleClsGeneric, "description");
 }
@@ -203,48 +211,59 @@ public ClsGeneric_OnClassAttribLoad(classIndex, Handle:kv, const String:attribut
         ClassGotName[classIndex] = true;
     }
     
-    decl String:buffer[CLASS_STRING_LEN];
-    buffer[0] = 0;
+    decl String:value[CLASS_STRING_LEN];
+    value[0] = 0;
+    KvGetString(kv, attribute, value, sizeof(value));
     
     if (StrEqual(attribute, "enabled", false))
     {
-        KvGetString(kv, attribute, buffer, sizeof(buffer));
-        ClassGenericData[classIndex][ClassAttrib_Enabled] = ConfigSettingToBool(buffer);
+        //KvGetString(kv, attribute, buffer, sizeof(buffer));
+        ClassGenericData[classIndex][ClassAttrib_Enabled] = ConfigSettingToBool(value);
     }
     else if (StrEqual(attribute, "team", false))
     {
-        KvGetString(kv, attribute, buffer, sizeof(buffer));
-        ClassGenericData[classIndex][ClassAttrib_Team] = ClassMgr_StringToTeam(buffer);
+        //KvGetString(kv, attribute, buffer, sizeof(buffer));
+        ClassGenericData[classIndex][ClassAttrib_Team] = ClassMgr_StringToTeam(value);
     }
     else if (StrEqual(attribute, "team_default", false))
     {
-        KvGetString(kv, attribute, buffer, sizeof(buffer));
-        ClassGenericData[classIndex][ClassAttrib_TeamDefault] = ConfigSettingToBool(buffer);
+        //KvGetString(kv, attribute, buffer, sizeof(buffer));
+        ClassGenericData[classIndex][ClassAttrib_TeamDefault] = ConfigSettingToBool(value);
     }
     else if (StrEqual(attribute, "is_admin_class", false))
     {
-        KvGetString(kv, attribute, buffer, sizeof(buffer));
-        ClassGenericData[classIndex][ClassAttrib_IsAdminClass] = ConfigSettingToBool(buffer);
+        //KvGetString(kv, attribute, buffer, sizeof(buffer));
+        ClassGenericData[classIndex][ClassAttrib_IsAdminClass] = ConfigSettingToBool(value);
     }
     else if (StrEqual(attribute, "is_mother_zombie", false))
     {
-        KvGetString(kv, attribute, buffer, sizeof(buffer));
-        ClassGenericData[classIndex][ClassAttrib_IsMotherZombie] = ConfigSettingToBool(buffer);
+        //KvGetString(kv, attribute, buffer, sizeof(buffer));
+        ClassGenericData[classIndex][ClassAttrib_IsMotherZombie] = ConfigSettingToBool(value);
     }
-    else if (StrEqual(attribute, "group", false))
+    else if (StrEqual(attribute, "auth_mode", false))
     {
-        KvGetString(kv, attribute, buffer, sizeof(buffer));
-        strcopy(ClassGenericData[classIndex][ClassAttrib_Group], CLASS_NAME_LEN, buffer);
+        //KvGetString(kv, attribute, buffer, sizeof(buffer));
+        ClassGenericData[classIndex][ClassAttrib_AuthMode] = ClsGeneric_StringToAuthMode(value);
+    }
+    else if (StrEqual(attribute, "groups", false))
+    {
+        //KvGetString(kv, attribute, buffer, sizeof(buffer));
+        strcopy(ClassGenericData[classIndex][ClassAttrib_Groups], CLASS_STRING_LEN, value);
+    }
+    else if (StrEqual(attribute, "flags", false))
+    {
+        //KvGetString(kv, attribute, buffer, sizeof(buffer));
+        strcopy(ClassGenericData[classIndex][ClassAttrib_Flags], CLASS_STRING_LEN, value);
     }
     else if (StrEqual(attribute, "display_name", false))
     {
-        KvGetString(kv, attribute, buffer, sizeof(buffer));
-        strcopy(ClassGenericData[classIndex][ClassAttrib_DisplayName], CLASS_NAME_LEN, buffer);
+        //KvGetString(kv, attribute, buffer, sizeof(buffer));
+        strcopy(ClassGenericData[classIndex][ClassAttrib_DisplayName], CLASS_NAME_LEN, value);
     }
     else if (StrEqual(attribute, "description", false))
     {
-        KvGetString(kv, attribute, buffer, sizeof(buffer));
-        strcopy(ClassGenericData[classIndex][ClassAttrib_Description], CLASS_NAME_LEN, buffer);
+        //KvGetString(kv, attribute, buffer, sizeof(buffer));
+        strcopy(ClassGenericData[classIndex][ClassAttrib_Description], CLASS_NAME_LEN, value);
     }
 }
 
@@ -279,9 +298,19 @@ public Action:ClsGeneric_OnClassValidate(classIndex)
         ClassMgr_LogAttribErrGeneric(g_moduleClsGeneric, "team", className, classIndex);
         hasErrors = true;
     }
-    if (!ClsGeneric_IsValidGroup(classCache[ClassAttrib_Group]))
+    if (!ClsGeneric_IsValidAuthMode(classCache[ClassAttrib_AuthMode]))
     {
-        ClassMgr_LogAttribErrString(g_moduleClsGeneric, "group", className, classIndex, classCache[ClassAttrib_Group]);
+        ClassMgr_LogAttribErrGeneric(g_moduleClsGeneric, "auth_mode", className, classIndex);
+        hasErrors = true;
+    }
+    if (!ClsGeneric_IsValidFlagList(classCache[ClassAttrib_Flags], CLASS_LIST_SEPARATOR))
+    {
+        ClassMgr_LogAttribErrString(g_moduleClsGeneric, "flags", className, classIndex, classCache[ClassAttrib_Flags]);
+        hasErrors = true;
+    }
+    if (!ClsGeneric_IsValidGroupList(classCache[ClassAttrib_Groups], CLASS_LIST_SEPARATOR))
+    {
+        ClassMgr_LogAttribErrString(g_moduleClsGeneric, "groups", className, classIndex, classCache[ClassAttrib_Groups]);
         hasErrors = true;
     }
     if (!ClsGeneric_IsValidDisplayName(classCache[ClassAttrib_DisplayName]))
@@ -449,7 +478,9 @@ ClsGeneric_ClearClass(classIndex, ClassCacheType:cache = ClassCache_Original)
     attributes[ClassAttrib_TeamDefault] = false;
     attributes[ClassAttrib_IsAdminClass] = false;
     attributes[ClassAttrib_IsMotherZombie] = false;
-    attributes[ClassAttrib_Group][0] = 0;
+    attributes[ClassAttrib_AuthMode] = ClsGeneric_InvalidMode;
+    attributes[ClassAttrib_Flags][0] = 0;
+    attributes[ClassAttrib_Groups][0] = 0;
     attributes[ClassAttrib_Name][0] = 0;
     attributes[ClassAttrib_DisplayName][0] = 0;
     attributes[ClassAttrib_Description][0] = 0;
@@ -473,7 +504,7 @@ ClsGeneric_ClearClass(classIndex, ClassCacheType:cache = ClassCache_Original)
  ***************************/
 
 /**
- * Gets the group name of the specified class.
+ * Gets the group list from the specified class.
  *
  * @param index         Class index or client index.
  * @param buffer        Destination string buffer.
@@ -483,17 +514,53 @@ ClsGeneric_ClearClass(classIndex, ClassCacheType:cache = ClassCache_Original)
  *
  * @return              Number of cells written.
  */
-public ClsGeneric_GetGroup(classIndex, String:buffer[], maxlen, ClassCacheType:cache)
+public ClsGeneric_GetGroups(classIndex, String:buffer[], maxlen, ClassCacheType:cache)
 {
     switch (cache)
     {
-        case ClassCache_Original, ClassCache_Modified:
+        case ClassCache_Original:
         {
-            return strcopy(buffer, maxlen, ClassGenericData[classIndex][ClassAttrib_Group]);
+            return strcopy(buffer, maxlen, ClassGenericData[classIndex][ClassAttrib_Groups]);
+        }
+        case ClassCache_Modified:
+        {
+            return strcopy(buffer, maxlen, ClassGenericData2[classIndex][ClassAttrib_Groups]);
         }
         case ClassCache_Player:
         {
-            return strcopy(buffer, maxlen, ClassPlayerData[classIndex][ClassAttrib_Group]);
+            return strcopy(buffer, maxlen, ClassPlayerData[classIndex][ClassAttrib_Groups]);
+        }
+    }
+    
+    return 0;
+}
+
+/**
+ * Gets the flag list from the specified class.
+ *
+ * @param index         Class index or client index.
+ * @param buffer        Destination string buffer.
+ * @param maxlen        Size of buffer.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
+ *
+ * @return              Number of cells written.
+ */
+public ClsGeneric_GetFlags(classIndex, String:buffer[], maxlen, ClassCacheType:cache)
+{
+    switch (cache)
+    {
+        case ClassCache_Original:
+        {
+            return strcopy(buffer, maxlen, ClassGenericData[classIndex][ClassAttrib_Flags]);
+        }
+        case ClassCache_Modified:
+        {
+            return strcopy(buffer, maxlen, ClassGenericData2[classIndex][ClassAttrib_Flags]);
+        }
+        case ClassCache_Player:
+        {
+            return strcopy(buffer, maxlen, ClassPlayerData[classIndex][ClassAttrib_Flags]);
         }
     }
     
@@ -543,9 +610,13 @@ public ClsGeneric_GetDisplayName(classIndex, String:buffer[], maxlen, ClassCache
 {
     switch (cache)
     {
-        case ClassCache_Original, ClassCache_Modified:
+        case ClassCache_Original:
         {
             return strcopy(buffer, maxlen, ClassGenericData[classIndex][ClassAttrib_DisplayName]);
+        }
+        case ClassCache_Modified:
+        {
+            return strcopy(buffer, maxlen, ClassGenericData2[classIndex][ClassAttrib_DisplayName]);
         }
         case ClassCache_Player:
         {
@@ -571,9 +642,13 @@ public ClsGeneric_GetDescription(classIndex, String:buffer[], maxlen, ClassCache
 {
     switch (cache)
     {
-        case ClassCache_Original, ClassCache_Modified:
+        case ClassCache_Original:
         {
             return strcopy(buffer, maxlen, ClassGenericData[classIndex][ClassAttrib_Description]);
+        }
+        case ClassCache_Modified:
+        {
+            return strcopy(buffer, maxlen, ClassGenericData2[classIndex][ClassAttrib_Description]);
         }
         case ClassCache_Player:
         {
@@ -597,8 +672,18 @@ public bool:ClsGeneric_IsEnabled(index, ClassCacheType:cache)
 {
     switch (cache)
     {
-        case ClassCache_Original, ClassCache_Modified: return ClassGenericData[index][ClassAttrib_Enabled];
-        case ClassCache_Player: return ClassPlayerData[index][ClassAttrib_Enabled];
+        case ClassCache_Original:
+        {
+            return ClassGenericData[index][ClassAttrib_Enabled];
+        }
+        case ClassCache_Modified:
+        {
+            return ClassGenericData2[index][ClassAttrib_Enabled];
+        }
+        case ClassCache_Player:
+        {
+            return ClassPlayerData[index][ClassAttrib_Enabled];
+        }
     }
     
     return false;
@@ -637,8 +722,18 @@ public bool:ClsGeneric_GetTeamDefault(index, ClassCacheType:cache)
 {
     switch (cache)
     {
-        case ClassCache_Original, ClassCache_Modified: return ClassGenericData[index][ClassAttrib_TeamDefault];
-        case ClassCache_Player: return ClassPlayerData[index][ClassAttrib_TeamDefault];
+        case ClassCache_Original:
+        {
+             return ClassGenericData[index][ClassAttrib_TeamDefault];
+        }
+        case ClassCache_Modified:
+        {
+             return ClassGenericData2[index][ClassAttrib_TeamDefault];
+        }
+        case ClassCache_Player:
+        {
+            return ClassPlayerData[index][ClassAttrib_TeamDefault];
+        }
     }
     
     return false;
@@ -657,8 +752,18 @@ public bool:ClsGeneric_GetIsAdminClass(index, ClassCacheType:cache)
 {
     switch (cache)
     {
-        case ClassCache_Original, ClassCache_Modified: return ClassGenericData[index][ClassAttrib_IsAdminClass];
-        case ClassCache_Player: return ClassPlayerData[index][ClassAttrib_IsAdminClass];
+        case ClassCache_Original:
+        {
+            return ClassGenericData[index][ClassAttrib_IsAdminClass];
+        }
+        case ClassCache_Modified:
+        {
+            return ClassGenericData2[index][ClassAttrib_IsAdminClass];
+        } 
+        case ClassCache_Player:
+        {
+            return ClassPlayerData[index][ClassAttrib_IsAdminClass];
+        }
     }
     
     return false;
@@ -677,8 +782,18 @@ public bool:ClsGeneric_GetIsMotherZombie(index, ClassCacheType:cache)
 {
     switch (cache)
     {
-        case ClassCache_Original, ClassCache_Modified: return ClassGenericData[index][ClassAttrib_IsMotherZombie];
-        case ClassCache_Player: return ClassPlayerData[index][ClassAttrib_IsMotherZombie];
+        case ClassCache_Original:
+        {
+            return ClassGenericData[index][ClassAttrib_IsMotherZombie];
+        }
+        case ClassCache_Modified:
+        {
+            return ClassGenericData2[index][ClassAttrib_IsMotherZombie];
+        }
+        case ClassCache_Player:
+        {
+            return ClassPlayerData[index][ClassAttrib_IsMotherZombie];
+        }
     }
     
     return false;
@@ -693,7 +808,7 @@ public bool:ClsGeneric_GetIsMotherZombie(index, ClassCacheType:cache)
  *
  * @return              Class flags.
  */
-public ClsGeneric_GetFlags(index, ClassCacheType:cache)
+public ClsGeneric_GetClassFlags(index, ClassCacheType:cache)
 {
     new flags = 0;
     
@@ -707,6 +822,76 @@ public ClsGeneric_GetFlags(index, ClassCacheType:cache)
     }
     
     return flags;
+}
+
+/**
+ * Gets the authorization mode from the specified class.
+ *
+ * @param index         Class index or client index.
+ * @param cache         Specifies what class cache to read from. If player
+ *                      cache is used 'index' will be used as a client index.
+ *
+ * @return              Class authorization mode or ClsGeneric_InvalidMode on error.
+ */
+public ClsGeneric_AuthModes:ClsGeneric_GetAuthMode(index, ClassCacheType:cache)
+{
+    switch (cache)
+    {
+        case ClassCache_Original:
+        {
+            return ClassGenericData[index][ClassAttrib_AuthMode];
+        }
+        case ClassCache_Modified:
+        {
+            return ClassGenericData2[index][ClassAttrib_AuthMode];
+        }
+        case ClassCache_Player:
+        {
+            return ClassPlayerData[index][ClassAttrib_AuthMode];
+        }
+    }
+    
+    return ClsGeneric_InvalidMode;
+}
+
+/**
+ * Converts a string to a authorization mode.
+ *
+ * @param mode      Mode string to convert.
+ *
+ * @return          Authorization blending mode, or ClsGeneric_InvalidMode on error.
+ */
+ClsGeneric_AuthModes:ClsGeneric_StringToAuthMode(const String:mode[])
+{
+    if (strlen(mode) > 0)
+    {
+        if (StrEqual(mode, "disabled", false))
+        {
+            return ClsGeneric_Disabled;
+        }
+        else if (StrEqual(mode, "flag", false))
+        {
+            return ClsGeneric_Flag;
+        }
+        else if (StrEqual(mode, "group", false))
+        {
+            return ClsGeneric_Group;
+        }
+        else if (StrEqual(mode, "either", false))
+        {
+            return ClsGeneric_Either;
+        }
+        else if (StrEqual(mode, "both", false))
+        {
+            return ClsGeneric_Both;
+        }
+        else if (StrEqual(mode, "all", false))
+        {
+            return ClsGeneric_All;
+        }
+    }
+    
+    return ClsGeneric_InvalidMode;
 }
 
 
@@ -799,7 +984,24 @@ bool:ClsGeneric_IsValidTeam(ClassTeam:team)
 }
 
 /**
- * Validates group.
+ * Validates authorization mode.
+ *
+ * @param mode          Mode to validate.
+ *
+ * @return              True if valid, false otherwise.
+ */
+bool:ClsGeneric_IsValidAuthMode(ClsGeneric_AuthModes:mode)
+{
+    if (mode != ClsGeneric_InvalidMode)
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+/**
+ * Validates a group name.
  *
  * @param group         Group name to validate.
  *
@@ -807,12 +1009,6 @@ bool:ClsGeneric_IsValidTeam(ClassTeam:team)
  */
 bool:ClsGeneric_IsValidGroup(const String:group[])
 {
-    // No group is also valid.
-    if (strlen(group) == 0)
-    {
-        return true;
-    }
-    
     // Check if the group exist in SourceMod's admin cache.
     if (FindAdmGroup(group) != INVALID_GROUP_ID)
     {
@@ -820,6 +1016,92 @@ bool:ClsGeneric_IsValidGroup(const String:group[])
     }
     
     return false;
+}
+
+/**
+ * Validates a group list and log invalid names.
+ *
+ * @param groupList     List of groups to validate, separated by the separator.
+ * @param separator     Separator string to separate list entries.
+ *
+ * @return              True if all are valid, false otherwise.
+ */
+bool:ClsGeneric_IsValidGroupList(const String:groupList[], const String:separator[])
+{
+    // No groups is also valid.
+    if (strlen(groupList) == 0)
+    {
+        return true;
+    }
+    
+    decl String:groups[AUTHLIB_MAX_GROUPS][AUTHLIB_GROUP_LEN];
+    new count = ExplodeString(groupList, separator, groups, AUTHLIB_MAX_GROUPS, AUTHLIB_GROUP_LEN);
+    new bool:passed = true;
+    
+    // Loop through groups in the list.
+    for (new group = 0; group < count; group++)
+    {
+        // Validate group.
+        if (FindAdmGroup(groups[group]) == INVALID_GROUP_ID)
+        {
+            LogMgr_Print(g_moduleClsGeneric, LogType_Error, "Config Validation", "Error: Invalid group name: \"%s\"", groups[group]);
+            passed = false;
+        }
+    }
+    
+    return passed;
+}
+
+/**
+ * Validates a flag name.
+ *
+ * @param flag          Flag name to validate.
+ *
+ * @return              True if valid, false otherwise.
+ */
+bool:ClsGeneric_IsValidFlag(const String:flag[])
+{
+    new AdminFlag:dummy;
+    if (FindFlagByName(flag, dummy))
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+/**
+ * Validates a flag list and log invalid names.
+ *
+ * @param flagList      List of flags to validate, separated by the separator.
+ * @param separator     Separator string to separate list entries.
+ *
+ * @return              True if all are valid, false otherwise.
+ */
+bool:ClsGeneric_IsValidFlagList(const String:flagList[], const String:separator[])
+{
+    // No flags is also valid.
+    if (strlen(flagList) == 0)
+    {
+        return true;
+    }
+    
+    decl String:flags[AdminFlags_TOTAL][AUTHLIB_FLAG_LEN];
+    new count = ExplodeString(flagList, separator, flags, AdminFlags_TOTAL, AUTHLIB_FLAG_LEN);
+    new bool:passed = true;
+    
+    // Loop through groups in the list.
+    for (new flag = 0; flag < count; flag++)
+    {
+        // Validate group.
+        if (!ClsGeneric_IsValidFlag(flags[flag]))
+        {
+            LogMgr_Print(g_moduleClsGeneric, LogType_Error, "Config Validation", "Error: Invalid flag name: \"%s\"", flags[flag]);
+            passed = false;
+        }
+    }
+    
+    return passed;
 }
 
 /**

@@ -157,9 +157,10 @@ new Handle:g_hCvarClassesDefaultHuman;
 new Handle:g_hCvarClassesZombieSelect;
 new Handle:g_hCvarClassesHumanSelect;
 
-#define CLASS_MAX           48
-#define CLASS_NAME_LEN      64
-#define CLASS_STRING_LEN    256
+#define CLASS_MAX               48
+#define CLASS_NAME_LEN          64
+#define CLASS_STRING_LEN        256
+#define CLASS_LIST_SEPARATOR    ","
 
 /**
  * Class cache types. Specifies which data array to use.
@@ -181,6 +182,20 @@ enum ClassTeam
     ClassTeamNew_Zombies,
     ClassTeamNew_Humans,
     ClassTeamNew_All               /** Not valid in a class! It's only used by filters. */
+}
+
+/**
+ * Authorization modes for classes.
+ */
+enum ClsGeneric_AuthModes
+{
+    ClsGeneric_InvalidMode = -1,
+    ClsGeneric_Disabled,            // No authorization.
+    ClsGeneric_Flag,                // Player must have a flag.
+    ClsGeneric_Group,               // Player must be in a group.
+    ClsGeneric_Either,              // Player must have either a flag or be in a group.
+    ClsGeneric_Both,                // Player must both have a flag and be in a group.
+    ClsGeneric_All                  // Player must have all flags and be in all groups.
 }
 
 /**
@@ -252,7 +267,7 @@ new bool:g_ClassPlayerSpawned[MAXPLAYERS + 1];
 //    bool:ClassFilter_IgnoreEnabled,     /** Ignore whether the class is disabled or not. */
 //    ClassFilter_RequireFlags,           /** Flags the classes must have set. */
 //    ClassFilter_DenyFlags,              /** Flags the classes cannot have set. */
-//    ClassFilter_Client                  /** The client to check for class group permissions. Use 0 to ignore group filter, and negative to exclude classes with groups set. */
+//    ClassFilter_Client                  /** The client authorize. Use 0 to ignore authorization, and negative to exclude classes with authorization. */
 //}
 
 /**
@@ -1101,4 +1116,24 @@ ClassMgr_TeamToString(ClassTeam:team, String:buffer[], maxlen)
     }
     
     return 0;
+}
+
+/**
+ * Converts the specified class authorization mdoe to a authorization mode for
+ * authlib.
+ *
+ * @param classAuthMode     Class authorization mdoe to convert.
+ *
+ * @return                  Authlib mode. Or -1 on invalid mode.
+ */
+Auth_Modes:ClassMgr_ClsAuthModeToAuthMode(ClsGeneric_AuthModes:classAuthMode)
+{
+    switch (classAuthMode)
+    {
+        case ClsGeneric_Either: return Auth_Either;
+        case ClsGeneric_Both: return Auth_Both;
+        case ClsGeneric_All: return Auth_All;
+    }
+
+    return Auth_Modes:-1;
 }

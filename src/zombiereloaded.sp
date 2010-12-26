@@ -72,6 +72,7 @@
 
 // Libraries and generic utilities.
 #include "zr/libraries/authcachelib"
+#include "zr/libraries/authlib"
 #include "zr/libraries/conversionlib"
 #include "zr/libraries/cookielib"
 #include "zr/libraries/cvarlib"
