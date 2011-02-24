@@ -11,7 +11,7 @@
 //
 // Attribute:               Values:     Description:
 // ----------------------------------------------------------------------------
-// index                    number      The hitgroup index.
+// index                    number      The hitgroup index. DON'T modify this unless you know what you're doing.
 // damage                   on/off      Allow damage to be done on this hitgroup for zombies.
 // knockback                decimal     The knockback multiplier for this hitgroup.
 

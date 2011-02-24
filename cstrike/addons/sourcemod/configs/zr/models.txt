@@ -3,6 +3,7 @@
 //                              ZOMBIE:RELOADED
 //                            Model configuration
 //
+// Add custom models to this file. Set permissions and assign them to a team.
 // See Model Configuration (3.5) section in the manual for detailed info.
 //
 // ============================================================================
@@ -13,90 +14,137 @@
 //
 // Section name: Unique user defined name to identify the model.
 //
-// Attribute:   Description:
+// Attribute:           Values:     Description:
 // ----------------------------------------------------------------------------
-// name     Name of model file, without extension.
-// path     Path to model files. MUST end with "/".
-// team     Model type:
-//              "zombies"
-//              "humans"
-// access   Access type:
-//              "public"        - Everyone can use the model.
-//              "admins"        - Model can only be used by admins.    
-//              "hidden"        - Model is excluded from public random selections.
-//              "motherzombies" - Model can only be used by mother zombies.
-//              "group"         - Use group authentication.
-// group    If access is "group": A SourceMod group name. Otherwise blank ("").
+// filename             text        Name of model file, without extension.
+// path                 text        Path to model files. MUST end with "/".
+// team                 text        Which team the model belongs to. Options:
+//                                      "zombies"
+//                                      "humans"
+// motherzombies_only   yes/no      Only allow mother zombies to use the model.
+// admins_only          yes/no      Only allow admins to use the model.
+// is_hidden            yes/no      Exclude model from random selections. A class or a model collection must refer to the model to use it.
+// auth_mode            text        Authorization mode for the model. Options:
+//                                      "disabled" - No authorization. Everyone can use the model.
+//                                      "flag"     - Player must have at least one of the flags.
+//                                      "group"    - Player must be in at least one of the groups.
+//                                      "either"   - Player must either have one of the flags or be in one of the groups.
+//                                      "both"     - Player must both have one of the flags and be in one of the groups.
+//                                      "all"      - Player must have all flags and be in all groups.
+// flags                text        List of flag names to authorize. Separated by comma (,). See auth_mode.
+// groups               text        List of groups to authorize. Separated by comma (,). See auth_mode.
 
 "models"
 {
     "zh_charple001"
     {
-        "name"      "zh_charple001"
-        "path"      "models/player/zh/"
-        "team"      "zombies"
-        "access"    "public"
-        "group"     ""
+        // General
+        "filename"              "zh_charple001"
+        "path"                  "models/player/zh/"
+        "team"                  "zombies"
+        
+        // Restrictions
+        "motherzombies_only"    "no"
+        "admins_only"           "no"
+        "is_hidden"             "no"
+        
+        // Advanced authorization
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
     }
     
     "zh_zombie003"
     {
-        "name"      "zh_zombie003"
-        "path"      "models/player/zh/"
-        "team"      "zombies"
-        "access"    "public"
-        "group"     ""
+        // General
+        "filename"              "zh_zombie003"
+        "path"                  "models/player/zh/"
+        
+        // Restrictions
+        "motherzombies_only"    "no"
+        "admins_only"           "no"
+        "is_hidden"             "no"
+        
+        // Advanced authorization
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
     }
     
     "zh_corpse002"
     {
-        "name"      "zh_corpse002"
-        "path"      "models/player/zh/"
-        "team"      "zombies"
-        "access"    "public"
-        "group"     ""
+        // General
+        "filename"              "zh_corpse002"
+        "path"                  "models/player/zh/"
+        "team"                  "zombies"
+        
+        // Restrictions
+        "motherzombies_only"    "no"
+        "admins_only"           "no"
+        "is_hidden"             "no"
+        
+        // Advanced authorization
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
     }
     
     "t_guerilla"
     {
-        "name"      "t_guerilla"
-        "path"      "models/player/ics/hellknight_red/"
-        "team"      "zombies"
-        "access"    "public"
-        "group"     ""
+        // General
+        "filename"              "t_guerilla"
+        "path"                  "models/player/ics/hellknight_red/"
+        "team"                  "zombies"
+        
+        // Restrictions
+        "motherzombies_only"    "no"
+        "admins_only"           "no"
+        "is_hidden"             "no"
+        
+        // Advanced authorization
+        "auth_mode"             "disabled"
+        "flags"                 ""
+        "groups"                ""
     }
     
     // Special model examples:
     // -----------------------
     
-    // Only admins can use this zombie model.
-    //"admin_zombie"
-    //{
-    //    "name"      "1337model"
-    //    "path"      "models/player/adminmodels/"
-    //    "team"      "zombies"
-    //    "access"    "admins"
-    //    "group"     ""
-    //}
-    
-    // Only members of the zr_vip group in SourceMod can use this human model.
+    // Group restriction example. Only members of the vip or vip2 groups in SourceMod can use this model.
     //"vip_human"
     //{
-    //    "name"      "vipmodel"
-    //    "path"      "models/player/vip/"
-    //    "team"      "humans"
-    //    "access"    "group"
-    //    "group"     "zr_vip"
+    //    // General
+    //    "filename"              "vipmodel"
+    //    "path"                  "models/player/vip/"
+    //    "team"                  "humans"
+    //    
+    //    // Restrictions
+    //    "motherzombies_only"    "no"
+    //    "admins_only"           "no"
+    //    "is_hidden"             "no"
+    //    
+    //    // Advanced authorization
+    //    "auth_mode"             "group"
+    //    "flags"                 ""
+    //    "groups"                "vip, vip2"
     //}
     
-    // This model will be excluded from public random selections. Only classes
-    // that use "random_hidden" or explicit specify this model will be able to use it.
-    //"hidden"
+    // Flag restriction example. Only players with custom1 or kick flags can use this model.
+    //"human"
     //{
-    //    "name"      "hiddenmodel"
-    //    "path"      "models/player/"
-    //    "team"      "humans"
-    //    "access"    "hidden"
-    //    "group"     ""
+    //    // General
+    //    "filename"              "mymodel"
+    //    "path"                  "models/player/mymodel/"
+    //    "team"                  "humans"
+    //    
+    //    // Restrictions
+    //    "motherzombies_only"    "no"
+    //    "admins_only"           "no"
+    //    "is_hidden"             "no"
+    //    
+    //    // Advanced authorization
+    //    "auth_mode"             "flag"
+    //    "flags"                 "custom1, kick"
+    //    "groups"                ""
     //}
 }

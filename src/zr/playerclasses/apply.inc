@@ -82,7 +82,8 @@ bool:ClassApplyAttributes(client, bool:improved = false)
  */
 bool:ClassApplyModel(client, classindex, cachetype = ZR_CLASS_CACHE_PLAYER)
 {
-    new bool:isAttributePreset = false;
+    // Disabled until model module conversion is done.
+    /*new bool:isAttributePreset = false;
     decl String:modelpath[PLATFORM_MAX_PATH];
     new index;
     new ModelTeam:team;
@@ -184,7 +185,7 @@ bool:ClassApplyModel(client, classindex, cachetype = ZR_CLASS_CACHE_PLAYER)
         }
     }
     
-    SetEntityModel(client, modelpath);
+    SetEntityModel(client, modelpath);*/
     return true;
 }
 

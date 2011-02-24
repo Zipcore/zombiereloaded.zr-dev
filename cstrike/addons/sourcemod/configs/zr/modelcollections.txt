@@ -1,0 +1,36 @@
+// ============================================================================
+//
+//                              ZOMBIE:RELOADED
+//                      Model Collections Configuration
+//
+// A model collection can be used to let classes pick a random model from a
+// collection defined in this file. Model collections are optional and classes
+// can also refer to models directly. See (...) in the manual for detailed info.
+//
+// ============================================================================
+//
+// SHORT DESCRIPTIONS
+//
+// Section name: Unique user defined name to identify the model collection.
+//
+// Attribute:               Values:     Description:
+// ----------------------------------------------------------------------------
+// team         The team the collection belongs to. Options:
+//                  "zombies"
+//                  "motherzombies"
+//                  "humans"
+// model        Name of model to include in the collection. A collection may have several model entries.
+
+"modelcollections"
+{
+    "zombie models"
+    {
+        "team"          "zombies"
+        
+        // Models in the collection.
+        "model"         "zh_charple001"
+        "model"         "zh_zombie003"
+        "model"         "zh_corpse002"
+        "model"         "t_guerilla"
+    }
+}

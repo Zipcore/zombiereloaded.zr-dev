@@ -885,13 +885,15 @@ public bool:ClsModel_IsValidModel(const String:model[])
         }
         
         // Look up the name in the model list.
-        if (ModelsIsValidName(model))
+        // Disabled until model module is converted.
+        /*if (ModelsIsValidName(model))
         {
             return true;
-        }
+        }*/
     }
     
-    return false;
+    //return false;     Always valid until model module is converted.
+    return true;
 }
 
 /**
