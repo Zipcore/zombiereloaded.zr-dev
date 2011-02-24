@@ -50,7 +50,7 @@
 // TODO: To be removed when base conversion is done.
 #include "zr/log.h"
 #include "zr/tools.h"
-#include "zr/models.h"
+//#include "zr/models.h"
 #include "zr/playerclasses/classheaders.h"
 #include "zr/weapons/ammoheaders.h"
 //#include "zr/weapons/restrictheaders.h"
@@ -100,7 +100,8 @@
 #include "zr/modules/ztele"
 #include "zr/modules/stripobjectives"
 #include "zr/modules/classes/classmanager"
-// models, zmenu, cookies, etc.
+#include "zr/modules/models/models"
+// zmenu, cookies, etc.
 
 
 // ----- Old base -----
@@ -126,7 +127,7 @@
 #include "zr/downloads"
 #include "zr/overlays"
 #include "zr/playerclasses/playerclasses"
-#include "zr/models"
+//#include "zr/models"
 #include "zr/weapons/weapons"
 #include "zr/hitgroups"
 #include "zr/roundstart"

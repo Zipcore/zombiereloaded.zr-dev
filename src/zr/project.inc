@@ -60,12 +60,13 @@ stock ForwardOnPluginStart()
     // Game cores
     ZRCore_OnPluginStart();
     ZRC_OnPluginStart();
-    //ZRiot_OnPluginStart();    // Not impoted yet.
+    //ZRiot_OnPluginStart();    // Not imported yet.
     
     // Game components
     StripObj_OnPluginStart();
     ZTele_OnPluginStart();
     ClassMgr_OnPluginStart();
+    Models_OnPluginStart();
 }
 
 // **********************************************

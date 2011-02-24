@@ -210,7 +210,7 @@ public BaseAdapter_OnMapEnd()
 public BaseAdapter_OnConfigsExecuted()
 {
     // Forward event to modules. (OnConfigsExecuted)
-    ModelsLoad();
+    //ModelsLoad();
     DownloadsLoad();
     WeaponsLoad();
     HitgroupsLoad();
